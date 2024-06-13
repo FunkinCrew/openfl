@@ -689,6 +689,10 @@ class Assets
 					@:privateAccess LimeAssets.libraries.remove(name);
 					_library = new AssetLibrary();
 					_library.__proxy = library;
+
+					// ERIC: Figure out what bug the change here was made to fix
+					// https://github.com/FunkinCrew/openfl/commit/7af97e4baff7371eba1f79959909ffca7971902e
+					// https://github.com/FunkinCrew/lime/commit/f195121ebec688b417e38ab115185c8d93c349d3
 					LimeAssets.registerLibrary(name, _library);
 				}
 			}
