@@ -491,7 +491,8 @@ class Assets
 			return false;
 		}
 		#else
-		return (bitmapData != null && #if !lime_hybrid bitmapData.image != null #else bitmapData.__handle != null #end);
+		return (bitmapData != null
+			&& #if !lime_hybrid (bitmapData.image != null || bitmapData.__texture != null) #else bitmapData.__handle != null #end);
 		#end
 		#else
 		return true;
