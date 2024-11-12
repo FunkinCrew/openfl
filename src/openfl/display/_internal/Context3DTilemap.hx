@@ -538,8 +538,12 @@ class Context3DTilemap
 					tileData = tileset.__data[id];
 					if (tileData == null) continue;
 				}
+				
+				var numBuffer:Int = bufferPosition - lastFlushedPosition;
+				var forceFlush:Bool = numBuffer >= 16383;
 
-				if ((shader != currentShader)
+				if ((forceFlush)
+					|| (shader != currentShader)
 					|| (bitmapData != currentBitmapData && currentBitmapData != null)
 					|| (currentBlendMode != blendMode))
 				{
