@@ -10,9 +10,13 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.filters.BitmapFilterType;
 #if lime
-import lime._internal.graphics.ImageDataUtil; // TODO
-
+import lime._internal.graphics.ImageDataUtil;
 #end
+
+/**
+	@see `openfl.display.DisplayObject.filters`
+	@see `openfl.display.BitmapData.applyFilter`
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
