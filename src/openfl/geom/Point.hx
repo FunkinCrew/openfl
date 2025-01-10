@@ -164,9 +164,9 @@ class Point
 		relative to the two end points specified by parameters `pt1`
 		and `pt2`. The closer the value of the parameter `f`
 		is to `1.0`, the closer the interpolated point is to the first
-		point(parameter `pt1`). The closer the value of the parameter
+		point (parameter `pt1`). The closer the value of the parameter
 		`f` is to 0, the closer the interpolated point is to the second
-		point(parameter `pt2`).
+		point (parameter `pt2`).
 
 		@param pt1 The first point.
 		@param pt2 The second point.
@@ -189,9 +189,9 @@ class Point
 		relative to the two end points specified by parameters `pt1`
 		and `pt2`. The closer the value of the parameter `f`
 		is to `1.0`, the closer the interpolated point is to the first
-		point(parameter `pt1`). The closer the value of the parameter
+		point (parameter `pt1`). The closer the value of the parameter
 		`f` is to 0, the closer the interpolated point is to the second
-		point(parameter `pt2`).
+		point (parameter `pt2`).
 
 		@param pt1 The first point.
 		@param pt2 The second point.

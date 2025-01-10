@@ -1,6 +1,17 @@
 Changelog
 =========
 
+9.4.1 (12/19/2024)
+------------------
+
+* Fixed some broken gradient rendering caused by the new implemention of `SpreadMethod` in 9.4.0
+* Fixed incorrect drawing positions after calling `graphics.curveTo()` or `graphics.cubicCurveTo()`
+* Fixed incorrect `scrollRect` clipping at extreme scaling levels
+* Fixed crash when using hardware-only bitmaps with `beginShaderFill()` to use a solid black fallback color instead
+* Fixed `ServerSocket` returning value of `0.0.0.0` for `localAddress` if that value was passed to `bind()`
+* Fixed incorrect hit testing when graphics contains a mix of line styles
+* Fixed conditional in `TextLayout` to allow cppia target compilation
+
 9.4.0 (10/21/2024)
 ------------------
 

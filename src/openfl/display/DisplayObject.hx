@@ -255,7 +255,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		The following table describes the `blendMode` settings. The
 		BlendMode class defines string values you can use. The illustrations in
 		the table show `blendMode` values applied to a circular display
-		object(2) superimposed on another display object(1).
+		object (2) superimposed on another display object (1).
 
 		![Square Number 1](/images/blendMode-0a.jpg)  ![Circle Number 2](/images/blendMode-0b.jpg)
 
@@ -330,7 +330,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		significantly faster depending on the complexity of the vector content.
 
 		The `cacheAsBitmap` property is automatically set to
-		`true` whenever you apply a filter to a display object(when
+		`true` whenever you apply a filter to a display object (when
 		its `filter` array is not empty), and if a display object has a
 		filter applied to it, `cacheAsBitmap` is reported as
 		`true` for that display object, even if you set the property to
@@ -497,7 +497,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		is adjusted accordingly, as shown in the following code:
 
 		Except for TextField and Video objects, a display object with no
-		content(such as an empty sprite) has a height of 0, even if you try to
+		content (such as an empty sprite) has a height of 0, even if you try to
 		set `height` to a different value.
 
 		@see [Manipulating size and scaling objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/manipulating-size-and-scaling-objects.html)
@@ -745,7 +745,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		* All fills (including bitmaps, video, and gradients) are stretched to
 		fit their shapes.
 
-		If a display object is rotated, all subsequent scaling is normal(and
+		If a display object is rotated, all subsequent scaling is normal (and
 		the `scale9Grid` property is ignored).
 
 		For example, consider the following display object and a rectangle that
@@ -912,7 +912,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		is adjusted accordingly, as shown in the following code:
 
 		Except for TextField and Video objects, a display object with no
-		content(such as an empty sprite) has a width of 0, even if you try to set
+		content (such as an empty sprite) has a width of 0, even if you try to set
 		`width` to a different value.
 
 		@see [Manipulating size and scaling objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/manipulating-size-and-scaling-objects.html)

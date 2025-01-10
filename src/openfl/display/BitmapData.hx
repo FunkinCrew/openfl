@@ -733,12 +733,12 @@ class BitmapData implements IBitmapDrawable
 
 
 		`BitmapData.dispose()` releases the memory occupied by the
-		actual bitmap data, immediately(a bitmap can consume up to 64 MB of
+		actual bitmap data, immediately (a bitmap can consume up to 64 MB of
 		memory). After using `BitmapData.dispose()`, the BitmapData
 		object is no longer usable and an exception may be thrown if
 		you call functions on the BitmapData object. However,
 		`BitmapData.dispose()` does not garbage collect the BitmapData
-		object(approximately 128 bytes); the memory occupied by the actual
+		object (approximately 128 bytes); the memory occupied by the actual
 		BitmapData object is released at the time the BitmapData object is
 		collected by the garbage collector.
 
@@ -806,7 +806,7 @@ class BitmapData implements IBitmapDrawable
 		`colorTransform`, `blendMode`, and a destination
 		`clipRect` parameter to control how the rendering performs.
 		Optionally, you can specify whether the bitmap should be smoothed when
-		scaled(this works only if the source object is a BitmapData object).
+		scaled (this works only if the source object is a BitmapData object).
 
 		The source display object does not use any of its applied
 		transformations for this call. It is treated as it exists in the library
@@ -2065,11 +2065,11 @@ class BitmapData implements IBitmapDrawable
 
 		@param mask      A hexadecimal value, specifying the bits of the ARGB
 						 color to consider. The color value is combined with this
-						 hexadecimal value, by using the `&`(bitwise
+						 hexadecimal value, by using the `&` (bitwise
 						 AND) operator.
 		@param color     A hexadecimal value, specifying the ARGB color to match
-						(if `findColor` is set to `true`)
-						 or _not_ to match(if `findColor` is set
+						 (if `findColor` is set to `true`)
+						 or _not_ to match (if `findColor` is set
 						 to `false`).
 		@param findColor If the value is set to `true`, returns the
 						 bounds of a color value in an image. If the value is set
@@ -2934,7 +2934,7 @@ class BitmapData implements IBitmapDrawable
 		@param x     The _x_ position of the pixel whose value changes.
 		@param y     The _y_ position of the pixel whose value changes.
 		@param color The resulting ARGB color for the pixel. If the bitmap is
-					 opaque(not transparent), the alpha transparency portion of
+					 opaque (not transparent), the alpha transparency portion of
 					 this color value is ignored.
 
 		@see [Manipulating pixels](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/manipulating-pixels.html)
@@ -3028,7 +3028,7 @@ class BitmapData implements IBitmapDrawable
 								refer to the current BitmapData instance.
 		@param sourceRect       A rectangle that defines the area of the source
 								image to use as input.
-		@param destPoint        The point within the destination image(the
+		@param destPoint        The point within the destination image (the
 								current BitmapData instance) that corresponds to
 								the upper-left corner of the source rectangle.
 		@param operation        One of the following comparison operators, passed
