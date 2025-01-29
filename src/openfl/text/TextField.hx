@@ -2034,7 +2034,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __getPositionByIdentifier(x:Float, y:Float, line:Bool):Int
 	{
 		var position = __getPosition(x, y);
-		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"\n";
 		var char = __text.charAt(position);
 		if (__specialSelectionInitialIndex <= position)
 		{
@@ -2062,16 +2062,18 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __getOppositeIdentifierBound(charIndex:Int, line:Bool):Int
 	{
 		var position = charIndex;
-		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"\n";
 		var char = __text.charAt(position);
 
 		if (position <= __caretIndex)
 		{
-			while (delimiters.indexOf(char) == -1 && position > 0)
+			if (position == 0) return position;
+			do
 			{
 				position--;
 				char = __text.charAt(position);
 			}
+			while (delimiters.indexOf(char) == -1 && position > 0);
 			if (position == 0) return position;
 			position++;
 		}
@@ -3450,14 +3452,14 @@ class TextField extends InteractiveObject
 		if (__lineSelection)
 		{
 			var prevCaretIndex = __caretIndex;
-			__caretIndex = __getPositionByIdentifier(event.stageX + scrollH, event.stageY, true);
+			__caretIndex = __getPositionByIdentifier(mouseX + scrollH, mouseY, true);
 			__selectionIndex = __getOppositeIdentifierBound(prevCaretIndex, true);
 			setSelection(__caretIndex, __selectionIndex);
 		}
 		else if (__wordSelection)
 		{
 			var prevCaretIndex = __caretIndex;
-			__caretIndex = __getPositionByIdentifier(event.stageX + scrollH, event.stageY, false);
+			__caretIndex = __getPositionByIdentifier(mouseX + scrollH, mouseY, false);
 			__selectionIndex = __getOppositeIdentifierBound(prevCaretIndex, false);
 			__specialSelectionInitialIndex = prevCaretIndex;
 			setSelection(__caretIndex, __selectionIndex);
