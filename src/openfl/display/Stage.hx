@@ -15,6 +15,7 @@ import openfl.events.FocusEvent;
 import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
+import openfl.events.StageOrientationEvent;
 import openfl.events.TextEvent;
 import openfl.events.TouchEvent;
 import openfl.events.UncaughtErrorEvent;
@@ -42,6 +43,9 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
+#if (lime >= "8.3.0")
+import lime.system.Orientation;
+#end
 #end
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -193,9 +197,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 {
 	/**
 		Whether the application supports changes in the stage orientation (and
-		device rotation). Currently, this property is only `true` in Adobe AIR
-		applications running on mobile devices. On all other OpenFL targets,
-		it returns `false`.
+		device rotation).
+
+		@see `Stage.orientation`
+		@see `Stage.deviceOrientation`
+		@see `Stage.autoOrients`
+		@see `Stage.setOrientation`
+		@see `Stage.supportedOrientations`
 	**/
 	public static var supportsOrientationChange(get, never):Bool;
 
@@ -210,14 +218,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		the stage orientation changes to a device-defined "standard"
 		orientation, after which, no further stage orientation changes occur.
 
-		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+		_OpenFL target support:_ May be set when targeting Adobe AIR only.
+		Always returns `false` on all other targets. Orientation may be
+		restricted at build-time only in a project.xml file using
+		`<app orientation="landscape"/>` or `<app orientation="portrait"/>`.
 
 		_Adobe AIR profile support:_ This feature is supported on mobile
 		devices, but it is not supported on desktop operating systems or AIR for
 		TV devices. You can test for support at run time using the
-		`Stage.supportsOrientantionChange` property. See
+		`Stage.supportsOrientationChange` property. See
 		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
 		for more information regarding API support across multiple profiles.
+
+		@see `Stage.supportsOrientationChange`
+		@see `Stage.orientation`
 	**/
 	public var autoOrients(get, set):Bool;
 
@@ -349,7 +363,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Use the constants defined in the StageOrientation class when setting or
 		comparing values for this property.
 
-		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+		_OpenFL target support:_ This feature is supported on iOS and Android
+		mobile devices, but it is not supported on desktop operating systems.
+		You can test for support at run time using the
+		`Stage.supportsOrientationChange` property.
 
 		_AIR profile support:_ This feature is supported on mobile devices, but
 		it is not supported on desktop operating systems or AIR for TV devices.
@@ -874,7 +891,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		| `StageOrientation.DEFAULT`       | The screen is in the default orientation (right-side up). |
 		| `StageOrientation.ROTATED_RIGHT` | The screen is rotated right.                              |
 		| `StageOrientation.ROTATED_LEFT`  | The screen is rotated left.                               |
-		| `StageOrientation.UPSIDE_DOWN`   | The screen is rotated upside down.                        |a
+		| `StageOrientation.UPSIDE_DOWN`   | The screen is rotated upside down.                        |
+
+		_OpenFL target support:_ Returns orientation values when targeting Adobe
+		AIR only. On all other targets, returns an empty vector.
+
+		_Adobe AIR profile support:_ This feature is supported on mobile
+		devices, but it is not supported on desktop operating systems or AIR for
+		TV devices. You can test for support at run time using the
+		`Stage.supportsOrientationChange` property. See
+		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+		for more information regarding API support across multiple profiles.
+
+		@see `Stage.setOrientation()`
+		@see `Stage.orientation`
 	**/
 	public var supportedOrientations(get, never):Vector<StageOrientation>;
 
@@ -1000,6 +1030,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if lime
 	@:noCompletion private var __primaryTouch:Touch;
 	#end
+	private var __oldStageOrientation:StageOrientation = UNKNOWN;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -1262,10 +1293,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Do not set the parameter to `StageOrientation.UNKNOWN` or any string
 		value other than those listed in the table.
 
-		To check whether changing device orientation is supported, check the
-		value of the `Stage.supportsOrientantionChange` property. Check the list
-		provided by the `supportedOrientations` property to determine which
-		orientations are supported by the current device.
+		Check the list provided by the `supportedOrientations` property to
+		determine which orientations are supported by the current device.
 
 		Setting the orientation is an asynchronous operation. It is not
 		guaranteed to be complete immediately after you call the
@@ -1275,6 +1304,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		**Note:** The `setOrientation()` method does not cause an
 		`orientationChanging` event to be dispatched.
+
+		_OpenFL target support:_ May be called when targeting Adobe AIR only.
+		Calls to this method are always ignored on all other targets. Orientation
+		may be restricted at build-time only in a project.xml file using
+		`<app orientation="landscape"/>` or `<app orientation="portrait"/>`.
+
+		_Adobe AIR profile support:_ This feature is supported on mobile
+		devices, but it is not supported on desktop operating systems or AIR for
+		TV devices. You can test for support at run time using the
+		`Stage.supportsOrientationChange` property. See
+		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+		for more information regarding API support across multiple profiles.
+
+		@see `Stage.supportedOrientations`
+		@see `Stage.orientation`
 	**/
 	public function setOrientation(newOrientation:StageOrientation):Void {}
 
@@ -2168,6 +2212,29 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 	}
 
+	#if (lime >= "8.3.0")
+	@:noCompletion private function __onLimeDisplayOrientationChange(display:Int, orientation:Orientation):Void
+	{
+		var newStageOrientation:StageOrientation;
+		switch (orientation)
+		{
+			case PORTRAIT:
+				newStageOrientation = DEFAULT;
+			case PORTRAIT_FLIPPED:
+				newStageOrientation = UPSIDE_DOWN;
+			case LANDSCAPE:
+				newStageOrientation = ROTATED_LEFT;
+			case LANDSCAPE_FLIPPED:
+				newStageOrientation = ROTATED_RIGHT;
+			default:
+				newStageOrientation = UNKNOWN;
+		}
+		var oldStageOrientation = __oldStageOrientation;
+		__oldStageOrientation = newStageOrientation;
+		dispatchEvent(new StageOrientationEvent(StageOrientationEvent.ORIENTATION_CHANGE, true, false, oldStageOrientation, newStageOrientation));
+	}
+	#end
+
 	@:noCompletion private function __renderAfterEvent():Void
 	{
 		#if (cpp || hl || neko)
@@ -2486,6 +2553,28 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			__createRenderer();
 		}
+
+		#if (lime >= "8.3.0")
+		if (window.display != null)
+		{
+			// StageOrientationEvent references both the old and new
+			// orientations, so save the initial orientation for the first time
+			// that the event is dispatched
+			switch (window.display.orientation)
+			{
+				case PORTRAIT:
+					__oldStageOrientation = DEFAULT;
+				case PORTRAIT_FLIPPED:
+					__oldStageOrientation = UPSIDE_DOWN;
+				case LANDSCAPE:
+					__oldStageOrientation = ROTATED_LEFT;
+				case LANDSCAPE_FLIPPED:
+					__oldStageOrientation = ROTATED_RIGHT;
+				default:
+					__oldStageOrientation = UNKNOWN;
+			}
+		}
+		#end
 	}
 
 	@:noCompletion private function __onLimeWindowDeactivate(window:Window):Void
@@ -3365,6 +3454,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		application.onCreateWindow.add(__onLimeCreateWindow);
 		application.onUpdate.add(__onLimeUpdate);
 		application.onExit.add(__onLimeModuleExit, false, 0);
+		#if (lime >= "8.3.0")
+		application.onDisplayOrientationChange.add(__onLimeDisplayOrientationChange);
+		#end
 
 		for (gamepad in Gamepad.devices)
 		{
@@ -3585,6 +3677,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		application.onCreateWindow.remove(__onLimeCreateWindow);
 		application.onUpdate.remove(__onLimeUpdate);
 		application.onExit.remove(__onLimeModuleExit);
+		#if (lime >= "8.3.0")
+		application.onDisplayOrientationChange.remove(__onLimeDisplayOrientationChange);
+		#end
 
 		Gamepad.onConnect.remove(__onLimeGamepadConnect);
 		Touch.onStart.remove(__onLimeTouchStart);
@@ -3679,6 +3774,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	// Get & Set Methods
 	@:noCompletion private static function get_supportsOrientationChange():Bool
 	{
+		#if (lime >= "8.3.0")
+		#if (ios || android)
+		return true;
+		#end
+		#end
 		return false;
 	}
 
@@ -3733,6 +3833,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function get_deviceOrientation():StageOrientation
 	{
+		#if (lime >= "8.3.0")
+		switch (application.deviceOrientation)
+		{
+			case LANDSCAPE:
+				return StageOrientation.ROTATED_LEFT;
+			case LANDSCAPE_FLIPPED:
+				return StageOrientation.ROTATED_RIGHT;
+			case PORTRAIT:
+				return StageOrientation.DEFAULT;
+			case PORTRAIT_FLIPPED:
+				return StageOrientation.UPSIDE_DOWN;
+			default:
+				return StageOrientation.UNKNOWN;
+		}
+		#end
 		return StageOrientation.UNKNOWN;
 	}
 
@@ -3872,6 +3987,25 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function get_orientation():StageOrientation
 	{
+		#if (lime >= "8.3.0")
+		var display = window.display;
+		if (display != null)
+		{
+			switch (display.orientation)
+			{
+				case LANDSCAPE:
+					return StageOrientation.ROTATED_RIGHT;
+				case LANDSCAPE_FLIPPED:
+					return StageOrientation.ROTATED_LEFT;
+				case PORTRAIT:
+					return StageOrientation.DEFAULT;
+				case PORTRAIT_FLIPPED:
+					return StageOrientation.UPSIDE_DOWN;
+				default:
+					return StageOrientation.UNKNOWN;
+			}
+		}
+		#end
 		return StageOrientation.UNKNOWN;
 	}
 
