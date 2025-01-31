@@ -1072,7 +1072,7 @@ import js.html.CanvasRenderingContext2D;
 		Renders a set of triangles, typically to distort bitmaps and give them a
 		three-dimensional appearance. The `drawTriangles()` method maps
 		either the current fill, or a bitmap fill, to the triangle faces using a
-		set of(u,v) coordinates.
+		set of (u,v) coordinates.
 
 		 Any type of fill can be used, but if the fill has a transform matrix
 		that transform matrix is ignored.

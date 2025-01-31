@@ -337,13 +337,13 @@ class BitmapData implements IBitmapDrawable
 		destination rectangle that is affected by an input source rectangle.
 
 		After a filter is applied, the resulting image can be larger than the input image.
-		For example, if you use a BlurFilter class to blur a source rectangle of(50,50,100,100)
-		and a destination point of(10,10), the area that changes in the destination image is
-		larger than(10,10,60,60) because of the blurring. This happens internally during the
+		For example, if you use a BlurFilter class to blur a source rectangle of (50,50,100,100)
+		and a destination point of (10,10), the area that changes in the destination image is
+		larger than (10,10,60,60) because of the blurring. This happens internally during the
 		applyFilter() call.
 
 		If the `sourceRect` parameter of the sourceBitmapData parameter is an
-		interior region, such as(50,50,100,100) in a 200 x 200 image, the filter uses the source
+		interior region, such as (50,50,100,100) in a 200 x 200 image, the filter uses the source
 		pixels outside the `sourceRect` parameter to generate the destination rectangle.
 
 		If the BitmapData object and the object specified as the `sourceBitmapData`

@@ -817,7 +817,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		The properties of the `scrollRect` Rectangle object use the
 		display object's coordinate space and are scaled just like the overall
 		display object. The corner bounds of the cropped window on the scrolling
-		display object are the origin of the display object(0,0) and the point
+		display object are the origin of the display object (0,0) and the point
 		defined by the width and height of the rectangle. They are not centered
 		around the origin, but use the origin to define the upper-left corner of
 		the area. A scrolled display object always scrolls in whole pixel
@@ -1277,7 +1277,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		To use this method, first create an instance of the Point class. The
 		_x_ and _y_ values that you assign represent global coordinates
-		because they relate to the origin(0,0) of the main display area. Then
+		because they relate to the origin (0,0) of the main display area. Then
 		pass the Point instance as the parameter to the
 		`globalToLocal()` method. The method returns a new Point object
 		with _x_ and _y_ values that relate to the origin of the display
@@ -1358,7 +1358,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		coordinates to the Stage (global) coordinates.
 
 		This method allows you to convert any given _x_ and _y_
-		coordinates from values that are relative to the origin(0,0) of a
+		coordinates from values that are relative to the origin (0,0) of a
 		specific display object (local coordinates) to values that are relative to
 		the origin of the Stage (global coordinates).
 
