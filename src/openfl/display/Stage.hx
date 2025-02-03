@@ -1035,6 +1035,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
+		#if haxe4
+		// when using Haxe 4, this value doesn't seem to get initialized,
+		// so it is undefined, which breaks ObjectMap. this line changes it
+		// from undefined to 0, but won't mess with numeric value > 0.
+		untyped #if haxe4 js.Syntax.code #else __js__ #end ("$global.$haxeUID |= 0;");
+		#end
+
 		untyped Object.defineProperties(Stage.prototype, {
 			"color": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
