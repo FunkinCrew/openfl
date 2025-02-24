@@ -1877,7 +1877,7 @@ import js.html.CanvasRenderingContext2D;
 
 				case BEGIN_FILL:
 					var c = data.readBeginFill();
-					graphicsData.push(new GraphicsSolidFill(c.color, 1));
+					graphicsData.push(new GraphicsSolidFill(c.color, c.alpha));
 
 				case BEGIN_GRADIENT_FILL:
 					var c = data.readBeginGradientFill();
