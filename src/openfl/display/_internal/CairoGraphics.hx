@@ -81,6 +81,21 @@ class CairoGraphics
 		cairo.newPath();
 	}
 
+	private static function createImagePattern(bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool, smooth:Bool):CairoPattern
+	{
+		var pattern = CairoPattern.createForSurface(bitmapFill.getSurface());
+		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
+
+		if (bitmapRepeat)
+		{
+			pattern.extend = CairoExtend.REPEAT;
+		}
+
+		fillPatternMatrix = matrix;
+
+		return pattern;
+	}
+
 	private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CairoPattern
 	{
@@ -151,21 +166,6 @@ class CairoGraphics
 		mat.ty = bounds.y;
 
 		pattern.matrix = mat;
-
-		return pattern;
-	}
-
-	private static function createImagePattern(bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool, smooth:Bool):CairoPattern
-	{
-		var pattern = CairoPattern.createForSurface(bitmapFill.getSurface());
-		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
-
-		if (bitmapRepeat)
-		{
-			pattern.extend = CairoExtend.REPEAT;
-		}
-
-		fillPatternMatrix = matrix;
 
 		return pattern;
 	}
@@ -558,11 +558,6 @@ class CairoGraphics
 					hasPath = true;
 					cairo.moveTo(c.x - offsetX + c.radius, c.y - offsetY);
 					cairo.arc(c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2);
-
-				case DRAW_RECT:
-					var c = data.readDrawRect();
-					hasPath = true;
-					cairo.rectangle(c.x - offsetX, c.y - offsetY, c.width, c.height);
 
 				case DRAW_ELLIPSE:
 					var c = data.readDrawEllipse();
@@ -1092,6 +1087,11 @@ class CairoGraphics
 					}
 
 					cairo.matrix = graphics.__renderTransform.__toMatrix3();
+
+				case DRAW_RECT:
+					var c = data.readDrawRect();
+					hasPath = true;
+					cairo.rectangle(c.x - offsetX, c.y - offsetY, c.width, c.height);
 
 				case WINDING_EVEN_ODD:
 					data.readWindingEvenOdd();
