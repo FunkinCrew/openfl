@@ -784,8 +784,7 @@ class CairoGraphics
 						var bitmap = shaderBuffer.inputs[0];
 						if (bitmap.readable)
 						{
-							fillPattern = createImagePattern(bitmap, null, shaderBuffer.inputWrap[0] != CLAMP,
-								shaderBuffer.inputFilter[0] != NEAREST);
+							fillPattern = createImagePattern(bitmap, null, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
 						}
 						else
 						{
