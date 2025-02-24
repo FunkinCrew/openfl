@@ -1337,7 +1337,6 @@ class CairoGraphics
 						endFill();
 						endStroke();
 						hasFill = false;
-						hasLineStyle = false;
 						bitmapFill = null;
 						initStrokeX = 0;
 						initStrokeY = 0;
