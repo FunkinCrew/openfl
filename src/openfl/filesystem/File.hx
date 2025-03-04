@@ -2075,7 +2075,7 @@ class File extends FileReference
 		return creationDate;
 	}
 
-	@:noCompletion private static function get_lineEnding():String
+	@:noCompletion private static inline function get_lineEnding():String
 	{
 		#if windows
 		return "\r\n";
@@ -2102,7 +2102,7 @@ class File extends FileReference
 		return name;
 	}
 
-	@:noCompletion private static function get_separator():String
+	@:noCompletion private inline static function get_separator():String
 	{
 		#if windows
 		return "\\";
@@ -2183,12 +2183,12 @@ class File extends FileReference
 		return "file:///" + nativePath;
 	}
 
-	@:noCompletion private function get_exists():Bool
+	@:noCompletion private inline get_exists():Bool
 	{
 		return FileSystem.exists(__path);
 	}
 
-	@:noCompletion private function get_isHidden():Bool
+	@:noCompletion private get_isHidden():Bool
 	{
 		#if windows
 		return __winGetHiddenAttr();
