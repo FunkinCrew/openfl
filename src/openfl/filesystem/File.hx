@@ -2183,7 +2183,7 @@ class File extends FileReference
 		return "file:///" + nativePath;
 	}
 
-	@:noCompletion private inline get_exists():Bool
+	@:noCompletion private function get_exists():Bool
 	{
 		return FileSystem.exists(__path);
 	}
