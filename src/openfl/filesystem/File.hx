@@ -424,6 +424,46 @@ class File extends FileReference
 	**/
 	public static var userDirectory(get, never):File;
 
+	/**
+     	* Reads the contents of a file as a `ByteArray`.
+     	*
+     	* @param path The path to the file.
+     	* @return A `ByteArray` containing the file's contents.
+     	*/
+    	public static inline function getFileBytes(path:String):ByteArray {
+        	return HaxeFile.getBytes(path);
+    	}
+
+    	/**
+     	* Reads the contents of a file as a `String`.
+     	*
+     	* @param path The path to the file.
+     	* @return A `String` containing the file's contents.
+     	*/
+    	public static inline function getFileText(path:String):String {
+        	return HaxeFile.getContent(path);
+    	}
+
+    	/**
+     	* Saves a `ByteArray` to a file.
+     	*
+     	* @param path The path where the file should be saved.
+     	* @param bytes The `ByteArray` to write to the file.
+     	*/
+    	public static inline function saveBytes(path:String, bytes:ByteArray):Void {
+        	HaxeFile.saveBytes(path, bytes);
+    	}
+
+    	/**
+     	* Saves a `String` as a text file.
+     	*
+     	* @param path The path where the file should be saved.
+     	* @param text The `String` content to write to the file.
+     	*/
+    	public static inline function saveText(path:String, text:String):Void {
+        	HaxeFile.saveContent(path, text);
+    	}
+	
 	@:noCompletion private static var __driveLetters:Array<String> =
 		#if windows
 		[
