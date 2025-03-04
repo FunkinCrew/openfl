@@ -12,6 +12,7 @@ import openfl.events.IOErrorEvent;
 import openfl.net.FileFilter;
 import openfl.events.FileListEvent;
 import openfl.net.FileReference;
+import openfl.utils.ByteArray;
 import sys.FileSystem;
 import sys.io.Process;
 #if (lime && !macro)
