@@ -2188,7 +2188,7 @@ class File extends FileReference
 		return FileSystem.exists(__path);
 	}
 
-	@:noCompletion private get_isHidden():Bool
+	@:noCompletion private function get_isHidden():Bool
 	{
 		#if windows
 		return __winGetHiddenAttr();
