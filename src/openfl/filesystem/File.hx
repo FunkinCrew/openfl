@@ -480,7 +480,6 @@ class File extends FileReference
 
 	@:noCompletion private var __fileDialog:#if (lime && !macro) FileDialog #else Dynamic #end;
 	@:noCompletion private var __fileWorker:BackgroundWorker;
-	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
 	@:noCompletion private var __fileStatsDirty:Bool = false;
 
 	/**
@@ -524,7 +523,7 @@ class File extends FileReference
 
 		if (name.length == 0)
 		{
-			var dirs:Array<String> = Path.directory(__path).split(__sep);
+			var dirs:Array<String> = Path.directory(__path).split(separator);
 			name = dirs[dirs.length - 1];
 		}
 	}
@@ -816,20 +815,20 @@ class File extends FileReference
 	**/
 	public function canonicalize():Void
 	{
-		var segs:Array<String> = __path.split(__sep);
+		var segs:Array<String> = __path.split(separator);
 
-		var cPath:String = __driveLetters[__driveLetters.indexOf(segs[0].toUpperCase() + __sep)];
+		var cPath:String = __driveLetters[__driveLetters.indexOf(segs[0].toUpperCase() + separator)];
 		var start:Int = 1;
 		if (cPath == null)
 		{
 			// fall back to unix paths
-			cPath = __sep + segs[1] + __sep;
+			cPath = separator + segs[1] + separator;
 			start = 2;
 		}
 
 		for (i in start...segs.length)
 		{
-			cPath += __canonicalize(cPath, segs[i]) + __sep;
+			cPath += __canonicalize(cPath, segs[i]) + separator;
 		}
 
 		__path = Path.removeTrailingSlashes(cPath);
@@ -1299,7 +1298,7 @@ class File extends FileReference
 
 		for (directory in directories)
 		{
-			files.push(new File(__path + __sep + directory));
+			files.push(new File(__path + separator + directory));
 		}
 
 		return files;
@@ -1376,7 +1375,7 @@ class File extends FileReference
 			var files:Array<File> = [];
 			for (directory in directories)
 			{
-				files.push(new File(__path + __sep + directory));
+				files.push(new File(__path + separator + directory));
 			}
 			// don't dispatch events directly from doWork because the listeners
 			// will be called in the wrong thread
@@ -1497,7 +1496,7 @@ class File extends FileReference
 
 		for (k in 0...relatives.length)
 		{
-			relativePath += relatives[k] + (k != relatives.length - 1 || refPath.length == 1 ? __sep : "");
+			relativePath += relatives[k] + (k != relatives.length - 1 || refPath.length == 1 ? separator : "");
 		}
 
 		return relativePath == "" && ref.__path != __path ? null : relativePath;
@@ -1697,7 +1696,7 @@ class File extends FileReference
 	public function resolvePath(path:String):File
 	{
 		var directoryPath:String = Path.removeTrailingSlashes(__path);
-		return new File('$directoryPath$__sep$path');
+		return new File('$directoryPath$separator$path');
 	}
 
 	/**
@@ -1899,7 +1898,7 @@ class File extends FileReference
 
 		for (dir in dirs)
 		{
-			path += '$dir$__sep';
+			path += '$dir$separator';
 		}
 
 		return Path.removeTrailingSlashes(path);
@@ -2208,8 +2207,8 @@ class File extends FileReference
 		// TODO:Can we optimize this?
 		var path:String = Path.removeTrailingSlashes(__path);
 
-		var lastIndex:Int = path.lastIndexOf(__sep);
-		if (lastIndex == path.indexOf(__sep))
+		var lastIndex:Int = path.lastIndexOf(separator);
+		if (lastIndex == path.indexOf(separator))
 		{
 			lastIndex += 1;
 		}
