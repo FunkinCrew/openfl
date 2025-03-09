@@ -2,47 +2,80 @@ package openfl.xml;
 
 import openfl.Lib;
 import openfl.utils.Object;
+import haxe.xml.Parser;
+import haxe.xml.Access;
 
-abstract XML(Object) {
+abstract XML(Xml) {
     
-    public function new(value:Object) {
-        Lib.notImplemented("XML.new");
+    public function new(value:Dynamic) {
+        if (Std.is(value, String)) {
+            this = Parser.parse(value);
+        } else if (Std.is(value, Xml)) {
+            this = value;
+        } else {
+            throw "Invalid XML initialization value";
+        }
     }
 
     public function toString():String {
-        Lib.notImplemented("XML.toString");
-        return "";
+        return xml.firstChild() != null && xml.firstChild().nodeType == Xml.PCData
+        ? xml.firstChild().nodeValue
+        : xml.toString();
     }
 
     public function toXMLString():String {
-        Lib.notImplemented("XML.toXMLString");
-        return "";
+        return xml.toString();
     }
 
-    public function localName():Object {
-        Lib.notImplemented("XML.localName");
-        return null;
+    public function localName():String {
+        var name = xml.nodeName;
+        return name.indexOf(":") >= 0 ? name.split(":")[1] : name;
     }
 
-    public function name():Object {
-        Lib.notImplemented("XML.name");
-        return null;
+    public function name():String {
+        return xml.nodeName;
     }
 
-    public function namespace(prefix:String = null):Dynamic {
-        Lib.notImplemented("XML.namespace");
-        return null;
+    public function namespace(prefix:String = null):String {
+        var nodeName = xml.nodeName;
+        if (prefix == null) {
+            if (nodeName.indexOf(":") >= 0) {
+                var nsPrefix = nodeName.split(":")[0];
+                return xml.getNodeName() == null ? "" : xml.getNodeName().split(":")[0];
+            } else {
+                // default namespace?
+                return ""; 
+            }
+        } else {
+            var current = xml;
+            while (current != null) {
+                for (attr in current.attributes()) {
+                    if (attr == "xmlns:" + prefix || (prefix == "" && attr == "xmlns")) {
+                        return current.get(attr);
+                    }
+                }
+                current = current.parent;
+            }
+            // namespac not found
+            return ""; 
+        }
     }
 
-    public function namespaceDeclarations():Array<Dynamic> {
-        Lib.notImplemented("XML.namespaceDeclarations");
-        return [];
+    public function namespaceDeclarations():Array<String> {
+        var declarations = [];
+        for (attr in xml.attributes()) {
+            if (attr == "xmlns" || attr.indexOf("xmlns:") == 0) {
+                declarations.push(xml.get(attr));
+            }
+        }
+        return declarations;
     }
 
-    public function attributes():XMLList {
+   /* public function attributes():XMLList {
         Lib.notImplemented("XML.attributes");
         return null;
     }
+    
 
     public function attribute(attributeName:Dynamic):XMLList {
         Lib.notImplemented("XML.attribute");
@@ -58,50 +91,84 @@ abstract XML(Object) {
         Lib.notImplemented("XML.child");
         return null;
     }
+    */
+    
 
     public function childIndex():Int {
-        Lib.notImplemented("XML.childIndex");
+        var parentNode = xml.parent;
+        if (parentNode == null) return -1;
+    
+        var index = 0;
+        for (child in parentNode.elements()) {
+            if (child == xml) {
+                return index;
+            }
+            index++;
+        }
         return -1;
     }
 
+    /*
     public function comments():XMLList {
         Lib.notImplemented("XML.comments");
         return null;
     }
+    */
 
     public function contains(value:XML):Bool {
-        Lib.notImplemented("XML.contains");
+        for (descendant in xml.elements()) {
+            if (descendant == value.xml || new XML(descendant).contains(value)) {
+                return true;
+            }
+        }
         return false;
     }
 
     public function copy():XML {
-        Lib.notImplemented("XML.copy");
-        return this;
+        return new XML(xml.copy());
     }
 
-    public function descendants(name:Object = "*"):XMLList {
-        Lib.notImplemented("XML.descendants");
-        return null;
+    //Basic idea, requires XMLList
+    public function descendants(name:String = "*"):Array<XML> {
+        var result = [];
+        for (descendant in xml.elements()) {
+            if (name == "*" || descendant.nodeName == name) {
+                result.push(new XML(descendant));
+            }
+            // Recursively add all descendants of this child
+            result = result.concat(new XML(descendant).descendants(name));
+        }
+        return result;
     }
 
+    /*
     public function elements(name:Object = "*"):XMLList {
         Lib.notImplemented("XML.elements");
         return null;
     }
-
+    */
     public function hasComplexContent():Bool {
-        Lib.notImplemented("XML.hasComplexContent");
-        return false;
+        return xml.elements().hasNext() || xml.firstChild() == null;
     }
 
     public function hasSimpleContent():Bool {
-        Lib.notImplemented("XML.hasSimpleContent");
-        return false;
+        return !xml.elements().hasNext() && xml.firstChild() != null;
     }
 
-    public function inScopeNamespaces():Array<Dynamic> {
-        Lib.notImplemented("XML.inScopeNamespaces");
-        return [];
+    public function inScopeNamespaces():Array<String> {
+        var namespaces = [];
+        var current = xml;
+    
+        while (current != null) {
+            for (attr in current.attributes()) {
+                if (attr == "xmlns" || attr.indexOf("xmlns:") == 0) {
+                    namespaces.push(current.get(attr));
+                }
+            }
+            current = current.parent;
+        }
+    
+        return namespaces;
     }
 
     public function insertChildAfter(child1:Object, child2:Object):Dynamic {
