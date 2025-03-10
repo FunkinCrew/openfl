@@ -199,7 +199,7 @@ class TextLayout
 		        #end
 		        #elseif
 		        //if haxe3
-		        if hl
+		        #if hl
 		        __hbBuffer.addUTF16(text, text.length, 0, -1);
 		        #else
 		        __hbBuffer.addUTF8(text, 0, -1);
