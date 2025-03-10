@@ -89,6 +89,22 @@ class TextLayout
 		__create(__direction, __script, __language);
 	}
 
+	#if cppia
+	@:noCompletion private inline function stringToUTF16LEBytes(s:String):Bytes
+	{
+		var len = s.length;
+		var buffer = Bytes.alloc(len << 1);
+		var view = haxe.io.UInt16Array.fromBytes(buffer, 0, len); // Wrap buffer in a UInt16 view
+
+		for (i in 0...len)
+		{
+			view[i] = s.charCodeAt(i);
+		}
+
+		return buffer;
+	}
+	#end
+
 	private function __create(direction:TextDirection, script:TextScript, language:String):Void
 	{
 		if (language.length != 4) return;
@@ -154,7 +170,7 @@ class TextLayout
 			__hbBuffer.script = script.toHBScript();
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
-			#if (neko || cppia)
+			#if (neko)
 			// other targets still uses dummy positions to make UTF8 work
 			// TODO: confirm
 			__hbBuffer.addUTF8(text, 0, -1);
@@ -162,6 +178,8 @@ class TextLayout
 			__hbBuffer.addUTF16(text, text.length, 0, -1);
 			#elseif (cpp)
 			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
+			#elseif (cppia)
+			__hbBuffer.addUTF16(stringToUTF16LEBytes(text), text.length, 0, -1);
 			#end
 
 			HB.shape(__hbFont, __hbBuffer);
