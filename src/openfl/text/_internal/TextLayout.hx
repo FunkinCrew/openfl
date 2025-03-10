@@ -95,7 +95,7 @@ class TextLayout
 	#if cppia
 	/**
 	 *   Why this is necessary for `cppia`:
-	 *   In cppia, Haxe String is stored as UTF-16, but its memory layout is not actually guaranteed
+	 *   In cppia, Haxe String can be stored as UTF-16, but its memory layout is not actually guaranteed
 	 *   to be directly compatible with native APIs.
 	 *   Unlike cpp, we cannot just use wc_str() to get a direct UTF-16 pointer.
 	 *   Instead, we manually create a correctly aligned UTF-16 Bytes to ensure 
