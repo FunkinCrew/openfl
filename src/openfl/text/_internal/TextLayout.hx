@@ -107,7 +107,7 @@ class TextLayout
 	{
 		var len = s.length;
 		var buffer = Bytes.alloc(len << 1);
-		
+
 		var view = UInt16Array.fromBytes(buffer, 0, len); // Wrap buffer in a UInt16 view
 
 		for (i in 0...len)
@@ -184,27 +184,27 @@ class TextLayout
 			__hbBuffer.script = script.toHBScript();
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
-			
-		        #if haxe4
+
+			#if haxe4
 			#if (lime >= version("8.3.0"))
-		        __hbBuffer.addString(text, 0, -1);
-		        #elseif (neko || (cpp && disable_unicode_strings))
-		        __hbBuffer.addUTF8(text, 0, -1);
-		        #elseif hl
-		        __hbBuffer.addUTF16(text, text.length, 0, -1);
-		        #elseif cppia
-		        __hbBuffer.addUTF16(stringToUTF16LEBytes(text), text.length, 0, -1);
-		        #elseif cpp
-		        __hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
-		        #end
-		        #else
-		        //if haxe3
-		        #if hl
-		        __hbBuffer.addUTF16(text, text.length, 0, -1);
-		        #else
-		        __hbBuffer.addUTF8(text, 0, -1);
-		        #end
-		        #end
+			__hbBuffer.addString(text, 0, -1);
+			#elseif (neko || (cpp && disable_unicode_strings))
+			__hbBuffer.addUTF8(text, 0, -1);
+			#elseif hl
+			__hbBuffer.addUTF16(text, text.length, 0, -1);
+			#elseif cppia
+			__hbBuffer.addUTF16(stringToUTF16LEBytes(text), text.length, 0, -1);
+			#elseif cpp
+			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
+			#end
+			#else
+			// if haxe3
+			#if hl
+			__hbBuffer.addUTF16(text, text.length, 0, -1);
+			#else
+			__hbBuffer.addUTF8(text, 0, -1);
+			#end
+			#end
 
 			HB.shape(__hbFont, __hbBuffer);
 
@@ -339,9 +339,7 @@ class TextLayout
 	}
 }
 
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextDirection(Int) to Int
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextDirection(Int) to Int
 {
 	public var INVALID = 0;
 	public var LEFT_TO_RIGHT = 4;
@@ -405,9 +403,7 @@ class TextLayout
 	}
 }
 
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextScript(String) to (String)
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextScript(String) to (String)
 {
 	public var COMMON = "Zyyy";
 	public var INHERITED = "Zinh";
