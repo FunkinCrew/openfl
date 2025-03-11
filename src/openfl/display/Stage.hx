@@ -2217,6 +2217,23 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			__onMouseWheel(Std.int(deltaX), Std.int(deltaY), deltaMode);
 		}
+
+		var stack:Array<DisplayObject> = [];
+		var target:InteractiveObject = null;
+
+		if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
+		{
+			target = cast stack[stack.length - 1];
+		}
+		else
+		{
+			target = this;
+			stack = [this];
+		}
+
+		if (target == null) target = this;
+
+		__checkOverOut(target, stack, 0);
 	}
 
 	#if (lime >= "8.3.0")
@@ -3001,6 +3018,18 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				}
 			}
 		}
+
+		Point.__pool.release(targetPoint);
+		Point.__pool.release(localPoint);
+
+		__checkOverOut(target, stack, button);
+	}
+
+	@:noCompletion private function __checkOverOut(target:InteractiveObject, stack:Array<DisplayObject>, button:Int):Void
+	{
+		var targetPoint = Point.__pool.get();
+		targetPoint.setTo(__mouseX, __mouseY);
+		var localPoint = Point.__pool.get();
 
 		if (Mouse.__cursor == MouseCursor.AUTO && !Mouse.__hidden)
 		{
