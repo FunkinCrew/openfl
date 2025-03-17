@@ -748,7 +748,13 @@ class Shader
 				}
 
 				Reflect.setField(__data, name, input);
-				if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, input);
+
+				try
+				{
+					if (__isGenerated) Reflect.setField(this, name, input);
+					if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, input);
+				}
+				catch (e:Dynamic) {}
 			}
 			else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
 			{
@@ -814,7 +820,13 @@ class Shader
 						}
 
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
+
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+							if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
+						}
+						catch (e:Dynamic) {}
 
 					case INT, INT2, INT3, INT4:
 						var parameter = new ShaderParameter<Int>();
@@ -825,9 +837,16 @@ class Shader
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramInt.push(parameter);
+
 						Reflect.setField(__data, name, parameter);
+
 						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
 
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+						}
+						catch (e:Dynamic) {}
 					default:
 						var parameter = new ShaderParameter<Float>();
 						parameter.name = name;
@@ -857,7 +876,13 @@ class Shader
 						}
 
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
+
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+							if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
+						}
+						catch (e:Dynamic) {}
 				}
 			}
 
