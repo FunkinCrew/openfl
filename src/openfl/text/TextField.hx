@@ -2380,6 +2380,9 @@ class TextField extends InteractiveObject
 	{
 		if (stage == null) return;
 
+		var oldScrollH = scrollH;
+		var oldScrollV = scrollV;
+
 		var bounds:Rectangle = this.getBounds(this);
 
 		if (mouseX > bounds.width - 1)
@@ -2405,7 +2408,15 @@ class TextField extends InteractiveObject
 			}
 			__mouseScrollVCounter = 0;
 		}
-		stage_onMouseMove(null);
+
+		// if the scroll position changed, then we may need to update selection.
+		// however, we shouldn't call it if the scroll position hasn't changed
+		// because that might overwrite the values of a recent call to the
+		// setSelection() method.
+		if (scrollH != oldScrollH || scrollV != oldScrollV)
+		{
+			stage_onMouseMove(null);
+		}
 	}
 
 	@:noCompletion private function __updateScrollH():Void
