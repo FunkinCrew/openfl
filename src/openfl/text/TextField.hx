@@ -3321,8 +3321,19 @@ class TextField extends InteractiveObject
 		{
 			__updateLayout();
 
-			var position = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
-				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
+			var position:Int;
+			if (__lineSelection)
+			{
+				position = __getPositionByIdentifier(mouseX + scrollH, mouseY, true);
+			}
+			else if (__wordSelection)
+			{
+				position = __getPositionByIdentifier(mouseX + scrollH, mouseY, false);
+			}
+			else
+			{
+				position = __getPosition(mouseX + scrollH, mouseY);
+			}
 
 			if (position != __caretIndex)
 			{
