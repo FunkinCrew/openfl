@@ -196,6 +196,9 @@ class InteractiveObjectTest extends Test
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		var dispatched = false;
 		var bubbled = false;
 		function libCurrent_mouseOverHandler(event:MouseEvent):Void
@@ -253,6 +256,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -316,6 +322,9 @@ class InteractiveObjectTest extends Test
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -364,6 +373,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -416,6 +428,9 @@ class InteractiveObjectTest extends Test
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -466,6 +481,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -518,6 +536,9 @@ class InteractiveObjectTest extends Test
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -568,6 +589,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -623,6 +647,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -677,6 +704,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -728,6 +758,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -782,6 +815,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -834,6 +870,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -888,6 +927,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -937,6 +979,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		var dispatched = false;
 		var bubbled = false;
@@ -995,6 +1040,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseDown.dispatch(25.0, 35.0, 0);
 		// ensure that pending mouse events are dispatched
@@ -1058,6 +1106,9 @@ class InteractiveObjectTest extends Test
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		var dispatched = false;
 		sprite.addEventListener(MouseEvent.ROLL_OVER, function(event:MouseEvent):Void
 		{
@@ -1103,6 +1154,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -1154,6 +1208,9 @@ class InteractiveObjectTest extends Test
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -1202,6 +1259,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -1254,6 +1314,9 @@ class InteractiveObjectTest extends Test
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -1304,6 +1367,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -1356,6 +1422,9 @@ class InteractiveObjectTest extends Test
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -1406,6 +1475,9 @@ class InteractiveObjectTest extends Test
 		sprite.x = 20.0;
 		sprite.y = 30.0;
 		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -1461,6 +1533,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -1514,6 +1589,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
@@ -1573,6 +1651,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -1627,6 +1708,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -1680,6 +1764,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
 
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
 		stage.application.onUpdate.dispatch(0);
@@ -1732,6 +1819,9 @@ class InteractiveObjectTest extends Test
 		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
 		sprite.graphics.endFill();
 		spriteParent.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
 
 		stage.window.onMouseMove.dispatch(25.0, 35.0);
 		// ensure that pending mouse events are dispatched
