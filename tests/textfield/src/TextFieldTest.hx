@@ -586,17 +586,26 @@ class TextFieldTest extends Test
 
 		Assert.equals(0, textField.getLineOffset(0));
 		#if flash
-		Assert.raises(() -> textField.getLineOffset(1), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(1);
+		}, RangeError);
 		#else
 		Assert.equals(-1, textField.getLineOffset(1));
 		#end
-		Assert.raises(() -> textField.getLineOffset(-1), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(-1);
+		}, RangeError);
 
 		textField.text = "Hello";
 
 		Assert.equals(0, textField.getLineOffset(0));
 		#if flash
-		Assert.raises(() -> textField.getLineOffset(1), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(1);
+		}, RangeError);
 		#else
 		Assert.equals(-1, textField.getLineOffset(1));
 		#end
@@ -606,7 +615,10 @@ class TextFieldTest extends Test
 		#if flash
 		Assert.equals(0, textField.getLineOffset(0));
 		Assert.equals(6, textField.getLineOffset(1));
-		Assert.raises(() -> textField.getLineOffset(2), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(2);
+		}, RangeError);
 		#else
 		Assert.equals(0, textField.getLineOffset(0));
 		// TODO: line index 1 should be an empty string, like flash
@@ -619,7 +631,10 @@ class TextFieldTest extends Test
 		#if flash
 		Assert.equals(0, textField.getLineOffset(0));
 		Assert.equals(6, textField.getLineOffset(1));
-		Assert.raises(() -> textField.getLineOffset(2), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(2);
+		}, RangeError);
 		#else
 		Assert.equals(0, textField.getLineOffset(0));
 		Assert.equals(6, textField.getLineOffset(1));
@@ -633,17 +648,26 @@ class TextFieldTest extends Test
 
 		Assert.equals("", textField.getLineText(0));
 		#if flash
-		Assert.raises(() -> textField.getLineText(1), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineText(1);
+		}, RangeError);
 		#else
 		Assert.isNull(textField.getLineText(1));
 		#end
-		Assert.raises(() -> textField.getLineText(-1), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineText(-1);
+		}, RangeError);
 
 		textField.text = "Hello";
 
 		Assert.equals("Hello", textField.getLineText(0));
 		#if flash
-		Assert.raises(() -> textField.getLineText(1), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineText(1);
+		}, RangeError);
 		#else
 		Assert.isNull(textField.getLineText(1));
 		#end
@@ -653,7 +677,10 @@ class TextFieldTest extends Test
 		#if flash
 		Assert.equals("Hello\r", textField.getLineText(0));
 		Assert.equals("", textField.getLineText(1));
-		Assert.raises(() -> textField.getLineText(2), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineText(2);
+		}, RangeError);
 		#else
 		Assert.equals("Hello\n", textField.getLineText(0));
 		// TODO: line index 1 should be an empty string, like flash
@@ -666,7 +693,10 @@ class TextFieldTest extends Test
 		#if flash
 		Assert.equals("Hello\r", textField.getLineText(0));
 		Assert.equals("World", textField.getLineText(1));
-		Assert.raises(() -> textField.getLineText(2), RangeError);
+		Assert.raises(function():Void
+		{
+			textField.getLineText(2);
+		}, RangeError);
 		#else
 		Assert.equals("Hello\n", textField.getLineText(0));
 		Assert.equals("World", textField.getLineText(1));
