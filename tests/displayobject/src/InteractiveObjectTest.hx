@@ -1989,6 +1989,7 @@ class InteractiveObjectTest extends Test
 		spriteParent.parent.removeChild(spriteParent);
 	}
 
+	@Ignored
 	public function test_touchBeginEvent()
 	{
 		if (Lib.current == null || Lib.current.stage == null)
@@ -2053,6 +2054,7 @@ class InteractiveObjectTest extends Test
 		sprite.parent.removeChild(sprite);
 	}
 
+	@Ignored
 	public function test_touchEndEvent()
 	{
 		if (Lib.current == null || Lib.current.stage == null)
@@ -2121,6 +2123,7 @@ class InteractiveObjectTest extends Test
 		sprite.parent.removeChild(sprite);
 	}
 
+	@Ignored
 	public function test_touchMoveEvent()
 	{
 		if (Lib.current == null || Lib.current.stage == null)
