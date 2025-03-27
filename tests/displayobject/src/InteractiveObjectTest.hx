@@ -1,13 +1,17 @@
 package;
 
+import openfl.Lib;
 import openfl.display.InteractiveObject;
 import openfl.display.Sprite;
 import openfl.errors.RangeError;
 import openfl.events.Event;
+import openfl.events.MouseEvent;
 import openfl.geom.Rectangle;
 import utest.Assert;
 import utest.Test;
 
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.Stage)
 class InteractiveObjectTest extends Test
 {
 	public function test_new_()
@@ -172,4 +176,1593 @@ class InteractiveObjectTest extends Test
 		Assert.notNull(exists);
 		#end
 	}
+
+	#if !flash
+	public function test_mouseOverEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOver event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_mouseOverHandler(event:MouseEvent):Void
+		{
+			Lib.current.removeEventListener(MouseEvent.MOUSE_OVER, libCurrent_mouseOverHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(MouseEvent.MOUSE_OVER, libCurrent_mouseOverHandler);
+		sprite.addEventListener(MouseEvent.MOUSE_OVER, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		Lib.current.removeEventListener(MouseEvent.MOUSE_OVER, libCurrent_mouseOverHandler);
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseOutEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_mouseOutHandler(event:MouseEvent):Void
+		{
+			Lib.current.removeEventListener(MouseEvent.MOUSE_OUT, libCurrent_mouseOutHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(MouseEvent.MOUSE_OUT, libCurrent_mouseOutHandler);
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		stage.window.onMouseMove.dispatch(0.0, 0.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		Lib.current.removeEventListener(MouseEvent.MOUSE_OUT, libCurrent_mouseOutHandler);
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseOutEventOnRemovedFromStage()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event from removedFromStage test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.parent.removeChild(sprite);
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+	}
+
+	public function test_mouseOutEventOnSetInvisible()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event from visible = false test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.visible = false;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseOutEventOnSetMouseDisabled()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event from mouseEnabled = false test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.mouseEnabled = false;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseOutEventOnSetNewPosition()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event from set position test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.x += 200.0;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseOutEventOnSetNewScale()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event from set scale test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.scaleX *= 0.01;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseOutEventOnSetNewRotation()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event from set rotation test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.rotation = 90.0;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseOutEventOnParentRemovedFromStage()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.visible = false;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_mouseOutEventOnSetParentInvisible()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.parent.removeChild(spriteParent);
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+	}
+
+	public function test_mouseOutEventOnSetParentMouseChildrenDisabled()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.mouseChildren = false;
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_mouseOutEventOnSetParentNewPosition()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.x += 200.0;
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_mouseOutEventOnSetParentNewScale()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.scaleX = 0.01;
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_mouseOutEventOnSetParentNewRotation()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.rotation = 90.0;
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_mouseDownEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseDown event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_mouseDownHandler(event:MouseEvent):Void
+		{
+			Lib.current.removeEventListener(MouseEvent.MOUSE_DOWN, libCurrent_mouseDownHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(MouseEvent.MOUSE_DOWN, libCurrent_mouseDownHandler);
+		sprite.addEventListener(MouseEvent.MOUSE_DOWN, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isTrue(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		stage.window.onMouseDown.dispatch(25.0, 35.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		Lib.current.removeEventListener(MouseEvent.MOUSE_DOWN, libCurrent_mouseDownHandler);
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseUpEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseUp event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseDown.dispatch(25.0, 35.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_mouseUpHandler(event:MouseEvent):Void
+		{
+			Lib.current.removeEventListener(MouseEvent.MOUSE_UP, libCurrent_mouseUpHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(MouseEvent.MOUSE_UP, libCurrent_mouseUpHandler);
+		sprite.addEventListener(MouseEvent.MOUSE_UP, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		stage.window.onMouseUp.dispatch(25.0, 35.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		Lib.current.removeEventListener(MouseEvent.MOUSE_UP, libCurrent_mouseUpHandler);
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_rollOverEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOver event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OVER, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_rollOutEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		stage.window.onMouseMove.dispatch(0.0, 0.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_rollOutEventOnRemovedFromStage()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event from removedFromStage test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.parent.removeChild(sprite);
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+	}
+
+	public function test_rollOutEventOnSetInvisible()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event from visible = false test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.visible = false;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_rollOutEventOnSetMouseDisabled()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event from mouseEnabled = false test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.mouseEnabled = false;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_rollOutEventOnSetNewPosition()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event from set position test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.x += 200.0;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_rollOutEventOnSetNewScale()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event from set scale test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.scaleX *= 0.01;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_rollOutEventOnSetNewRotation()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event from set rotation test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		sprite.rotation = 90.0;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_rollOutEventOnParentRemovedFromStage()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.visible = false;
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_rollOutEventOnSetParentInvisible()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.parent.removeChild(spriteParent);
+
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+	}
+
+	public function test_rollOutEventOnSetParentMouseChildrenDisabled()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var dispatchedForParent = false;
+		spriteParent.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatchedForParent = true;
+		});
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.mouseChildren = false;
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isFalse(dispatchedForParent);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_rollOutEventOnSetParentNewPosition()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.x += 200.0;
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_rollOutEventOnSetParentNewScale()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.scaleX = 0.01;
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_rollOutEventOnSetParentNewRotation()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOut event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var spriteParent = new Sprite();
+		spriteParent.x = 20.0;
+		spriteParent.y = 30.0;
+		Lib.current.addChild(spriteParent);
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		spriteParent.addChild(sprite);
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		sprite.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		spriteParent.rotation = 90.0;
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+
+		spriteParent.parent.removeChild(spriteParent);
+	}
+	#end
 }

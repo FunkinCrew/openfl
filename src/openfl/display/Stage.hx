@@ -1447,6 +1447,33 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__onMouse(MouseEvent.MOUSE_MOVE, __pendingMouseX, __pendingMouseY, 0);
 			__pendingMouseEvent = false;
 		}
+		else if (__mouseOverTarget != null)
+		{
+			// to perfectly match flash's behavior, we should probably do a
+			// full __hitTest() here instead. however, this is still
+			// significantly better than what we had before, and we should
+			// probably test the performance of a full __hitTest() before
+			// switching to it.
+			if (__mouseOverTarget.__transformDirty || __mouseOverTarget.stage == null || !__mouseOverTarget.visible || !__mouseOverTarget.mouseEnabled)
+			{
+				__onMouse(MouseEvent.MOUSE_MOVE, __mouseX, __mouseY, 0);
+			}
+			else
+			{
+				var current:DisplayObjectContainer = __mouseOverTarget.parent;
+				while (current != null)
+				{
+					// parents get mostly similar checks to __mouseOverTarget,
+					// but switch to mouseChildren instead of mouseEnabled.
+					if (current.__transformDirty || current.stage == null || !current.visible || !current.mouseChildren)
+					{
+						__onMouse(MouseEvent.MOUSE_MOVE, __mouseX, __mouseY, 0);
+						break;
+					}
+					current = current.parent;
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
@@ -2217,23 +2244,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			__onMouseWheel(Std.int(deltaX), Std.int(deltaY), deltaMode);
 		}
-
-		var stack:Array<DisplayObject> = [];
-		var target:InteractiveObject = null;
-
-		if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
-		{
-			target = cast stack[stack.length - 1];
-		}
-		else
-		{
-			target = this;
-			stack = [this];
-		}
-
-		if (target == null) target = this;
-
-		__checkOverOut(target, stack, 0);
 	}
 
 	#if (lime >= "8.3.0")
@@ -3019,18 +3029,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 		}
 
-		Point.__pool.release(targetPoint);
-		Point.__pool.release(localPoint);
-
-		__checkOverOut(target, stack, button);
-	}
-
-	@:noCompletion private function __checkOverOut(target:InteractiveObject, stack:Array<DisplayObject>, button:Int):Void
-	{
-		var targetPoint = Point.__pool.get();
-		targetPoint.setTo(__mouseX, __mouseY);
-		var localPoint = Point.__pool.get();
-
 		if (Mouse.__cursor == MouseCursor.AUTO && !Mouse.__hidden)
 		{
 			var cursor:MouseCursor = null;
@@ -3102,58 +3100,22 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			{
 				__rollOutStack.remove(item);
 
-				#if openfl_pool_events
-				event = MouseEvent.__pool.get();
-				event.type = MouseEvent.ROLL_OUT;
-				event.stageX = __mouseX;
-				event.stageY = __mouseY;
-				var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
-				event.localX = local.x;
-				event.localY = local.y;
-				event.target = item;
-				event.clickCount = 0;
-				#else
-				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, 0, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast item);
-				#end
-				event.bubbles = false;
-
-				__dispatchTarget(item, event);
-
-				if (event.__updateAfterEventFlag)
-				{
-					__renderAfterEvent();
-				}
-
-				#if openfl_pool_events
-				MouseEvent.__pool.release(cast event);
-				#end
-			}
-			else
-			{
-				i++;
-			}
-		}
-
-		for (item in stack)
-		{
-			if (__rollOutStack.indexOf(item) == -1 && __mouseOverTarget != null)
-			{
-				if (item.hasEventListener(MouseEvent.ROLL_OVER))
+				// ROLL_OUT doesn't bubble, so we can skip dispatch if we don't
+				// have a listener
+				if (item.hasEventListener(MouseEvent.ROLL_OUT))
 				{
 					#if openfl_pool_events
-					var mouseEvent = MouseEvent.__pool.get();
-					mouseEvent.type = MouseEvent.ROLL_OVER;
-					mouseEvent.stageX = __mouseX;
-					mouseEvent.stageY = __mouseY;
+					event = MouseEvent.__pool.get();
+					event.type = MouseEvent.ROLL_OUT;
+					event.stageX = __mouseX;
+					event.stageY = __mouseY;
 					var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
-					mouseEvent.localX = local.x;
-					mouseEvent.localY = local.y;
-					mouseEvent.target = item;
-					event = mouseEvent;
+					event.localX = local.x;
+					event.localY = local.y;
+					event.target = item;
 					event.clickCount = 0;
 					#else
-					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, 0, __mouseX, __mouseY,
+					event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, 0, __mouseX, __mouseY,
 						__mouseOverTarget.__globalToLocal(targetPoint, localPoint), cast item);
 					#end
 					event.bubbles = false;
@@ -3169,11 +3131,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					MouseEvent.__pool.release(cast event);
 					#end
 				}
-
-				if (item.hasEventListener(MouseEvent.ROLL_OUT) || item.hasEventListener(MouseEvent.ROLL_OVER))
-				{
-					__rollOutStack.push(item);
-				}
+			}
+			else
+			{
+				i++;
 			}
 		}
 
@@ -3210,6 +3171,49 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			__mouseOverTarget = target;
 			__mouseOutStack = stack;
+		}
+
+		for (item in stack)
+		{
+			if (__rollOutStack.indexOf(item) == -1 && __mouseOverTarget != null)
+			{
+				// ROLL_OVER doesn't bubble, so we can skip dispatch if we don't
+				// have a listener
+				if (item.hasEventListener(MouseEvent.ROLL_OVER))
+				{
+					#if openfl_pool_events
+					var mouseEvent = MouseEvent.__pool.get();
+					mouseEvent.type = MouseEvent.ROLL_OVER;
+					mouseEvent.stageX = __mouseX;
+					mouseEvent.stageY = __mouseY;
+					var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
+					mouseEvent.localX = local.x;
+					mouseEvent.localY = local.y;
+					mouseEvent.target = item;
+					event = mouseEvent;
+					event.clickCount = 0;
+					#else
+					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, 0, __mouseX, __mouseY,
+						__mouseOverTarget.__globalToLocal(targetPoint, localPoint), cast item);
+					#end
+					event.bubbles = false;
+
+					__dispatchTarget(item, event);
+
+					if (event.__updateAfterEventFlag)
+					{
+						__renderAfterEvent();
+					}
+
+					#if openfl_pool_events
+					MouseEvent.__pool.release(cast event);
+					#end
+				}
+
+				// a ROLL_OUT listener could be added later, so don't check if
+				// we have a listener here
+				__rollOutStack.push(item);
+			}
 		}
 
 		if (__dragObject != null)
