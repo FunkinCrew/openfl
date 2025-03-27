@@ -6,6 +6,7 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
+import openfl.Lib;
 import utest.Assert;
 import utest.Test;
 
@@ -880,5 +881,148 @@ class TextFieldTest extends Test
 	{
 		var textField = new TextField();
 		textField.text = "Hello";
+	#end
+
+	#if !flash
+	public function test_mouseDownAndMouseUpEventAtSamePosition()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping TextField mouseDown/mouseUp test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var tf = new TextField();
+		tf.autoSize = TextFieldAutoSize.LEFT;
+		tf.text = "Hello";
+		tf.x = 20.0;
+		tf.y = 30.0;
+		Lib.current.addChild(tf);
+
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(0, tf.selectionEndIndex);
+
+		stage.window.onMouseDown.dispatch(tf.x + tf.width / 2.0, tf.y + tf.height / 2.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(tf.selectionBeginIndex > 0);
+		Assert.equals(tf.selectionBeginIndex, tf.selectionEndIndex);
+
+		stage.window.onMouseUp.dispatch(tf.x + tf.width / 2.0, tf.y + tf.height / 2.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(tf.selectionBeginIndex > 0);
+		Assert.equals(tf.selectionBeginIndex, tf.selectionEndIndex);
+
+		tf.parent.removeChild(tf);
+	}
+
+	public function test_mouseDownMouseMoveAndMouseUpEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping TextField mouseDown/mouseMove/mouseUp test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var tf = new TextField();
+		tf.autoSize = TextFieldAutoSize.LEFT;
+		tf.text = "Hello";
+		tf.x = 20.0;
+		tf.y = 30.0;
+		Lib.current.addChild(tf);
+
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(0, tf.selectionEndIndex);
+
+		var xPos = tf.x + tf.width / 2.0;
+		var yPos = tf.y + tf.height / 2.0;
+
+		stage.window.onMouseDown.dispatch(xPos, yPos, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(tf.selectionBeginIndex > 0);
+		Assert.equals(tf.selectionBeginIndex, tf.selectionEndIndex);
+
+		var prevSelectionBeginIndex = tf.selectionBeginIndex;
+		var prevSelectionEndIndex = tf.selectionEndIndex;
+
+		xPos += 100.0;
+		stage.window.onMouseMove.dispatch(xPos, yPos);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.equals(prevSelectionBeginIndex, tf.selectionBeginIndex);
+		Assert.isTrue(tf.selectionEndIndex > prevSelectionEndIndex);
+
+		prevSelectionBeginIndex = tf.selectionBeginIndex;
+		prevSelectionEndIndex = tf.selectionEndIndex;
+
+		stage.window.onMouseUp.dispatch(xPos, yPos, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		// mouse hasn't moved again, so no change
+		Assert.equals(prevSelectionBeginIndex, tf.selectionBeginIndex);
+		Assert.equals(prevSelectionEndIndex, tf.selectionEndIndex);
+
+		tf.parent.removeChild(tf);
+	}
+
+	public function test_setSelectionBetweenMouseDownAndMouseUp()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping TextField setSelection between mouseDown/mouseUp test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var tf = new TextField();
+		tf.autoSize = LEFT;
+		tf.text = "Hello";
+		tf.x = 20.0;
+		tf.y = 30.0;
+		Lib.current.addChild(tf);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess tf.stage.__renderAfterEvent();
+
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(0, tf.selectionEndIndex);
+
+		var xPos = tf.x + tf.width / 2.0;
+		var yPos = tf.y + tf.height / 2.0;
+
+		stage.window.onMouseDown.dispatch(xPos, yPos, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(tf.selectionBeginIndex > 0);
+		Assert.equals(tf.selectionBeginIndex, tf.selectionEndIndex);
+
+		tf.setSelection(0, tf.text.length);
+
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(tf.text.length, tf.selectionEndIndex);
+
+		stage.window.onMouseUp.dispatch(xPos, yPos, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		// mouse hasn't moved again, so no change
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(tf.text.length, tf.selectionEndIndex);
+
+		tf.parent.removeChild(tf);
+	}
 	#end
 }
