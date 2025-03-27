@@ -1456,7 +1456,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			// switching to it.
 			if (__mouseOverTarget.__transformDirty || __mouseOverTarget.stage == null || !__mouseOverTarget.visible || !__mouseOverTarget.mouseEnabled)
 			{
-				__onMouse(MouseEvent.MOUSE_MOVE, __mouseX, __mouseY, 0);
+				__onMouse(null, __mouseX, __mouseY, 0);
 			}
 			else
 			{
@@ -1467,7 +1467,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					// but switch to mouseChildren instead of mouseEnabled.
 					if (current.__transformDirty || current.stage == null || !current.visible || !current.mouseChildren)
 					{
-						__onMouse(MouseEvent.MOUSE_MOVE, __mouseX, __mouseY, 0);
+						__onMouse(null, __mouseX, __mouseY, 0);
 						break;
 					}
 					current = current.parent;
@@ -2807,149 +2807,164 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var clickType:String = null;
 		var supportsClickCount = false;
 
-		switch (type)
+		if (type != null)
 		{
-			case MouseEvent.MOUSE_DOWN:
-				if (focus != null)
-				{
-					if (focus != target)
+			switch (type)
+			{
+				case MouseEvent.MOUSE_DOWN:
+					if (focus != null)
 					{
-						var focusEvent = new FocusEvent(FocusEvent.MOUSE_FOCUS_CHANGE, true, true, target, false, 0);
-						focus.dispatchEvent(focusEvent);
-
-						if (!focusEvent.isDefaultPrevented())
+						if (focus != target)
 						{
-							if (target.__allowMouseFocus())
+							var focusEvent = new FocusEvent(FocusEvent.MOUSE_FOCUS_CHANGE, true, true, target, false, 0);
+							focus.dispatchEvent(focusEvent);
+
+							if (!focusEvent.isDefaultPrevented())
 							{
-								focus = target;
-							}
-							else
-							{
-								focus = null;
+								if (target.__allowMouseFocus())
+								{
+									focus = target;
+								}
+								else
+								{
+									focus = null;
+								}
 							}
 						}
 					}
-				}
-				else
-				{
-					if (target.__allowMouseFocus())
-					{
-						focus = target;
-					}
 					else
 					{
-						focus = null;
+						if (target.__allowMouseFocus())
+						{
+							focus = target;
+						}
+						else
+						{
+							focus = null;
+						}
 					}
-				}
 
-				__mouseDownLeft = target;
-				if (__lastClickTarget != target)
-				{
-					// the target has changed since the previous click
-					// so we can't double-click the old target anymore
-					__lastClickTarget = null;
-					__lastClickTime = 0;
-				}
-				MouseEvent.__buttonDown = true;
-				supportsClickCount = true;
-
-			case MouseEvent.MIDDLE_MOUSE_DOWN:
-				__mouseDownMiddle = target;
-				supportsClickCount = true;
-
-			case MouseEvent.RIGHT_MOUSE_DOWN:
-				__mouseDownRight = target;
-				supportsClickCount = true;
-
-			case MouseEvent.MOUSE_UP:
-				if (__mouseDownLeft != null)
-				{
-					MouseEvent.__buttonDown = false;
-
-					if (__mouseDownLeft == target)
+					__mouseDownLeft = target;
+					if (__lastClickTarget != target)
 					{
-						clickType = MouseEvent.CLICK;
+						// the target has changed since the previous click
+						// so we can't double-click the old target anymore
+						__lastClickTarget = null;
+						__lastClickTime = 0;
 					}
-					else
+					MouseEvent.__buttonDown = true;
+					supportsClickCount = true;
+
+				case MouseEvent.MIDDLE_MOUSE_DOWN:
+					__mouseDownMiddle = target;
+					supportsClickCount = true;
+
+				case MouseEvent.RIGHT_MOUSE_DOWN:
+					__mouseDownRight = target;
+					supportsClickCount = true;
+
+				case MouseEvent.MOUSE_UP:
+					if (__mouseDownLeft != null)
 					{
-						var event:MouseEvent = null;
+						MouseEvent.__buttonDown = false;
 
-						#if openfl_pool_events
-						event = MouseEvent.__pool.get();
-						event.type = MouseEvent.RELEASE_OUTSIDE;
-						event.stageX = __mouseX;
-						event.stageY = __mouseY;
-						event.localX = __mouseX;
-						event.localY = __mouseY;
-						event.target = this;
-						event.clickCount = 0;
-						#else
-						event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, 0, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
-						#end
+						if (__mouseDownLeft == target)
+						{
+							clickType = MouseEvent.CLICK;
+						}
+						else
+						{
+							var event:MouseEvent = null;
 
-						__mouseDownLeft.dispatchEvent(event);
+							#if openfl_pool_events
+							event = MouseEvent.__pool.get();
+							event.type = MouseEvent.RELEASE_OUTSIDE;
+							event.stageX = __mouseX;
+							event.stageY = __mouseY;
+							event.localX = __mouseX;
+							event.localY = __mouseY;
+							event.target = this;
+							event.clickCount = 0;
+							#else
+							event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, 0, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+							#end
 
-						#if openfl_pool_events
-						MouseEvent.__pool.release(event);
-						#end
+							__mouseDownLeft.dispatchEvent(event);
+
+							#if openfl_pool_events
+							MouseEvent.__pool.release(event);
+							#end
+						}
+
+						__mouseDownLeft = null;
+					}
+					supportsClickCount = true;
+
+				case MouseEvent.MIDDLE_MOUSE_UP:
+					if (__mouseDownMiddle == target)
+					{
+						clickType = MouseEvent.MIDDLE_CLICK;
 					}
 
-					__mouseDownLeft = null;
-				}
-				supportsClickCount = true;
+					__mouseDownMiddle = null;
+					supportsClickCount = true;
 
-			case MouseEvent.MIDDLE_MOUSE_UP:
-				if (__mouseDownMiddle == target)
-				{
-					clickType = MouseEvent.MIDDLE_CLICK;
-				}
+				case MouseEvent.RIGHT_MOUSE_UP:
+					if (__mouseDownRight == target)
+					{
+						clickType = MouseEvent.RIGHT_CLICK;
+					}
 
-				__mouseDownMiddle = null;
-				supportsClickCount = true;
+					__mouseDownRight = null;
+					supportsClickCount = true;
 
-			case MouseEvent.RIGHT_MOUSE_UP:
-				if (__mouseDownRight == target)
-				{
-					clickType = MouseEvent.RIGHT_CLICK;
-				}
-
-				__mouseDownRight = null;
-				supportsClickCount = true;
-
-			default:
+				default:
+			}
 		}
 
 		var localPoint = Point.__pool.get();
-		var event:MouseEvent = null;
-
-		var clickCount = #if (lime >= "8.1.0") supportsClickCount ? window.clickCount : 0 #else 0 #end;
-		#if openfl_pool_events
-		event = MouseEvent.__pool.get();
-		event.type = type;
-		event.stageX = __mouseX;
-		event.stageY = __mouseY;
-		var local = target.__globalToLocal(targetPoint, localPoint);
-		event.localX = local.x;
-		event.localY = local.y;
-		event.target = target;
-		event.clickCount = clickCount;
-		#else
-		event = MouseEvent.__create(type, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
-		#end
-
-		__dispatchStack(event, stack);
-
-		if (event.__updateAfterEventFlag)
+		// we're allowing type to be null, so we might not dispatch an event
+		// in this section.
+		// there are times that we want to see if the mouse over target has
+		// changed, to dispatch over/out events, even if the mouse hasn't moved.
+		// instead, it's possible for the state of the old mouse over target to
+		// change, such as being removed from the stage, being set invisible, or
+		// transformed so that it no longer appears under the mouse.
+		if (type != null)
 		{
-			__renderAfterEvent();
-		}
+			var event:MouseEvent = null;
 
-		#if openfl_pool_events
-		MouseEvent.__pool.release(event);
-		#end
+			var clickCount = #if (lime >= "8.1.0") supportsClickCount ? window.clickCount : 0 #else 0 #end;
+			#if openfl_pool_events
+			event = MouseEvent.__pool.get();
+			event.type = type;
+			event.stageX = __mouseX;
+			event.stageY = __mouseY;
+			var local = target.__globalToLocal(targetPoint, localPoint);
+			event.localX = local.x;
+			event.localY = local.y;
+			event.target = target;
+			event.clickCount = clickCount;
+			#else
+			event = MouseEvent.__create(type, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+			#end
+
+			__dispatchStack(event, stack);
+
+			if (event.__updateAfterEventFlag)
+			{
+				__renderAfterEvent();
+			}
+
+			#if openfl_pool_events
+			MouseEvent.__pool.release(event);
+			#end
+		}
 
 		if (clickType != null)
 		{
+			var event:MouseEvent = null;
+
 			#if openfl_pool_events
 			event = MouseEvent.__pool.get();
 			event.type = clickType;
@@ -3057,12 +3072,12 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 		}
 
-		var event:MouseEvent;
-
 		if (target != __mouseOverTarget)
 		{
 			if (__mouseOverTarget != null)
 			{
+				var event:MouseEvent = null;
+
 				#if openfl_pool_events
 				event = MouseEvent.__pool.get();
 				event.type = MouseEvent.MOUSE_OUT;
@@ -3086,7 +3101,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				}
 
 				#if openfl_pool_events
-				MouseEvent.__pool.release(cast event);
+				MouseEvent.__pool.release(event);
 				#end
 			}
 		}
@@ -3104,6 +3119,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				// have a listener
 				if (item.hasEventListener(MouseEvent.ROLL_OUT))
 				{
+					var event:MouseEvent = null;
+
 					#if openfl_pool_events
 					event = MouseEvent.__pool.get();
 					event.type = MouseEvent.ROLL_OUT;
@@ -3128,7 +3145,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					}
 
 					#if openfl_pool_events
-					MouseEvent.__pool.release(cast event);
+					MouseEvent.__pool.release(event);
 					#end
 				}
 			}
@@ -3142,16 +3159,17 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			if (target != null)
 			{
+				var event:MouseEvent = null;
+
 				#if openfl_pool_events
-				var mouseEvent = MouseEvent.__pool.get();
-				mouseEvent.type = MouseEvent.MOUSE_OVER;
-				mouseEvent.stageX = __mouseX;
-				mouseEvent.stageY = __mouseY;
+				event = MouseEvent.__pool.get();
+				event.type = MouseEvent.MOUSE_OVER;
+				event.stageX = __mouseX;
+				event.stageY = __mouseY;
 				var local = target.__globalToLocal(targetPoint, localPoint);
-				mouseEvent.localX = local.x;
-				mouseEvent.localY = local.y;
-				mouseEvent.target = target;
-				event = mouseEvent;
+				event.localX = local.x;
+				event.localY = local.y;
+				event.target = target;
 				event.clickCount = 0;
 				#else
 				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
@@ -3165,7 +3183,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				}
 
 				#if openfl_pool_events
-				MouseEvent.__pool.release(cast event);
+				MouseEvent.__pool.release(event);
 				#end
 			}
 
@@ -3181,16 +3199,17 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				// have a listener
 				if (item.hasEventListener(MouseEvent.ROLL_OVER))
 				{
+					var event:MouseEvent = null;
+
 					#if openfl_pool_events
-					var mouseEvent = MouseEvent.__pool.get();
-					mouseEvent.type = MouseEvent.ROLL_OVER;
-					mouseEvent.stageX = __mouseX;
-					mouseEvent.stageY = __mouseY;
+					event = MouseEvent.__pool.get();
+					event.type = MouseEvent.ROLL_OVER;
+					event.stageX = __mouseX;
+					event.stageY = __mouseY;
 					var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
-					mouseEvent.localX = local.x;
-					mouseEvent.localY = local.y;
-					mouseEvent.target = item;
-					event = mouseEvent;
+					event.localX = local.x;
+					event.localY = local.y;
+					event.target = item;
 					event.clickCount = 0;
 					#else
 					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, 0, __mouseX, __mouseY,
