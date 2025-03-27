@@ -1092,6 +1092,136 @@ class InteractiveObjectTest extends Test
 		sprite.parent.removeChild(sprite);
 	}
 
+	public function test_mouseMoveEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseMove event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_mouseMoveHandler(event:MouseEvent):Void
+		{
+			Lib.current.removeEventListener(MouseEvent.MOUSE_MOVE, libCurrent_mouseMoveHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(MouseEvent.MOUSE_MOVE, libCurrent_mouseMoveHandler);
+		sprite.addEventListener(MouseEvent.MOUSE_MOVE, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isFalse(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		stage.window.onMouseMove.dispatch(25.0, 36.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		Lib.current.removeEventListener(MouseEvent.MOUSE_MOVE, libCurrent_mouseMoveHandler);
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseMoveEventAfterMouseDown()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseMove event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		stage.window.onMouseDown.dispatch(25.0, 35.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_mouseMoveHandler(event:MouseEvent):Void
+		{
+			Lib.current.removeEventListener(MouseEvent.MOUSE_MOVE, libCurrent_mouseMoveHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(MouseEvent.MOUSE_MOVE, libCurrent_mouseMoveHandler);
+		sprite.addEventListener(MouseEvent.MOUSE_MOVE, function(event:MouseEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.isTrue(event.buttonDown);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+			Assert.equals(0, event.delta);
+			Assert.equals(0, event.clickCount);
+		});
+
+		stage.window.onMouseMove.dispatch(25.0, 36.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		stage.window.onMouseUp.dispatch(25.0, 36.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Lib.current.removeEventListener(MouseEvent.MOUSE_MOVE, libCurrent_mouseMoveHandler);
+		sprite.parent.removeChild(sprite);
+	}
+
 	public function test_rollOverEvent()
 	{
 		if (Lib.current == null || Lib.current.stage == null)
