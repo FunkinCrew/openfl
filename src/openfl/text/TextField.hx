@@ -862,8 +862,8 @@ class TextField extends InteractiveObject
 
 		__wordSelection = false;
 		__drawableType = TEXT_FIELD;
-		__caretIndex = -1;
-		__selectionIndex = -1;
+		__caretIndex = 0;
+		__selectionIndex = 0;
 		__displayAsPassword = false;
 		__passwordChar = "*";
 		__graphics = new Graphics(this);
