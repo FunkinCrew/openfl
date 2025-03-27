@@ -1,11 +1,13 @@
 package;
 
+import lime.ui.Touch;
 import openfl.Lib;
 import openfl.display.InteractiveObject;
 import openfl.display.Sprite;
 import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
+import openfl.events.TouchEvent;
 import openfl.geom.Rectangle;
 import utest.Assert;
 import utest.Test;
@@ -14,6 +16,8 @@ import utest.Test;
 @:access(openfl.display.Stage)
 class InteractiveObjectTest extends Test
 {
+	private var __touch:Touch = new Touch(0.0, 0.0, 0, 0.0, 0.0, 0.0, 0);
+
 	public function test_new_()
 	{
 		#if flash
@@ -1853,6 +1857,211 @@ class InteractiveObjectTest extends Test
 		Assert.isTrue(dispatched);
 
 		spriteParent.parent.removeChild(spriteParent);
+	}
+
+	public function test_touchBeginEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping touchBegin event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_touchBeginHandler(event:TouchEvent):Void
+		{
+			Lib.current.removeEventListener(TouchEvent.TOUCH_BEGIN, libCurrent_touchBeginHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(TouchEvent.TOUCH_BEGIN, libCurrent_touchBeginHandler);
+		sprite.addEventListener(TouchEvent.TOUCH_BEGIN, function(event:TouchEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.equals(0, event.touchPointID);
+			Assert.isTrue(event.isPrimaryTouchPoint);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+		});
+
+		var xPos = 25.0 / stage.window.scale / stage.window.width;
+		var yPos = 35.0 / stage.window.scale / stage.window.height;
+		__touch.x = xPos;
+		__touch.y = yPos;
+		Touch.onStart.dispatch(__touch);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		Lib.current.removeEventListener(TouchEvent.TOUCH_BEGIN, libCurrent_touchBeginHandler);
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_touchEndEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping touchEnd event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		var xPos = 25.0 / stage.window.scale / stage.window.width;
+		var yPos = 35.0 / stage.window.scale / stage.window.height;
+		__touch.x = xPos;
+		__touch.y = yPos;
+		Touch.onStart.dispatch(__touch);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_touchEndHandler(event:TouchEvent):Void
+		{
+			Lib.current.removeEventListener(TouchEvent.TOUCH_END, libCurrent_touchEndHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(TouchEvent.TOUCH_END, libCurrent_touchEndHandler);
+		sprite.addEventListener(TouchEvent.TOUCH_END, function(event:TouchEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.equals(0, event.touchPointID);
+			Assert.isTrue(event.isPrimaryTouchPoint);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+		});
+
+		Touch.onEnd.dispatch(__touch);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		Lib.current.removeEventListener(TouchEvent.TOUCH_END, libCurrent_touchEndHandler);
+		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_touchMoveEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping touchMove event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		var xPos = 25.0 / stage.window.scale / stage.window.width;
+		var yPos = 35.0 / stage.window.scale / stage.window.height;
+		__touch.x = xPos;
+		__touch.y = yPos;
+		Touch.onStart.dispatch(__touch);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		var dispatched = false;
+		var bubbled = false;
+		function libCurrent_touchMoveHandler(event:TouchEvent):Void
+		{
+			Lib.current.removeEventListener(TouchEvent.TOUCH_MOVE, libCurrent_touchMoveHandler);
+			bubbled = true;
+			Assert.notEquals(sprite, Lib.current);
+			Assert.equals(sprite, event.target);
+			Assert.equals(Lib.current, event.currentTarget);
+		}
+		Lib.current.addEventListener(TouchEvent.TOUCH_MOVE, libCurrent_touchMoveHandler);
+		sprite.addEventListener(TouchEvent.TOUCH_MOVE, function(event:TouchEvent):Void
+		{
+			dispatched = true;
+			Assert.equals(sprite, event.target);
+			Assert.equals(sprite, event.currentTarget);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+			Assert.equals(0, event.touchPointID);
+			Assert.isTrue(event.isPrimaryTouchPoint);
+			Assert.isFalse(event.altKey);
+			Assert.isFalse(event.shiftKey);
+			Assert.isFalse(event.ctrlKey);
+			Assert.isFalse(event.controlKey);
+			Assert.isFalse(event.commandKey);
+			Assert.isNull(event.relatedObject);
+		});
+
+		__touch.x += 0.01;
+		Touch.onMove.dispatch(__touch);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatched);
+		Assert.isTrue(bubbled);
+
+		Touch.onEnd.dispatch(__touch);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Lib.current.removeEventListener(TouchEvent.TOUCH_MOVE, libCurrent_touchMoveHandler);
+		sprite.parent.removeChild(sprite);
 	}
 	#end
 }
