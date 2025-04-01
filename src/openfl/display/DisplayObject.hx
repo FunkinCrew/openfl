@@ -2435,6 +2435,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function set_x(value:Float):Float
 	{
+		if (value != value) value = 0.0; // flash converts NaN to 0.0
 		if (value != __transform.tx) __setTransformDirty();
 		return __transform.tx = value;
 	}
@@ -2446,6 +2447,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function set_y(value:Float):Float
 	{
+		if (value != value) value = 0.0; // flash converts NaN to 0.0
 		if (value != __transform.ty) __setTransformDirty();
 		return __transform.ty = value;
 	}
