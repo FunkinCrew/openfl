@@ -33,6 +33,16 @@ class NativeWindowTest extends Test
 	@:timeout(2000)
 	public function test_activate(async:Async):Void
 	{
+		#if !flash
+		if (Sys.getEnv("SDL_VIDEODRIVER") == "dummy")
+		{
+			// activation doesn't seem to work when using the dummy video driver
+			// which we need sometimes when running tests on the CI server
+			Assert.pass("Skipping NativeWindow activate() test");
+			async.done();
+			return;
+		}
+		#end
 		var nativeWindow = new NativeWindow(new NativeWindowInitOptions());
 		var dispatchedActivate = false;
 		nativeWindow.addEventListener(Event.ACTIVATE, function(event:Event):Void
