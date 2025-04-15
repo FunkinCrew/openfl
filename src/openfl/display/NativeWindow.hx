@@ -596,7 +596,8 @@ class NativeWindow extends EventDispatcher
 		#if (lime < "8.1.0")
 		return __opened;
 		#else
-		return __window.visible;
+		// visible may be null instead of false in some versions of Lime
+		return __window.visible == true;
 		#end
 	}
 
