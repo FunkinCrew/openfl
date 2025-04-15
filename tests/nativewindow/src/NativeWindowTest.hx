@@ -30,7 +30,7 @@ class NativeWindowTest extends Test
 		Assert.isFalse(nativeWindow.visible);
 	}
 
-	@:timeout(3000)
+	@:timeout(2000)
 	public function test_activate(async:Async):Void
 	{
 		var nativeWindow = new NativeWindow(new NativeWindowInitOptions());
@@ -51,7 +51,7 @@ class NativeWindowTest extends Test
 			Assert.isTrue(dispatchedActivate);
 			nativeWindow.close();
 			async.done();
-		}, 2000);
+		}, 1000);
 	}
 
 	@:timeout(1000)
