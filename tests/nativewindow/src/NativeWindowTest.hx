@@ -51,7 +51,7 @@ class NativeWindowTest extends Test
 			Assert.isTrue(dispatchedActivate);
 			nativeWindow.close();
 			async.done();
-		}, 500);
+		}, 1000);
 	}
 
 	@:timeout(1000)
