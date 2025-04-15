@@ -141,6 +141,7 @@ class NativeWindow extends EventDispatcher
 	@:noCompletion private var __pendingWidth:Int = 400;
 	@:noCompletion private var __pendingHeight:Int = 228;
 	#end
+	@:noCompletion private var __type:NativeWindowType = NORMAL;
 	@:noCompletion private var __closed:Bool = false;
 	@:noCompletion private var __previousX:Int;
 	@:noCompletion private var __previousY:Int;
@@ -226,6 +227,25 @@ class NativeWindow extends EventDispatcher
 		__window.onMaximize.add(window_onMaximize);
 		__window.onRestore.add(window_onRestore);
 		__window.onClose.add(window_onClose);
+	}
+
+	/**
+		 Reports the window `type` setting used to create this window.
+
+		The values returned by `NativeWindow.type` will be one of the constants
+		defined in the `NativeWindowType` class.
+
+		The `type` setting cannot be changed after a window is created.
+	**/
+	public var type(get, never):NativeWindowType;
+
+	@:noCompletion private function get_type():NativeWindowType
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		return __type;
 	}
 
 	/**
