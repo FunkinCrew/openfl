@@ -1191,6 +1191,13 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private function window_onClose():Void
 	{
+		var result = dispatchEvent(new Event(Event.CLOSING, false, true));
+		if (!result)
+		{
+			__window.onClose.cancel();
+			return;
+		}
+
 		// all child windows are closed when their owner is closed
 		while (__ownedWindows.length > 0)
 		{
