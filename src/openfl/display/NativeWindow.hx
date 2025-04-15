@@ -149,7 +149,7 @@ class NativeWindow extends EventDispatcher
 	@:noCompletion private var __previousDisplayState:NativeWindowDisplayState;
 	@:noCompletion private var __active:Bool = false;
 	@:noCompletion private var __ownedWindows:Vector<NativeWindow> = new Vector();
-	@:noCompletion private var __autoClosedByOwner:Bool = false;
+	@:noCompletion private var __skipClosingEvent:Bool = false;
 
 	/**
 		Creates a new NativeWindow instance and a corresponding operating system
@@ -971,6 +971,7 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		__skipClosingEvent = true;
 		__window.close();
 	}
 
@@ -1192,7 +1193,7 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private function window_onClose():Void
 	{
-		if (!__autoClosedByOwner)
+		if (!__skipClosingEvent)
 		{
 			var result = dispatchEvent(new Event(Event.CLOSING, false, true));
 			if (!result)
@@ -1203,10 +1204,10 @@ class NativeWindow extends EventDispatcher
 		}
 
 		// all child windows are closed when their owner is closed
+		// the child windows do not dispatch Event.CLOSING
 		while (__ownedWindows.length > 0)
 		{
 			var childWindow = __ownedWindows.pop();
-			childWindow.__autoClosedByOwner = true;
 			childWindow.close();
 		}
 		__closed = true;
