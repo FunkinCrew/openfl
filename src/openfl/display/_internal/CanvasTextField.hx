@@ -389,7 +389,8 @@ class CanvasTextField
 				}
 
 				graphics.__bitmap = BitmapData.fromCanvas(textField.__graphics.__canvas);
-				graphics.__bitmapScale = pixelRatio;
+				graphics.__bitmapScaleX = pixelRatio;
+				graphics.__bitmapScaleY = pixelRatio;
 				graphics.__visible = true;
 				textField.__dirty = false;
 				graphics.__softwareDirty = false;

@@ -40,6 +40,7 @@ class Context3DGraphics
 	private static var tempVerticesVector:Vector<Float> = new Vector<Float>();
 	private static var tempIndicesVector:Vector<Int> = new Vector<Int>();
 	private static var tempUvtVector:Vector<Float> = new Vector<Float>();
+	private static var tempScale9VerticesVector:Vector<Float>;
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
@@ -59,8 +60,46 @@ class Context3DGraphics
 		var bitmap:BitmapData = null;
 		var bitmapMatrix:Matrix = null;
 
+		var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+		if (!hasScale9Grid)
+		{
+			scale9Grid = null;
+		}
+
 		inline function buildDrawTrianglesBuffer(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
 		{
+			if (hasScale9Grid)
+			{
+				if (tempScale9VerticesVector == null)
+				{
+					tempScale9VerticesVector = new Vector<Float>(vertices.length);
+				}
+				else
+				{
+					tempScale9VerticesVector.length = vertices.length;
+				}
+				var i = 0;
+				var length = vertices.length;
+				var isX = true;
+				while (i < length)
+				{
+					if (isX)
+					{
+						tempScale9VerticesVector[i] = toScale9Position(vertices[i], scale9Grid.x, scale9Grid.width, bounds.width,
+							graphics.__owner.scaleX) / graphics.__owner.scaleX;
+					}
+					else
+					{
+						tempScale9VerticesVector[i] = toScale9Position(vertices[i], scale9Grid.y, scale9Grid.height, bounds.height,
+							graphics.__owner.scaleY) / graphics.__owner.scaleY;
+					}
+					i++;
+					isX = !isX;
+				}
+				vertices = tempScale9VerticesVector;
+			}
+
 			if (bitmap != null && uvtData == null)
 			{
 				uvtData = tempUvtVector;
@@ -374,8 +413,12 @@ class Context3DGraphics
 					var radiusX = c.ellipseWidth / 2.0;
 					var radiusY = (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth) / 2.0;
 
-					var scaleX = graphics.__owner.scaleX;
-					var scaleY = graphics.__owner.scaleY;
+					var scaleX = (hasScale9Grid
+						&& c.x + radiusX <= scale9Grid.x
+						&& c.x + c.width - radiusX >= scale9Grid.x + scale9Grid.width) ? 1.0 : graphics.__owner.scaleX;
+					var scaleY = (hasScale9Grid
+						&& c.y + radiusY <= scale9Grid.y
+						&& c.y + c.height - radiusX >= scale9Grid.y + scale9Grid.height) ? 1.0 : graphics.__owner.scaleY;
 
 					PolygonFunctions.buildRoundRectVerticesAndIndices(x, y, width, height, radiusX, radiusY, scaleX, scaleY, tempVerticesVector,
 						tempIndicesVector);
@@ -633,6 +676,13 @@ class Context3DGraphics
 					|| (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null))
 				{
 					buildBuffer(graphics, renderer);
+				}
+
+				var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+				if (!hasScale9Grid)
+				{
+					scale9Grid = null;
 				}
 
 				var data = new DrawCommandReader(graphics.__commands);
@@ -936,8 +986,12 @@ class Context3DGraphics
 							var radiusX = c.ellipseWidth / 2.0;
 							var radiusY = (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth) / 2.0;
 
-							var scaleX = graphics.__owner.scaleX;
-							var scaleY = graphics.__owner.scaleY;
+							var scaleX = (hasScale9Grid
+								&& c.x + radiusX <= scale9Grid.x
+								&& c.x + c.width - radiusX >= scale9Grid.x + scale9Grid.width) ? 1.0 : graphics.__owner.scaleX;
+							var scaleY = (hasScale9Grid
+								&& c.y + radiusY <= scale9Grid.y
+								&& c.y + c.height - radiusX >= scale9Grid.y + scale9Grid.height) ? 1.0 : graphics.__owner.scaleY;
 
 							var numVertices = PolygonFunctions.getRoundRectNumVertices(radiusX * scaleX, radiusY * scaleY);
 							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
@@ -955,6 +1009,20 @@ class Context3DGraphics
 								var y = c.y;
 								var width = c.width;
 								var height = c.height;
+
+								if (hasScale9Grid)
+								{
+									var scaledLeft = toScale9Position(c.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+									var scaledTop = toScale9Position(c.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+									var scaledRight = toScale9Position(c.x + c.width, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+									var scaledBottom = toScale9Position(c.y + c.height, scale9Grid.y, scale9Grid.height, bounds.height,
+										graphics.__owner.scaleY);
+
+									x = scaledLeft / graphics.__owner.scaleX;
+									y = scaledTop / graphics.__owner.scaleY;
+									width = (scaledRight - scaledLeft) / graphics.__owner.scaleX;
+									height = (scaledBottom - scaledTop) / graphics.__owner.scaleY;
+								}
 
 								matrix.identity();
 								matrix.scale(width, height);
@@ -1154,6 +1222,42 @@ class Context3DGraphics
 			result[i + 1] = trianglesHeight * (vertices[i + 1] / trianglesHeight) / bitmap.height;
 			i += 2;
 		}
+	}
+
+	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
+	{
+		if (scale <= 0.0)
+		{
+			// doesn't render if scaled with negative value
+			return 0.0;
+		}
+		var scale9End = unscaledSize - scale9Center - scale9Start;
+		var size = unscaledSize * scale;
+		var center = size - scale9Start - scale9End;
+		if (pos <= scale9Start)
+		{
+			// start region
+			if (center < 0.0)
+			{
+				return pos * (scale9Start + scale9End + center) / (scale9Start + scale9End);
+			}
+			return pos;
+		}
+		if (pos >= (scale9Start + scale9Center))
+		{
+			// end region
+			if (center < 0.0)
+			{
+				return (scale9Start + (pos - scale9Start - scale9Center)) * (scale9Start + scale9End + center) / (scale9Start + scale9End);
+			}
+			return scale9Start + center + (pos - scale9Start - scale9Center);
+		}
+		// center region
+		if (center < 0.0)
+		{
+			return scale9Start * (scale9Start + scale9End + center) / (scale9Start + scale9End);
+		}
+		return scale9Start + center * (pos - scale9Start) / scale9Center;
 	}
 }
 
