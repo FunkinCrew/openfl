@@ -101,6 +101,20 @@ class Assets
 			}
 		}
 
+		final etcTexture:String = haxe.io.Path.withoutExtension(id) + ".ktx";
+		if (Assets.exists(etcTexture, AssetType.BINARY))
+		{
+			var texture = openfl.Lib.current.stage.context3D.createETC2Texture(Assets.getBytes(etcTexture));
+			var bitmapData = BitmapData.fromTexture(texture);
+
+			if (useCache && cache.enabled)
+			{
+				cache.setBitmapData(id, bitmapData);
+			}
+
+			return bitmapData;
+		}
+
 		var image = LimeAssets.getImage(id, false);
 
 		if (image != null)

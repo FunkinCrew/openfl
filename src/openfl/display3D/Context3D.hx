@@ -10,6 +10,7 @@ import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.Texture;
+import openfl.display3D.textures.ETC2Texture;
 import openfl.display3D.textures.VideoTexture;
 import openfl.display.BitmapData;
 import openfl.display.Stage;
@@ -133,6 +134,7 @@ import lime.math.Vector2;
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.textures.Texture)
+@:access(openfl.display3D.textures.ETC2Texture)
 @:access(openfl.display3D.textures.VideoTexture)
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
@@ -294,7 +296,7 @@ import lime.math.Vector2;
 		#if (js && html5 && dom)
 		gl = GL.context;
 		#else
-		gl = __context.webgl;
+		gl = __context.webgl2;
 		#end
 
 		if (__contextState == null) __contextState = new Context3DState();
@@ -620,7 +622,26 @@ import lime.math.Vector2;
 				var scaledHeight = wantsBestResolution ? height : Std.int(height * __stage.window.scale);
 				#end
 				var vertexData = new Vector<Float>([
-					scaledWidth, scaledHeight, 0, 1, 1, 0, scaledHeight, 0, 0, 1, scaledWidth, 0, 0, 1, 0, 0, 0, 0, 0, 0.0
+					scaledWidth,
+					scaledHeight,
+					0,
+					1,
+					1,
+					0,
+					scaledHeight,
+					0,
+					0,
+					1,
+					scaledWidth,
+					0,
+					0,
+					1,
+					0,
+					0,
+					0,
+					0,
+					0,
+					0.0
 				]);
 
 				__stage3D.__vertexBuffer.uploadFromVector(vertexData, 0, 20);
@@ -910,6 +931,11 @@ import lime.math.Vector2;
 	public function createTexture(width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture
 	{
 		return new Texture(this, width, height, format, optimizeForRenderToTexture, streamingLevels);
+	}
+
+	public function createETC2Texture(data:ByteArray):ETC2Texture
+	{
+		return new ETC2Texture(this, data);
 	}
 
 	/**
