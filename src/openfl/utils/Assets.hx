@@ -114,11 +114,12 @@ class Assets
 
 		@param	id		The ID or asset path for the bitmap
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+		@param  allowASTC		(Optional) Wether to allow ASTC compressed textures to be used to get this bitmap (Default: true)
 		@return		A new BitmapData object
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function getBitmapData(id:String, useCache:Bool = true):BitmapData
+	public static function getBitmapData(id:String, useCache:Bool = true, allowASTC:Bool = true):BitmapData
 	{
 		#if (lime && tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
@@ -131,18 +132,26 @@ class Assets
 			}
 		}
 
-		final etcTexture:String = haxe.io.Path.withoutExtension(id) + ".ktx";
-		if (Assets.exists(etcTexture, AssetType.BINARY))
+		final astcTexture:String = haxe.io.Path.withoutExtension(id) + ".astc";
+		if (Assets.exists(astcTexture, AssetType.BINARY) && allowASTC)
 		{
-			var texture = openfl.Lib.current.stage.context3D.createETC2Texture(Assets.getBytes(etcTexture));
-			var bitmapData = BitmapData.fromTexture(texture);
+			var texture = openfl.Lib.current.stage.context3D.createASTCTexture(Assets.getBytes(astcTexture));
 
-			if (useCache && cache.enabled)
+			if (texture.supported)
 			{
-				cache.setBitmapData(id, bitmapData);
-			}
+				var bitmapData = BitmapData.fromTexture(texture);
 
-			return bitmapData;
+				if (useCache && cache.enabled)
+				{
+					cache.setBitmapData(id, bitmapData);
+				}
+
+				return bitmapData;
+			}
+			else
+			{
+				texture.dispose();
+			}
 		}
 
 		var image = LimeAssets.getImage(id, false);
