@@ -56,9 +56,9 @@ import openfl.Lib;
 			__getImageDimensions(data);
 
 			var formatName = 'COMPRESSED_RGBA_ASTC_${blockDimX}x${blockDimY}_KHR';
-			if (!Reflect.fields(astcExtension).contains('formatName'))
+			if (!Reflect.fields(astcExtension).contains(formatName))
 			{
-				trace('[ERROR] format: $formatname is invalid!');
+				trace('[ERROR] format: $formatName is invalid!');
 			}
 
 			var format = Reflect.getProperty(astcExtension, formatName);
