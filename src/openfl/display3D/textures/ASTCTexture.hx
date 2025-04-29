@@ -29,6 +29,9 @@ import openfl.Lib;
 	public var supported:Bool = true;
 	public var imageSize(default, null):Int = 0;
 	public var depth(default, null):Int = 0;
+	public var blockDimX:Int = -1;
+	public var blockDimY:Int = -1;
+	public var blockDimZ:Int = -1;
 
 	@:noCompletion private function new(context:Context3D, data:ByteArray)
 	{
@@ -49,14 +52,20 @@ import openfl.Lib;
 
 		if (supported)
 		{
-			var format = astcExtension.COMPRESSED_RGBA_ASTC_4x4_KHR;
+			__getImageSize(data);
+			__getImageDimensions(data);
+
+			var formatName = 'COMPRESSED_RGBA_ASTC_${blockDimX}x${blockDimY}_KHR';
+			if (!Reflect.fields(astcExtension).contains('formatName'))
+			{
+				trace('[ERROR] format: $formatname is invalid!');
+			}
+
+			var format = Reflect.getProperty(astcExtension, formatName);
 			__format = format;
 			__internalFormat = format;
 			__optimizeForRenderToTexture = false;
 			__streamingLevels = 0;
-
-			__getImageSize(data);
-			__getImageDimensions(data);
 
 			__uploadASTCTextureFromByteArray(data);
 		}
@@ -92,9 +101,9 @@ import openfl.Lib;
 	{
 		bytes.position = 4;
 
-		var blockDimX = bytes.readUnsignedByte();
-		var blockDimY = bytes.readUnsignedByte();
-		var blockDimZ = bytes.readUnsignedByte();
+		blockDimX = bytes.readUnsignedByte();
+		blockDimY = bytes.readUnsignedByte();
+		blockDimZ = bytes.readUnsignedByte();
 
 		bytes.position = 7;
 
