@@ -10,6 +10,7 @@ import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.Texture;
+import openfl.display3D.textures.ASTCTexture;
 import openfl.display3D.textures.VideoTexture;
 import openfl.display.BitmapData;
 import openfl.display.Stage;
@@ -133,6 +134,7 @@ import lime.math.Vector2;
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.textures.Texture)
+@:access(openfl.display3D.textures.ASTCTexture)
 @:access(openfl.display3D.textures.VideoTexture)
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
@@ -910,6 +912,11 @@ import lime.math.Vector2;
 	public function createTexture(width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture
 	{
 		return new Texture(this, width, height, format, optimizeForRenderToTexture, streamingLevels);
+	}
+
+	public function createASTCTexture(data:ByteArray):ASTCTexture
+	{
+		return new ASTCTexture(this, data);
 	}
 
 	/**

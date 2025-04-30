@@ -1,7 +1,7 @@
 package openfl.net;
 
 #if !flash
-#if desktop
+#if cpp
 import haxe.io.Path;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
