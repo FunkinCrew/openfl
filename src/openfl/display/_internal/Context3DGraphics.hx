@@ -449,6 +449,7 @@ class Context3DGraphics
 						var c = data.readDrawTriangles();
 						if (c.uvtData == null)
 						{
+							data.destroy();
 							return false;
 						}
 					}
