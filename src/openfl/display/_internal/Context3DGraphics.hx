@@ -578,6 +578,15 @@ class Context3DGraphics
 							shaderBuffer = null;
 							fill = null;
 
+						case BEGIN_GRADIENT_FILL:
+							// not implemented yet, but we don't want to keep
+							// the previous fill either.
+							data.skip(type);
+
+							fill = 0x00000000;
+							shaderBuffer = null;
+							bitmap = null;
+
 						case BEGIN_FILL:
 							var c = data.readBeginFill();
 							var color = Std.int(c.color);
