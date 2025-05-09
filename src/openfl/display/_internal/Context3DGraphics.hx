@@ -453,6 +453,10 @@ class Context3DGraphics
 							return false;
 						}
 					}
+					else if (hasColorFill)
+					{
+						data.skip(type);
+					}
 					else
 					{
 						data.destroy();
