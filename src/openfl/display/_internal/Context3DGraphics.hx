@@ -442,7 +442,11 @@ class Context3DGraphics
 				case DRAW_TRIANGLES:
 					if (hasBitmapFill || hasShaderFill)
 					{
-						data.skip(type);
+						var c = data.readDrawTriangles();
+						if (c.uvtData == null)
+						{
+							return false;
+						}
 					}
 					else
 					{
