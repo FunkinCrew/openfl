@@ -62,6 +62,10 @@ class Context3DGraphics
 					var c = data.readBeginBitmapFill();
 					bitmap = c.bitmap;
 
+				case BEGIN_GRADIENT_FILL:
+					bitmap = null;
+					data.skip(type);
+
 				case BEGIN_FILL:
 					bitmap = null;
 					data.skip(type);
