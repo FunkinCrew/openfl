@@ -684,14 +684,6 @@ class Context3DGraphics
 								var width = c.width;
 								var height = c.height;
 
-								#if lime
-								var color:ARGB = (fill : ARGB);
-								tempColorTransform.redOffset = color.r;
-								tempColorTransform.greenOffset = color.g;
-								tempColorTransform.blueOffset = color.b;
-								#end
-								tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
-
 								matrix.identity();
 								matrix.scale(width, height);
 								matrix.tx = x;
@@ -703,9 +695,17 @@ class Context3DGraphics
 								renderer.applyMatrix(renderer.__getMatrix(matrix, AUTO));
 								renderer.applyBitmapData(blankBitmapData, true, repeat);
 								#if lime
+								var color:ARGB = (fill : ARGB);
+								tempColorTransform.redOffset = color.r;
+								tempColorTransform.greenOffset = color.g;
+								tempColorTransform.blueOffset = color.b;
+								tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
 								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
-								#end
 								renderer.applyColorTransform(tempColorTransform);
+								#else
+								renderer.applyAlpha(graphics.__owner.__worldAlpha);
+								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+								#end
 								renderer.updateShader();
 
 								var vertexBuffer = blankBitmapData.getVertexBuffer(context);
