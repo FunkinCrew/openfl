@@ -757,7 +757,7 @@ class Context3DGraphics
 								renderer.applyColorTransform(null);
 								renderer.__updateShaderBuffer(shaderBufferOffset);
 							}
-							else
+							else if (bitmap != null)
 							{
 								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 								renderer.setShader(shader);
@@ -765,6 +765,26 @@ class Context3DGraphics
 								renderer.applyBitmapData(bitmap, smooth, repeat);
 								renderer.applyAlpha(graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+								renderer.updateShader();
+							}
+							else
+							{
+								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+								renderer.setShader(shader);
+								renderer.applyMatrix(uMatrix);
+								renderer.applyBitmapData(blankBitmapData, true, repeat);
+								#if lime
+								var color:ARGB = (fill : ARGB);
+								tempColorTransform.redOffset = color.r;
+								tempColorTransform.greenOffset = color.g;
+								tempColorTransform.blueOffset = color.b;
+								tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
+								renderer.applyColorTransform(tempColorTransform);
+								#else
+								renderer.applyAlpha(graphics.__owner.__worldAlpha);
+								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+								#end
 								renderer.updateShader();
 							}
 
