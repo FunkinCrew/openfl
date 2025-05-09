@@ -739,119 +739,122 @@ class Context3DGraphics
 							var uvtData = c.uvtData;
 							var culling = c.culling;
 
-							var hasIndices = (indices != null);
-							var numVertices = Math.floor(vertices.length / 2);
-							var length = hasIndices ? indices.length : numVertices;
-
-							var hasUVData = (uvtData != null);
-							var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
-							var vertLength = hasUVTData ? 4 : 2;
-							var uvStride = hasUVTData ? 3 : 2;
-
-							var dataPerVertex = vertLength + 2;
-							var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
-							var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
-
-							var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
-							var shader:Shader;
-
-							if (shaderBuffer != null && !maskRender)
+							if ((uvtData != null && (shaderBuffer != null || bitmap != null)) || (uvtData == null && fill != null))
 							{
-								shader = renderer.__initShaderBuffer(shaderBuffer);
+								var hasIndices = (indices != null);
+								var numVertices = Math.floor(vertices.length / 2);
+								var length = hasIndices ? indices.length : numVertices;
 
-								renderer.__setShaderBuffer(shaderBuffer);
-								renderer.applyMatrix(uMatrix);
-								renderer.applyBitmapData(bitmap, false, repeat);
-								renderer.applyAlpha(1);
-								renderer.applyColorTransform(null);
-								renderer.__updateShaderBuffer(shaderBufferOffset);
-							}
-							else if (bitmap != null)
-							{
-								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
-								renderer.setShader(shader);
-								renderer.applyMatrix(uMatrix);
-								renderer.applyBitmapData(bitmap, smooth, repeat);
-								renderer.applyAlpha(graphics.__owner.__worldAlpha);
-								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-								renderer.updateShader();
-							}
-							else
-							{
-								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
-								renderer.setShader(shader);
-								renderer.applyMatrix(uMatrix);
-								renderer.applyBitmapData(blankBitmapData, true, repeat);
-								#if lime
-								var color:ARGB = (fill : ARGB);
-								tempColorTransform.redOffset = color.r;
-								tempColorTransform.greenOffset = color.g;
-								tempColorTransform.blueOffset = color.b;
-								tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
-								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
-								renderer.applyColorTransform(tempColorTransform);
-								#else
-								renderer.applyAlpha(graphics.__owner.__worldAlpha);
-								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+								var hasUVData = (uvtData != null);
+								var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
+								var vertLength = hasUVTData ? 4 : 2;
+								var uvStride = hasUVTData ? 3 : 2;
+
+								var dataPerVertex = vertLength + 2;
+								var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
+								var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
+
+								var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
+								var shader:Shader;
+
+								if (shaderBuffer != null && !maskRender)
+								{
+									shader = renderer.__initShaderBuffer(shaderBuffer);
+
+									renderer.__setShaderBuffer(shaderBuffer);
+									renderer.applyMatrix(uMatrix);
+									renderer.applyBitmapData(bitmap, false, repeat);
+									renderer.applyAlpha(1);
+									renderer.applyColorTransform(null);
+									renderer.__updateShaderBuffer(shaderBufferOffset);
+								}
+								else if (bitmap != null)
+								{
+									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+									renderer.setShader(shader);
+									renderer.applyMatrix(uMatrix);
+									renderer.applyBitmapData(bitmap, smooth, repeat);
+									renderer.applyAlpha(graphics.__owner.__worldAlpha);
+									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+									renderer.updateShader();
+								}
+								else
+								{
+									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+									renderer.setShader(shader);
+									renderer.applyMatrix(uMatrix);
+									renderer.applyBitmapData(blankBitmapData, true, repeat);
+									#if lime
+									var color:ARGB = (fill : ARGB);
+									tempColorTransform.redOffset = color.r;
+									tempColorTransform.greenOffset = color.g;
+									tempColorTransform.blueOffset = color.b;
+									tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+									renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
+									renderer.applyColorTransform(tempColorTransform);
+									#else
+									renderer.applyAlpha(graphics.__owner.__worldAlpha);
+									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+									#end
+									renderer.updateShader();
+								}
+
+								if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, bufferPosition,
+									hasUVTData ? FLOAT_4 : FLOAT_2);
+								if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer,
+									bufferPosition + vertLength, FLOAT_2);
+
+								switch (culling)
+								{
+									case POSITIVE:
+										context.setCulling(FRONT);
+
+									case NEGATIVE:
+										context.setCulling(BACK);
+
+									case NONE:
+										context.setCulling(NONE);
+
+									default:
+								}
+
+								// if (hasIndices) {
+
+								// 	context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor (length / 3));
+								// 	triangleIndexBufferPosition += length;
+
+								// } else {
+
+								context.__drawTriangles(0, length);
+
+								// }
+
+								shaderBufferOffset += length;
+								if (hasUVTData)
+								{
+									vertexBufferPositionUVT += (dataPerVertex * length);
+								}
+								else
+								{
+									vertexBufferPosition += (dataPerVertex * length);
+								}
+
+								// This code is here because other draw calls are not aware (currently) of the culling type and just generally expect it to use
+								// back face culling by default
+								switch (culling)
+								{
+									case POSITIVE, NONE:
+										context.setCulling(BACK);
+
+									default:
+								}
+
+								#if gl_stats
+								Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 								#end
-								renderer.updateShader();
+
+								renderer.__clearShader();
 							}
-
-							if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, bufferPosition,
-								hasUVTData ? FLOAT_4 : FLOAT_2);
-							if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer,
-								bufferPosition + vertLength, FLOAT_2);
-
-							switch (culling)
-							{
-								case POSITIVE:
-									context.setCulling(FRONT);
-
-								case NEGATIVE:
-									context.setCulling(BACK);
-
-								case NONE:
-									context.setCulling(NONE);
-
-								default:
-							}
-
-							// if (hasIndices) {
-
-							// 	context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor (length / 3));
-							// 	triangleIndexBufferPosition += length;
-
-							// } else {
-
-							context.__drawTriangles(0, length);
-
-							// }
-
-							shaderBufferOffset += length;
-							if (hasUVTData)
-							{
-								vertexBufferPositionUVT += (dataPerVertex * length);
-							}
-							else
-							{
-								vertexBufferPosition += (dataPerVertex * length);
-							}
-
-							// This code is here because other draw calls are not aware (currently) of the culling type and just generally expect it to use
-							// back face culling by default
-							switch (culling)
-							{
-								case POSITIVE, NONE:
-									context.setCulling(BACK);
-
-								default:
-							}
-
-							#if gl_stats
-							Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-							#end
-
-							renderer.__clearShader();
 
 						case END_FILL:
 							bitmap = null;
