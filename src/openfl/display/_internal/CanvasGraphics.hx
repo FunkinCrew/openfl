@@ -1074,21 +1074,8 @@ class CanvasGraphics
 						break;
 					}
 
-					if (!colorFill)
+					if (!colorFill && uvt != null)
 					{
-						// TODO move this to Graphics?
-
-						if (uvt == null)
-						{
-							uvt = new Vector<Float>();
-
-							for (i in 0...(Std.int(v.length / 2)))
-							{
-								uvt.push(v[i * 2] - offsetX / bitmapFill.width);
-								uvt.push(v[i * 2 + 1] - offsetY / bitmapFill.height);
-							}
-						}
-
 						var skipT = uvt.length != v.length;
 						var normalizedUVT = normalizeUVT(uvt, skipT);
 						var maxUVT = normalizedUVT.max;
@@ -1154,7 +1141,7 @@ class CanvasGraphics
 							default:
 						}
 
-						if (colorFill)
+						if (colorFill || uvt == null)
 						{
 							context.beginPath();
 							context.moveTo(x1, y1);
