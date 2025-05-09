@@ -37,6 +37,9 @@ class Context3DGraphics
 	private static var blankBitmapData = new BitmapData(1, 1, false, 0);
 	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
+	private static var tempVerticesVector:Vector<Float> = new Vector<Float>();
+	private static var tempIndicesVector:Vector<Int> = new Vector<Int>();
+	private static var tempUvtVector:Vector<Float> = new Vector<Float>();
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
@@ -44,6 +47,71 @@ class Context3DGraphics
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
 		var vertexBufferPositionUVT = 0;
+		var bounds = graphics.__bounds;
+
+		inline function buildDrawTrianglesBuffer(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
+		{
+			var hasIndices = (indices != null);
+			var numVertices = Math.floor(vertices.length / 2);
+			var length = hasIndices ? indices.length : numVertices;
+
+			var hasUVData = (uvtData != null);
+			var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
+			var vertLength = hasUVTData ? 4 : 2;
+			var uvStride = hasUVTData ? 3 : 2;
+
+			var dataPerVertex = vertLength + 2;
+			var vertexOffset = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
+
+			// TODO: Use index buffer for indexed render
+
+			// if (hasIndices) resizeIndexBuffer (graphics, false, triangleIndexBufferPosition + length);
+			resizeVertexBuffer(graphics, hasUVTData, vertexOffset + (length * dataPerVertex));
+
+			// var indexBufferData = graphics.__triangleIndexBufferData;
+			var vertexBufferData = hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData;
+			var offset:Int;
+			var vertOffset:Int;
+			var uvOffset:Int;
+			var t:Float;
+
+			for (i in 0...length)
+			{
+				offset = vertexOffset + (i * dataPerVertex);
+				vertOffset = hasIndices ? indices[i] * 2 : i * 2;
+				uvOffset = hasIndices ? indices[i] * uvStride : i * uvStride;
+
+				// if (hasIndices) indexBufferData[triangleIndexBufferPosition + i] = indices[i];
+
+				if (hasUVTData)
+				{
+					t = uvtData[uvOffset + 2];
+
+					vertexBufferData[offset + 0] = vertices[vertOffset] / t;
+					vertexBufferData[offset + 1] = vertices[vertOffset + 1] / t;
+					vertexBufferData[offset + 2] = 0;
+					vertexBufferData[offset + 3] = 1 / t;
+				}
+				else
+				{
+					vertexBufferData[offset + 0] = vertices[vertOffset];
+					vertexBufferData[offset + 1] = vertices[vertOffset + 1];
+				}
+
+				vertexBufferData[offset + vertLength] = hasUVData ? uvtData[uvOffset] : 0;
+				vertexBufferData[offset + vertLength + 1] = hasUVData ? uvtData[uvOffset + 1] : 0;
+			}
+
+			// if (hasIndices) triangleIndexBufferPosition += length;
+			if (hasUVTData)
+			{
+				vertexBufferPositionUVT += length * dataPerVertex;
+			}
+			else
+			{
+				vertexBufferPosition += length * dataPerVertex;
+			}
+		}
 
 		var data = new DrawCommandReader(graphics.__commands);
 
@@ -260,66 +328,41 @@ class Context3DGraphics
 					var indices = c.indices;
 					var uvtData = c.uvtData;
 					var culling = c.culling;
+					buildDrawTrianglesBuffer(vertices, indices, uvtData, culling);
 
-					var hasIndices = (indices != null);
-					var numVertices = Math.floor(vertices.length / 2);
-					var length = hasIndices ? indices.length : numVertices;
-
-					var hasUVData = (uvtData != null);
-					var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
-					var vertLength = hasUVTData ? 4 : 2;
-					var uvStride = hasUVTData ? 3 : 2;
-
-					var dataPerVertex = vertLength + 2;
-					var vertexOffset = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
-
-					// TODO: Use index buffer for indexed render
-
-					// if (hasIndices) resizeIndexBuffer (graphics, false, triangleIndexBufferPosition + length);
-					resizeVertexBuffer(graphics, hasUVTData, vertexOffset + (length * dataPerVertex));
-
-					// var indexBufferData = graphics.__triangleIndexBufferData;
-					var vertexBufferData = hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData;
-					var offset:Int;
-					var vertOffset:Int;
-					var uvOffset:Int;
-					var t:Float;
-
-					for (i in 0...length)
+				case DRAW_RECT:
+					if (bitmap != null)
 					{
-						offset = vertexOffset + (i * dataPerVertex);
-						vertOffset = hasIndices ? indices[i] * 2 : i * 2;
-						uvOffset = hasIndices ? indices[i] * uvStride : i * uvStride;
+						var c = data.readDrawRect();
 
-						// if (hasIndices) indexBufferData[triangleIndexBufferPosition + i] = indices[i];
+						tempVerticesVector.length = 8;
+						tempVerticesVector[0] = c.x;
+						tempVerticesVector[1] = c.y;
+						tempVerticesVector[2] = c.x + c.width;
+						tempVerticesVector[3] = c.y;
+						tempVerticesVector[4] = c.x;
+						tempVerticesVector[5] = c.y + c.height;
+						tempVerticesVector[6] = c.x + c.width;
+						tempVerticesVector[7] = c.y + c.height;
+						tempIndicesVector.length = 6;
+						tempIndicesVector[0] = 0;
+						tempIndicesVector[1] = 1;
+						tempIndicesVector[2] = 2;
+						tempIndicesVector[3] = 1;
+						tempIndicesVector[4] = 2;
+						tempIndicesVector[5] = 3;
 
-						if (hasUVTData)
-						{
-							t = uvtData[uvOffset + 2];
+						tempUvtVector.length = 8;
+						tempUvtVector[0] = 0.0;
+						tempUvtVector[1] = 0.0;
+						tempUvtVector[2] = bounds.width / bitmap.width;
+						tempUvtVector[3] = 0.0;
+						tempUvtVector[4] = 0.0;
+						tempUvtVector[5] = bounds.height / bitmap.height;
+						tempUvtVector[6] = bounds.width / bitmap.width;
+						tempUvtVector[7] = bounds.height / bitmap.height;
 
-							vertexBufferData[offset + 0] = vertices[vertOffset] / t;
-							vertexBufferData[offset + 1] = vertices[vertOffset + 1] / t;
-							vertexBufferData[offset + 2] = 0;
-							vertexBufferData[offset + 3] = 1 / t;
-						}
-						else
-						{
-							vertexBufferData[offset + 0] = vertices[vertOffset];
-							vertexBufferData[offset + 1] = vertices[vertOffset + 1];
-						}
-
-						vertexBufferData[offset + vertLength] = hasUVData ? uvtData[uvOffset] : 0;
-						vertexBufferData[offset + vertLength + 1] = hasUVData ? uvtData[uvOffset + 1] : 0;
-					}
-
-					// if (hasIndices) triangleIndexBufferPosition += length;
-					if (hasUVTData)
-					{
-						vertexBufferPositionUVT += length * dataPerVertex;
-					}
-					else
-					{
-						vertexBufferPosition += length * dataPerVertex;
+						buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, tempUvtVector, NONE);
 					}
 
 				case END_FILL:
@@ -433,7 +476,7 @@ class Context3DGraphics
 					}
 
 				case DRAW_RECT:
-					if (hasColorFill)
+					if (hasColorFill || hasBitmapFill || hasShaderFill)
 					{
 						data.skip(type);
 					}
@@ -575,6 +618,126 @@ class Context3DGraphics
 				var vertexBufferPosition = 0;
 				var vertexBufferPositionUVT = 0;
 
+				inline function renderDrawTriangles(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
+				{
+					if ((uvtData != null && bitmap != null) || (uvtData == null && fill != null))
+					{
+						var hasIndices = (indices != null);
+						var numVertices = Math.floor(vertices.length / 2);
+						var length = hasIndices ? indices.length : numVertices;
+
+						var hasUVData = (uvtData != null);
+						var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
+						var vertLength = hasUVTData ? 4 : 2;
+						var uvStride = hasUVTData ? 3 : 2;
+
+						var dataPerVertex = vertLength + 2;
+						var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
+						var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
+
+						var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
+						var shader:Shader;
+
+						if (shaderBuffer != null && !maskRender)
+						{
+							shader = renderer.__initShaderBuffer(shaderBuffer);
+
+							renderer.__setShaderBuffer(shaderBuffer);
+							renderer.applyMatrix(uMatrix);
+							renderer.applyBitmapData(bitmap, false, repeat);
+							renderer.applyAlpha(1);
+							renderer.applyColorTransform(null);
+							renderer.__updateShaderBuffer(shaderBufferOffset);
+						}
+						else if (bitmap != null)
+						{
+							shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+							renderer.setShader(shader);
+							renderer.applyMatrix(uMatrix);
+							renderer.applyBitmapData(bitmap, smooth, repeat);
+							renderer.applyAlpha(graphics.__owner.__worldAlpha);
+							renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+							renderer.updateShader();
+						}
+						else
+						{
+							shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+							renderer.setShader(shader);
+							renderer.applyMatrix(uMatrix);
+							renderer.applyBitmapData(blankBitmapData, true, repeat);
+							#if lime
+							var color:ARGB = (fill : ARGB);
+							tempColorTransform.redOffset = color.r;
+							tempColorTransform.greenOffset = color.g;
+							tempColorTransform.blueOffset = color.b;
+							tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+							renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
+							renderer.applyColorTransform(tempColorTransform);
+							#else
+							renderer.applyAlpha(graphics.__owner.__worldAlpha);
+							renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+							#end
+							renderer.updateShader();
+						}
+
+						if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, bufferPosition,
+							hasUVTData ? FLOAT_4 : FLOAT_2);
+						if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, bufferPosition + vertLength,
+							FLOAT_2);
+
+						switch (culling)
+						{
+							case POSITIVE:
+								context.setCulling(FRONT);
+
+							case NEGATIVE:
+								context.setCulling(BACK);
+
+							case NONE:
+								context.setCulling(NONE);
+
+							default:
+						}
+
+						// if (hasIndices) {
+
+						// 	context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor (length / 3));
+						// 	triangleIndexBufferPosition += length;
+
+						// } else {
+
+						context.__drawTriangles(0, length);
+
+						// }
+
+						shaderBufferOffset += length;
+						if (hasUVTData)
+						{
+							vertexBufferPositionUVT += (dataPerVertex * length);
+						}
+						else
+						{
+							vertexBufferPosition += (dataPerVertex * length);
+						}
+
+						// This code is here because other draw calls are not aware (currently) of the culling type and just generally expect it to use
+						// back face culling by default
+						switch (culling)
+						{
+							case POSITIVE, NONE:
+								context.setCulling(BACK);
+
+							default:
+						}
+
+						#if gl_stats
+						Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+						#end
+
+						renderer.__clearShader();
+					}
+				}
+
 				for (type in graphics.__commands.types)
 				{
 					switch (type)
@@ -694,9 +857,41 @@ class Context3DGraphics
 							}
 
 						case DRAW_RECT:
-							if (fill != null)
+							var c = data.readDrawRect();
+
+							if (bitmap != null)
 							{
-								var c = data.readDrawRect();
+								tempVerticesVector.length = 8;
+								tempVerticesVector[0] = c.x;
+								tempVerticesVector[1] = c.y;
+								tempVerticesVector[2] = c.x + c.width;
+								tempVerticesVector[3] = c.y;
+								tempVerticesVector[4] = c.x;
+								tempVerticesVector[5] = c.y + c.height;
+								tempVerticesVector[6] = c.x + c.width;
+								tempVerticesVector[7] = c.y + c.height;
+								tempIndicesVector.length = 6;
+								tempIndicesVector[0] = 0;
+								tempIndicesVector[1] = 1;
+								tempIndicesVector[2] = 2;
+								tempIndicesVector[3] = 1;
+								tempIndicesVector[4] = 2;
+								tempIndicesVector[5] = 3;
+
+								tempUvtVector.length = 8;
+								tempUvtVector[0] = 0.0;
+								tempUvtVector[1] = 0.0;
+								tempUvtVector[2] = bounds.width / bitmap.width;
+								tempUvtVector[3] = 0.0;
+								tempUvtVector[4] = 0.0;
+								tempUvtVector[5] = bounds.height / bitmap.height;
+								tempUvtVector[6] = bounds.width / bitmap.width;
+								tempUvtVector[7] = bounds.height / bitmap.height;
+
+								renderDrawTriangles(tempVerticesVector, tempIndicesVector, tempUvtVector, NONE);
+							}
+							else if (fill != null)
+							{
 								var x = c.x;
 								var y = c.y;
 								var width = c.width;
@@ -748,122 +943,7 @@ class Context3DGraphics
 							var uvtData = c.uvtData;
 							var culling = c.culling;
 
-							if ((uvtData != null && (shaderBuffer != null || bitmap != null)) || (uvtData == null && fill != null))
-							{
-								var hasIndices = (indices != null);
-								var numVertices = Math.floor(vertices.length / 2);
-								var length = hasIndices ? indices.length : numVertices;
-
-								var hasUVData = (uvtData != null);
-								var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
-								var vertLength = hasUVTData ? 4 : 2;
-								var uvStride = hasUVTData ? 3 : 2;
-
-								var dataPerVertex = vertLength + 2;
-								var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
-								var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
-
-								var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
-								var shader:Shader;
-
-								if (shaderBuffer != null && !maskRender)
-								{
-									shader = renderer.__initShaderBuffer(shaderBuffer);
-
-									renderer.__setShaderBuffer(shaderBuffer);
-									renderer.applyMatrix(uMatrix);
-									renderer.applyBitmapData(bitmap, false, repeat);
-									renderer.applyAlpha(1);
-									renderer.applyColorTransform(null);
-									renderer.__updateShaderBuffer(shaderBufferOffset);
-								}
-								else if (bitmap != null)
-								{
-									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
-									renderer.setShader(shader);
-									renderer.applyMatrix(uMatrix);
-									renderer.applyBitmapData(bitmap, smooth, repeat);
-									renderer.applyAlpha(graphics.__owner.__worldAlpha);
-									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-									renderer.updateShader();
-								}
-								else
-								{
-									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
-									renderer.setShader(shader);
-									renderer.applyMatrix(uMatrix);
-									renderer.applyBitmapData(blankBitmapData, true, repeat);
-									#if lime
-									var color:ARGB = (fill : ARGB);
-									tempColorTransform.redOffset = color.r;
-									tempColorTransform.greenOffset = color.g;
-									tempColorTransform.blueOffset = color.b;
-									tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
-									renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
-									renderer.applyColorTransform(tempColorTransform);
-									#else
-									renderer.applyAlpha(graphics.__owner.__worldAlpha);
-									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-									#end
-									renderer.updateShader();
-								}
-
-								if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, bufferPosition,
-									hasUVTData ? FLOAT_4 : FLOAT_2);
-								if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer,
-									bufferPosition + vertLength, FLOAT_2);
-
-								switch (culling)
-								{
-									case POSITIVE:
-										context.setCulling(FRONT);
-
-									case NEGATIVE:
-										context.setCulling(BACK);
-
-									case NONE:
-										context.setCulling(NONE);
-
-									default:
-								}
-
-								// if (hasIndices) {
-
-								// 	context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor (length / 3));
-								// 	triangleIndexBufferPosition += length;
-
-								// } else {
-
-								context.__drawTriangles(0, length);
-
-								// }
-
-								shaderBufferOffset += length;
-								if (hasUVTData)
-								{
-									vertexBufferPositionUVT += (dataPerVertex * length);
-								}
-								else
-								{
-									vertexBufferPosition += (dataPerVertex * length);
-								}
-
-								// This code is here because other draw calls are not aware (currently) of the culling type and just generally expect it to use
-								// back face culling by default
-								switch (culling)
-								{
-									case POSITIVE, NONE:
-										context.setCulling(BACK);
-
-									default:
-								}
-
-								#if gl_stats
-								Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-								#end
-
-								renderer.__clearShader();
-							}
+							renderDrawTriangles(vertices, indices, uvtData, culling);
 
 						case END_FILL:
 							bitmap = null;
