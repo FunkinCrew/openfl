@@ -341,6 +341,25 @@ class Context3DGraphics
 					var culling = c.culling;
 					buildDrawTrianglesBuffer(vertices, indices, uvtData, culling);
 
+				case DRAW_CIRCLE:
+					var c = data.readDrawCircle();
+					var x = c.x;
+					var y = c.y;
+					var radius = c.radius;
+
+					PolygonFunctions.buildEllipseVerticesAndIndices(x - radius, y - radius, radius, radius, tempVerticesVector, tempIndicesVector);
+					buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
+
+				case DRAW_ELLIPSE:
+					var c = data.readDrawEllipse();
+					var x = c.x;
+					var y = c.y;
+					var radiusX = c.width / 2.0;
+					var radiusY = c.height / 2.0;
+
+					PolygonFunctions.buildEllipseVerticesAndIndices(x, y, radiusX, radiusY, tempVerticesVector, tempIndicesVector);
+					buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
+
 				case DRAW_RECT:
 					if (bitmap != null)
 					{
@@ -865,6 +884,24 @@ class Context3DGraphics
 
 								renderer.__clearShader();
 							}
+						case DRAW_CIRCLE:
+							var c = data.readDrawCircle();
+							var x = c.x;
+							var y = c.y;
+							var radius = c.radius;
+
+							PolygonFunctions.buildEllipseVerticesAndIndices(x - radius, y - radius, radius, radius, tempVerticesVector, tempIndicesVector);
+							renderDrawTriangles(tempVerticesVector, tempIndicesVector, null, NONE);
+
+						case DRAW_ELLIPSE:
+							var c = data.readDrawEllipse();
+							var x = c.x;
+							var y = c.y;
+							var radiusX = c.width / 2.0;
+							var radiusY = c.height / 2.0;
+
+							PolygonFunctions.buildEllipseVerticesAndIndices(x, y, radiusX, radiusY, tempVerticesVector, tempIndicesVector);
+							renderDrawTriangles(tempVerticesVector, tempIndicesVector, null, NONE);
 
 						case DRAW_RECT:
 							var c = data.readDrawRect();
@@ -1094,6 +1131,66 @@ class Context3DGraphics
 			result[i] = trianglesWidth * (vertices[i] / trianglesWidth) / bitmap.width;
 			result[i + 1] = trianglesHeight * (vertices[i + 1] / trianglesHeight) / bitmap.height;
 			i += 2;
+		}
+	}
+}
+
+// =============================================================================
+//
+//  PolygonFunctions derived from Starling Framework
+//  Copyright Gamua GmbH. All Rights Reserved.
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are met:
+//
+//  1. Redistributions of source code must retain the above copyright notice, this
+//     list of conditions and the following disclaimer.
+//  2. Redistributions in binary form must reproduce the above copyright notice,
+//     this list of conditions and the following disclaimer in the documentation
+//     and/or other materials provided with the distribution.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+//  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+//  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+//  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// =============================================================================
+
+@:dox(hide) private class PolygonFunctions
+{
+	public static function buildEllipseVerticesAndIndices(x:Float, y:Float, radiusX:Float, radiusY:Float, vertices:Vector<Float>, indices:Vector<Int>):Void
+	{
+		var numSides = Std.int(Math.PI * (radiusX + radiusY) / 4.0);
+		if (numSides < 6)
+		{
+			numSides = 6;
+		}
+
+		var angleDelta:Float = 2.0 * Math.PI / numSides;
+		var angle:Float = 0.0;
+
+		vertices.length = numSides * 2;
+		for (i in 0...numSides)
+		{
+			vertices[i * 2] = Math.cos(angle) * radiusX + x + radiusX;
+			vertices[i * 2 + 1] = Math.sin(angle) * radiusY + y + radiusY;
+			angle += angleDelta;
+		}
+
+		indices.length = (numSides - 2) * 3;
+		var from:UInt = 1;
+		var to:UInt = numSides - 1;
+		for (i in from...to)
+		{
+			indices[i * 3] = 0;
+			indices[i * 3 + 1] = i;
+			indices[i * 3 + 2] = i + 1;
 		}
 	}
 }
