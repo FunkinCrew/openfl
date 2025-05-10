@@ -57,6 +57,7 @@ class Context3DGraphics
 		var tileTransform = Matrix.__pool.get();
 
 		var bitmap:BitmapData = null;
+		var bitmapMatrix:Matrix = null;
 
 		inline function buildDrawTrianglesBuffer(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
 		{
@@ -135,13 +136,16 @@ class Context3DGraphics
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
 					bitmap = c.bitmap;
+					bitmapMatrix = c.matrix;
 
 				case BEGIN_GRADIENT_FILL:
 					bitmap = null;
+					bitmapMatrix = null;
 					data.skip(type);
 
 				case BEGIN_FILL:
 					bitmap = null;
+					bitmapMatrix = null;
 					data.skip(type);
 
 				case BEGIN_SHADER_FILL:
@@ -149,6 +153,7 @@ class Context3DGraphics
 					var shaderBuffer = c.shaderBuffer;
 
 					bitmap = null;
+					bitmapMatrix = null;
 
 					if (shaderBuffer != null)
 					{
@@ -363,6 +368,7 @@ class Context3DGraphics
 
 				case END_FILL:
 					bitmap = null;
+					bitmapMatrix = null;
 
 				default:
 					data.skip(type);
@@ -443,6 +449,12 @@ class Context3DGraphics
 			switch (type)
 			{
 				case BEGIN_BITMAP_FILL:
+					var c = data.readBeginBitmapFill();
+					if (c.matrix != null)
+					{
+						data.destroy();
+						return false;
+					}
 					hasBitmapFill = true;
 					hasColorFill = false;
 					hasShaderFill = false;
@@ -592,6 +604,7 @@ class Context3DGraphics
 
 				var shaderBuffer:ShaderBuffer = null;
 				var bitmap:BitmapData = null;
+				var bitmapMatrix:Matrix = null;
 				var repeat = false;
 				var smooth = false;
 				var fill:Null<Int> = null;
@@ -738,6 +751,7 @@ class Context3DGraphics
 						case BEGIN_BITMAP_FILL:
 							var c = data.readBeginBitmapFill();
 							bitmap = c.bitmap;
+							bitmapMatrix = c.matrix;
 							repeat = c.repeat;
 							smooth = c.smooth;
 							shaderBuffer = null;
@@ -751,6 +765,7 @@ class Context3DGraphics
 							fill = 0x00000000;
 							shaderBuffer = null;
 							bitmap = null;
+							bitmapMatrix = null;
 
 						case BEGIN_FILL:
 							var c = data.readBeginFill();
@@ -760,6 +775,7 @@ class Context3DGraphics
 							fill = (color & 0xFFFFFF) | (alpha << 24);
 							shaderBuffer = null;
 							bitmap = null;
+							bitmapMatrix = null;
 
 						case BEGIN_SHADER_FILL:
 							var c = data.readBeginShaderFill();
@@ -776,6 +792,7 @@ class Context3DGraphics
 							}
 
 							fill = null;
+							bitmapMatrix = null;
 
 						case DRAW_QUADS:
 							if (bitmap != null)
@@ -930,6 +947,7 @@ class Context3DGraphics
 
 						case END_FILL:
 							bitmap = null;
+							bitmapMatrix = null;
 							fill = null;
 							shaderBuffer = null;
 							data.skip(type);
