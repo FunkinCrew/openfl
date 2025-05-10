@@ -49,8 +49,23 @@ class Context3DGraphics
 		var vertexBufferPositionUVT = 0;
 		var bounds = graphics.__bounds;
 
+		var data = new DrawCommandReader(graphics.__commands);
+
+		var context = renderer.__context3D;
+
+		var tileRect = Rectangle.__pool.get();
+		var tileTransform = Matrix.__pool.get();
+
+		var bitmap:BitmapData = null;
+
 		inline function buildDrawTrianglesBuffer(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
 		{
+			if (bitmap != null && uvtData == null)
+			{
+				uvtData = tempUvtVector;
+				populateUvtVector(vertices, bitmap, uvtData);
+			}
+
 			var hasIndices = (indices != null);
 			var numVertices = Math.floor(vertices.length / 2);
 			var length = hasIndices ? indices.length : numVertices;
@@ -112,15 +127,6 @@ class Context3DGraphics
 				vertexBufferPosition += length * dataPerVertex;
 			}
 		}
-
-		var data = new DrawCommandReader(graphics.__commands);
-
-		var context = renderer.__context3D;
-
-		var tileRect = Rectangle.__pool.get();
-		var tileTransform = Matrix.__pool.get();
-
-		var bitmap:BitmapData = null;
 
 		for (type in graphics.__commands.types)
 		{
@@ -352,17 +358,7 @@ class Context3DGraphics
 						tempIndicesVector[4] = 2;
 						tempIndicesVector[5] = 3;
 
-						tempUvtVector.length = 8;
-						tempUvtVector[0] = 0.0;
-						tempUvtVector[1] = 0.0;
-						tempUvtVector[2] = bounds.width / bitmap.width;
-						tempUvtVector[3] = 0.0;
-						tempUvtVector[4] = 0.0;
-						tempUvtVector[5] = bounds.height / bitmap.height;
-						tempUvtVector[6] = bounds.width / bitmap.width;
-						tempUvtVector[7] = bounds.height / bitmap.height;
-
-						buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, tempUvtVector, NONE);
+						buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
 					}
 
 				case END_FILL:
@@ -487,16 +483,7 @@ class Context3DGraphics
 					}
 
 				case DRAW_TRIANGLES:
-					if (hasBitmapFill || hasShaderFill)
-					{
-						var c = data.readDrawTriangles();
-						if (c.uvtData == null)
-						{
-							data.destroy();
-							return false;
-						}
-					}
-					else if (hasColorFill)
+					if (hasColorFill || hasBitmapFill || hasShaderFill)
 					{
 						data.skip(type);
 					}
@@ -620,7 +607,13 @@ class Context3DGraphics
 
 				inline function renderDrawTriangles(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
 				{
-					if ((uvtData != null && bitmap != null) || (uvtData == null && fill != null))
+					if (bitmap != null && uvtData == null)
+					{
+						uvtData = tempUvtVector;
+						populateUvtVector(vertices, bitmap, uvtData);
+					}
+
+					if (bitmap != null || (uvtData == null && fill != null))
 					{
 						var hasIndices = (indices != null);
 						var numVertices = Math.floor(vertices.length / 2);
@@ -878,17 +871,7 @@ class Context3DGraphics
 								tempIndicesVector[4] = 2;
 								tempIndicesVector[5] = 3;
 
-								tempUvtVector.length = 8;
-								tempUvtVector[0] = 0.0;
-								tempUvtVector[1] = 0.0;
-								tempUvtVector[2] = bounds.width / bitmap.width;
-								tempUvtVector[3] = 0.0;
-								tempUvtVector[4] = 0.0;
-								tempUvtVector[5] = bounds.height / bitmap.height;
-								tempUvtVector[6] = bounds.width / bitmap.width;
-								tempUvtVector[7] = bounds.height / bitmap.height;
-
-								renderDrawTriangles(tempVerticesVector, tempIndicesVector, tempUvtVector, NONE);
+								renderDrawTriangles(tempVerticesVector, tempIndicesVector, null, NONE);
 							}
 							else if (fill != null)
 							{
@@ -1051,6 +1034,48 @@ class Context3DGraphics
 		if (newBuffer != null)
 		{
 			hasUVTData ? graphics.__vertexBufferDataUVT = newBuffer : graphics.__vertexBufferData = newBuffer;
+		}
+	}
+
+	private static function populateUvtVector(vertices:Vector<Float>, bitmap:BitmapData, result:Vector<Float>):Void
+	{
+		var minX = vertices[0];
+		var maxX = minX;
+		var minY = vertices[1];
+		var maxY = minY;
+		var i = 2;
+		var length = vertices.length;
+		while (i < length)
+		{
+			var x = vertices[i];
+			if (minX > x)
+			{
+				minX = x;
+			}
+			else if (maxX < x)
+			{
+				maxX = x;
+			}
+			var y = vertices[i + 1];
+			if (minY > y)
+			{
+				minY = y;
+			}
+			else if (maxY < y)
+			{
+				maxY = y;
+			}
+			i += 2;
+		}
+		var trianglesWidth = maxX - minX;
+		var trianglesHeight = maxY - minY;
+		result.length = length;
+		i = 0;
+		while (i < length)
+		{
+			result[i] = trianglesWidth * (vertices[i] / trianglesWidth) / bitmap.width;
+			result[i + 1] = trianglesHeight * (vertices[i + 1] / trianglesHeight) / bitmap.height;
+			i += 2;
 		}
 	}
 }
