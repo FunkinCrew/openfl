@@ -637,22 +637,19 @@ class Context3DGraphics
 				var vertexBufferPosition = 0;
 				var vertexBufferPositionUVT = 0;
 
-				inline function renderDrawTriangles(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
+				inline function renderDrawTriangles(verticesLength:Int, indicesLength:Int, uvDataLength:Int, culling:TriangleCulling):Void
 				{
-					if (bitmap != null && uvtData == null)
+					if (bitmap != null && uvDataLength == 0)
 					{
-						uvtData = tempUvtVector;
-						populateUvtVector(vertices, bitmap, uvtData);
+						uvDataLength = verticesLength;
 					}
 
-					if (bitmap != null || (uvtData == null && fill != null))
+					if (bitmap != null || (uvDataLength == 0 && fill != null))
 					{
-						var hasIndices = (indices != null);
-						var numVertices = Math.floor(vertices.length / 2);
-						var length = hasIndices ? indices.length : numVertices;
+						var numVertices = Math.floor(verticesLength / 2);
+						var length = indicesLength > 0 ? indicesLength : numVertices;
 
-						var hasUVData = (uvtData != null);
-						var hasUVTData = (hasUVData && uvtData.length >= (numVertices * 3));
+						var hasUVTData = uvDataLength >= (numVertices * 3);
 						var vertLength = hasUVTData ? 4 : 2;
 						var uvStride = hasUVTData ? 3 : 2;
 
@@ -724,16 +721,7 @@ class Context3DGraphics
 							default:
 						}
 
-						// if (hasIndices) {
-
-						// 	context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor (length / 3));
-						// 	triangleIndexBufferPosition += length;
-
-						// } else {
-
 						context.__drawTriangles(0, length);
-
-						// }
 
 						shaderBufferOffset += length;
 						if (hasUVTData)
@@ -886,46 +874,25 @@ class Context3DGraphics
 							}
 						case DRAW_CIRCLE:
 							var c = data.readDrawCircle();
-							var x = c.x;
-							var y = c.y;
 							var radius = c.radius;
 
-							PolygonFunctions.buildEllipseVerticesAndIndices(x - radius, y - radius, radius, radius, tempVerticesVector, tempIndicesVector);
-							renderDrawTriangles(tempVerticesVector, tempIndicesVector, null, NONE);
+							var numVertices = PolygonFunctions.getEllipseNumVertices(radius, radius);
+							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
 
 						case DRAW_ELLIPSE:
 							var c = data.readDrawEllipse();
-							var x = c.x;
-							var y = c.y;
 							var radiusX = c.width / 2.0;
 							var radiusY = c.height / 2.0;
 
-							PolygonFunctions.buildEllipseVerticesAndIndices(x, y, radiusX, radiusY, tempVerticesVector, tempIndicesVector);
-							renderDrawTriangles(tempVerticesVector, tempIndicesVector, null, NONE);
+							var numVertices = PolygonFunctions.getEllipseNumVertices(radiusX, radiusY);
+							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
 
 						case DRAW_RECT:
 							var c = data.readDrawRect();
 
 							if (bitmap != null)
 							{
-								tempVerticesVector.length = 8;
-								tempVerticesVector[0] = c.x;
-								tempVerticesVector[1] = c.y;
-								tempVerticesVector[2] = c.x + c.width;
-								tempVerticesVector[3] = c.y;
-								tempVerticesVector[4] = c.x;
-								tempVerticesVector[5] = c.y + c.height;
-								tempVerticesVector[6] = c.x + c.width;
-								tempVerticesVector[7] = c.y + c.height;
-								tempIndicesVector.length = 6;
-								tempIndicesVector[0] = 0;
-								tempIndicesVector[1] = 1;
-								tempIndicesVector[2] = 2;
-								tempIndicesVector[3] = 1;
-								tempIndicesVector[4] = 2;
-								tempIndicesVector[5] = 3;
-
-								renderDrawTriangles(tempVerticesVector, tempIndicesVector, null, NONE);
+								renderDrawTriangles(8, 6, 0, NONE);
 							}
 							else if (fill != null)
 							{
@@ -980,7 +947,7 @@ class Context3DGraphics
 							var uvtData = c.uvtData;
 							var culling = c.culling;
 
-							renderDrawTriangles(vertices, indices, uvtData, culling);
+							renderDrawTriangles(vertices.length, indices != null ? indices.length : 0, uvtData != null ? uvtData.length : 0, culling);
 
 						case END_FILL:
 							bitmap = null;
@@ -1164,28 +1131,34 @@ class Context3DGraphics
 
 @:dox(hide) private class PolygonFunctions
 {
+	public static inline function getEllipseNumVertices(radiusX:Float, radiusY:Float):Int
+	{
+		var numVertices = Std.int(Math.PI * (radiusX + radiusY) / 4.0);
+		if (numVertices < 6)
+		{
+			numVertices = 6;
+		}
+		return numVertices;
+	}
+
 	public static function buildEllipseVerticesAndIndices(x:Float, y:Float, radiusX:Float, radiusY:Float, vertices:Vector<Float>, indices:Vector<Int>):Void
 	{
-		var numSides = Std.int(Math.PI * (radiusX + radiusY) / 4.0);
-		if (numSides < 6)
-		{
-			numSides = 6;
-		}
+		var numVertices = getEllipseNumVertices(radiusX, radiusY);
 
-		var angleDelta:Float = 2.0 * Math.PI / numSides;
+		var angleDelta:Float = 2.0 * Math.PI / numVertices;
 		var angle:Float = 0.0;
 
-		vertices.length = numSides * 2;
-		for (i in 0...numSides)
+		vertices.length = numVertices * 2;
+		for (i in 0...numVertices)
 		{
 			vertices[i * 2] = Math.cos(angle) * radiusX + x + radiusX;
 			vertices[i * 2 + 1] = Math.sin(angle) * radiusY + y + radiusY;
 			angle += angleDelta;
 		}
 
-		indices.length = (numSides - 2) * 3;
+		indices.length = (numVertices - 2) * 3;
 		var from:UInt = 1;
-		var to:UInt = numSides - 1;
+		var to:UInt = numVertices - 1;
 		for (i in from...to)
 		{
 			indices[i * 3] = 0;
