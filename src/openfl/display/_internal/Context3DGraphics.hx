@@ -360,6 +360,18 @@ class Context3DGraphics
 					PolygonFunctions.buildEllipseVerticesAndIndices(x, y, radiusX, radiusY, tempVerticesVector, tempIndicesVector);
 					buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
 
+				case DRAW_ROUND_RECT:
+					var c = data.readDrawRoundRect();
+					var x = c.x;
+					var y = c.y;
+					var width = c.width;
+					var height = c.height;
+					var radiusX = c.ellipseWidth / 2.0;
+					var radiusY = c.ellipseHeight / 2.0;
+
+					PolygonFunctions.buildRoundRectVerticesAndIndices(x, y, width, height, radiusX, radiusY, tempVerticesVector, tempIndicesVector);
+					buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
+
 				case DRAW_RECT:
 					if (bitmap != null)
 					{
@@ -887,6 +899,14 @@ class Context3DGraphics
 							var numVertices = PolygonFunctions.getEllipseNumVertices(radiusX, radiusY);
 							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
 
+						case DRAW_ROUND_RECT:
+							var c = data.readDrawRoundRect();
+							var radiusX = c.ellipseWidth / 2.0;
+							var radiusY = c.ellipseHeight / 2.0;
+
+							var numVertices = PolygonFunctions.getRoundRectNumVertices(radiusX, radiusY);
+							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
+
 						case DRAW_RECT:
 							var c = data.readDrawRect();
 
@@ -1159,6 +1179,78 @@ class Context3DGraphics
 		indices.length = (numVertices - 2) * 3;
 		var from = 0;
 		var to = numVertices - 1;
+		for (i in from...to)
+		{
+			indices[i * 3] = 0;
+			indices[i * 3 + 1] = i + 1;
+			indices[i * 3 + 2] = i + 2;
+		}
+	}
+
+	public static inline function getRoundRectNumVertices(radiusX:Float, radiusY:Float):Int
+	{
+		var numVerticesPerCorner = Math.ceil(Math.PI * (radiusX + radiusY) / 16.0);
+		if (numVerticesPerCorner < 2)
+		{
+			numVerticesPerCorner = 2;
+		}
+		return numVerticesPerCorner * 4;
+	}
+
+	public static function buildRoundRectVerticesAndIndices(x:Float, y:Float, width:Float, height:Float, radiusX:Float, radiusY:Float, vertices:Vector<Float>,
+			indices:Vector<Int>):Void
+	{
+		var numVertices = getRoundRectNumVertices(radiusX, radiusY);
+		var verticesPerCorner = Std.int(numVertices / 4);
+
+		var angleDelta:Float = (Math.PI / 2.0) / (verticesPerCorner - 1);
+		var angle:Float = 0.0;
+		var offsetX:Float = width - radiusX - radiusX;
+		var offsetY:Float = height - radiusY - radiusY;
+		var horizontal = true;
+
+		vertices.length = numVertices * 2;
+		var j = 0;
+		var len = verticesPerCorner;
+		for (i in 0...4)
+		{
+			while (j < len)
+			{
+				vertices[j * 2] = offsetX + Math.cos(angle) * radiusX + x + radiusX;
+				vertices[j * 2 + 1] = offsetY + Math.sin(angle) * radiusY + y + radiusY;
+				angle += angleDelta;
+				j++;
+			}
+			angle -= angleDelta;
+			if (horizontal)
+			{
+				if (offsetX == 0.0)
+				{
+					offsetX = width - radiusX - radiusX;
+				}
+				else
+				{
+					offsetX = 0.0;
+				}
+			}
+			else
+			{
+				if (offsetY == 0.0)
+				{
+					offsetY = height - radiusY - radiusY;
+				}
+				else
+				{
+					offsetY = 0.0;
+				}
+			}
+			horizontal = !horizontal;
+			len += verticesPerCorner;
+		}
+
+		indices.length = (numVertices - 2) * 3;
+		var from:Int = 0;
+		var to:Int = numVertices - 1;
 		for (i in from...to)
 		{
 			indices[i * 3] = 0;
