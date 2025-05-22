@@ -1195,8 +1195,8 @@ class Context3DGraphics
 		}
 
 		indices.length = (numVertices - 2) * 3;
-		var from = 0;
-		var to = numVertices - 1;
+		var from:Int = 0;
+		var to:Int = numVertices - 2;
 		for (i in from...to)
 		{
 			indices[i * 3] = 0;
@@ -1268,7 +1268,7 @@ class Context3DGraphics
 
 		indices.length = (numVertices - 2) * 3;
 		var from:Int = 0;
-		var to:Int = numVertices - 1;
+		var to:Int = numVertices - 2;
 		for (i in from...to)
 		{
 			indices[i * 3] = 0;
