@@ -347,7 +347,11 @@ class Context3DGraphics
 					var y = c.y;
 					var radius = c.radius;
 
-					PolygonFunctions.buildEllipseVerticesAndIndices(x - radius, y - radius, radius, radius, tempVerticesVector, tempIndicesVector);
+					var scaleX = graphics.__owner.scaleX;
+					var scaleY = graphics.__owner.scaleY;
+
+					PolygonFunctions.buildEllipseVerticesAndIndices(x - radius, y - radius, radius, radius, scaleX, scaleY, tempVerticesVector,
+						tempIndicesVector);
 					buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
 
 				case DRAW_ELLIPSE:
@@ -357,7 +361,10 @@ class Context3DGraphics
 					var radiusX = c.width / 2.0;
 					var radiusY = c.height / 2.0;
 
-					PolygonFunctions.buildEllipseVerticesAndIndices(x, y, radiusX, radiusY, tempVerticesVector, tempIndicesVector);
+					var scaleX = graphics.__owner.scaleX;
+					var scaleY = graphics.__owner.scaleY;
+
+					PolygonFunctions.buildEllipseVerticesAndIndices(x, y, radiusX, radiusY, scaleX, scaleY, tempVerticesVector, tempIndicesVector);
 					buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
 
 				case DRAW_ROUND_RECT:
@@ -369,7 +376,11 @@ class Context3DGraphics
 					var radiusX = c.ellipseWidth / 2.0;
 					var radiusY = c.ellipseHeight / 2.0;
 
-					PolygonFunctions.buildRoundRectVerticesAndIndices(x, y, width, height, radiusX, radiusY, tempVerticesVector, tempIndicesVector);
+					var scaleX = graphics.__owner.scaleX;
+					var scaleY = graphics.__owner.scaleY;
+
+					PolygonFunctions.buildRoundRectVerticesAndIndices(x, y, width, height, radiusX, radiusY, scaleX, scaleY, tempVerticesVector,
+						tempIndicesVector);
 					buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
 
 				case DRAW_RECT:
@@ -896,7 +907,10 @@ class Context3DGraphics
 							var radiusX = c.width / 2.0;
 							var radiusY = c.height / 2.0;
 
-							var numVertices = PolygonFunctions.getEllipseNumVertices(radiusX, radiusY);
+							var scaleX = graphics.__owner.scaleX;
+							var scaleY = graphics.__owner.scaleY;
+
+							var numVertices = PolygonFunctions.getEllipseNumVertices(radiusX * scaleX, radiusY * scaleY);
 							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
 
 						case DRAW_ROUND_RECT:
@@ -904,7 +918,10 @@ class Context3DGraphics
 							var radiusX = c.ellipseWidth / 2.0;
 							var radiusY = c.ellipseHeight / 2.0;
 
-							var numVertices = PolygonFunctions.getRoundRectNumVertices(radiusX, radiusY);
+							var scaleX = graphics.__owner.scaleX;
+							var scaleY = graphics.__owner.scaleY;
+
+							var numVertices = PolygonFunctions.getRoundRectNumVertices(radiusX * scaleX, radiusY * scaleY);
 							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
 
 						case DRAW_RECT:
@@ -1161,9 +1178,10 @@ class Context3DGraphics
 		return numVertices;
 	}
 
-	public static function buildEllipseVerticesAndIndices(x:Float, y:Float, radiusX:Float, radiusY:Float, vertices:Vector<Float>, indices:Vector<Int>):Void
+	public static function buildEllipseVerticesAndIndices(x:Float, y:Float, radiusX:Float, radiusY:Float, scaleX:Float, scaleY:Float, vertices:Vector<Float>,
+			indices:Vector<Int>):Void
 	{
-		var numVertices = getEllipseNumVertices(radiusX, radiusY);
+		var numVertices = getEllipseNumVertices(radiusX * scaleX, radiusY * scaleY);
 
 		var angleDelta:Float = 2.0 * Math.PI / numVertices;
 		var angle:Float = 0.0;
@@ -1189,18 +1207,18 @@ class Context3DGraphics
 
 	public static inline function getRoundRectNumVertices(radiusX:Float, radiusY:Float):Int
 	{
-		var numVerticesPerCorner = Math.ceil(Math.PI * (radiusX + radiusY) / 16.0);
-		if (numVerticesPerCorner < 2)
+		var numVerticesPerCorner = Math.ceil(Math.PI * (radiusX + radiusY) / 8.0);
+		if (numVerticesPerCorner < 3)
 		{
-			numVerticesPerCorner = 2;
+			numVerticesPerCorner = 3;
 		}
 		return numVerticesPerCorner * 4;
 	}
 
-	public static function buildRoundRectVerticesAndIndices(x:Float, y:Float, width:Float, height:Float, radiusX:Float, radiusY:Float, vertices:Vector<Float>,
-			indices:Vector<Int>):Void
+	public static function buildRoundRectVerticesAndIndices(x:Float, y:Float, width:Float, height:Float, radiusX:Float, radiusY:Float, scaleX:Float,
+			scaleY:Float, vertices:Vector<Float>, indices:Vector<Int>):Void
 	{
-		var numVertices = getRoundRectNumVertices(radiusX, radiusY);
+		var numVertices = getRoundRectNumVertices(radiusX * scaleX, radiusY * scaleY);
 		var verticesPerCorner = Std.int(numVertices / 4);
 
 		var angleDelta:Float = (Math.PI / 2.0) / (verticesPerCorner - 1);
