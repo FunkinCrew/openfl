@@ -1157,13 +1157,13 @@ class Context3DGraphics
 		}
 
 		indices.length = (numVertices - 2) * 3;
-		var from:UInt = 1;
-		var to:UInt = numVertices - 1;
+		var from = 0;
+		var to = numVertices - 1;
 		for (i in from...to)
 		{
 			indices[i * 3] = 0;
-			indices[i * 3 + 1] = i;
-			indices[i * 3 + 2] = i + 1;
+			indices[i * 3 + 1] = i + 1;
+			indices[i * 3 + 2] = i + 2;
 		}
 	}
 }
