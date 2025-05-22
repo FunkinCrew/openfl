@@ -168,81 +168,79 @@ class Context3DGraphics
 					}
 
 				case DRAW_QUADS:
-					// TODO: Other fill types
+					var c = data.readDrawQuads();
+					var rects = c.rects;
+					var indices = c.indices;
+					var transforms = c.transforms;
 
+					#if cpp
+					var rects:Array<Float> = rects == null ? null : untyped (rects).__array;
+					var indices:Array<Int> = indices == null ? null : untyped (indices).__array;
+					var transforms:Array<Float> = transforms == null ? null : untyped (transforms).__array;
+					#end
+
+					var hasIndices = (indices != null);
+					var transformABCD = false, transformXY = false;
+
+					var length = hasIndices ? indices.length : Math.floor(rects.length / 4);
+					if (length == 0) return;
+
+					if (transforms != null)
+					{
+						if (transforms.length >= length * 6)
+						{
+							transformABCD = true;
+							transformXY = true;
+						}
+						else if (transforms.length >= length * 4)
+						{
+							transformABCD = true;
+						}
+						else if (transforms.length >= length * 2)
+						{
+							transformXY = true;
+						}
+					}
+
+					var dataPerVertex = 4;
+					var stride = dataPerVertex * 4;
+
+					if (graphics.__quadBuffer == null)
+					{
+						graphics.__quadBuffer = new Context3DBuffer(context, QUADS, length, dataPerVertex);
+					}
+					else
+					{
+						graphics.__quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
+					}
+
+					var vertexOffset:Int;
+					var bitmapWidth:Int;
+					var bitmapHeight:Int;
+					var tileWidth:Float;
+					var tileHeight:Float;
+					var uvX:Float;
+					var uvY:Float;
+					var uvWidth:Float;
+					var uvHeight:Float;
+					var x:Float;
+					var y:Float;
+					var x2:Float;
+					var y2:Float;
+					var x3:Float;
+					var y3:Float;
+					var x4:Float;
+					var y4:Float;
+					var ri:Int;
+					var ti:Int;
+
+					var vertexBufferData = graphics.__quadBuffer.vertexBufferData;
+
+					bitmapWidth = 1;
+					bitmapHeight = 1;
 					if (bitmap != null)
 					{
-						var c = data.readDrawQuads();
-						var rects = c.rects;
-						var indices = c.indices;
-						var transforms = c.transforms;
-
-						#if cpp
-						var rects:Array<Float> = rects == null ? null : untyped (rects).__array;
-						var indices:Array<Int> = indices == null ? null : untyped (indices).__array;
-						var transforms:Array<Float> = transforms == null ? null : untyped (transforms).__array;
-						#end
-
-						var hasIndices = (indices != null);
-						var transformABCD = false, transformXY = false;
-
-						var length = hasIndices ? indices.length : Math.floor(rects.length / 4);
-						if (length == 0) return;
-
-						if (transforms != null)
-						{
-							if (transforms.length >= length * 6)
-							{
-								transformABCD = true;
-								transformXY = true;
-							}
-							else if (transforms.length >= length * 4)
-							{
-								transformABCD = true;
-							}
-							else if (transforms.length >= length * 2)
-							{
-								transformXY = true;
-							}
-						}
-
-						var dataPerVertex = 4;
-						var stride = dataPerVertex * 4;
-
-						if (graphics.__quadBuffer == null)
-						{
-							graphics.__quadBuffer = new Context3DBuffer(context, QUADS, length, dataPerVertex);
-						}
-						else
-						{
-							graphics.__quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
-						}
-
-						var vertexOffset:Int;
-						var bitmapWidth:Int;
-						var bitmapHeight:Int;
-						var tileWidth:Float;
-						var tileHeight:Float;
-						var uvX:Float;
-						var uvY:Float;
-						var uvWidth:Float;
-						var uvHeight:Float;
-						var x:Float;
-						var y:Float;
-						var x2:Float;
-						var y2:Float;
-						var x3:Float;
-						var y3:Float;
-						var x4:Float;
-						var y4:Float;
-						var ri:Int;
-						var ti:Int;
-
-						var vertexBufferData = graphics.__quadBuffer.vertexBufferData;
-
 						#if openfl_power_of_two
-						bitmapWidth = 1;
-						bitmapHeight = 1;
 						while (bitmapWidth < bitmap.width)
 						{
 							bitmapWidth <<= 1;
@@ -255,83 +253,83 @@ class Context3DGraphics
 						bitmapWidth = bitmap.width;
 						bitmapHeight = bitmap.height;
 						#end
+					}
 
-						for (i in 0...length)
+					for (i in 0...length)
+					{
+						vertexOffset = (quadBufferPosition + i) * stride;
+
+						ri = (hasIndices ? (indices[i] * 4) : i * 4);
+						if (ri < 0) continue;
+						tileRect.setTo(rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+
+						tileWidth = tileRect.width;
+						tileHeight = tileRect.height;
+
+						if (tileWidth <= 0 || tileHeight <= 0)
 						{
-							vertexOffset = (quadBufferPosition + i) * stride;
-
-							ri = (hasIndices ? (indices[i] * 4) : i * 4);
-							if (ri < 0) continue;
-							tileRect.setTo(rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
-
-							tileWidth = tileRect.width;
-							tileHeight = tileRect.height;
-
-							if (tileWidth <= 0 || tileHeight <= 0)
-							{
-								continue;
-							}
-
-							if (transformABCD && transformXY)
-							{
-								ti = i * 6;
-								tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
-									transforms[ti + 5]);
-							}
-							else if (transformABCD)
-							{
-								ti = i * 4;
-								tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
-							}
-							else if (transformXY)
-							{
-								ti = i * 2;
-								tileTransform.tx = transforms[ti];
-								tileTransform.ty = transforms[ti + 1];
-							}
-							else
-							{
-								tileTransform.tx = tileRect.x;
-								tileTransform.ty = tileRect.y;
-							}
-
-							uvX = tileRect.x / bitmapWidth;
-							uvY = tileRect.y / bitmapHeight;
-							uvWidth = tileRect.right / bitmapWidth;
-							uvHeight = tileRect.bottom / bitmapHeight;
-
-							x = tileTransform.__transformX(0, 0);
-							y = tileTransform.__transformY(0, 0);
-							x2 = tileTransform.__transformX(tileWidth, 0);
-							y2 = tileTransform.__transformY(tileWidth, 0);
-							x3 = tileTransform.__transformX(0, tileHeight);
-							y3 = tileTransform.__transformY(0, tileHeight);
-							x4 = tileTransform.__transformX(tileWidth, tileHeight);
-							y4 = tileTransform.__transformY(tileWidth, tileHeight);
-
-							vertexBufferData[vertexOffset + 0] = x;
-							vertexBufferData[vertexOffset + 1] = y;
-							vertexBufferData[vertexOffset + 2] = uvX;
-							vertexBufferData[vertexOffset + 3] = uvY;
-
-							vertexBufferData[vertexOffset + dataPerVertex + 0] = x2;
-							vertexBufferData[vertexOffset + dataPerVertex + 1] = y2;
-							vertexBufferData[vertexOffset + dataPerVertex + 2] = uvWidth;
-							vertexBufferData[vertexOffset + dataPerVertex + 3] = uvY;
-
-							vertexBufferData[vertexOffset + (dataPerVertex * 2) + 0] = x3;
-							vertexBufferData[vertexOffset + (dataPerVertex * 2) + 1] = y3;
-							vertexBufferData[vertexOffset + (dataPerVertex * 2) + 2] = uvX;
-							vertexBufferData[vertexOffset + (dataPerVertex * 2) + 3] = uvHeight;
-
-							vertexBufferData[vertexOffset + (dataPerVertex * 3) + 0] = x4;
-							vertexBufferData[vertexOffset + (dataPerVertex * 3) + 1] = y4;
-							vertexBufferData[vertexOffset + (dataPerVertex * 3) + 2] = uvWidth;
-							vertexBufferData[vertexOffset + (dataPerVertex * 3) + 3] = uvHeight;
+							continue;
 						}
 
-						quadBufferPosition += length;
+						if (transformABCD && transformXY)
+						{
+							ti = i * 6;
+							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
+								transforms[ti + 5]);
+						}
+						else if (transformABCD)
+						{
+							ti = i * 4;
+							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
+						}
+						else if (transformXY)
+						{
+							ti = i * 2;
+							tileTransform.tx = transforms[ti];
+							tileTransform.ty = transforms[ti + 1];
+						}
+						else
+						{
+							tileTransform.tx = tileRect.x;
+							tileTransform.ty = tileRect.y;
+						}
+
+						uvX = tileRect.x / bitmapWidth;
+						uvY = tileRect.y / bitmapHeight;
+						uvWidth = tileRect.right / bitmapWidth;
+						uvHeight = tileRect.bottom / bitmapHeight;
+
+						x = tileTransform.__transformX(0, 0);
+						y = tileTransform.__transformY(0, 0);
+						x2 = tileTransform.__transformX(tileWidth, 0);
+						y2 = tileTransform.__transformY(tileWidth, 0);
+						x3 = tileTransform.__transformX(0, tileHeight);
+						y3 = tileTransform.__transformY(0, tileHeight);
+						x4 = tileTransform.__transformX(tileWidth, tileHeight);
+						y4 = tileTransform.__transformY(tileWidth, tileHeight);
+
+						vertexBufferData[vertexOffset + 0] = x;
+						vertexBufferData[vertexOffset + 1] = y;
+						vertexBufferData[vertexOffset + 2] = uvX;
+						vertexBufferData[vertexOffset + 3] = uvY;
+
+						vertexBufferData[vertexOffset + dataPerVertex + 0] = x2;
+						vertexBufferData[vertexOffset + dataPerVertex + 1] = y2;
+						vertexBufferData[vertexOffset + dataPerVertex + 2] = uvWidth;
+						vertexBufferData[vertexOffset + dataPerVertex + 3] = uvY;
+
+						vertexBufferData[vertexOffset + (dataPerVertex * 2) + 0] = x3;
+						vertexBufferData[vertexOffset + (dataPerVertex * 2) + 1] = y3;
+						vertexBufferData[vertexOffset + (dataPerVertex * 2) + 2] = uvX;
+						vertexBufferData[vertexOffset + (dataPerVertex * 2) + 3] = uvHeight;
+
+						vertexBufferData[vertexOffset + (dataPerVertex * 3) + 0] = x4;
+						vertexBufferData[vertexOffset + (dataPerVertex * 3) + 1] = y4;
+						vertexBufferData[vertexOffset + (dataPerVertex * 3) + 2] = uvWidth;
+						vertexBufferData[vertexOffset + (dataPerVertex * 3) + 3] = uvHeight;
 					}
+
+					quadBufferPosition += length;
 
 				case DRAW_TRIANGLES:
 					var c = data.readDrawTriangles();
@@ -515,7 +513,7 @@ class Context3DGraphics
 					data.skip(type);
 
 				case DRAW_QUADS:
-					if (hasBitmapFill || hasShaderFill)
+					if (hasColorFill || hasBitmapFill || hasShaderFill)
 					{
 						data.skip(type);
 					}
@@ -825,7 +823,7 @@ class Context3DGraphics
 							bitmapMatrix = null;
 
 						case DRAW_QUADS:
-							if (bitmap != null)
+							if (bitmap != null || fill != null)
 							{
 								var c = data.readDrawQuads();
 								var rects = c.rects;
@@ -855,7 +853,7 @@ class Context3DGraphics
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 									// renderer.__updateShaderBuffer ();
 								}
-								else
+								else if (bitmap != null)
 								{
 									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 									renderer.setShader(shader);
@@ -863,6 +861,26 @@ class Context3DGraphics
 									renderer.applyBitmapData(bitmap, smooth, repeat);
 									renderer.applyAlpha(graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+									renderer.updateShader();
+								}
+								else
+								{
+									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+									renderer.setShader(shader);
+									renderer.applyMatrix(uMatrix);
+									renderer.applyBitmapData(blankBitmapData, true, repeat);
+									#if lime
+									var color:ARGB = (fill : ARGB);
+									tempColorTransform.redOffset = color.r;
+									tempColorTransform.greenOffset = color.g;
+									tempColorTransform.blueOffset = color.b;
+									tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+									renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
+									renderer.applyColorTransform(tempColorTransform);
+									#else
+									renderer.applyAlpha(graphics.__owner.__worldAlpha);
+									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+									#end
 									renderer.updateShader();
 								}
 
