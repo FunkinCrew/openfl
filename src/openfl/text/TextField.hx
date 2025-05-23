@@ -64,9 +64,9 @@ import js.html.DivElement;
 	media in the same way that a web browser wraps text around media embedded
 	in an HTML document.
 
-	Flash Player supports a subset of HTML tags that you can use to format
+	OpenFL supports a subset of HTML tags that you can use to format
 	text. See the list of supported HTML tags in the description of the
-	`htmlText` property.
+	`TextField.htmlText` property.
 
 	@event change                    Dispatched after a control value is
 									 modified, unlike the
@@ -89,14 +89,14 @@ import js.html.DivElement;
 
 									 **Note:** The default behavior,
 									 adding the text to the text field, occurs
-									 only when Flash Player generates the
+									 only when OpenFL generates the
 									 event, which in this case happens when a
 									 user attempts to input text. You cannot
 									 put text into a text field by sending it
 									 `textInput` events.
 	@event scroll                    Dispatched by a TextField object
 									 _after_ the user scrolls.
-	@event textInput                 Flash Player dispatches the
+	@event textInput                 OpenFL dispatches the
 									 `textInput` event when a user
 									 enters one or more characters of text.
 									 Various text input methods can generate
@@ -105,7 +105,7 @@ import js.html.DivElement;
 									 speech recognition systems, and even the
 									 act of pasting plain text with no
 									 formatting or style information.
-	@event textInteractionModeChange Flash Player dispatches the
+	@event textInteractionModeChange OpenFL dispatches the
 									 `textInteractionModeChange`
 									 event when a user changes the interaction
 									 mode of a text field. for example on
@@ -139,9 +139,9 @@ class TextField extends InteractiveObject
 
 	#if false
 	/**
-		When set to `true` and the text field is not in focus, Flash Player
+		When set to `true` and the text field is not in focus, OpenFL
 		highlights the selection in the text field in gray. When set to
-		`false` and the text field is not in focus, Flash Player does not
+		`false` and the text field is not in focus, OpenFL does not
 		highlight the selection in the text field.
 
 		@default false
@@ -326,8 +326,7 @@ class TextField extends InteractiveObject
 
 	/**
 		Specifies whether to render by using embedded font outlines. If
-		`false`, Flash Player renders the text field by using device
-		fonts.
+		`false`, OpenFL renders the text field by using device fonts.
 
 		If you set the `embedFonts` property to `true`
 		for a text field, you must specify a font for that text by using the
@@ -345,7 +344,7 @@ class TextField extends InteractiveObject
 		The type of grid fitting used for this text field. This property
 		applies only if the `openfl.text.AntiAliasType` property of the text
 		field is set to `openfl.text.AntiAliasType.ADVANCED`.
-		The type of grid fitting used determines whether Flash Player forces
+		The type of grid fitting used determines whether OpenFL forces
 		strong horizontal and vertical lines to fit to a pixel or subpixel
 		grid, or not at all.
 
@@ -364,34 +363,34 @@ class TextField extends InteractiveObject
 
 	/**
 		Contains the HTML representation of the text field contents.
-		Flash Player supports the following HTML tags:
+		OpenFL supports the following HTML tags:
 
 		| Tag |  Description  |
 		| --- | --- |
-		| Anchor tag | The `<a>` tag creates a hypertext link and supports the following attributes:<ul><li>`target`: Specifies the name of the target window where you load the page. Options include `_self`, `_blank`, `_parent`, and `_top`. The `_self` option specifies the current frame in the current window, `_blank` specifies a new window, `_parent` specifies the parent of the current frame, and `_top` specifies the top-level frame in the current window.</li><li>`href`: Specifies a URL or a `link` event. The URL can be either absolute or relative to the location of the SWF file that is loading the page. An example of an absolute reference to a URL is `http://www.adobe.com`; an example of a relative reference is `/index.html`. Absolute URLs must be prefixed with http://; otherwise, Flash Player or AIR treats them as relative URLs. You can use the `link` event to cause the link to execute a Haxe function instead of opening a URL. To specify a `link` event, use the event scheme instead of the http scheme in your `href` attribute. An example is `href="event:myText"` instead of `href="http://myURL"`; when the user clicks a hypertext link that contains the event scheme, the text field dispatches a `link` TextEvent with its `text` property set to "`myText`". You can then create a Haxe function that executes whenever the link TextEvent is dispatched. You can also define `a:link`, `a:hover`, and `a:active` styles for anchor tags by using style sheets.</li></ul> |
+		| Anchor tag | The `<a>` tag creates a hypertext link and supports the following attributes:<ul><li>`target`: Specifies the name of the target window where you load the page. Options include `_self`, `_blank`, `_parent`, and `_top`. The `_self` option specifies the current frame in the current window, `_blank` specifies a new window, `_parent` specifies the parent of the current frame, and `_top` specifies the top-level frame in the current window.</li><li>`href`: Specifies a URL or a `link` event. The URL can be either absolute or relative to the location of the SWF file that is loading the page. An example of an absolute reference to a URL is `http://www.adobe.com`; an example of a relative reference is `/index.html`. Absolute URLs must be prefixed with http://; otherwise, OpenFL treats them as relative URLs. You can use the `link` event to cause the link to execute a Haxe function instead of opening a URL. To specify a `link` event, use the event scheme instead of the http scheme in your `href` attribute. An example is `href="event:myText"` instead of `href="http://myURL"`; when the user clicks a hypertext link that contains the event scheme, the text field dispatches a `link` TextEvent with its `text` property set to "`myText`". You can then create a Haxe function that executes whenever the link TextEvent is dispatched. You can also define `a:link`, `a:hover`, and `a:active` styles for anchor tags by using style sheets.</li></ul> |
 		| Bold tag | The `<b>` tag renders text as bold. A bold typeface must be available for the font used. |
 		| Break tag | The `<br>` tag creates a line break in the text field. Set the text field to be a multiline text field to use this tag.  |
-		| Font tag | The `<font>` tag specifies a font or list of fonts to display the text.The font tag supports the following attributes:<ul><li>`color`: Only hexadecimal color (`#FFFFFF`) values are supported.</li><li>`face`: Specifies the name of the font to use. As shown in the following example, you can specify a list of comma-delimited font names, in which case Flash Player selects the first available font. If the specified font is not installed on the local computer system or isn't embedded in the SWF file, Flash Player selects a substitute font.</li><li>`size`: Specifies the size of the font. You can use absolute pixel sizes, such as 16 or 18, or relative point sizes, such as +2 or -4.</li></ul> |
-		| Image tag | The `<img>` tag lets you embed external image files (JPEG, GIF, PNG), SWF files, and movie clips inside text fields. Text automatically flows around images you embed in text fields. You must set the text field to be multiline to wrap text around an image.<br>The `<img>` tag supports the following attributes:<ul><li>`src`: Specifies the URL to an image or SWF file, or the linkage identifier for a movie clip symbol in the library. This attribute is required; all other attributes are optional. External files (JPEG, GIF, PNG, and SWF files) do not show until they are downloaded completely.</li><li>`width`: The width of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`height`: The height of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`align`: Specifies the horizontal alignment of the embedded image within the text field. Valid values are `left` and `right`. The default value is `left`.</li><li>`hspace`: Specifies the amount of horizontal space that surrounds the image where no text appears. The default value is 8.</li><li>`vspace`: Specifies the amount of vertical space that surrounds the image where no text appears. The default value is 8.</li><li>`id`: Specifies the name for the movie clip instance (created by Flash Player) that contains the embedded image file, SWF file, or movie clip. This approach is used to control the embedded content with Haxe.</li><li>`checkPolicyFile`: Specifies that Flash Player checks for a URL policy file on the server associated with the image domain. If a policy file exists, SWF files in the domains listed in the file can access the data of the loaded image, for example, by calling the `BitmapData.draw()` method with this image as the `source` parameter. For more information related to security, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).</li></ul>Flash displays media embedded in a text field at full size. To specify the dimensions of the media you are embedding, use the `<img>` tag `height` and `width` attributes. <br>In general, an image embedded in a text field appears on the line following the `<img>` tag. However, when the `<img>` tag is the first character in the text field, the image appears on the first line of the text field.<br>For AIR content in the application security sandbox, AIR ignores `img` tags in HTML content in OpenFL TextField objects. This is to prevent possible phishing attacks. |
+		| Font tag | The `<font>` tag specifies a font or list of fonts to display the text.The font tag supports the following attributes:<ul><li>`color`: Only hexadecimal color (`#FFFFFF`) values are supported.</li><li>`face`: Specifies the name of the font to use. As shown in the following example, you can specify a list of comma-delimited font names, in which case OpenFL selects the first available font. If the specified font is not installed on the local computer system or isn't embedded in the SWF file, OpenFL selects a substitute font.</li><li>`size`: Specifies the size of the font. You can use absolute pixel sizes, such as 16 or 18, or relative point sizes, such as +2 or -4.</li></ul> |
+		| Image tag | The `<img>` tag lets you embed external image files (JPEG, GIF, PNG), SWF files, and movie clips inside text fields. Text automatically flows around images you embed in text fields. You must set the text field to be multiline to wrap text around an image.<br>The `<img>` tag supports the following attributes:<ul><li>`src`: Specifies the URL to an image or SWF file, or the linkage identifier for a movie clip symbol in the library. This attribute is required; all other attributes are optional. External files (JPEG, GIF, PNG, and SWF files) do not show until they are downloaded completely.</li><li>`width`: The width of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`height`: The height of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`align`: Specifies the horizontal alignment of the embedded image within the text field. Valid values are `left` and `right`. The default value is `left`.</li><li>`hspace`: Specifies the amount of horizontal space that surrounds the image where no text appears. The default value is 8.</li><li>`vspace`: Specifies the amount of vertical space that surrounds the image where no text appears. The default value is 8.</li><li>`id`: Specifies the name for the movie clip instance (created by OpenFL) that contains the embedded image file, SWF file, or movie clip. This approach is used to control the embedded content with Haxe.</li><li>`checkPolicyFile`: Specifies that Flash Player checks for a URL policy file on the server associated with the image domain. If a policy file exists, SWF files in the domains listed in the file can access the data of the loaded image, for example, by calling the `BitmapData.draw()` method with this image as the `source` parameter. For more information related to security, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).</li></ul>Flash displays media embedded in a text field at full size. To specify the dimensions of the media you are embedding, use the `<img>` tag `height` and `width` attributes. <br>In general, an image embedded in a text field appears on the line following the `<img>` tag. However, when the `<img>` tag is the first character in the text field, the image appears on the first line of the text field.<br>For AIR content in the application security sandbox, AIR ignores `img` tags in HTML content in OpenFL TextField objects. This is to prevent possible phishing attacks. |
 		| Italic tag | The `<i>` tag displays the tagged text in italics. An italic typeface must be available for the font used. |
-		| List item tag | The `<li>` tag places a bullet in front of the text that it encloses.<br>**Note:** Because Flash Player and AIR do not recognize ordered and unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered. All lists are unordered and all list items use bullets. |
+		| List item tag | The `<li>` tag places a bullet in front of the text that it encloses.<br>**Note:** Because OpenFL does not recognize ordered and unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered. All lists are unordered and all list items use bullets. |
 		| Paragraph tag | The `<p>` tag creates a new paragraph. The text field must be set to be a multiline text field to use this tag. The `<p>` tag supports the following attributes:<ul><li>align: Specifies alignment of text within the paragraph; valid values are `left`, `right`, `justify`, and `center`.</li><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
 		| Span tag | The `<span>` tag is available only for use with CSS text styles. It supports the following attribute:<ul><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
 		| Text format tag | The `<textformat>` tag lets you use a subset of paragraph formatting properties of the TextFormat class within text fields, including line leading, indentation, margins, and tab stops. You can combine `<textformat>` tags with the built-in HTML tags.<br>The `<textformat>` tag has the following attributes:<li>`blockindent`: Specifies the block indentation in points; corresponds to `TextFormat.blockIndent`.</li><li>`indent`: Specifies the indentation from the left margin to the first character in the paragraph; corresponds to `TextFormat.indent`. Both positive and negative numbers are acceptable.</li><li>`leading`: Specifies the amount of leading (vertical space) between lines; corresponds to `TextFormat.leading`. Both positive and negative numbers are acceptable.</li><li>`leftmargin`: Specifies the left margin of the paragraph, in points; corresponds to `TextFormat.leftMargin`.</li><li>`rightmargin`: Specifies the right margin of the paragraph, in points; corresponds to `TextFormat.rightMargin`.</li><li>`tabstops`: Specifies custom tab stops as an array of non-negative integers; corresponds to `TextFormat.tabStops`.</li></ul> |
 		| Underline tag | The `<u>` tag underlines the tagged text. |
 
-		Flash Player and AIR support the following HTML entities:
+		OpenFL supports the following HTML entities:
 
 		| Entity | Description |
 		| --- | --- |
-		| &amp;lt; | < (less than) |
-		| &amp;gt; | > (greater than) |
-		| &amp;amp; | & (ampersand) |
-		| &amp;quot; | " (double quotes) |
-		| &amp;apos; | ' (apostrophe, single quote) |
+		| `&lt;` | < (less than) |
+		| `&gt;` | > (greater than) |
+		| `&amp;` | & (ampersand) |
+		| `&quot;` | " (double quotes) |
+		| `&apos;` | ' (apostrophe, single quote) |
 
-		Flash Player and AIR also support explicit character codes, such as
-		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
+		OpenFL also supports explicit character codes, such as
+		`&#38;` (ASCII ampersand) and `&#x20AC;` (Unicode € symbol).
 	**/
 	public var htmlText(get, set):UTF8String;
 
@@ -423,7 +422,7 @@ class TextField extends InteractiveObject
 	public var maxScrollV(get, never):Int;
 
 	/**
-		A Boolean value that indicates whether Flash Player automatically scrolls
+		A Boolean value that indicates whether OpenFL automatically scrolls
 		multiline text fields when the user clicks a text field and rolls the mouse wheel.
 		By default, this value is `true`. This property is useful if you want to prevent
 		mouse wheel scrolling of text fields, or implement your own text field scrolling.
@@ -509,7 +508,7 @@ class TextField extends InteractiveObject
 		The units of horizontal scrolling are pixels, whereas the units of
 		vertical scrolling are lines. Horizontal scrolling is measured in pixels
 		because most fonts you typically use are proportionally spaced; that is,
-		the characters can have different widths. Flash Player performs vertical
+		the characters can have different widths. OpenFL performs vertical
 		scrolling by line because users usually want to see a complete line of
 		text rather than a partial line. Even if a line uses multiple fonts, the
 		height of the line adjusts to fit the largest font in use.
@@ -682,7 +681,7 @@ class TextField extends InteractiveObject
 	#if false
 	/**
 		Specifies whether to copy and paste the text formatting along with the
-		text. When set to `true`, Flash Player copies and pastes formatting
+		text. When set to `true`, OpenFL copies and pastes formatting
 		(such as alignment, bold, and italics) when you copy and paste between
 		text fields. Both the origin and destination text fields for the copy
 		and paste procedure must have `useRichTextClipboard` set to `true`.

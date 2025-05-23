@@ -42,7 +42,7 @@ class CairoShape
 			var height = graphics.__height;
 			var cairo = renderer.cairo;
 
-			if (cairo != null && graphics.__visible && width >= 1 && height >= 1)
+			if (cairo != null && graphics.__cairo != null && graphics.__visible && width >= 1 && height >= 1)
 			{
 				var transform = graphics.__worldTransform;
 				var scale9Grid = shape.__worldScale9Grid;
@@ -95,6 +95,12 @@ class CairoShape
 
 					function drawImage(sx:Float, sy:Float, sWidth:Float, sHeight:Float, dx:Float, dy:Float, dWidth:Float, dHeight:Float):Void
 					{
+						if (dWidth == 0.0 || dHeight == 0.0)
+						{
+							// nothing to draw
+							return;
+						}
+
 						renderTransform.a = (dWidth / sWidth);
 						renderTransform.d = (dHeight / sHeight);
 						renderTransform.tx = transform.tx + dx;

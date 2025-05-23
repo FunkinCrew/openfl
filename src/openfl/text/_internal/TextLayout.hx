@@ -98,9 +98,9 @@ class TextLayout
 	 *   In cppia, Haxe String can be stored as UTF-16, but its memory layout is not actually guaranteed
 	 *   to be directly compatible with native APIs.
 	 *   Unlike cpp, we cannot just use wc_str() to get a direct UTF-16 pointer.
-	 *   Instead, we manually create a correctly aligned UTF-16 Bytes to ensure 
+	 *   Instead, we manually create a correctly aligned UTF-16 Bytes to ensure
 	 *   the expected layout.
-	 *   UInt16Array.fromBytes() efficiently maps the buffer as 16-bit words, ensuring correct 
+	 *   UInt16Array.fromBytes() efficiently maps the buffer as 16-bit words, ensuring correct
 	 *   memory layout and endianness in this case.
 	 */
 	@:noCompletion private inline function stringToUTF16LEBytes(s:String):Bytes
@@ -186,7 +186,7 @@ class TextLayout
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
 
 			#if haxe4
-			#if (lime >= version("8.3.0"))
+			#if (lime >= "8.3.0")
 			__hbBuffer.addString(text, 0, -1);
 			#elseif (neko || (cpp && disable_unicode_strings))
 			__hbBuffer.addUTF8(text, 0, -1);

@@ -426,45 +426,49 @@ class File extends FileReference
 	public static var userDirectory(get, never):File;
 
 	/**
-     	* Reads the contents of a file as a `ByteArray`.
-     	*
-     	* @param path The path to the file.
-     	* @return A `ByteArray` containing the file's contents.
-     	*/
-    	public static inline function getFileBytes(path:String):ByteArray {
-        	return HaxeFile.getBytes(path);
-    	}
+	 * Reads the contents of a file as a `ByteArray`.
+	 *
+	 * @param path The path to the file.
+	 * @return A `ByteArray` containing the file's contents.
+	 */
+	public static inline function getFileBytes(path:String):ByteArray
+	{
+		return HaxeFile.getBytes(path);
+	}
 
-    	/**
-     	* Reads the contents of a file as a `String`.
-     	*
-     	* @param path The path to the file.
-     	* @return A `String` containing the file's contents.
-     	*/
-    	public static inline function getFileText(path:String):String {
-        	return HaxeFile.getContent(path);
-    	}
+	/**
+	 * Reads the contents of a file as a `String`.
+	 *
+	 * @param path The path to the file.
+	 * @return A `String` containing the file's contents.
+	 */
+	public static inline function getFileText(path:String):String
+	{
+		return HaxeFile.getContent(path);
+	}
 
-    	/**
-     	* Saves a `ByteArray` to a file.
-     	*
-     	* @param path The path where the file should be saved.
-     	* @param bytes The `ByteArray` to write to the file.
-     	*/
-    	public static inline function saveBytes(path:String, bytes:ByteArray):Void {
-        	HaxeFile.saveBytes(path, bytes);
-    	}
+	/**
+	 * Saves a `ByteArray` to a file.
+	 *
+	 * @param path The path where the file should be saved.
+	 * @param bytes The `ByteArray` to write to the file.
+	 */
+	public static inline function saveBytes(path:String, bytes:ByteArray):Void
+	{
+		HaxeFile.saveBytes(path, bytes);
+	}
 
-    	/**
-     	* Saves a `String` as a text file.
-     	*
-     	* @param path The path where the file should be saved.
-     	* @param text The `String` content to write to the file.
-     	*/
-    	public static inline function saveText(path:String, text:String):Void {
-        	HaxeFile.saveContent(path, text);
-    	}
-	
+	/**
+	 * Saves a `String` as a text file.
+	 *
+	 * @param path The path where the file should be saved.
+	 * @param text The `String` content to write to the file.
+	 */
+	public static inline function saveText(path:String, text:String):Void
+	{
+		HaxeFile.saveContent(path, text);
+	}
+
 	@:noCompletion private static var __driveLetters:Array<String> =
 		#if windows
 		[
@@ -954,7 +958,7 @@ class File extends FileReference
 				for (file in files)
 				{
 					var newFile = new File(Path.join([newPath, file.name]));
-					file.copyTo(newFile);
+					file.copyTo(newFile, overwrite);
 				}
 			}
 			else
@@ -1193,9 +1197,9 @@ class File extends FileReference
 	/**
 		Deletes the file.
 
-		@throws	IOError The directory does not exist, or the directory could not be deleted. On Windows, you
-		cannot delete a directory that contains a file that is open.
-		@throws SecurityError The application does not have the necessary permissions to delete the directory.
+		@throws	IOError The file does not exist, or could not be deleted. On Windows, you
+		cannot delete a file that is currently open.
+		@throws SecurityError The application does not have the necessary permissions to delete the file.
 
 		The following code creates a temporary file and then calls the deleteFile() method to delete it.
 
@@ -1218,10 +1222,10 @@ class File extends FileReference
 	/**
 		Deletes the file asynchronously.
 
-		@event complete Dispatched when the directory has been deleted successfully.
-		@event ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
-		directory that contains a file that is open.
-		@throws SecurityError The application does not have the necessary permissions to delete the directory.
+		@event complete Dispatched when the file has been deleted successfully.
+		@event ioError The file does not exist or could not be deleted. On Windows, you cannot delete a
+		a file that is currently open.
+		@throws SecurityError The application does not have the necessary permissions to delete the file.
 
 		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
@@ -1293,13 +1297,31 @@ class File extends FileReference
 			throw new Error("Not a directory.", 3007);
 		}
 
-		var directories:Array<String> = FileSystem.readDirectory(__path);
+		var fileNames:Array<String> = FileSystem.readDirectory(__path);
 		var files:Array<File> = [];
 
-		for (directory in directories)
+		#if windows
+		for (fileName in fileNames)
 		{
-			files.push(new File(__path + separator + directory));
+			files.push(new File(__path + separator + fileName));
 		}
+		#else
+		if (__path == separator)
+		{
+			for (fileName in fileNames)
+			{
+				// avoid double // when listing unix root
+				files.push(new File(separator + fileName));
+			}
+		}
+		else
+		{
+			for (fileName in fileNames)
+			{
+				files.push(new File(__path + separator + fileName));
+			}
+		}
+		#end
 
 		return files;
 	}
@@ -1354,10 +1376,10 @@ class File extends FileReference
 		});
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			var directories:Array<String> = null;
+			var fileNames:Array<String> = null;
 			try
 			{
-				directories = FileSystem.readDirectory(__path);
+				fileNames = FileSystem.readDirectory(__path);
 			}
 			catch (e:Dynamic)
 			{
@@ -1373,10 +1395,29 @@ class File extends FileReference
 				return;
 			}
 			var files:Array<File> = [];
-			for (directory in directories)
+
+			#if windows
+			for (fileName in fileNames)
 			{
-				files.push(new File(__path + separator + directory));
+				files.push(new File(__path + separator + fileName));
 			}
+			#else
+			if (__path == separator)
+			{
+				for (fileName in fileNames)
+				{
+					// avoid double // when listing unix root
+					files.push(new File(separator + fileName));
+				}
+			}
+			else
+			{
+				for (fileName in fileNames)
+				{
+					files.push(new File(__path + separator + fileName));
+				}
+			}
+			#end
 			// don't dispatch events directly from doWork because the listeners
 			// will be called in the wrong thread
 			__fileWorker.sendComplete(new FileListEvent(FileListEvent.DIRECTORY_LISTING, files));
@@ -2183,7 +2224,7 @@ class File extends FileReference
 				path = Path.addTrailingSlash(path);
 			}
 
-			if (Path.directory(path).length == 0)
+			if (#if !windows !StringTools.startsWith(path, "/") && #end Path.directory(path).length == 0)
 			{
 				throw new ArgumentError("One of the parameters is invalid.");
 			}

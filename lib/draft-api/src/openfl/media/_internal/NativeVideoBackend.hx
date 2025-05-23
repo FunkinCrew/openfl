@@ -35,4 +35,5 @@ extern class NativeVideoBackend
 	@:native('video_get_duration') private static function __videoGetDuration():Int;	
 	@:native('video_get_audio_position') private static function __videoGetAudioPosition():Int;
 	@:native('video_get_video_position') private static function __videoGetVideoPosition():Int;
+	@:native('video_frames_seek_to') private static function __videoFramesSeekTo(time:Int):Void;
 }
