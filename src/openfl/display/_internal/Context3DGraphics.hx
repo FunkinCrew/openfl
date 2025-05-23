@@ -372,7 +372,7 @@ class Context3DGraphics
 					var width = c.width;
 					var height = c.height;
 					var radiusX = c.ellipseWidth / 2.0;
-					var radiusY = c.ellipseHeight / 2.0;
+					var radiusY = (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth) / 2.0;
 
 					var scaleX = graphics.__owner.scaleX;
 					var scaleY = graphics.__owner.scaleY;
@@ -934,7 +934,7 @@ class Context3DGraphics
 						case DRAW_ROUND_RECT:
 							var c = data.readDrawRoundRect();
 							var radiusX = c.ellipseWidth / 2.0;
-							var radiusY = c.ellipseHeight / 2.0;
+							var radiusY = (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth) / 2.0;
 
 							var scaleX = graphics.__owner.scaleX;
 							var scaleY = graphics.__owner.scaleY;
