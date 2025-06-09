@@ -395,7 +395,7 @@ class File extends FileReference
 	// TODO
 	// public static var systemCharset:String;
 	// TODO: platorm specific code?
-	public var url(get, never):String;
+	public var url(get, set):String;
 
 	/**
 		The user's directory.
@@ -2245,6 +2245,47 @@ class File extends FileReference
 		// TODO: url encode the native path to avoid invalid URL characters
 		// TODO: use app: and app-storage: protocols instead of file:, when path is relative to those directories
 		return "file:///" + nativePath;
+	}
+
+	@:noCompletion private function set_url(value:String):String
+	{
+		if (value == null)
+		{
+			throw new ArgumentError("One of the parameters is invalid.");
+		}
+
+		var resolveFromDirectory:File = null;
+		var schemeRegex = ~/^(.+?):/;
+		if (schemeRegex.match(value))
+		{
+			var scheme = schemeRegex.matched(1);
+			if (scheme == "app")
+			{
+				resolveFromDirectory = File.applicationDirectory;
+			}
+			else if (scheme == "app-storage")
+			{
+				resolveFromDirectory = File.applicationStorageDirectory;
+			}
+			else if (scheme != "file")
+			{
+				throw new ArgumentError("One of the parameters is invalid.");
+			}
+		}
+
+		value = ~/^\/{2,}/.replace(value.substr(5), "/");
+		value = StringTools.urlDecode(value);
+
+		if (resolveFromDirectory != null)
+		{
+			nativePath = resolveFromDirectory.resolvePath(value).nativePath;
+		}
+		else
+		{
+			nativePath = value;
+		}
+
+		return url;
 	}
 
 	@:noCompletion private function get_exists():Bool
