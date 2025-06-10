@@ -433,14 +433,22 @@ class Shader
 	/**
 	 * Retrieves the line number from a shader log line.
 	 */
+	#if windows
+	// 0(5) : whatever
+	@:noCompletion private var __lineExtractor = ~/^\d+\((\d+)\) : (.+$)/;
+	#else // (html5 || macos || linux)
+	// ERROR: 0:5:whatever
 	@:noCompletion private var __lineExtractor = ~/^\w+?: \d+:(\d+):(.+$)/;
+	#end
+
 	/**
 	 * Searches for strings that have only whitespace.
-	 * 
+	 *
 	 * **Note:** Searching for all whitespace via `~/^\s*$/` caused false-negatives,
 	 * notably: `String.fromCharCode(0)` is `false` but `\W` is `true`.
 	 */
 	@:noCompletion private var __isEmptyLine = ~/^\W*$/;
+
 	@:noCompletion private function __logGLShaderInfo(isError:Bool, type:Int, infoLog:String, source:String):Void
 	{
 		var message = "";
@@ -449,8 +457,7 @@ class Shader
 		for (log in infoLog.split("\n"))
 		{
 			// ignore empty lines
-			if (__isEmptyLine.match(log))
-				continue;
+			if (__isEmptyLine.match(log)) continue;
 
 			// look for a line number
 			if (!__lineExtractor.match(log))
@@ -478,12 +485,12 @@ class Shader
 		}
 
 		// If we couldn't parse the logs, output the old, verbose format
-		if (failingLine != null)
-			message = '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
-		
+		if (failingLine != null) message = '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
+
 		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
 		if (isError) Log.error('Error compiling $typeName shader $message');
-		else Log.debug('Info compiling $typeName shader $message');
+		else
+			Log.debug('Info compiling $typeName shader $message');
 	}
 
 	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
