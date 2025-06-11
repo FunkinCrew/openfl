@@ -1,8 +1,15 @@
 package openfl.sensors;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-import openfl.errors.IllegalOperationError;
+import haxe.Timer;
+import openfl.errors.ArgumentError;
+import openfl.events.DeviceRotationEvent;
+import openfl.events.EventDispatcher;
+#if lime
+import lime.system.Sensor;
+import lime.system.SensorType;
+#end
 
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 /**
 	The DeviceRotation class dispatches events based on activity detected by the
 	device's accelerometer, gyroscope sensors. This data represents the device's
@@ -28,33 +35,79 @@ import openfl.errors.IllegalOperationError;
 	[AIR Profile Support](https://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
 	for more information regarding API support across multiple profiles.
 **/
-class DeviceRotation
+class DeviceRotation extends EventDispatcher
 {
 	/**
-		The isSupported property is set to `true` if the accelerometer and
+		The isSupported property is set to `true` if the
 		gyroscope sensors are available on the device, otherwise it is set to
 		`false`.
 	**/
 	public static var isSupported(get, never):Bool;
 
+	@:noCompletion private static var defaultInterval:Int = 34;
+	@:noCompletion private static var currentPitch:Float = 0.0;
+	@:noCompletion private static var currentRoll:Float = 1.0;
+	@:noCompletion private static var currentYaw:Float = 0.0;
+
+	@:noCompletion private static var initialized:Bool = false;
+	@:noCompletion private static var supported:Bool = false;
+
+	public var muted(get, set):Bool;
+
 	private static function get_isSupported():Bool
 	{
-		return false;
+		initialize();
+		return supported;
 	}
+
+	@:noCompletion private var __interval:Int;
 
 	/**
 		Specifies whether the user has denied access to the Device Rotation data
 		(`true`) or allowed access (`false`). When this value changes, a
 		`status` event is dispatched.
 	**/
-	public var muted(default, never):Bool = false;
+	@:noCompletion private var __muted:Bool;
+
+	@:noCompletion private var __timer:Timer;
 
 	/**
 		Creates a new DeviceRotation instance.
 	**/
 	public function new()
 	{
-		throw new IllegalOperationError("Not supported");
+		super();
+		initialize();
+
+		__interval = 0;
+		__muted = false;
+
+		setRequestedUpdateInterval(defaultInterval);
+	}
+
+	override public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
+			useWeakReference:Bool = false):Void
+	{
+		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		update();
+	}
+
+	@:noCompletion private static function initialize():Void
+	{
+		if (!initialized)
+		{
+			#if lime
+			var sensors = Sensor.getSensors(SensorType.GYROSCOPE);
+
+			if (sensors.length > 0)
+			{
+				sensors[0].onUpdate.add(gyroscope_onUpdate);
+				supported = true;
+			}
+			#end
+
+			initialized = true;
+		}
 	}
 
 	/**
@@ -67,7 +120,63 @@ class DeviceRotation
 		calling the setRequestedUpdateInterval() method. In this case, the
 		application receives updates based on the device's default interval.
 	**/
-	public function setRequestedUpdateInterval(interval:Float):Void {}
+	public function setRequestedUpdateInterval(interval:Int):Void
+	{
+		__interval = interval;
+
+		if (__interval < 0)
+		{
+			throw new ArgumentError();
+		}
+		else if (__interval == 0)
+		{
+			__interval = defaultInterval;
+		}
+
+		if (__timer != null)
+		{
+			__timer.stop();
+			__timer = null;
+		}
+
+		if (supported && !muted)
+		{
+			__timer = new Timer(__interval);
+			__timer.run = update;
+		}
+	}
+
+	@:noCompletion private function update():Void
+	{
+		var event = new DeviceRotationEvent(DeviceRotationEvent.UPDATE);
+
+		event.timestamp = Timer.stamp();
+		event.pitch = currentPitch;
+		event.roll = currentRoll;
+		event.yaw = currentYaw;
+
+		dispatchEvent(event);
+	}
+
+	@:noCompletion private static function gyroscope_onUpdate(x:Float, y:Float, z:Float):Void
+	{
+		currentPitch = x;
+		currentRoll = y;
+		currentYaw = z;
+	}
+
+	@:noCompletion private function get_muted():Bool
+	{
+		return __muted;
+	}
+
+	@:noCompletion private function set_muted(value:Bool):Bool
+	{
+		__muted = value;
+		setRequestedUpdateInterval(__interval);
+
+		return value;
+	}
 }
 #else
 #if air
