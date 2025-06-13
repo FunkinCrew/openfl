@@ -3530,6 +3530,43 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	}
 	#end
 
+	@:noCompletion private function __applyScaleAndAlign(windowWidth:Float, windowHeight:Float, scaleX:Float, scaleY:Float):Void
+	{
+		var scaledWidth = __logicalWidth * scaleX;
+		var scaledHeight = __logicalHeight * scaleY;
+
+		var visibleWidth = __logicalWidth - Math.round((scaledWidth - windowWidth) / scaleX);
+		var visibleHeight = __logicalHeight - Math.round((scaledHeight - windowHeight) / scaleY);
+		var visibleX = 0.0;
+		var visibleY = 0.0;
+		switch (align)
+		{
+			case BOTTOM_RIGHT:
+				visibleX = Math.round(__logicalWidth - visibleWidth);
+				visibleY = Math.round(__logicalHeight - visibleHeight);
+			case BOTTOM:
+				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
+				visibleY = Math.round(__logicalHeight - visibleHeight);
+			case BOTTOM_LEFT:
+				visibleY = Math.round(__logicalHeight - visibleHeight);
+			case RIGHT:
+				visibleX = Math.round(__logicalWidth - visibleWidth);
+				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
+			case LEFT:
+				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
+			case TOP_RIGHT:
+				visibleX = Math.round(__logicalWidth - visibleWidth);
+			case TOP:
+				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
+			default: // TOP_LEFT
+		}
+
+		__displayMatrix.translate(-visibleX, -visibleY);
+		__displayMatrix.scale(scaleX, scaleY);
+
+		__displayRect.setTo(visibleX, visibleY, visibleWidth, visibleHeight);
+	}
+
 	@:noCompletion private function __resize():Void
 	{
 		var cacheWidth = stageWidth;
@@ -3581,50 +3618,27 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				switch (scaleMode)
 				{
 					case EXACT_FIT:
-						var displayScaleX = windowWidth / stageWidth;
-						var displayScaleY = windowHeight / stageHeight;
+						var displayScaleX = windowWidth / __logicalWidth;
+						var displayScaleY = windowHeight / __logicalHeight;
 
 						__displayMatrix.scale(displayScaleX, displayScaleY);
-						__displayRect.setTo(0, 0, stageWidth, stageHeight);
+						__displayRect.setTo(0, 0, __logicalWidth, __logicalHeight);
 
 					case NO_BORDER:
-						var scaleX = windowWidth / stageWidth;
-						var scaleY = windowHeight / stageHeight;
+						var scaleX = windowWidth / __logicalWidth;
+						var scaleY = windowHeight / __logicalHeight;
 
 						var scale = Math.max(scaleX, scaleY);
 
-						var scaledWidth = stageWidth * scale;
-						var scaledHeight = stageHeight * scale;
-
-						var visibleWidth = stageWidth - Math.round((scaledWidth - windowWidth) / scale);
-						var visibleHeight = stageHeight - Math.round((scaledHeight - windowHeight) / scale);
-						var visibleX = Math.round((stageWidth - visibleWidth) / 2);
-						var visibleY = Math.round((stageHeight - visibleHeight) / 2);
-
-						__displayMatrix.translate(-visibleX, -visibleY);
-						__displayMatrix.scale(scale, scale);
-
-						__displayRect.setTo(visibleX, visibleY, visibleWidth, visibleHeight);
+						__applyScaleAndAlign(windowWidth, windowHeight, scale, scale);
 
 					default: // SHOW_ALL
 
-						var scaleX = windowWidth / stageWidth;
-						var scaleY = windowHeight / stageHeight;
-
+						var scaleX = windowWidth / __logicalWidth;
+						var scaleY = windowHeight / __logicalHeight;
 						var scale = Math.min(scaleX, scaleY);
 
-						var scaledWidth = stageWidth * scale;
-						var scaledHeight = stageHeight * scale;
-
-						var visibleWidth = stageWidth - Math.round((scaledWidth - windowWidth) / scale);
-						var visibleHeight = stageHeight - Math.round((scaledHeight - windowHeight) / scale);
-						var visibleX = Math.round((stageWidth - visibleWidth) / 2);
-						var visibleY = Math.round((stageHeight - visibleHeight) / 2);
-
-						__displayMatrix.translate(-visibleX, -visibleY);
-						__displayMatrix.scale(scale, scale);
-
-						__displayRect.setTo(visibleX, visibleY, visibleWidth, visibleHeight);
+						__applyScaleAndAlign(windowWidth, windowHeight, scale, scale);
 				}
 			}
 		}
