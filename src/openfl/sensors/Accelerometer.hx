@@ -78,7 +78,7 @@ class Accelerometer extends EventDispatcher
 	public static var isSupported(get, never):Bool;
 
 	@:noCompletion private static var currentX:Float = 0.0;
-	@:noCompletion private static var currentY:Float = 1.0;
+	@:noCompletion private static var currentY:Float = 0.0;
 	@:noCompletion private static var currentZ:Float = 0.0;
 	@:noCompletion private static var defaultInterval:Int = 34;
 	@:noCompletion private static var initialized:Bool = false;
