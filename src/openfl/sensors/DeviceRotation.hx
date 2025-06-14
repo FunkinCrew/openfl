@@ -46,7 +46,7 @@ class DeviceRotation extends EventDispatcher
 
 	@:noCompletion private static var defaultInterval:Int = 34;
 	@:noCompletion private static var currentPitch:Float = 0.0;
-	@:noCompletion private static var currentRoll:Float = 1.0;
+	@:noCompletion private static var currentRoll:Float = 0.0;
 	@:noCompletion private static var currentYaw:Float = 0.0;
 
 	@:noCompletion private static var initialized:Bool = false;
