@@ -1,5 +1,6 @@
 package openfl.sensors;
 
+#if !flash
 import haxe.Timer;
 import openfl.errors.ArgumentError;
 import openfl.events.DeviceRotationEvent;
@@ -9,7 +10,6 @@ import lime.system.Sensor;
 import lime.system.SensorType;
 #end
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 /**
 	The DeviceRotation class dispatches events based on activity detected by the
 	device's accelerometer, gyroscope sensors. This data represents the device's
@@ -52,24 +52,32 @@ class DeviceRotation extends EventDispatcher
 	@:noCompletion private static var initialized:Bool = false;
 	@:noCompletion private static var supported:Bool = false;
 
-	public var muted(get, set):Bool;
-
-	private static function get_isSupported():Bool
-	{
-		initialize();
-		return supported;
-	}
-
-	@:noCompletion private var __interval:Int;
-
 	/**
 		Specifies whether the user has denied access to the Device Rotation data
 		(`true`) or allowed access (`false`). When this value changes, a
 		`status` event is dispatched.
 	**/
-	@:noCompletion private var __muted:Bool;
+	public var muted(get, set):Bool;
 
+	@:noCompletion private var __interval:Int;
+	@:noCompletion private var __muted:Bool;
 	@:noCompletion private var __timer:Timer;
+
+	#if openfljs
+	@:noCompletion private static function __init__()
+	{
+		untyped Object.defineProperty(DeviceRotation.prototype, "muted", {
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_muted (); }"),
+			set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_muted (v); }")
+		});
+		untyped Object.defineProperty(DeviceRotation, "isSupported", {
+			get: function()
+			{
+				return DeviceRotation.get_isSupported();
+			}
+		});
+	}
+	#end
 
 	/**
 		Creates a new DeviceRotation instance.
@@ -77,6 +85,7 @@ class DeviceRotation extends EventDispatcher
 	public function new()
 	{
 		super();
+
 		initialize();
 
 		__interval = 0;
@@ -111,14 +120,20 @@ class DeviceRotation extends EventDispatcher
 	}
 
 	/**
-		The setRequestedUpdateInterval method is used to set the desired time
-		interval for updates. The time interval is measured in milliseconds. The
-		update interval is only used as a hint to conserve the battery power.
-		The actual time between device rotation vector updates may be greater or
-		lesser than this value. Any change in the update interval affects all
-		registered listeners. You can use the DeviceRotation class without
-		calling the setRequestedUpdateInterval() method. In this case, the
+		The `setRequestedUpdateInterval` method is used to set the
+		desired time interval for updates. The time interval is measured in
+		milliseconds. The update interval is only used as a hint to conserve the
+		battery power. The actual time between acceleration updates may be greater
+		or lesser than this value. Any change in the update interval affects all
+		registered listeners. You can use the DeviceRotation class without calling
+		the `setRequestedUpdateInterval()` method. In this case, the
 		application receives updates based on the device's default interval.
+
+		@param interval The requested update interval. If `interval` is
+						set to 0, then the minimum supported update interval is
+						used.
+		@throws ArgumentError The specified `interval` is less than
+							  zero.
 	**/
 	public function setRequestedUpdateInterval(interval:Int):Void
 	{
@@ -163,6 +178,13 @@ class DeviceRotation extends EventDispatcher
 		currentPitch = x;
 		currentRoll = y;
 		currentYaw = z;
+	}
+
+	// Getters & Setters
+	private static function get_isSupported():Bool
+	{
+		initialize();
+		return supported;
 	}
 
 	@:noCompletion private function get_muted():Bool
