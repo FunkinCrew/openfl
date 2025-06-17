@@ -12,6 +12,7 @@ import openfl.display3D._internal.GLShader;
 import openfl.utils.ByteArray;
 import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.Log;
+import openfl.Lib;
 
 /**
 	// TODO: Document GLSL Shaders
@@ -119,6 +120,8 @@ import openfl.utils._internal.Log;
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
+@:access(openfl.display.Stage)
+@:access(openfl.events.UncaughtErrorEvents)
 // #if (!display && !macro)
 #if !macro
 @:autoBuild(openfl.utils._internal.ShaderMacro.build())
@@ -417,19 +420,77 @@ class Shader
 		gl.compileShader(shader);
 		var shaderInfoLog = gl.getShaderInfoLog(shader);
 		var hasInfoLog = shaderInfoLog != null && StringTools.trim(shaderInfoLog) != "";
-		var compileStatus = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+		var isError = gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0;
 
-		if (hasInfoLog || compileStatus == 0)
+		if (hasInfoLog || isError)
 		{
-			var message = (compileStatus == 0) ? "Error" : "Info";
-			message += (type == gl.VERTEX_SHADER) ? " compiling vertex shader" : " compiling fragment shader";
-			message += "\n" + shaderInfoLog;
-			message += "\n" + source;
-			if (compileStatus == 0) Log.error(message);
-			else if (hasInfoLog) Log.debug(message);
+			__logGLShaderInfo(isError, type, shaderInfoLog, source);
 		}
 
 		return shader;
+	}
+
+	/**
+	 * Retrieves the line number from a shader log line.
+	 */
+	#if windows
+	// 0(5) : whatever
+	@:noCompletion private var __lineExtractor = ~/^\d+\((\d+)\) : (.+$)/;
+	#else // (html5 || macos || linux)
+	// ERROR: 0:5:whatever
+	@:noCompletion private var __lineExtractor = ~/^\w+?: \d+:(\d+):(.+$)/;
+	#end
+
+	/**
+	 * Searches for strings that have only whitespace.
+	 *
+	 * **Note:** Searching for all whitespace via `~/^\s*$/` caused false-negatives,
+	 * notably: `String.fromCharCode(0)` is `false` but `\W` is `true`.
+	 */
+	@:noCompletion private var __isEmptyLine = ~/^\W*$/;
+
+	@:noCompletion private function __logGLShaderInfo(isError:Bool, type:Int, infoLog:String, source:String):Void
+	{
+		var message = "";
+		var lines = source.split("\n");
+		var failingLine:String = null;
+		for (log in infoLog.split("\n"))
+		{
+			// ignore empty lines
+			if (__isEmptyLine.match(log)) continue;
+
+			// look for a line number
+			if (!__lineExtractor.match(log))
+			{
+				// Could not find expected info, abort pretty formatting
+				failingLine = log;
+				break;
+			}
+
+			var lineNumberStr = __lineExtractor.matched(1);
+			var lineNumber = Std.parseInt(lineNumberStr);
+			var info = __lineExtractor.matched(2);
+			if (lineNumber >= lines.length)
+			{
+				// EOF errors will not have a valid line
+				message += '\n\n $lineNumber | $info';
+			}
+			else
+			{
+				// Add the relevant line to each log
+				var line = lines[lineNumber - 1];
+				var indent = StringTools.lpad("|", " ", lineNumberStr.length + 3);
+				message += '\n\n $lineNumber | $line\n$indent ${info}';
+			}
+		}
+
+		// If we couldn't parse the logs, output the old, verbose format
+		if (failingLine != null) message = '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
+
+		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
+		if (isError) Log.error('Error compiling $typeName shader $message');
+		else
+			Log.debug('Info compiling $typeName shader $message');
 	}
 
 	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
@@ -622,7 +683,22 @@ class Shader
 
 				// TODO
 				// program.uploadSources (vertex, fragment);
-				program.__glProgram = __createGLProgram(vertex, fragment);
+
+				if (Lib.current.stage.__uncaughtErrorEvents.__enabled)
+				{
+					try
+					{
+						program.__glProgram = __createGLProgram(vertex, fragment);
+					}
+					catch (e:Dynamic)
+					{
+						Lib.current.stage.__handleError(e);
+
+						program.__glProgram = null;
+					}
+				}
+				else
+					program.__glProgram = __createGLProgram(vertex, fragment);
 
 				__context.__programs.set(id, program);
 			}
@@ -730,7 +806,16 @@ class Shader
 				}
 
 				Reflect.setField(__data, name, input);
-				if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, input);
+
+				try
+				{
+					if (__isGenerated) Reflect.setField(this, name, input);
+					if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, input);
+				}
+				catch (e:Dynamic)
+				{
+					Log.debug('Failed to set field $name: $e');
+				}
 			}
 			else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
 			{
@@ -796,7 +881,16 @@ class Shader
 						}
 
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
+
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+							if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
+						}
+						catch (e:Dynamic)
+						{
+							Log.debug('Failed to set field $name: $e');
+						}
 
 					case INT, INT2, INT3, INT4:
 						var parameter = new ShaderParameter<Int>();
@@ -807,9 +901,19 @@ class Shader
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramInt.push(parameter);
+
 						Reflect.setField(__data, name, parameter);
+
 						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
 
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+						}
+						catch (e:Dynamic)
+						{
+							Log.debug('Failed to set field $name: $e');
+						}
 					default:
 						var parameter = new ShaderParameter<Float>();
 						parameter.name = name;
@@ -839,7 +943,16 @@ class Shader
 						}
 
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
+
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+							if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
+						}
+						catch (e:Dynamic)
+						{
+							Log.debug('Failed to set field $name: $e');
+						}
 				}
 			}
 
