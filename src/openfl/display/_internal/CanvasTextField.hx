@@ -388,7 +388,19 @@ class CanvasTextField
 					}
 				}
 
-				graphics.__bitmap = BitmapData.fromCanvas(textField.__graphics.__canvas);
+				if (graphics.__bitmap == null
+					|| graphics.__bitmap.width != graphics.__canvas.width
+					|| graphics.__bitmap.height != graphics.__canvas.height)
+				{
+					graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
+				}
+				else
+				{
+					// optimization: if the size of the canvas hasn't changed,
+					// we can re-use the same BitmapData.
+					graphics.__bitmap.image.version++;
+				}
+
 				graphics.__bitmapScaleX = pixelRatio;
 				graphics.__bitmapScaleY = pixelRatio;
 				graphics.__visible = true;
