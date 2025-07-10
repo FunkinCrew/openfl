@@ -1448,6 +1448,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmapData.dispose();
 			__cacheBitmapData = null;
 		}
+
+		if (__cacheBitmapData2 != null)
+		{
+			__cacheBitmapData2.dispose();
+			__cacheBitmapData2 = null;
+		}
+
+		if (__cacheBitmapData3 != null)
+		{
+			__cacheBitmapData3.dispose();
+			__cacheBitmapData3 = null;
+		}
 	}
 
 	@:noCompletion private function __dispatch(event:Event):Bool
