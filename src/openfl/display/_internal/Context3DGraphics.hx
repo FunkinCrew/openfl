@@ -1097,9 +1097,9 @@ class Context3DGraphics
 				Matrix.__pool.release(matrix);
 			}
 
-			graphics.__hardwareDirty = false;
 			graphics.__dirty = false;
 		}
+		graphics.__hardwareDirty = false;
 	}
 
 	public static function renderMask(graphics:Graphics, renderer:OpenGLRenderer):Void
