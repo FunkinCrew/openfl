@@ -2310,10 +2310,17 @@ class CanvasGraphics
 
 				data.destroy();
 
-				if (graphics.__bitmap == null
-					|| graphics.__bitmap.width != graphics.__canvas.width
-					|| graphics.__bitmap.height != graphics.__canvas.height)
+				if (graphics.__bitmap == null)
 				{
+					graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
+				}
+				else if (graphics.__bitmap.width != graphics.__canvas.width || graphics.__bitmap.height != graphics.__canvas.height)
+				{
+					var texture = graphics.__bitmap.__texture;
+					if (texture != null)
+					{
+						texture.dispose();
+					}
 					graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
 				}
 				else
