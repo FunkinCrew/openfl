@@ -614,6 +614,25 @@ abstract Vector<T>(IVector<T>)
 		return vector;
 	}
 
+	#if (haxe_ver >= 4.2)
+	/**
+		Creates a new Vector object populated with the specified parameters
+		@param	values	Objects of the specified type
+		@return	A new Vector object
+	**/
+	public inline static function ofValues<T>(...values:T):Vector<T>
+	{
+		var vector:Vector<T> = new Vector<T>();
+
+		for (i in 0...values.length)
+		{
+			vector[i] = cast values[i];
+		}
+
+		return vector;
+	}
+	#end
+
 	/**
 		Attempts to cast a Vector to another Vector object of a similar type
 		@param	vec	A Vector object to cast
@@ -2187,6 +2206,13 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return cast VectorData.ofArray(a);
 	}
 
+	#if (haxe_ver >= 4.2)
+	public inline static function ofValues<T>(...values:T):Vector<T>
+	{
+		return cast VectorData.ofArray(values);
+	}
+	#end
+
 	public inline static function convert<T, U>(v:VectorData<T>):VectorData<U>
 	{
 		return cast v;
@@ -2351,6 +2377,18 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 		return data;
 	}
+
+	#if (haxe_ver >= 4.2)
+	public static function ofValues<T>(...values:T):VectorData<T>
+	{
+		var data = new VectorData<T>();
+		for (i in 0...values.length)
+		{
+			data[i] = values[i];
+		}
+		return data;
+	}
+	#end
 
 	public function pop():T
 	{
@@ -2698,6 +2736,18 @@ abstract Vector<T>(VectorData<T>)
 		}
 		return vec;
 	}
+
+	#if (haxe_ver >= 4.2)
+	public inline static function ofValues<T>(...values:T):Vector<T>
+	{
+		var vec = new VectorData<T>();
+		for (i in 0...values.length)
+		{
+			vec[i] = values[i];
+		}
+		return vec;
+	}
+	#end
 
 	public inline static function convert<T, U>(v:Vector<T>):Vector<U>
 	{
