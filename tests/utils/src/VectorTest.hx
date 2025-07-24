@@ -379,6 +379,16 @@ class VectorTest extends Test
 		Assert.equals(4, vector[4]);
 	}
 
+	#if (haxe_ver >= 4.2)
+	public function test_ofValues()
+	{
+		var vector = Vector.ofValues(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+		Assert.equals(10, vector.length);
+		Assert.equals(4, vector[4]);
+	}
+	#end
+
 	@Ignored
 	public function test_convert() {}
 
