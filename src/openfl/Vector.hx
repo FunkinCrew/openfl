@@ -16,37 +16,35 @@ import haxe.Constraints.Function;
 	setting and retrieving element values. These include `push()`, `pop()`, `shift()`,
 	`unshift()`, and others. The properties and methods of a Vector object are
 	similar — in most cases identical — to the properties and methods of an Array. In
-	most cases where you would use an Array in which all the elements have the same
-	data type, a Vector instance is preferable. However, Vector instances are dense
-	arrays, meaning it must have a value (or `null`) in each index. Array instances
-	don't have this same restriction.
+	some cases where you would use an Array in which all the elements have the same
+	data type, a Vector instance may be preferable.
 
 	The Vector's base type is specified using postfix type parameter syntax. Type
-	parameter syntax is a sequence consisting of a dot (`.`), left angle bracket (`<`),
+	parameter syntax is a sequence consisting of a left angle bracket (`<`),
 	class name, then a right angle bracket (`>`), as shown in this example:
 
 	In the first line of the example, the variable `v` is declared as a
-	Vector.<String> instance. In other words, it represents a Vector (an array) that
+	`Vector<String>` instance. In other words, it represents a Vector (an array) that
 	can only hold String instances and from which only String instances can be
 	retrieved. The second line constructs an instance of the same Vector type (that is,
 	a Vector whose elements are all String objects) and assigns it to `v`.
 
 	```as3
-	var v:Vector.<String>;
-	v = new Vector.<String>();
+	var v:Vector<String>;
+	v = new Vector<String>();
 	```
 
-	A variable declared with the Vector.<T> data type can only store a Vector instance
+	A variable declared with the Vector<T> data type can only store a Vector instance
 	that is constructed with the same base type T. For example, a Vector that's
-	constructed by calling `new Vector.<String>()` can't be assigned to a variable that's
-	declared with the Vector.<int> data type. The base types must match exactly. For
+	constructed by calling `new Vector<String>()` can't be assigned to a variable that's
+	declared with the Vector<Int> data type. The base types must match exactly. For
 	example, the following code doesn't compile because the object's base type isn't
 	the same as the variable's declared base type (even though Sprite is a subclass of
 	DisplayObject):
 
 	```haxe
 	// This code doesn't compile even though Sprite is a DisplayObject subclass
-	var v:Vector.<DisplayObject> = new Vector.<Sprite>();
+	var v:Vector<DisplayObject> = new Vector<Sprite>();
 	```
 
 	To convert a Vector with base type T to a Vector of a superclass of T, use the
@@ -68,8 +66,12 @@ import haxe.Constraints.Function;
 	As a result of its restrictions, a Vector has three primary benefits over an Array
 	instance whose elements are all instances of a single class:
 
-	* Performance: array element access and iteration are much faster when using a
-	Vector instance than they are when using an Array.
+	* Performance: array element access and iteration are much faster on the
+	Flash and AIR targets when using a Vector instance than they are when using
+	an Array. On other targets, Vectors are usually a bit slower. Vectors are
+	mainly provided in OpenFL for backwards compatibility with ActionScript 3.0
+	code ported to Haxe because Haxe Arrays have a type parameter by default. If
+	not targeting Flash or AIR, prefer Array over Vector.
 	* Type safety: in strict mode the compiler can identify data type errors. Examples
 	of data type errors include assigning a value of the incorrect data type to a
 	Vector or expecting the wrong data type when reading a value from a Vector. Note,
@@ -118,45 +120,39 @@ abstract Vector<T>(IVector<T>)
 	/**
 		Creates a Vector with the specified base type.
 
-		When calling the `Vector.<T>()` constructor, specify the base type using
+		When calling the `Vector<T>()` constructor, specify the base type using
 		type parameter syntax. Type parameter syntax is a sequence consisting of a
-		dot (`.`), left angle bracket (`<`), class name, then a right angle bracket (`>`),
+		left angle bracket (`<`), class name, then a right angle bracket (`>`),
 		as shown in this example:
 
-		```as3
-		var v:Vector.<String> = new Vector.<String>();
+		```haxe
+		var v:Vector<String> = new Vector<String>();
 		```
 
-		To create a Vector instance from an Array or another Vector (such as one with a
-		different base type), use the `Vector()` global function.
+		To create a Vector instance from an Array, use the `Vector.ofArray()`
+		static function.
 
-		To create a pre-populated Vector instance, use the following syntax instead of
-		using the parameters specified below:
+		```haxe
+		var array:Array<String> = ["a", "b", "c"];
+		var v:Vector<String> = Vector.ofArray(array);
+		```
 
-		```as3
-		// var v:Vector.<T> = new <T>[E0, ..., En-1 ,];
+		To create a pre-populated Vector instance from a set of values, use the
+		`Vector.ofValues()` static function.
+
+		```haxe
+		// var v:Vector<T> = Vector.ofValues(E0, E1, ..., En-1, En);
 		// For example:
-		var v:Vector.<int> = new <int>[0,1,2,];
+		var v:Vector<String> = Vector.ofValues("a", "b", "c");
 		```
 
-		The following information applies to this syntax:
+		The following information applies to these static methods:
 
-		* It is supported in Flash Professional CS5 and later, Flash Builder 4 and later,
-		and Flex 4 and later.
-		* The trailing comma is optional.
-		* Empty items in the array are not supported; a statement such as
-		`var v:Vector.<int> = new <int>[0,,2,]` throws a compiler error.
-		* You can't specify a default length for the Vector instance. Instead, the length
-		is the same as the number of elements in the initialization list.
-		* You can't specify whether the Vector instance has a fixed length. Instead, use
-		the fixed property.
-		* Data loss or errors can occur if items passed as values don't match the
-		specified type. For example:
-
-		```as3
-		var v:Vector.<int> = new <int>[4.2]; // compiler error when running in strict mode
-		trace(v[0]); //returns 4 when not running in strict mode
-		```
+		* You can't specify a default length for the Vector instance. Instead,
+		the length is the same as the number of elements in the initialization
+		list.
+		* You can't specify whether the Vector instance has a fixed length.
+		Instead, set the fixed property.
 
 		@param	length	The initial length (number of elements) of the Vector. If this
 		parameter is greater than zero, the specified number of Vector elements are

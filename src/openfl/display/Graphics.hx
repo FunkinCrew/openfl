@@ -380,7 +380,7 @@ import js.html.CanvasRenderingContext2D;
 							  `pixel3` or `pixel4` output).
 		@throws ArgumentError When the shader specifies an image input that
 							  isn't provided.
-		@throws ArgumentError When a ByteArray or Vector.<Number> instance is
+		@throws ArgumentError When a ByteArray or Vector<Float> instance is
 							  used as an input and the `width` and `height`
 							  properties aren't specified for the ShaderInput,
 							  or the specified values don't match the amount

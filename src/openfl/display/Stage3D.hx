@@ -338,7 +338,7 @@ class Stage3D extends EventDispatcher
 		{
 			var stage3D:Stage3D = stage.stage3Ds[0];
 			stage3D.addEventListener( Event.CONTEXT3D_CREATE, myContext3DHandler );
-			stage3D.requestContext3DMatchingProfiles(Vector.<string>([Context3DProfile.BASELINE, Context3DProfile.BASELINE_EXTENDED]));
+			stage3D.requestContext3DMatchingProfiles(Vector.ofValues(Context3DProfile.BASELINE, Context3DProfile.BASELINE_EXTENDED));
 		}
 
 		function myContext3DHandler ( event : Event ) : Void
