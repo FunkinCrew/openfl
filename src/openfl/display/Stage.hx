@@ -1013,6 +1013,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __mouseOverTarget:InteractiveObject;
 	@:noCompletion private var __mouseX:Float;
 	@:noCompletion private var __mouseY:Float;
+	@:noCompletion private var __untransformedMouseX:Float;
+	@:noCompletion private var __untransformedMouseY:Float;
 	@:noCompletion private var __pendingMouseEvent:Bool;
 	@:noCompletion private var __pendingMouseX:Int;
 	@:noCompletion private var __pendingMouseY:Int;
@@ -1101,6 +1103,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__displayState = NORMAL;
 		__mouseX = 0;
 		__mouseY = 0;
+		__untransformedMouseX = 0;
+		__untransformedMouseY = 0;
 		__lastClickTime = 0;
 		__logicalWidth = 0;
 		__logicalHeight = 0;
@@ -1456,7 +1460,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			// switching to it.
 			if (__mouseOverTarget.__transformDirty || __mouseOverTarget.stage == null || !__mouseOverTarget.visible || !__mouseOverTarget.mouseEnabled)
 			{
-				__onMouse(null, __mouseX, __mouseY, 0);
+				__onMouse(null, __untransformedMouseX, __untransformedMouseY, 0);
 			}
 			else
 			{
@@ -1467,7 +1471,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					// but switch to mouseChildren instead of mouseEnabled.
 					if (current.__transformDirty || current.stage == null || !current.visible || !current.mouseChildren)
 					{
-						__onMouse(null, __mouseX, __mouseY, 0);
+						__onMouse(null, __untransformedMouseX, __untransformedMouseY, 0);
 						break;
 					}
 					current = current.parent;
@@ -2781,6 +2785,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __onMouse(type:String, x:Float, y:Float, button:Int):Void
 	{
 		if (button > 2) return;
+
+		__untransformedMouseX = x;
+		__untransformedMouseY = y;
 
 		var targetPoint = Point.__pool.get();
 		targetPoint.setTo(x, y);
