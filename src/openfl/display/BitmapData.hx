@@ -233,6 +233,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
+	@:noCompletion private var __asset:Bool;
 
 	/**
 		Creates a BitmapData object with a specified width and height. If you specify a value for
@@ -328,6 +329,7 @@ class BitmapData implements IBitmapDrawable
 		__worldTransform = new Matrix();
 		__worldColorTransform = new ColorTransform();
 		__renderable = true;
+		__asset = false;
 	}
 
 	/**
@@ -746,23 +748,31 @@ class BitmapData implements IBitmapDrawable
 	public function dispose():Void
 	{
 		#if (js && html5)
-		if (image != null && image.type == CANVAS) {
+		// if this BitmapData was created with Assets.getBitmapData(), then
+		// don't destroy the underlying image buffer.
+		// on html5, images are loaded asynchronously, and cloning is too
+		// expensive, so Lime's asset manager reuses the same Image instance
+		// every time that you call Assets.getImage() with the same asset ID.
+		if (image != null && image.type == CANVAS && !__asset)
+		{
 			var canvas = image.buffer.__srcCanvas;
 			var context = image.buffer.__srcContext;
 
-			if (canvas != null) {
+			if (canvas != null)
+			{
 				canvas.width = 0;
 				canvas.height = 0;
 				canvas = null;
 			}
-	
-			if (context != null) {
+
+			if (context != null)
+			{
 				context.clearRect(0, 0, 0, 0);
 				context = null;
 			}
 		}
 		#end
-		
+
 		image = null;
 
 		width = 0;
@@ -820,7 +830,7 @@ class BitmapData implements IBitmapDrawable
 
 	/**
 		Draws the `source` display object onto the bitmap image. If the bitmap
-		image is readable, the OpenFL software renderer is used; otherwise, 
+		image is readable, the OpenFL software renderer is used; otherwise,
 		the hardware renderer is used. You can specify `matrix`,
 		`colorTransform`, `blendMode`, and a destination
 		`clipRect` parameter to control how the rendering performs.
