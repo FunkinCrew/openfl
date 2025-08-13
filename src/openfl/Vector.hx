@@ -363,10 +363,26 @@ abstract Vector<T>(IVector<T>)
 		the Vector.
 		@throws	RangeError	If this method is called while `fixed` is `true`.
 	**/
+	#if (haxe_ver >= 4.2)
+	overload extern public inline function push(value:T):Int
+	{
+		return this.push(value);
+	}
+
+	overload extern public inline function push(args:haxe.Rest<T>):Int
+	{
+		var ret:Int = 0;
+		for(value in args){
+			ret = this.push(value);
+		}
+		return ret;
+	}	
+	#else
 	public inline function push(value:T):Int
 	{
 		return this.push(value);
 	}
+	#end
 
 	/**
 		Remove a single element from the Vector. This method modifies the Vector without
