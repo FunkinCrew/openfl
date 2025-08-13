@@ -379,13 +379,13 @@ abstract Vector<T>(IVector<T>)
 		return ret;
 	}
 	#else
-	#end
 	//dummy method (I dont know why but I was having issues with Haxe3 Compilation while
 	//using (haxe_ver >= 4.2 && !doc_gen)	
 	public inline function push(value:T):Int
 	{	
 		return this.push(value);
 	}
+	#end
 	#else
 	public inline function push(value:T):Int
 	{
