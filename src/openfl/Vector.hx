@@ -371,7 +371,7 @@ abstract Vector<T>(IVector<T>)
 
 	overload extern public inline function push(args:haxe.Rest<T>):Int
 	{
-		var ret:Int = 0;
+		var ret:Int = this.length;
 		for(value in args){
 			ret = this.push(value);
 		}
@@ -604,11 +604,30 @@ abstract Vector<T>(IVector<T>)
 		Vector.
 		@throws	RangeError	If this method is called while fixed is true.
 	**/
-	public inline function unshift(value:T):Void
+	#if (haxe_ver >= 4.2 && !doc_gen)
+	overload extern public inline function unshift(value:T):Void
 	{
 		this.unshift(value);
 	}
 
+	overload extern public inline function unshift(args:haxe.Rest<T>):Void
+	{
+		//TODO: We're supposed to return a value here, but we dont.
+		//var ret:Int = this.length;
+		for (value in args)
+		{
+			//ret =
+			this.unshift(value);
+		}
+		//return ret;
+	}
+	#else
+	public inline function unshift(value:T):Void
+	{
+		this.unshift(value);
+	}
+	#end
+		
 	/**
 		Creates a new Vector object using the values from an Array object
 		@param	array	An Array object
