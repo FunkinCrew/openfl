@@ -2107,6 +2107,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			return value;
 		}
 
+		if (value != null && value.__maskTarget != null)
+		{
+			// a single mask cannot be applied to more than one display object,
+			// so if the new mask already has a target, remove the mask
+			value.__maskTarget.mask = null;
+		}
+
 		if (value != __mask)
 		{
 			__setTransformDirty();
