@@ -2331,6 +2331,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			if (__scrollRect == null) __scrollRect = new Rectangle();
 			__scrollRect.copyFrom(value);
+			if (__scrollRect.width < 0.0)
+			{
+				__scrollRect.width = 0.0;
+			}
+			if (__scrollRect.height < 0.0)
+			{
+				__scrollRect.height = 0.0;
+			}
 		}
 		else
 		{
@@ -2344,7 +2352,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setRenderDirty();
 		}
 
-		return value;
+		return __scrollRect;
 	}
 
 	@:noCompletion private function get_shader():Shader
