@@ -363,7 +363,8 @@ abstract Vector<T>(IVector<T>)
 		the Vector.
 		@throws	RangeError	If this method is called while `fixed` is `true`.
 	**/
-	#if (haxe_ver >= 4.2 && !doc_gen)
+	#if (haxe_ver >= 4.2)
+	#if (!doc_gen)
 	overload extern public inline function push(value:T):Int
 	{
 		return this.push(value);
@@ -376,7 +377,8 @@ abstract Vector<T>(IVector<T>)
 			ret = this.push(value);
 		}
 		return ret;
-	}	
+	}
+	#end
 	#else
 	public inline function push(value:T):Int
 	{
@@ -604,7 +606,8 @@ abstract Vector<T>(IVector<T>)
 		Vector.
 		@throws	RangeError	If this method is called while fixed is true.
 	**/
-	#if (haxe_ver >= 4.2 && !doc_gen)
+	#if (haxe_ver >= 4.2)
+	#if (!doc_gen)	
 	overload extern public inline function unshift(value:T):Void
 	{
 		this.unshift(value);
@@ -621,6 +624,7 @@ abstract Vector<T>(IVector<T>)
 		}
 		//return ret;
 	}
+	#end
 	#else
 	public inline function unshift(value:T):Void
 	{
