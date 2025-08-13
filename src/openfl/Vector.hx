@@ -363,7 +363,7 @@ abstract Vector<T>(IVector<T>)
 		the Vector.
 		@throws	RangeError	If this method is called while `fixed` is `true`.
 	**/
-	#if (haxe_ver >= 4.2)
+	#if (haxe_ver >= 4.2 && !doc_gen)
 	overload extern public inline function push(value:T):Int
 	{
 		return this.push(value);
