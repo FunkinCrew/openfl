@@ -300,6 +300,9 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			if (hasFilters && !needRender)
 			{
+				var affineChanged:Bool = updateTransform
+					&& __affineChanged(displayObject.__cacheBitmap.__worldTransform, displayObject.__worldTransform);
+
 				for (filter in displayObject.__filters)
 				{
 					if (filter.__renderDirty)
@@ -307,14 +310,11 @@ class DisplayObjectRenderer extends EventDispatcher
 						needRender = true;
 						break;
 					}
-					//TODO: We need to do an affine check here instead of transform to avoid extra work
-					//checking the updateTransform flag only applies as a stopgap measure to ensure correct 
-					//behavior
-					else if (updateTransform && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (filter, ShaderFilter))
+					if (affineChanged && __isShaderFilter(filter))
 					{
-    					displayObject.__cacheBitmapData = null;
-    					needRender = true;                       
-   						break;                                   
+						displayObject.__cacheBitmapData = null;
+						needRender = true;
+						break;
 					}
 				}
 			}
@@ -872,6 +872,19 @@ class DisplayObjectRenderer extends EventDispatcher
 		return false;
 		#end
 	}
+
+	@:noCompletion private inline function __affineChanged(a:Matrix, b:Matrix, eps = 1e-4):Bool
+	{
+		return (Math.abs(a.a - b.a) > eps) || (Math.abs(a.b - b.b) > eps) || (Math.abs(a.c - b.c) > eps) || (Math.abs(a.d - b.d) > eps);
+	}
+
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private inline function __isShaderFilter(f:Dynamic):Bool
+		return Std.isOfType(f, ShaderFilter);
+	#else
+	@:noCompletion private inline function __isShaderFilter(f:Dynamic):Bool
+		return Std.is(f, ShaderFilter);
+	#end
 }
 #else
 typedef DisplayObjectRenderer = Dynamic;
