@@ -310,7 +310,8 @@ class DisplayObjectRenderer extends EventDispatcher
 					//TODO: We need to do an affine check here instead of transform to avoid extra work
 					//checking the updateTransform flag only applies as a stopgap measure to ensure correct 
 					//behavior
-					else if (updateTransform && Std.isOfType(filter, ShaderFilter)) {
+					else if (updateTransform && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (filter, ShaderFilter))
+					{
     					displayObject.__cacheBitmapData = null;
     					needRender = true;                       
    						break;                                   
