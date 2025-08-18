@@ -7,6 +7,7 @@ import openfl.display.DisplayObject;
 import openfl.display.Tilemap;
 import openfl.events.EventDispatcher;
 import openfl.events.RenderEvent;
+import openfl.filters.ShaderFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
