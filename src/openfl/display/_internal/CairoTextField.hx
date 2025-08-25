@@ -411,13 +411,30 @@ class CairoTextField
 
 					if (group.format.underline)
 					{
-						// TODO: Use font underlinePosition/underlineThickness
+						var underlineThickness:Float;
+						if (font != null && font.underlineThickness != 0.0)
+						{
+							underlineThickness = (font.underlineThickness / font.unitsPerEM) * group.format.size;
+						}
+						else
+						{
+							underlineThickness = Math.max(1.0, 0.05 * group.format.size);
+						}
+
+						var underlinePosition:Float;
+						if (font != null && font.underlinePosition != 0.0)
+						{
+							underlinePosition = -(font.underlinePosition / font.unitsPerEM) * group.format.size;
+						}
+						else
+						{
+							underlinePosition = Math.floor(group.ascent * 0.185) + 0.5;
+						}
 
 						cairo.newPath();
-						cairo.lineWidth = 1;
-						var descent = Math.floor(group.ascent * 0.185);
+						cairo.lineWidth = underlineThickness;
 						var x = group.offsetX + scrollX - bounds.x;
-						var y = Math.ceil(group.offsetY + scrollY + group.ascent - bounds.y) + descent + 0.5;
+						var y = group.offsetY + scrollY + group.ascent - bounds.y + underlinePosition;
 						cairo.moveTo(x, y);
 						cairo.lineTo(x + group.width, y);
 						cairo.stroke();
