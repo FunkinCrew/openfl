@@ -443,10 +443,34 @@ class CairoTextField
 
 					if (group.format.strikethrough)
 					{
+						#if (lime >= "8.3.0")
+						var strikethroughThickness:Float;
+						if (font != null && font.strikethroughThickness != 0.0)
+						{
+							strikethroughThickness = (font.strikethroughThickness / font.unitsPerEM) * group.format.size;
+						}
+						else
+						{
+							strikethroughThickness = Math.max(1.0, 0.05 * group.format.size);
+						}
+						var strikethroughPosition:Float;
+						if (font != null && font.strikethroughPosition != 0.0)
+						{
+							strikethroughPosition = -(font.strikethroughPosition / font.unitsPerEM) * group.format.size;
+						}
+						else
+						{
+							strikethroughPosition = -group.ascent / 3.0;
+						}
+						#else
+						var strikethroughThickness = Math.max(1.0, 0.05 * group.format.size);
+						var strikethroughPosition = -group.ascent / 3.0;
+						#end
+
 						cairo.newPath();
-						cairo.lineWidth = 1;
+						cairo.lineWidth = strikethroughThickness;
 						var x = group.offsetX + scrollX - bounds.x;
-						var y = Math.ceil(group.offsetY + scrollY + 2.0 * group.ascent / 3.0 - bounds.y);
+						var y = group.offsetY + scrollY + group.ascent - bounds.y + strikethroughPosition;
 						cairo.moveTo(x, y);
 						cairo.lineTo(x + group.width, y);
 						cairo.stroke();
