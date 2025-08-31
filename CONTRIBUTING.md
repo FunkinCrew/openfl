@@ -86,7 +86,7 @@ Below are some general guidelines we ask contributors to keep in mind in order t
 
  * At each official release, all merged PR branches which were included in the release should be purged, keeping the repo tidy. If your bugfix/feature branch was not removed, please notify the team.
 
-## Versioning and Branching Guidelines (see also: [Release Policy](https://github.com/openfl/openfl/blob/develop/RELEASE_POLICY.md]))
+## Versioning and Branching Guidelines (see also: [Release Policy](https://github.com/openfl/openfl/blob/develop/RELEASE_POLICY.md))
 
 We follow Semantic Versioning (semver): MAJOR.MINOR.PATCH.
 
