@@ -130,11 +130,11 @@ import lime.math.Vector2;
 @:noDebug
 #end
 @:access(openfl.display3D._internal.Context3DState)
+@:access(openfl.display3D.textures.ASTCTexture)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.textures.Texture)
-@:access(openfl.display3D.textures.ASTCTexture)
 @:access(openfl.display3D.textures.VideoTexture)
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
@@ -947,6 +947,29 @@ import lime.math.Vector2;
 		return new Texture(this, width, height, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
+	/**
+		Checks whether ASTC (Adaptive Scalable Texture Compression) is supported on this Context3D instance.
+
+		@return `true` if ASTC textures can be used on this device, `false` otherwise.
+	**/
+	public function isASTCSupported():Bool
+	{
+		return gl.getExtension("KHR_texture_compression_astc_ldr") != null;
+	}
+
+	/**
+		Creates a new ASTCTexture instance from ASTC-compressed data.
+
+		You must check `isASTCSupported()` before calling this method.
+
+		@param data A ByteArray containing ASTC-compressed texture data.
+		@return An `ASTCTexture` ready for use in rendering.
+
+		@throws IllegalOperationError If ASTC is not supported on this device (missing extension).
+		@throws IllegalOperationError If the ASTC signature in `data` is invalid.
+		@throws IllegalOperationError If the ASTC block format (blockX × blockY) is not supported.
+		@throws IllegalOperationError If the ASTC file is too short for header + blocks.
+	**/
 	public function createASTCTexture(data:ByteArray):ASTCTexture
 	{
 		return new ASTCTexture(this, data);

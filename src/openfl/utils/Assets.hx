@@ -81,10 +81,14 @@ class Assets
 	public static function exists(id:String, type:AssetType = null):Bool
 	{
 		#if lime
-		if (id != null && StringTools.endsWith(id, 'png') && type == null || type == IMAGE)
+		if (id != null && haxe.io.Path.extension(id) == "png" && type == null || type == IMAGE)
 		{
-			if (LimeAssets.exists(id.substr(0, id.length - 3) + 'astc', BINARY)) return true;
+			if (LimeAssets.exists(haxe.io.Path.withExtension(id, "astc"), BINARY))
+			{
+				return true;
+			}
 		}
+
 		return LimeAssets.exists(id, cast type);
 		#else
 		return false;
@@ -136,14 +140,14 @@ class Assets
 			}
 		}
 
-		final astcTexture:String = haxe.io.Path.withoutExtension(id) + ".astc";
-		if (Assets.exists(astcTexture, AssetType.BINARY) && allowASTC)
+		#if !flash
+		if (allowASTC && openfl.Lib.current.stage.context3D.isASTCSupported())
 		{
-			var texture = openfl.Lib.current.stage.context3D.createASTCTexture(Assets.getBytes(astcTexture));
+			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
 
-			if (texture.supported)
+			if (Assets.exists(astcTexture, AssetType.BINARY))
 			{
-				var bitmapData = BitmapData.fromTexture(texture);
+				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(Assets.getBytes(astcTexture)));
 
 				if (useCache && cache.enabled)
 				{
@@ -152,11 +156,8 @@ class Assets
 
 				return bitmapData;
 			}
-			else
-			{
-				texture.dispose();
-			}
 		}
+		#end
 
 		var image = LimeAssets.getImage(id, false);
 
