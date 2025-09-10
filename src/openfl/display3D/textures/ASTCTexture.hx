@@ -1,16 +1,18 @@
 package openfl.display3D.textures;
 
 #if !flash
-import haxe.io.Bytes;
+import openfl.display3D.Context3D;
 import openfl.utils._internal.UInt8Array;
-import openfl.display.BlendMode;
+import openfl.display3D._internal.ASTCReader;
+import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
-import openfl.Lib;
+
+using StringTools;
 
 /**
-	The ASTCTexture class represents a 2-dimensional compressed ASTC texture uploaded to a rendering context.
+	The ASTCTexture class represents a 2-dimensional texture using ASTC (Adaptive Scalable Texture Compression) for use in a rendering context.
 
-	Defines a 2D texture for use during rendering.
+	ASTC compression provides high-quality textures with reduced memory usage, but it requires hardware support for the "KHR_texture_compression_astc_ldr" extension.
 
 	ASTCTexture cannot be instantiated directly. Create instances by using Context3D
 	`createASTCTexture()` method.
@@ -22,101 +24,87 @@ import openfl.Lib;
 @:access(openfl.display3D.Context3D)
 @:final class ASTCTexture extends TextureBase
 {
-	@:noCompletion private static var __lowMemoryMode:Bool = false;
-	@:noCompletion private static var __warned:Bool = false;
-	public static inline final IMAGE_DATA_OFFSET = 16;
-
-	public var supported:Bool = true;
-	public var imageSize(default, null):Int = 0;
-	public var depth(default, null):Int = 0;
-	public var blockDimX:Int = -1;
-	public var blockDimY:Int = -1;
-	public var blockDimZ:Int = -1;
-
-	@:noCompletion private function new(context:Context3D, data:ByteArray)
+	@:noCompletion
+	private function new(context:Context3D, data:ByteArray):Void
 	{
 		super(context);
-		var gl = __context.gl;
-		var astcExtension = gl.getExtension("KHR_texture_compression_astc_ldr");
 
-		if (astcExtension == null)
+		final extension:Null<Dynamic> = __context.gl.getExtension("KHR_texture_compression_astc_ldr");
+
+		if (extension == null)
 		{
-			if (!__warned)
-			{
-				Lib.current.stage.window.alert("ASTC compression is not available on this device.", "Rendering Error!");
-				__warned = true;
-			}
-
-			supported = false;
+			throw new IllegalOperationError("ASTC texture compression is not supported on this device (missing GL extension: GL_KHR_texture_compression_astc_ldr).");
 		}
 
-		if (supported)
+		__textureTarget = __context.gl.TEXTURE_2D;
+
+		final reader:ASTCReader = new ASTCReader(data);
+
+		__width = reader.width;
+
+		__height = reader.height;
+
+		final format:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_ASTC_${reader.blockX}x${reader.blockY}_KHR');
+
+		if (format == null)
 		{
-			__getImageSize(data);
-			__getImageDimensions(data);
-
-			var formatName = 'COMPRESSED_RGBA_ASTC_${blockDimX}x${blockDimY}_KHR';
-			if (!Reflect.fields(astcExtension).contains(formatName))
-			{
-				trace('[ERROR] format: $formatName is invalid!');
-			}
-
-			var format = Reflect.getProperty(astcExtension, formatName);
-			__format = format;
-			__internalFormat = format;
-			__optimizeForRenderToTexture = false;
-			__streamingLevels = 0;
-
-			__uploadASTCTextureFromByteArray(data);
+			throw new IllegalOperationError('ASTC format ${reader.blockX}x${reader.blockY} is not supported on this device (GL extension KHR_texture_compression_astc_ldr is present, but this block size is missing).');
 		}
-	}
 
-	@:noCompletion public function __uploadASTCTextureFromByteArray(data:ByteArray):Void
-	{
-		var context = __context;
-		var gl = context.gl;
+		__format = format;
 
-		__textureTarget = gl.TEXTURE_2D;
+		__internalFormat = format;
+
 		__context.__bindGLTexture2D(__textureID);
 
-		var bytes:Bytes = cast data;
-		var textureBytes = new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, IMAGE_DATA_OFFSET, imageSize);
-		gl.compressedTexImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, textureBytes);
-		gl.texParameteri(__textureTarget, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		gl.texParameteri(__textureTarget, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		__context.gl.compressedTexImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, reader.getCompressedData());
 
 		__context.__bindGLTexture2D(null);
 	}
 
-	@:noCompletion private function __getImageDimensions(bytes:ByteArray):Void
+	@:noCompletion
+	private override function __setSamplerState(state:openfl.display._internal.SamplerState):Bool
 	{
-		bytes.position = 7;
+		if (super.__setSamplerState(state))
+		{
+			var gl = __context.gl;
 
-		__width = bytes.readUnsignedByte() | (bytes.readUnsignedByte() << 8) | (bytes.readUnsignedByte() << 16);
-		__height = bytes.readUnsignedByte() | (bytes.readUnsignedByte() << 8) | (bytes.readUnsignedByte() << 16);
-		depth = bytes.readUnsignedByte() | (bytes.readUnsignedByte() << 8) | (bytes.readUnsignedByte() << 16);
-	}
+			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
+			{
+				__context.gl.generateMipmap(__textureTarget);
+				__samplerState.mipmapGenerated = true;
+			}
 
-	@:noCompletion private function __getImageSize(bytes:ByteArray):Void
-	{
-		bytes.position = 4;
+			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
+			{
+				var aniso:Int = -1;
 
-		blockDimX = bytes.readUnsignedByte();
-		blockDimY = bytes.readUnsignedByte();
-		blockDimZ = bytes.readUnsignedByte();
+				if (state != null && state.filter != null)
+				{
+					switch (state.filter)
+					{
+						case ANISOTROPIC2X:
+							aniso = 2;
+						case ANISOTROPIC4X:
+							aniso = 4;
+						case ANISOTROPIC8X:
+							aniso = 8;
+						case ANISOTROPIC16X:
+							aniso = 16;
+						default:
+							aniso = 1;
+					}
+				}
 
-		bytes.position = 7;
+				if (aniso > Context3D.__glMaxTextureMaxAnisotropy) aniso = Context3D.__glMaxTextureMaxAnisotropy;
 
-		var dimX = bytes.readUnsignedByte() | (bytes.readUnsignedByte() << 8) | (bytes.readUnsignedByte() << 16);
-		var dimY = bytes.readUnsignedByte() | (bytes.readUnsignedByte() << 8) | (bytes.readUnsignedByte() << 16);
-		var dimZ = bytes.readUnsignedByte() | (bytes.readUnsignedByte() << 8) | (bytes.readUnsignedByte() << 16);
+				__context.gl.texParameterf(__context.gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+			}
 
-		var blocksX = Math.ceil(dimX / blockDimX);
-		var blocksY = Math.ceil(dimY / blockDimY);
-		var blocksZ = Math.ceil(dimZ / blockDimZ);
+			return true;
+		}
 
-		var totalBlocks = blocksX * blocksY * blocksZ;
-		imageSize = totalBlocks * 16;
+		return false;
 	}
 }
 #end
