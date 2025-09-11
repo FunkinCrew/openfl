@@ -75,18 +75,28 @@ class Assets
 		Returns whether a specific asset exists
 		@param	id 		The ID or asset path for the asset
 		@param	type	The asset type to match, or null to match any type
+		@param	allowCompressedTextures Whether to check for compressed texture formats (e.g., ASTC) when the asset is a PNG. Defaults to true.
 		@return		Whether the requested asset ID and type exists
 	**/
-	public static function exists(id:String, type:AssetType = null):Bool
+	public static function exists(id:String, type:AssetType = null, allowCompressedTextures:Bool = true):Bool
 	{
 		#if lime
-		if (id != null && haxe.io.Path.extension(id) == "png" && type == null || type == IMAGE)
+		#if !flash
+		if (allowCompressedTextures)
 		{
-			if (LimeAssets.exists(haxe.io.Path.withExtension(id, "astc"), BINARY))
+			if (id != null && haxe.io.Path.extension(id) == "png")
 			{
-				return true;
+				if (LimeAssets.exists(haxe.io.Path.withExtension(id, "astc"), BINARY))
+				{
+					return true;
+				}
+			}
+			else if (id != null && haxe.io.Path.extension(id) == "astc" && type != AssetType.BINARY)
+			{
+				type = AssetType.BINARY;
 			}
 		}
+		#end
 
 		return LimeAssets.exists(id, cast type);
 		#else
@@ -103,12 +113,12 @@ class Assets
 
 		@param	id		The ID or asset path for the bitmap
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-		@param  allowASTC		(Optional) Wether to allow ASTC compressed textures to be used to get this bitmap (Default: true)
+		@param  allowCompressedTextures		(Optional) Wether to allow compressed textures to be used to get this bitmap (Default: true)
 		@return		A new BitmapData object
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function getBitmapData(id:String, useCache:Bool = true, allowASTC:Bool = true):BitmapData
+	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true):BitmapData
 	{
 		#if (lime && tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
@@ -122,13 +132,13 @@ class Assets
 		}
 
 		#if !flash
-		if (allowASTC && openfl.Lib.current.stage.context3D.isASTCSupported())
+		if (allowCompressedTextures)
 		{
 			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
 
-			if (Assets.exists(astcTexture, AssetType.BINARY))
+			if (LimeAssets.exists(astcTexture, BINARY) && openfl.Lib.current.stage.context3D.isASTCSupported())
 			{
-				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(Assets.getBytes(astcTexture)));
+				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)));
 
 				if (useCache && cache.enabled)
 				{
