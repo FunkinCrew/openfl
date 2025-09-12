@@ -151,7 +151,7 @@ class Assets
 		}
 
 		#if !flash
-		if (allowCompressedTextures)
+		if (allowCompressedTextures || haxe.io.Path.extension(id) == "astc")
 		{
 			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
 
@@ -165,6 +165,11 @@ class Assets
 				}
 
 				return bitmapData;
+			}
+
+			if (haxe.io.Path.extension(id) == "astc")
+			{
+				return null;
 			}
 		}
 		#end
