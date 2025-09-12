@@ -138,7 +138,7 @@ class Assets
 
 			if (LimeAssets.exists(astcTexture, BINARY) && openfl.Lib.current.stage.context3D.isASTCSupported())
 			{
-				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)));
+				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)), false);
 
 				if (useCache && cache.enabled)
 				{

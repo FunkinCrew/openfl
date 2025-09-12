@@ -220,6 +220,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
+	@:noCompletion private var __textureShared:Bool = true;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
@@ -430,6 +431,7 @@ class BitmapData implements IBitmapDrawable
 			bitmapData.__framebufferContext = __framebufferContext;
 			bitmapData.__texture = __texture;
 			bitmapData.__textureContext = __textureContext;
+			bitmapData.__textureShared = __textureShared;
 			bitmapData.__isValid = true;
 		}
 		else
@@ -759,6 +761,12 @@ class BitmapData implements IBitmapDrawable
 		__vertexBuffer = null;
 		__framebuffer = null;
 		__framebufferContext = null;
+
+		if (__texture != null && !__textureShared)
+		{
+			__texture.dispose();
+		}
+
 		__texture = null;
 		__textureContext = null;
 
@@ -1354,12 +1362,13 @@ class BitmapData implements IBitmapDrawable
 
 		This method is not supported by the Flash target.
 
-		@param	texture	A Texture or RectangleTexture instance
+		@param	texture	A Texture or RectangleTexture instance.
+		@param	shared Optional. If `true`, the texture is shared; otherwise, it is not. Defaults to `true`.
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 
 		@see `BitmapData.readable`
 	**/
-	public static function fromTexture(texture:TextureBase):BitmapData
+	public static function fromTexture(texture:TextureBase, shared:Bool = true):BitmapData
 	{
 		if (texture == null) return null;
 
@@ -1367,6 +1376,8 @@ class BitmapData implements IBitmapDrawable
 		bitmapData.readable = false;
 		bitmapData.__texture = texture;
 		bitmapData.__textureContext = texture.__textureContext;
+		bitmapData.__textureShared = shared;
+		bitmapData.__surface = null;
 		bitmapData.image = null;
 		return bitmapData;
 	}
