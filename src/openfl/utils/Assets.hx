@@ -44,6 +44,8 @@ class Assets
 {
 	public static var allowCompressedTextures:Bool = true;
 
+	public static var allowHardwareTextures:Bool = true;
+
 	public static var cache:IAssetCache = new AssetCache();
 
 	@:noCompletion private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher() #end;
@@ -119,11 +121,13 @@ class Assets
 		@param	id		The ID or asset path for the bitmap
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@param  allowCompressedTextures		(Optional) Wether to allow compressed textures to be used to get this bitmap (Default: true)
+		@param	allowHardwareTextures		(Optional) Wether to allow hardware textures to be used (Default: true)
+		We wont load graphic to GPU, if it Compressed.
 		@return		A new BitmapData object
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true):BitmapData
+	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true, allowHardwareTextures:Bool = true):BitmapData
 	{
 		#if (tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
@@ -174,7 +178,7 @@ class Assets
 
 		if (image != null)
 		{
-			var bitmapData = BitmapData.fromImage(image);
+			var bitmapData = BitmapData.fromImage(image, true, (allowHardwareTextures && Assets.allowHardwareTextures));
 
 			bitmapData.__asset = true;
 
@@ -506,11 +510,13 @@ class Assets
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@param  allowCompressedTextures		(Optional) Wether to allow compressed textures to be used to get this bitmap (Default: true)
+		@param	allowHardwareTextures		(Optional) Wether to allow hardware textures to be used (Default: true)
 		@return		Returns a Future<BitmapData>
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function loadBitmapData(id:String, useCache:Null<Bool> = true, allowCompressedTextures:Bool = true):Future<BitmapData>
+	public static function loadBitmapData(id:String, useCache:Null<Bool> = true, allowCompressedTextures:Bool = true,
+			allowHardwareTextures:Bool = true):Future<BitmapData>
 	{
 		if (useCache == null) useCache = true;
 
@@ -574,7 +580,7 @@ class Assets
 		{
 			if (image != null)
 			{
-				var bitmapData = BitmapData.fromImage(image);
+				var bitmapData = BitmapData.fromImage(image, true, (allowHardwareTextures && Assets.allowHardwareTextures));
 
 				bitmapData.__asset = true;
 
