@@ -1226,15 +1226,16 @@ class BitmapData implements IBitmapDrawable
 
 		@param	base64	Base64-encoded data
 		@param	type	The MIME-type for the encoded data ("image/jpeg", etc)
+		@param	hardware	Whether the new BitmapData object should be considered hardware loaded
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
-	public static function fromBase64(base64:String, type:String):BitmapData
+	public static function fromBase64(base64:String, type:String, hardware:Bool = false):BitmapData
 	{
 		#if (js && html5)
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData.__fromBase64(base64, type);
+		bitmapData.__fromBase64(base64, type, hardware);
 		return bitmapData;
 		#end
 	}
@@ -1256,15 +1257,16 @@ class BitmapData implements IBitmapDrawable
 
 		@param	bytes	A haxe.io.Bytes or openfl.utils.ByteArray instance
 		@param	rawAlpha	An optional byte array with alpha data
+		@param	hardware	Whether the new BitmapData object should be considered hardware loaded
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
-	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData
+	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null, hardware:Bool = false):BitmapData
 	{
 		#if (js && html5)
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData.__fromBytes(bytes, rawAlpha);
+		bitmapData.__fromBytes(bytes, rawAlpha, hardware);
 		return bitmapData;
 		#end
 	}
@@ -1277,16 +1279,16 @@ class BitmapData implements IBitmapDrawable
 		All targets except from HTML5 targets will return `null`.
 
 		@param	canvas	An HTML5 canvas element
-		@param	transparent	Whether the new BitmapData object should be considered
-		transparent
+		@param	transparent	Whether the new BitmapData object should be considered transparent
+		@param	hardware	Whether the new BitmapData object should be considered hardware loaded
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
-	public static function fromCanvas(canvas:CanvasElement, transparent:Bool = true):BitmapData
+	public static function fromCanvas(canvas:CanvasElement, transparent:Bool = true, hardware:Bool = false):BitmapData
 	{
 		if (canvas == null) return null;
 
 		var bitmapData = new BitmapData(0, 0, transparent, 0);
-		bitmapData.__fromImage(Image.fromCanvas(canvas));
+		bitmapData.__fromImage(Image.fromCanvas(canvas), hardware);
 		bitmapData.image.transparent = transparent;
 		return bitmapData;
 	}
@@ -1304,15 +1306,16 @@ class BitmapData implements IBitmapDrawable
 		which supports asynchronous loading.
 
 		@param	path	A local file path containing an image
+		@param	hardware	Whether the new BitmapData object should be considered hardware loaded
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
-	public static function fromFile(path:String):BitmapData
+	public static function fromFile(path:String, hardware:Bool = false):BitmapData
 	{
 		#if (js && html5)
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData.__fromFile(path);
+		bitmapData.__fromFile(path, hardware);
 		return bitmapData.image != null ? bitmapData : null;
 		#end
 	}
@@ -1322,17 +1325,17 @@ class BitmapData implements IBitmapDrawable
 		Creates a new BitmapData using an existing Lime Image instance.
 
 		@param	image	A Lime Image object
-		@param	transparent	Whether the new BitmapData object should be considered
-		transparent
+		@param	transparent	Whether the new BitmapData object should be considered transparent
+		@param	hardware	Whether the new BitmapData object should be considered hardware loaded
 		@returns	A new BitmapData if the Image (and associated ImageBuffer) are not
 		`null`, otherwise `null` will be returned
 	**/
-	public static function fromImage(image:Image, transparent:Bool = true):BitmapData
+	public static function fromImage(image:Image, transparent:Bool = true, hardware:Bool = false):BitmapData
 	{
 		if (image == null || image.buffer == null) return null;
 
 		var bitmapData = new BitmapData(0, 0, transparent, 0);
-		bitmapData.__fromImage(image);
+		bitmapData.__fromImage(image, hardware);
 		bitmapData.image.transparent = transparent;
 		return bitmapData.image != null ? bitmapData : null;
 	}
@@ -2193,11 +2196,12 @@ class BitmapData implements IBitmapDrawable
 
 			if (__extraBufferFormats != null && __extraBufferFormats.length > 0)
 			{
-				__texture = context.createMultiBufferTexture(width, height, [BGRA].concat(__extraBufferFormats));
+				__texture = context.createMultiBufferTexture(width, height,
+					[(image != null && image.format == RGBA32) ? RGBA : BGRA].concat(__extraBufferFormats));
 			}
 			else
 			{
-				__texture = context.createRectangleTexture(width, height, BGRA, false);
+				__texture = context.createRectangleTexture(width, height, (image != null && image.format == RGBA32) ? RGBA : BGRA, false);
 			}
 
 			// context.__bindGLTexture2D (__texture);
@@ -3181,14 +3185,14 @@ class BitmapData implements IBitmapDrawable
 		}
 	}
 
-	@:noCompletion private inline function __fromBase64(base64:String, type:String):Void
+	@:noCompletion private inline function __fromBase64(base64:String, type:String, hardware:Bool = false):Void
 	{
-		__fromImage(Image.fromBase64(base64, type));
+		__fromImage(Image.fromBase64(base64, type), hardware);
 	}
 
-	@:noCompletion private inline function __fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Void
+	@:noCompletion private inline function __fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null, hardware:Bool = false):Void
 	{
-		__fromImage(Image.fromBytes(bytes));
+		__fromImage(Image.fromBytes(bytes), hardware);
 
 		if (rawAlpha != null)
 		{
@@ -3196,12 +3200,12 @@ class BitmapData implements IBitmapDrawable
 		}
 	}
 
-	@:noCompletion private function __fromFile(path:String):Void
+	@:noCompletion private function __fromFile(path:String, hardware:Bool = false):Void
 	{
-		__fromImage(Image.fromFile(path));
+		__fromImage(Image.fromFile(path), hardware);
 	}
 
-	@:noCompletion private function __fromImage(image:Image):Void
+	@:noCompletion private function __fromImage(image:Image, hardware:Bool = false):Void
 	{
 		if (image != null && image.buffer != null)
 		{
@@ -3209,17 +3213,23 @@ class BitmapData implements IBitmapDrawable
 
 			width = image.width;
 			height = image.height;
+
 			rect = new Rectangle(0, 0, image.width, image.height);
 
 			__textureWidth = width;
 			__textureHeight = height;
 
 			#if sys
-			image.format = BGRA32;
+			if (!hardware)
+			{
+				image.format = BGRA32;
+			}
+
 			image.premultiplied = true;
 			#end
 
-			readable = true;
+			readable = !hardware;
+
 			__isValid = true;
 		}
 	}
@@ -3230,39 +3240,6 @@ class BitmapData implements IBitmapDrawable
 		this.rect.__transform(bounds, matrix);
 		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
 		Rectangle.__pool.release(bounds);
-	}
-
-	@:noCompletion private inline function __loadFromBase64(base64:String, type:String):Future<BitmapData>
-	{
-		return Image.loadFromBase64(base64, type).then(function(image)
-		{
-			__fromImage(image);
-			return Future.withValue(this);
-		});
-	}
-
-	@:noCompletion private inline function __loadFromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>
-	{
-		return Image.loadFromBytes(bytes).then(function(image)
-		{
-			__fromImage(image);
-
-			if (rawAlpha != null)
-			{
-				__applyAlpha(rawAlpha);
-			}
-
-			return Future.withValue(this);
-		});
-	}
-
-	@:noCompletion private function __loadFromFile(path:String):Future<BitmapData>
-	{
-		return Image.loadFromFile(path).then(function(image)
-		{
-			__fromImage(image);
-			return Future.withValue(this);
-		});
 	}
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void

@@ -51,16 +51,15 @@ class AssetsMacro
 					}
 					else
 					{
-						__loadFromBase64(haxe.Resource.getString(resourceName), resourceType).onComplete(function(b)
+						lime.graphics.Image.loadFromBase64(haxe.Resource.getString(resourceName), resourceType).onComplete(function(img)
 						{
-							if (preload == null)
-							{
-								preload = b.image;
-							}
+							__fromImage(img);
+
+							preload ??= img;
 
 							if (onload != null && Reflect.isFunction(onload))
 							{
-								onload(b);
+								onload(this);
 							}
 						});
 					}

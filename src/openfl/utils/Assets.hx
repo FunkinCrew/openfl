@@ -4,9 +4,11 @@ import lime.app.Promise;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.Log;
+import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
 import openfl.display.Sprite;
+import openfl.display3D.textures.RectangleTexture;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
@@ -33,6 +35,8 @@ import openfl.text.Font;
 	@see [Working with font assets](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/working-with-font-assets.html)
 	@see [Working with sound assets](https://books.openfl.org/openfl-developers-guide/working-with-sound/working-with-sound-assets.html)
 **/
+@:access(openfl.display3D.textures.TextureBase)
+@:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Sprite)
 @:access(openfl.events.Event)
@@ -40,6 +44,10 @@ import openfl.text.Font;
 @:access(openfl.utils.AssetLibrary)
 class Assets
 {
+	public static var allowCompressedTextures:Bool = true;
+
+	public static var allowHardwareTextures:Bool = true;
+
 	public static var cache:IAssetCache = new AssetCache();
 
 	@:noCompletion private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher() #end;
@@ -69,7 +77,7 @@ class Assets
 	**/
 	public static function exists(id:String, type:AssetType = null, allowCompressedTextures:Bool = true):Bool
 	{
-		if (allowCompressedTextures)
+		if (allowCompressedTextures && Assets.allowCompressedTextures)
 		{
 			if (id != null && haxe.io.Path.extension(id) == "png")
 			{
@@ -115,11 +123,13 @@ class Assets
 		@param	id		The ID or asset path for the bitmap
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@param  allowCompressedTextures		(Optional) Wether to allow compressed textures to be used to get this bitmap (Default: true)
+		@param	allowHardwareTextures		(Optional) Wether to allow hardware textures to be used (Default: true)
+		We wont load graphic to GPU, if it Compressed.
 		@return		A new BitmapData object
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true):BitmapData
+	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true, allowHardwareTextures:Bool = true):BitmapData
 	{
 		#if (tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
@@ -132,13 +142,14 @@ class Assets
 			}
 		}
 
-		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
+		if (((allowCompressedTextures && Assets.allowCompressedTextures) || haxe.io.Path.extension(id) == "astc")
+			&& Lib.current.stage.context3D.isASTCSupported())
 		{
 			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
 
 			if (LimeAssets.exists(astcTexture, BINARY))
 			{
-				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)), false);
+				var bitmapData = BitmapData.fromTexture(Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)), false);
 
 				if (useCache && cache.enabled)
 				{
@@ -158,7 +169,7 @@ class Assets
 
 		if (image != null)
 		{
-			var bitmapData = BitmapData.fromImage(image);
+			var bitmapData = BitmapData.fromImage(image, true, (allowHardwareTextures && Assets.allowHardwareTextures));
 
 			bitmapData.__asset = true;
 
@@ -490,11 +501,13 @@ class Assets
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@param  allowCompressedTextures		(Optional) Wether to allow compressed textures to be used to get this bitmap (Default: true)
+		@param	allowHardwareTextures		(Optional) Wether to allow hardware textures to be used (Default: true)
 		@return		Returns a Future<BitmapData>
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function loadBitmapData(id:String, useCache:Null<Bool> = true, allowCompressedTextures:Bool = true):Future<BitmapData>
+	public static function loadBitmapData(id:String, useCache:Null<Bool> = true, allowCompressedTextures:Bool = true,
+			allowHardwareTextures:Bool = true):Future<BitmapData>
 	{
 		if (useCache == null) useCache = true;
 
@@ -550,7 +563,7 @@ class Assets
 		{
 			if (image != null)
 			{
-				var bitmapData = BitmapData.fromImage(image);
+				var bitmapData = BitmapData.fromImage(image, true, (allowHardwareTextures && Assets.allowHardwareTextures));
 
 				bitmapData.__asset = true;
 
