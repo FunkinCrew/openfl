@@ -49,6 +49,8 @@ import lime.media.vorbis.VorbisFile;
 @:access(openfl.utils.AssetLibrary)
 class Assets
 {
+	public static var allowGPU:Bool = #if desktop true #else false #end;
+
 	public static var cache:IAssetCache = new AssetCache();
 
 	@:noCompletion private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher() #end;
@@ -114,18 +116,21 @@ class Assets
 		@param	id		The ID or asset path for the bitmap
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@param  allowCompressedTextures		(Optional) Wether to allow compressed textures to be used to get this bitmap (Default: true)
+		@param	pushToGPU		Whenever the image should be immediately pushed to GPU.
+		We wont load graphic to GPU, if it Compressed.
 		@return		A new BitmapData object
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true):BitmapData
+	@:access(openfl.display.BitmapData)
+	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true, pushToGPU:Bool = true):BitmapData
 	{
 		#if (lime && tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
 		{
 			var bitmapData = cache.getBitmapData(id);
 
-			if (isValidBitmapData(bitmapData))
+			if (isValidBitmapData(bitmapData) && bitmapData.readable)
 			{
 				return bitmapData;
 			}
@@ -162,7 +167,23 @@ class Assets
 			#if flash
 			var bitmapData = image.src;
 			#else
-			var bitmapData = BitmapData.fromImage(image);
+			var bitmapData:BitmapData = BitmapData.fromImage(image);
+			#if (!macro && desktop)
+			if (pushToGPU && Assets.allowGPU)
+			{
+				bitmapData.lock();
+				if (bitmapData.__texture == null)
+				{
+					bitmapData.image.premultiplied = true;
+					bitmapData.getTexture(flixel.FlxG.stage.context3D);
+				}
+				bitmapData.__surface ??= lime.graphics.cairo.CairoImageSurface.fromImage(bitmapData.image);
+
+				bitmapData.readable = true;
+				bitmapData.image.data = null;
+				bitmapData.unlock();
+			}
+			#end
 			#end
 
 			if (useCache && cache.enabled)
@@ -507,8 +528,7 @@ class Assets
 			return false;
 		}
 		#else
-		return (bitmapData != null
-			&& #if !lime_hybrid (bitmapData.image != null || bitmapData.__texture != null) #else bitmapData.__handle != null #end);
+		return (bitmapData != null && #if !lime_hybrid bitmapData.image != null #else bitmapData.__handle != null #end);
 		#end
 		#else
 		return true;
@@ -548,11 +568,13 @@ class Assets
 
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+		@param	pushToGPU		Whenever the image should be immediately pushed to GPU.
 		@return		Returns a Future<BitmapData>
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function loadBitmapData(id:String, useCache:Null<Bool> = true):Future<BitmapData>
+	@:access(openfl.display.BitmapData)
+	public static function loadBitmapData(id:String, useCache:Null<Bool> = true, pushToGPU:Bool = true):Future<BitmapData>
 	{
 		if (useCache == null) useCache = true;
 
@@ -563,7 +585,7 @@ class Assets
 		{
 			var bitmapData = cache.getBitmapData(id);
 
-			if (isValidBitmapData(bitmapData))
+			if (isValidBitmapData(bitmapData) && (pushToGPU || bitmapData.readable))
 			{
 				promise.complete(bitmapData);
 				return promise.future;
@@ -578,6 +600,22 @@ class Assets
 				var bitmapData = image.src;
 				#else
 				var bitmapData = BitmapData.fromImage(image);
+				#if (!macro && desktop)
+				if (pushToGPU && Assets.allowGPU)
+				{
+					bitmapData.lock();
+					if (bitmapData.__texture == null)
+					{
+						bitmapData.image.premultiplied = true;
+						bitmapData.getTexture(flixel.FlxG.stage.context3D);
+					}
+					if (bitmapData.__surface == null) bitmapData.__surface = lime.graphics.cairo.CairoImageSurface.fromImage(bitmapData.image);
+
+					bitmapData.readable = true;
+					bitmapData.image.data = null;
+					bitmapData.unlock();
+				}
+				#end
 				#end
 
 				if (useCache && cache.enabled)
@@ -885,8 +923,7 @@ class Assets
 	public static function loadText(id:String):Future<String>
 	{
 		#if lime
-		var future = LimeAssets.loadText(id);
-		return future;
+		return LimeAssets.loadText(id);
 		#else
 		return Future.withValue(getText(id));
 		#end
