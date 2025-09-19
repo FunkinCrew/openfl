@@ -175,7 +175,7 @@ class Assets
 				if (bitmapData.__texture == null)
 				{
 					bitmapData.image.premultiplied = true;
-					bitmapData.getTexture(flixel.FlxG.stage.context3D);
+					bitmapData.getTexture(openfl.Lib.current.stage.context3D);
 				}
 				bitmapData.__surface ??= lime.graphics.cairo.CairoImageSurface.fromImage(bitmapData.image);
 
@@ -607,7 +607,7 @@ class Assets
 					if (bitmapData.__texture == null)
 					{
 						bitmapData.image.premultiplied = true;
-						bitmapData.getTexture(flixel.FlxG.stage.context3D);
+						bitmapData.getTexture(openfl.Lib.current.stage.context3D);
 					}
 					if (bitmapData.__surface == null) bitmapData.__surface = lime.graphics.cairo.CairoImageSurface.fromImage(bitmapData.image);
 
