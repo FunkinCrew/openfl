@@ -614,8 +614,8 @@ class WebSocket
 		__timestamp = Sys.time();
 
 		var stage = Lib.current.stage;
-		stage.removeEventListener(Event.TICK, __onTickConnect);
-		stage.addEventListener(Event.TICK, __onTickSSLHandshake);
+		stage.removeEventListener(Event.ENTER_FRAME, __onTickConnect);
+		stage.addEventListener(Event.ENTER_FRAME, __onTickSSLHandshake);
 	}
 
 	private function __onTickSSLHandshake(e:Event):Void
@@ -698,7 +698,7 @@ class WebSocket
 
 			if (__secure)
 			{
-				stage.removeEventListener(Event.TICK, __onTickSSLHandshake);
+				stage.removeEventListener(Event.ENTER_FRAME, __onTickSSLHandshake);
 			}
 		}
 
