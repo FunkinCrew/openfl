@@ -50,6 +50,7 @@ class TextureBase extends EventDispatcher
 	// private var __memoryUsage:Int;
 	@:noCompletion private var __optimizeForRenderToTexture:Bool;
 	// private var __outputTextureMemoryUsage:Bool = false;
+	@:noCompletion private var __premultiplyAlpha:Bool;
 	@:noCompletion private var __samplerState:SamplerState;
 	@:noCompletion private var __streamingLevels:Int;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
