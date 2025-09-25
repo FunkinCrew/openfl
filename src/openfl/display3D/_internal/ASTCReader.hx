@@ -85,5 +85,10 @@ class ASTCReader
 	{
 		return new UInt8Array(data.toArrayBuffer(), HEADER_SIZE, expectedDataSize);
 	}
+
+	public function dispose():Void
+	{
+		data = null;
+	}
 }
 #end
