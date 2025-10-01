@@ -1,6 +1,52 @@
 Changelog
 =========
 
+9.4.2 (10/01/2025)
+------------------
+
+* Fixed wrong mouse positions used by calculations on `TextField` double- and triple-click.
+* Fixed `TextField` double-click word selection when caret is immediately after the last character in a word.
+* Fixed `TextField` double-click selecting word on different line when caret is at beginning or end of line.
+* Fixed `Tilemap` being unable to render more than 16384 tiles.
+* Fixed `Graphics` incorrectly clearing the line style on `endFill()`.
+* Fixed `readGraphicsData()` forcing alpha to `1` for `BEGIN_FILL` command.
+* Fixed Stage 3D getting positioned too close to top-left of Stage on HiDPI screens.
+* Fixed `mask` not getting cleared from `DisplayObject` if it set on a new `DisplayObject` instead.
+* Fixed negative width and height on `scrollRect` not getting clamped to `0.0`.
+* Fixed `File` path canonicalization to better handle exceptions, remove `.` and `..`, and further improve compatibility.
+* Fixed `File` failing to copy directory when calling `copyTo()` in some situations.
+* Fixed missing default fonts for `_sans`, `_serif`, and `_typewriter` on iOS and iPadOS.
+* Fixed incorrect shape cache key in `TextFormat` after certain properties are changed.
+* Fixed exception when drawing to `Graphics` and `graphics.__cairo` is `null`.
+* Fixed crash when drawing `Graphics` to `BitmapData` and only `clear()` and `lineStyle()` were called.
+* Fixed expansion of environment variables on Windows in `File` paths.
+* Fixed scissor rect size when using `openfl_dpi_aware` define.
+* Fixed exception in `File` when specifying root path (`/`) or a child of root.
+* Fixed invalid characters in `url` value of `File`.
+* Fixed broken rendering of `scale9Grid` when a region's width or height is `0.0`.
+* Fixed detection of char code when Caps Lock is enabled.
+* Fixed `ColorMatrixFilter` not returning a copy from `matrix` getter.
+* Fixed double slash when listing content of root path (`/`) on non-Windows platforms.
+* Fixed exception in `File` when attempting to get parent of root path (`/`).
+* Fixed UTF-16 versus UTF-8 code paths in `TextLayout` for cppia and other targets.
+* Fixed setting `x`, `y`, or `alpha` in `DisplayObject` to `NaN`, which should convert to `0.0` instead.
+* Fixed `ctrlKey` and `controlKey` values on `MouseEvent` that weren't consistent with `KeyboardEvent`.
+* Fixed unnecessary matrix clone in `transform` setter of `DisplayObject`.
+* Fixed `null` default blend mode in `DisplayObjectRenderer`, which should have been `NORMAL`.
+* Fixed missing `typeReference()` on `Vector` externs for `flash` target.
+* Fixed memory leak in WebKit by clearing and resetting Canvas context on disposal.
+* Fixed case where `ENTER_FRAME` event failed to properly register in `DatagramSocket`.
+* Fixed `DatagramSocket` sometimes returning `null` for `localAddress` when using wildcards.
+* Fixed `DatagramSocket` value for `localAddress` when binding to `0.0.0.0`.
+* Fixed exception in `SimpleButton` when parent uses `cacheAsBitmap` and `downState` is `null`.
+* Fixed `setTextInputRect` not working on macOS because it was called before setting `window.textInputEnabled` to `true`.
+* Fixed `TextField` not respecting changes to `antiAliasType` and `sharpness` on native targets.
+* Fixed `BlurFilter` sometimes cutting off parts of the blur effect.
+* Fixed `ShaderFilter` cache not getting cleared on transformation changes.
+* Fixed value of `bubbles` property on `Event` when using `openfl_pool_events`.
+* Fixed text updates not getting batched in `FPS` when using `gl_stats`.
+* Fixed uninitialized `$global.$haxeUID` in openfl-js library.
+
 9.4.1 (12/19/2024)
 ------------------
 
