@@ -1,11 +1,11 @@
 package openfl.display._internal;
 
 #if !flash
+import openfl.display._internal.DrawCommandBuffer;
+import openfl.display._internal.DrawCommandReader;
 import openfl.display.BitmapData;
 import openfl.display.CanvasRenderer;
 import openfl.display.CapsStyle;
-import openfl.display._internal.DrawCommandBuffer;
-import openfl.display._internal.DrawCommandReader;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -442,6 +442,21 @@ class CanvasGraphics
 						fillCommands.moveTo(c.x, c.y);
 						strokeCommands.moveTo(c.x, c.y);
 
+					case LINE_STYLE:
+						endStroke();
+
+						if (hasStroke && (context : Dynamic).isPointInStroke(x, y))
+						{
+							data.destroy();
+							graphics.__canvas = cacheCanvas;
+							graphics.__context = cacheContext;
+							CanvasGraphics.graphics = null;
+							return true;
+						}
+
+						var c = data.readLineStyle();
+						strokeCommands.lineStyle(c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+
 					case LINE_GRADIENT_STYLE:
 						var c = data.readLineGradientStyle();
 						strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
@@ -450,10 +465,6 @@ class CanvasGraphics
 					case LINE_BITMAP_STYLE:
 						var c = data.readLineBitmapStyle();
 						strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
-
-					case LINE_STYLE:
-						var c = data.readLineStyle();
-						strokeCommands.lineStyle(c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 
 					case END_FILL:
 						data.readEndFill();
@@ -928,7 +939,17 @@ class CanvasGraphics
 					if (shaderBuffer.inputCount > 0)
 					{
 						bitmapFill = shaderBuffer.inputs[0];
-						context.fillStyle = createBitmapFill(bitmapFill, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
+						if (bitmapFill.readable)
+						{
+							context.fillStyle = createBitmapFill(bitmapFill, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
+						}
+						else
+						{
+							// if it's hardware-only BitmapData, fall back to
+							// drawing solid black because we have no software
+							// pixels to work with
+							context.fillStyle = "#" + StringTools.hex(0, 6);
+						}
 						hasFill = true;
 
 						pendingMatrix = null;
@@ -1470,7 +1491,6 @@ class CanvasGraphics
 							endFill();
 							endStroke();
 							hasFill = false;
-							hasLineStyle = false;
 							bitmapFill = null;
 							initStrokeX = 0;
 							initStrokeY = 0;

@@ -181,7 +181,7 @@ import js.html.CanvasRenderingContext2D;
 
 	/**
 		Specifies a simple one-color fill that subsequent calls to other Graphics
-		methods(such as `lineTo()` or `drawCircle()`) use
+		methods (such as `lineTo()` or `drawCircle()`) use
 		when drawing. The fill remains in effect until you call the
 		`beginFill()`, `beginBitmapFill()`,
 		`beginGradientFill()`, or `beginShaderFill()`
@@ -190,8 +190,8 @@ import js.html.CanvasRenderingContext2D;
 		The application renders the fill whenever three or more points are
 		drawn, or when the `endFill()` method is called.
 
-		@param color The color of the fill(0xRRGGBB).
-		@param alpha The alpha value of the fill(0.0 to 1.0).
+		@param color The color of the fill (0xRRGGBB).
+		@param alpha The alpha value of the fill (0.0 to 1.0).
 	**/
 	public function beginFill(color:Int = 0, alpha:Float = 1):Void
 	{
@@ -202,7 +202,7 @@ import js.html.CanvasRenderingContext2D;
 
 	/**
 		Specifies a gradient fill used by subsequent calls to other Graphics
-		methods(such as `lineTo()` or `drawCircle()`) for
+		methods (such as `lineTo()` or `drawCircle()`) for
 		the object. The fill remains in effect until you call the
 		`beginFill()`, `beginBitmapFill()`,
 		`beginGradientFill()`, or `beginShaderFill()`
@@ -984,22 +984,22 @@ import js.html.CanvasRenderingContext2D;
 
 		@param x             A number indicating the horizontal position relative
 							 to the registration point of the parent display
-							 object(in pixels).
+							 object (in pixels).
 		@param y             A number indicating the vertical position relative to
 							 the registration point of the parent display object
 							 (in pixels).
 		@param width         The width of the round rectangle (in pixels).
 		@param height        The height of the round rectangle (in pixels).
 		@param ellipseWidth  The width of the ellipse used to draw the rounded
-							 corners(in pixels).
+							 corners (in pixels).
 		@param ellipseHeight The height of the ellipse used to draw the rounded
-							 corners(in pixels). Optional; if no value is
+							 corners (in pixels). Optional; if no value is
 							 specified, the default value matches that provided
 							 for the `ellipseWidth` parameter.
 		@throws ArgumentError If the `width`, `height`,
 							  `ellipseWidth` or
 							  `ellipseHeight` parameters are not a
-							  number(`Number.NaN`).
+							  number (`Number.NaN`).
 
 		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
@@ -1072,7 +1072,7 @@ import js.html.CanvasRenderingContext2D;
 		Renders a set of triangles, typically to distort bitmaps and give them a
 		three-dimensional appearance. The `drawTriangles()` method maps
 		either the current fill, or a bitmap fill, to the triangle faces using a
-		set of(u,v) coordinates.
+		set of (u,v) coordinates.
 
 		 Any type of fill can be used, but if the fill has a transform matrix
 		that transform matrix is ignored.
@@ -1660,8 +1660,16 @@ import js.html.CanvasRenderingContext2D;
 		__bitmap = null;
 
 		#if (js && html5)
-		__canvas = null;
-		__context = null;
+		if (__canvas != null) {
+			__canvas.width = 0;
+			__canvas.height = 0;
+			__canvas = null;
+		}
+
+		if (__context != null) {
+			__context.clearRect(0, 0, 0, 0);
+			__context = null;
+		}
 		#else
 		__cairo = null;
 		#end
@@ -1877,7 +1885,7 @@ import js.html.CanvasRenderingContext2D;
 
 				case BEGIN_FILL:
 					var c = data.readBeginFill();
-					graphicsData.push(new GraphicsSolidFill(c.color, 1));
+					graphicsData.push(new GraphicsSolidFill(c.color, c.alpha));
 
 				case BEGIN_GRADIENT_FILL:
 					var c = data.readBeginGradientFill();
@@ -1899,7 +1907,13 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float):Void
 	{
-		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
+		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0)
+		{
+			if (__width >= 1 || __height >= 1) __dirty = true;
+			__width = 0;
+			__height = 0;
+			return;
+		}
 
 		var parentTransform = __owner.__renderTransform;
 		if (parentTransform == null) return;
