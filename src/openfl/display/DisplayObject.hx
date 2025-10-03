@@ -1428,8 +1428,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__cairo = null;
 
 		#if (js && html5)
-		__canvas = null;
-		__context = null;
+		if (__canvas != null)
+		{
+			__canvas.width = 0;
+			__canvas.height = 0;
+			__canvas = null;
+		}
+
+		if (__context != null)
+		{
+			__context.clearRect(0, 0, 0, 0);
+			__context = null;
+		}
 		#end
 
 		if (__graphics != null)
@@ -1968,8 +1978,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function set_alpha(value:Float):Float
 	{
-		if (value > 1.0) value = 1.0;
-		if (value < 0.0) value = 0.0;
+		if (value != value) value = 0.0; // flash converts NaN to 0.0
+		else if (value > 1.0) value = 1.0;
+		else if (value < 0.0) value = 0.0;
 
 		if (value != __alpha && !cacheAsBitmap) __setRenderDirty();
 		return __alpha = value;
@@ -2106,6 +2117,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value == __mask)
 		{
 			return value;
+		}
+
+		if (value != null && value.__maskTarget != null)
+		{
+			// a single mask cannot be applied to more than one display object,
+			// so if the new mask already has a target, remove the mask
+			value.__maskTarget.mask = null;
 		}
 
 		if (value != __mask)
@@ -2325,6 +2343,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			if (__scrollRect == null) __scrollRect = new Rectangle();
 			__scrollRect.copyFrom(value);
+			if (__scrollRect.width < 0.0)
+			{
+				__scrollRect.width = 0.0;
+			}
+			if (__scrollRect.height < 0.0)
+			{
+				__scrollRect.height = 0.0;
+			}
 		}
 		else
 		{
@@ -2338,7 +2364,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setRenderDirty();
 		}
 
-		return value;
+		return __scrollRect;
 	}
 
 	@:noCompletion private function get_shader():Shader

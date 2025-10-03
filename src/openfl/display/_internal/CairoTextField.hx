@@ -159,23 +159,6 @@ class CairoTextField
 			graphics.__bitmapScaleY = pixelRatio;
 
 			cairo = graphics.__cairo;
-
-			var options = new CairoFontOptions();
-
-			if (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)
-			{
-				options.hintStyle = CairoHintStyle.NONE;
-				options.hintMetrics = CairoHintMetrics.OFF;
-				options.antialias = CairoAntialias.NONE;
-			}
-			else
-			{
-				options.hintStyle = CairoHintStyle.SLIGHT;
-				options.hintMetrics = CairoHintMetrics.OFF;
-				options.antialias = CairoAntialias.GOOD;
-			}
-
-			cairo.fontOptions = options;
 		}
 		else
 		{
@@ -186,6 +169,23 @@ class CairoTextField
 			cairo.paint();
 			cairo.setOperator(OVER);
 		}
+
+		var options = new CairoFontOptions();
+
+		if (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)
+		{
+			options.hintStyle = CairoHintStyle.NONE;
+			options.hintMetrics = CairoHintMetrics.OFF;
+			options.antialias = CairoAntialias.NONE;
+		}
+		else
+		{
+			options.hintStyle = CairoHintStyle.SLIGHT;
+			options.hintMetrics = CairoHintMetrics.OFF;
+			options.antialias = CairoAntialias.GOOD;
+		}
+
+		cairo.fontOptions = options;
 
 		var matrix = Matrix.__pool.get();
 		matrix.copyFrom(graphics.__renderTransform);

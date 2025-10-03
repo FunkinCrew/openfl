@@ -1,5 +1,6 @@
 package;
 
+import openfl.system.Capabilities;
 import openfl.events.FileListEvent;
 import openfl.events.Event;
 #if (haxe4 && (sys || air))
@@ -94,6 +95,25 @@ class FileTest extends Test
 		Assert.equals(cwd.nativePath, workingDirectory.nativePath);
 	}
 	#end
+
+	public function test_canonicalize()
+	{
+		var isWindows = StringTools.startsWith(Capabilities.version, "WIN ");
+		if (isWindows)
+		{
+			var file = new File("c:\\..\\.\\__openfl_fake_path__\\abc\\def\\ghi\\..\\..\\jkl\\mno\\..\\pqr\\.\\.\\.\\stu\\vwx\\.\\..\\yz.png");
+			Assert.isFalse(file.exists);
+			file.canonicalize();
+			Assert.equals("C:\\__openfl_fake_path__\\abc\\jkl\\pqr\\stu\\yz.png", file.nativePath);
+		}
+		else
+		{
+			var file = new File("/.././__openfl_fake_path__/abc/def/ghi/../../jkl/mno/../pqr/./././stu/vwx/./../yz.png");
+			Assert.isFalse(file.exists);
+			file.canonicalize();
+			Assert.equals("/__openfl_fake_path__/abc/jkl/pqr/stu/yz.png", file.nativePath);
+		}
+	}
 
 	public function test_createDirectory()
 	{

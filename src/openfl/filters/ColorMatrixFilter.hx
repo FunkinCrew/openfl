@@ -230,7 +230,10 @@ import lime.math.RGBA;
 	// Get & Set Methods
 	@:noCompletion private function get_matrix():Array<Float>
 	{
-		return __matrix;
+		// need to return a copy because we shouldn't allow values within the
+		// matrix array to be modified directly. instead, the user should pass a
+		// whole array to the matrix property
+		return __matrix.copy();
 	}
 
 	@:noCompletion private function set_matrix(value:Array<Float>):Array<Float>
