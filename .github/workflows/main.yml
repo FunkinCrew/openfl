@@ -148,7 +148,8 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
-          haxelib install hxcpp --quiet
+          curl --output ../hxcpp-4.3.45.zip --location https://github.com/HaxeFoundation/hxcpp/releases/download/v4.3.45/hxcpp-4.3.45.zip
+          haxelib install ../hxcpp-4.3.45.zip --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
           haxelib install utest --quiet
@@ -160,14 +161,15 @@ jobs:
 
       - name: Install HashLink dependencies with Homebrew
         run: |
+          arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
           pushd ${{ github.workspace }}/lime-develop/project/lib/hashlink
-          brew update
+          arch -x86_64 /usr/local/bin/brew update
           rm /usr/local/bin/2to3*
           rm /usr/local/bin/idle3*
           rm /usr/local/bin/pydoc3*
           rm /usr/local/bin/python3*
           rm /usr/local/bin/pip3*
-          brew bundle
+          arch -x86_64 /usr/local/bin/brew bundle
           popd
 
       - name: Rebuild Lime
