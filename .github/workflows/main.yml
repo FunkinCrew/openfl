@@ -121,7 +121,7 @@ jobs:
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-lime-develop:
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -133,7 +133,7 @@ jobs:
           path: lime-develop
           submodules: true
 
-      - uses: krdlab/setup-haxe@master
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.3.6
 
