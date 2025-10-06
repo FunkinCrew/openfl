@@ -153,6 +153,7 @@ jobs:
           haxelib install format --quiet
           haxelib install hxp --quiet
           haxelib install utest --quiet
+          haxelib install dox --quiet
 
       - name: Setup environment
         run: |
