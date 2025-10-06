@@ -193,6 +193,11 @@ jobs:
         run: |
           haxelib run hxp test -Dtarget=air -Duse-lime-tools -verbose --install-hxp-alias
 
+      - name: Build docs
+        working-directory: scripts
+        run: |
+          haxe docs.hxml
+
   unit-test-air:
     strategy:
       matrix:
