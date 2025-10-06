@@ -12,6 +12,7 @@ import haxe.Unserializer;
 import openfl.errors.EOFError;
 import openfl.errors.RangeError;
 import openfl.net.ObjectEncoding;
+#if !flash
 import openfl.utils._internal.format.amf.AMFReader;
 import openfl.utils._internal.format.amf.AMFTools;
 import openfl.utils._internal.format.amf.AMFWriter;
@@ -20,6 +21,7 @@ import openfl.utils._internal.format.amf3.AMF3Reader;
 import openfl.utils._internal.format.amf3.AMF3Tools;
 import openfl.utils._internal.format.amf3.AMF3Value;
 import openfl.utils._internal.format.amf3.AMF3Writer;
+#end
 #if lime
 import lime.system.System;
 import lime.utils.ArrayBuffer;
