@@ -365,6 +365,7 @@ abstract Vector<T>(IVector<T>)
 	**/
 	#if (haxe_ver >= 4.2)
 	#if !doc_gen
+	#if (haxe_ver >= 4.3)
 	overload extern public inline function push(value:T):Int
 	{
 		return this.push(value);
@@ -373,16 +374,29 @@ abstract Vector<T>(IVector<T>)
 	overload extern public inline function push(args:haxe.Rest<T>):Int
 	{
 		var ret:Int = this.length;
-		for(value in args){
+		for (value in args)
+		{
 			ret = this.push(value);
 		}
 		return ret;
 	}
 	#else
-	//dummy method (I dont know why but I was having issues with Haxe3 Compilation while
-	//using (haxe_ver >= 4.2 && !doc_gen)	
+	// 4.2 considers T and ...T ambiguous
+	public inline function push(args:haxe.Rest<T>):Int
+	{
+		var ret:Int = this.length;
+		for (value in args)
+		{
+			ret = this.push(value);
+		}
+		return ret;
+	}
+	#end
+	#else
+	// dummy method (I dont know why but I was having issues with Haxe3 Compilation while
+	// using (haxe_ver >= 4.2 && !doc_gen)
 	public inline function push(value:T):Int
-	{	
+	{
 		return this.push(value);
 	}
 	#end
@@ -614,7 +628,8 @@ abstract Vector<T>(IVector<T>)
 		@throws	RangeError	If this method is called while fixed is true.
 	**/
 	#if (haxe_ver >= 4.2)
-	#if !doc_gen	
+	#if !doc_gen
+	#if (haxe_ver >= 4.3)
 	overload extern public inline function unshift(value:T):Void
 	{
 		this.unshift(value);
@@ -622,18 +637,31 @@ abstract Vector<T>(IVector<T>)
 
 	overload extern public inline function unshift(args:haxe.Rest<T>):Void
 	{
-		//TODO: We're supposed to return a value here, but we dont.
-		//var ret:Int = this.length;
+		// TODO: We're supposed to return a value here, but we dont.
+		// var ret:Int = this.length;
 		for (value in args)
 		{
-			//ret =
+			// ret =
 			this.unshift(value);
 		}
-		//return ret;
+		// return ret;
 	}
 	#else
-	//dummy method (I dont know why but I was having issues with Haxe3 Compilation while
-	//using (haxe_ver >= 4.2 && !doc_gen)	
+	public inline function unshift(args:haxe.Rest<T>):Void
+	{
+		// TODO: We're supposed to return a value here, but we dont.
+		// var ret:Int = this.length;
+		for (value in args)
+		{
+			// ret =
+			this.unshift(value);
+		}
+		// return ret;
+	}
+	#end
+	#else
+	// dummy method (I dont know why but I was having issues with Haxe3 Compilation while
+	// using (haxe_ver >= 4.2 && !doc_gen)
 	public inline function unshift(value:T):Void
 	{
 		this.unshift(value);
@@ -645,7 +673,7 @@ abstract Vector<T>(IVector<T>)
 		this.unshift(value);
 	}
 	#end
-		
+
 	/**
 		Creates a new Vector object using the values from an Array object
 		@param	array	An Array object
