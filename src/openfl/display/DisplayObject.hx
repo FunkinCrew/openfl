@@ -554,6 +554,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public var mask(get, set):DisplayObject;
 
+	// normal masks cannot be shared by multiple display objects, but swfs may
+	// define clipping layers, which involve depth checks where multiple display
+	// objects are allowed to be masked.
+	@:noCompletion private var clippingLayer(get, set):DisplayObject;
+
+	@:noCompletion private var __hasClippingLayer:Bool = false;
+
 	/**
 		Indicates the x coordinate of the mouse or user input device position, in
 		pixels.
@@ -1970,6 +1977,37 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
+	@:noCompletion private function __setMask(value:DisplayObject):Void
+	{
+		if (value != __mask)
+		{
+			__setTransformDirty();
+			__setRenderDirty();
+		}
+
+		if (__mask != null)
+		{
+			__mask.__isMask = false;
+			__mask.__maskTarget = null;
+			__mask.__setTransformDirty();
+			__mask.__setRenderDirty();
+		}
+
+		if (value != null)
+		{
+			value.__isMask = true;
+			value.__maskTarget = this;
+			value.__setWorldTransformInvalid();
+		}
+
+		if (__cacheBitmap != null && __cacheBitmap.clippingLayer != value)
+		{
+			__cacheBitmap.mask = value;
+		}
+
+		__mask = value;
+	}
+
 	// Get & Set Methods
 	@:keep @:noCompletion private function get_alpha():Float
 	{
@@ -2126,33 +2164,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			value.__maskTarget.mask = null;
 		}
 
-		if (value != __mask)
-		{
-			__setTransformDirty();
-			__setRenderDirty();
-		}
+		__setMask(value);
 
-		if (__mask != null)
-		{
-			__mask.__isMask = false;
-			__mask.__maskTarget = null;
-			__mask.__setTransformDirty();
-			__mask.__setRenderDirty();
-		}
+		return __mask;
+	}
 
-		if (value != null)
+	@:noCompletion private function get_clippingLayer():DisplayObject
+	{
+		if (!__hasClippingLayer)
 		{
-			value.__isMask = true;
-			value.__maskTarget = this;
-			value.__setWorldTransformInvalid();
+			return null;
 		}
+		return __mask;
+	}
 
-		if (__cacheBitmap != null && __cacheBitmap.mask != value)
-		{
-			__cacheBitmap.mask = value;
-		}
-
-		return __mask = value;
+	@:noCompletion private function set_clippingLayer(value:DisplayObject):DisplayObject
+	{
+		__hasClippingLayer = value != null;
+		__setMask(value);
+		return __mask;
 	}
 
 	@:noCompletion private function get_mouseX():Float
