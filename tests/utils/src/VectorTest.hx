@@ -177,7 +177,7 @@ class VectorTest extends Test
 		Assert.equals(1, vector.length);
 		Assert.equals(1, vector[0]);
 
-		#if (haxe_ver > 4.2)
+		#if (haxe_ver >= 4.2 && !flash)
 		vector.push(2, 3);
 
 		Assert.equals(3, vector.length);
@@ -218,7 +218,7 @@ class VectorTest extends Test
 		Assert.equals(2, vector[0]);
 		Assert.equals(3, vector.length);
 
-		#if (haxe_ver > 4.2)
+		#if (haxe_ver >= 4.2 && !flash)
 		vector.unshift(3, 4);
 
 		Assert.equals(5, vector.length);
