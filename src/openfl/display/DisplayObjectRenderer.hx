@@ -504,7 +504,10 @@ class DisplayObjectRenderer extends EventDispatcher
 			displayObject.__cacheBitmap.__worldShader = displayObject.__worldShader;
 			// displayObject.__cacheBitmap.__scrollRect = displayObject.__scrollRect;
 			// displayObject.__cacheBitmap.filters = displayObject.filters;
-			displayObject.__cacheBitmap.mask = displayObject.__mask;
+
+			// the cache bitmap should not take ownership of the mask, so take
+			// advantage of the fact that clipping layers can be shared
+			displayObject.__cacheBitmap.clippingLayer = displayObject.__mask;
 
 			if (needRender)
 			{

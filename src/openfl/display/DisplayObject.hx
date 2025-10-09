@@ -2002,7 +2002,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		if (__cacheBitmap != null && __cacheBitmap.clippingLayer != value)
 		{
-			__cacheBitmap.mask = value;
+			// the cache bitmap should not take ownership of the mask, so take
+			// advantage of the fact that clipping layers can be shared
+			__cacheBitmap.clippingLayer = value;
 		}
 
 		__mask = value;
