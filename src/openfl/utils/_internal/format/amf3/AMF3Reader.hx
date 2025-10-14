@@ -82,7 +82,7 @@ class AMF3Reader
 			header = readObjectHeader();
 		}
 
-		var ret = null;
+		var ret:AMF3Value = null;
 
 		switch (header)
 		{
