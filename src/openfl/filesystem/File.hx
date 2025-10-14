@@ -570,9 +570,9 @@ class File extends FileReference
 			directory.browseForDirectory("Select Directory");
 			directory.addEventListener(Event.SELECT, directorySelected);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Failed:", error.message);
+			trace("Failed: " + error);
 		}
 
 		function directorySelected(event:Event):Void
@@ -634,9 +634,9 @@ class File extends FileReference
 			fileToOpen.browseForOpen("Open", [txtFilter]);
 			fileToOpen.addEventListener(Event.SELECT, fileSelected);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Failed:", error.message);
+			trace("Failed: " + error);
 		}
 
 		function fileSelected(event:Event):Void
@@ -695,9 +695,9 @@ class File extends FileReference
 			docsDir.browseForOpenMultiple("Select Files");
 			docsDir.addEventListener(FileListEvent.SELECT_MULTIPLE, filesSelected);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Failed:", error.message);
+			trace("Failed: " + error);
 		}
 
 		function filesSelected(event:FileListEvent):Void
@@ -754,9 +754,9 @@ class File extends FileReference
 			docsDir.browseForSave("Save As");
 			docsDir.addEventListener(Event.SELECT, saveData);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Failed:", error.message);
+			trace("Failed: " + error);
 		}
 
 		function saveData(event:Event):Void
@@ -945,9 +945,9 @@ class File extends FileReference
 		{
 			sourceFile.copyTo(destination, true);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Error:", error.message);
+			trace("Error: " + error);
 		}
 		```
 
@@ -1617,9 +1617,9 @@ class File extends FileReference
 		{
 			sourceFile.moveTo(destination, true);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Error:" + error.message);
+			trace("Error: " + error);
 		}
 		```
 
