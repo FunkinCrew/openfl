@@ -577,7 +577,7 @@ class File extends FileReference
 
 		function directorySelected(event:Event):Void
 		{
-			directory = event.target as File;
+			directory = cast(event.target, File);
 			var files:Array = directory.getDirectoryListing();
 			for(i in 0...files.length)
 			{
@@ -761,7 +761,7 @@ class File extends FileReference
 
 		function saveData(event:Event):Void
 		{
-			var newFile:File = event.target as File;
+			var newFile:File = cast(event.target, File);
 			var str:String = "Hello.";
 			if (!newFile.exists)
 			{
