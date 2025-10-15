@@ -782,8 +782,42 @@ class File extends FileReference
 		if (cPath == null)
 		{
 			// fall back to unix paths
-			cPath = __sep + segs[1] + __sep;
+			var firstSeg = segs[1];
+			if (firstSeg == "." || firstSeg == "..")
+			{
+				cPath = __sep;
+			}
+			else
+			{
+				cPath = __sep + segs[1] + __sep;
+			}
 			start = 2;
+		}
+
+		var i = segs.length - 1;
+		var dotDotStack = 0;
+		while (i >= start)
+		{
+			var seg = segs[i];
+			if (seg == ".")
+			{
+				segs.splice(i, 1);
+			}
+			else
+			{
+				var isDotDot = seg == "..";
+				if (dotDotStack > 0 && !isDotDot)
+				{
+					segs.splice(i, 1);
+					dotDotStack--;
+				}
+				else if (isDotDot)
+				{
+					segs.splice(i, 1);
+					dotDotStack++;
+				}
+			}
+			i--;
 		}
 
 		for (i in start...segs.length)
@@ -914,7 +948,7 @@ class File extends FileReference
 				for (file in files)
 				{
 					var newFile = new File(Path.join([newPath, file.name]));
-					file.copyTo(newFile);
+					file.copyTo(newFile, overwrite);
 				}
 			}
 			else
@@ -1153,9 +1187,9 @@ class File extends FileReference
 	/**
 		Deletes the file.
 
-		@throws	IOError The directory does not exist, or the directory could not be deleted. On Windows, you
-		cannot delete a directory that contains a file that is open.
-		@throws SecurityError The application does not have the necessary permissions to delete the directory.
+		@throws	IOError The file does not exist, or could not be deleted. On Windows, you
+		cannot delete a file that is currently open.
+		@throws SecurityError The application does not have the necessary permissions to delete the file.
 
 		The following code creates a temporary file and then calls the deleteFile() method to delete it.
 
@@ -1178,10 +1212,10 @@ class File extends FileReference
 	/**
 		Deletes the file asynchronously.
 
-		@event complete Dispatched when the directory has been deleted successfully.
-		@event ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
-		directory that contains a file that is open.
-		@throws SecurityError The application does not have the necessary permissions to delete the directory.
+		@event complete Dispatched when the file has been deleted successfully.
+		@event ioError The file does not exist or could not be deleted. On Windows, you cannot delete a
+		a file that is currently open.
+		@throws SecurityError The application does not have the necessary permissions to delete the file.
 
 		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
@@ -1253,13 +1287,31 @@ class File extends FileReference
 			throw new Error("Not a directory.", 3007);
 		}
 
-		var directories:Array<String> = FileSystem.readDirectory(__path);
+		var fileNames:Array<String> = FileSystem.readDirectory(__path);
 		var files:Array<File> = [];
 
-		for (directory in directories)
+		#if windows
+		for (fileName in fileNames)
 		{
-			files.push(new File(__path + __sep + directory));
+			files.push(new File(__path + __sep + fileName));
 		}
+		#else
+		if (__path == __sep)
+		{
+			for (fileName in fileNames)
+			{
+				// avoid double // when listing unix root
+				files.push(new File(__sep + fileName));
+			}
+		}
+		else
+		{
+			for (fileName in fileNames)
+			{
+				files.push(new File(__path + __sep + fileName));
+			}
+		}
+		#end
 
 		return files;
 	}
@@ -1314,10 +1366,10 @@ class File extends FileReference
 		});
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			var directories:Array<String> = null;
+			var fileNames:Array<String> = null;
 			try
 			{
-				directories = FileSystem.readDirectory(__path);
+				fileNames = FileSystem.readDirectory(__path);
 			}
 			catch (e:Dynamic)
 			{
@@ -1333,10 +1385,29 @@ class File extends FileReference
 				return;
 			}
 			var files:Array<File> = [];
-			for (directory in directories)
+
+			#if windows
+			for (fileName in fileNames)
 			{
-				files.push(new File(__path + __sep + directory));
+				files.push(new File(__path + __sep + fileName));
 			}
+			#else
+			if (__path == __sep)
+			{
+				for (fileName in fileNames)
+				{
+					// avoid double // when listing unix root
+					files.push(new File(__sep + fileName));
+				}
+			}
+			else
+			{
+				for (fileName in fileNames)
+				{
+					files.push(new File(__path + __sep + fileName));
+				}
+			}
+			#end
 			// don't dispatch events directly from doWork because the listeners
 			// will be called in the wrong thread
 			__fileWorker.sendComplete(new FileListEvent(FileListEvent.DIRECTORY_LISTING, files));
@@ -1709,7 +1780,7 @@ class File extends FileReference
 		trace(temp.nativePath);
 		```
 
-		@returns File A File object referencing the new temporary file;		
+		@returns File A File object referencing the new temporary file;
 
 		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
@@ -1740,7 +1811,7 @@ class File extends FileReference
 		}
 		```
 
-		@returns Array An array of File objects, listing the root directories.		
+		@returns Array An array of File objects, listing the root directories.
 	**/
 	public static function getRootDirectories():Array<File>
 	{
@@ -1757,19 +1828,43 @@ class File extends FileReference
 
 	@:noCompletion private function __canonicalize(cpath:String, seg:String):String
 	{
-		seg = seg.toLowerCase();
-		var items:Array<String> = FileSystem.readDirectory(Path.directory(cpath));
+		var items:Array<String> = null;
+		try
+		{
+			items = FileSystem.readDirectory(Path.directory(cpath));
+		}
+		catch (e:Dynamic) {}
 		if (items == null)
 		{
-			return "";
+			// if the directory doesn't exist, or if something goes wrong, like
+			// we don't have permission to read it, use the original name.
+			return seg;
 		}
+
+		// we're using toLowerCase() for comparisons only.
+		// we'll return the original casing if the file doesn't exist.
+		var segLower = seg.toLowerCase();
 		for (item in items)
 		{
-			if (item.toLowerCase() == seg)
+			#if (windows || mac || ios)
+			if (item.toLowerCase() == segLower)
 			{
-				seg = item;
-				break;
+				// generally, file systems on Windows and macOS are not
+				// case-sensitive, but file systems on Linux are.
+				// technically, Windows and macOS file systems (or, sometimes,
+				// individual directories) can be configured to be
+				// case-sensitive, but that's rare.
+				// ideally, we should detect case-sensitivity, instead of
+				// assuming, but this is good enough for now.
+				return item;
 			}
+			#else
+			if (item == seg)
+			{
+				// found an exact match for case-sensitive file systems
+				return item;
+			}
+			#end
 		}
 
 		return seg;
@@ -1927,31 +2022,14 @@ class File extends FileReference
 	#if windows
 	@:noCompletion private function __replaceWindowsEnvVars(path:String):String
 	{
-		// Define the regular expression to match the path component to be replaced
-		var pattern:EReg = ~/%(.+?)%/;
-
-		// Find the first match of the regular expression in the path
-		var match:Bool = pattern.match(path);
-
-		if (match)
+		// replace all environment variables wrapped in %VAR_NAME%
+		var pattern:EReg = ~/%([^%]+)%/g;
+		return pattern.map(path, function(p)
 		{
-			// Extract the matched path component
-			var matchedPath:String = pattern.matched(0);
-
-			// Get the environment variable name by removing the first and last characters ("%")
-			var envVar:String = matchedPath.substring(1, matchedPath.length - 1);
-
-			// Get the value of the environment variable
-			var envVarValue:Null<String> = Sys.getEnv(envVar);
-
-			if (envVarValue == null)
-			{
-				return path;
-			}
-			// Replace the matched path component with the environment variable value
-			return StringTools.replace(path, matchedPath, envVarValue);
-		}
-		return path;
+			var envVar = p.matched(1);
+			var value = Sys.getEnv(envVar);
+			return (value != null) ? value : p.matched(0);
+		});
 	}
 	#end
 
@@ -2119,7 +2197,7 @@ class File extends FileReference
 				path = Path.addTrailingSlash(path);
 			}
 
-			if (Path.directory(path).length == 0)
+			if (#if !windows !StringTools.startsWith(path, "/") && #end Path.directory(path).length == 0)
 			{
 				throw new ArgumentError("One of the parameters is invalid.");
 			}
@@ -2137,9 +2215,23 @@ class File extends FileReference
 
 	@:noCompletion private function get_url():String
 	{
-		// TODO: url encode the native path to avoid invalid URL characters
 		// TODO: use app: and app-storage: protocols instead of file:, when path is relative to those directories
-		return "file:///" + nativePath;
+		var path = nativePath;
+
+		#if windows
+		// convert to forward slashes for URLs
+		path = path.split("\\").join("/");
+		if (!StringTools.startsWith(path, "/"))
+		{
+			path = "/" + path;
+		}
+		#end
+
+		var encoded = StringTools.urlEncode(path);
+		// keep path separators and drive colon unescaped
+		encoded = StringTools.replace(encoded, "%2F", "/");
+		encoded = StringTools.replace(encoded, "%3A", ":");
+		return "file://" + encoded;
 	}
 
 	@:noCompletion private function get_exists():Bool
@@ -2172,7 +2264,7 @@ class File extends FileReference
 		{
 			lastIndex += 1;
 		}
-		return lastIndex != -1 ? new File(__path.substring(0, (lastIndex - path.length) + path.length)) : null;
+		return lastIndex > 0 ? new File(__path.substring(0, (lastIndex - path.length) + path.length)) : null;
 	}
 }
 #else
