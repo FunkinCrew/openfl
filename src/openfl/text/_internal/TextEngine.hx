@@ -106,6 +106,7 @@ class TextEngine
 	// @:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	// @:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
 	private var __useIntAdvances:Null<Bool>;
+	private var __useLetterSpacing:Null<Bool>;
 
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion @:dox(hide) public var __cairoFont:#if lime CairoFontFace #else Dynamic #end;
 	@:noCompletion @:dox(hide) public var __font:Font;
@@ -893,6 +894,11 @@ class TextEngine
 					__useIntAdvances = ~/Trident\/7.0/.match(Browser.navigator.userAgent); // IE
 				}
 
+				if (__useLetterSpacing == null)
+				{
+					__useLetterSpacing = js.Lib.typeof(untyped __context.letterSpacing) != "undefined";
+				}
+
 				if (__useIntAdvances)
 				{
 					// slower, but more accurate if browser returns Int measurements
@@ -928,7 +934,7 @@ class TextEngine
 							advance = __context.measureText(text.charAt(i)).width;
 						}
 
-						// if (i > 0) advance += letterSpacing;
+						if (__useLetterSpacing && i > 0) advance += letterSpacing;
 
 						positions.push(advance);
 					}

@@ -212,6 +212,10 @@ class CanvasTextField
 
 						context.font = TextEngine.getFont(group.format);
 						context.fillStyle = color;
+						if (textEngine.__useLetterSpacing)
+						{
+							Reflect.setField(context, "letterSpacing", group.format.letterSpacing + "px");
+						}
 
 						context.fillText(text.substring(group.startIndex, group.endIndex), group.offsetX
 							+ scrollX
