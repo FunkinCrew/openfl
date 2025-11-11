@@ -2442,7 +2442,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 	}
 
-	public static function ofArray<T>(a:Array<Dynamic>):VectorData<T>
+	public static function ofArray<T>(a:Array<T>):VectorData<T>
 	{
 		if (a == null) return null;
 
