@@ -1,7 +1,7 @@
 Changelog
 =========
 
-9.5.0 (??/??/????)
+9.5.0 (11/11/2025)
 ------------------
 
 * Added new, more accurate `scale9Grid` implementation for `Graphics`. Set the new `openfl_legacy_scale9grid` define to restore legacy behavior.
