@@ -17,6 +17,10 @@ class BitmapDataFileIOTest extends Test
 	{
 		ByteArray.loadFromFile("openfl-base64.txt").onComplete(function(logoBytes)
 		{
+			if (async.timedOut)
+			{
+				return;
+			}
 			var logo = logoBytes.readUTFBytes(logoBytes.length);
 			var type = 'image';
 
@@ -38,6 +42,10 @@ class BitmapDataFileIOTest extends Test
 			async.done();
 		}).onError(function(result)
 		{
+				if (async.timedOut)
+				{
+					return;
+				}
 				Assert.fail(result);
 				async.done();
 		});

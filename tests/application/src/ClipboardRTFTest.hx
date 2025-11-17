@@ -27,6 +27,10 @@ class ClipboardRTFTest extends Test
 	{
 		ByteArray.loadFromFile("hello.rtf").onComplete(function(richTextFormatData)
 		{
+			if (async.timedOut)
+			{
+				return;
+			}
 			var textFormatData = 'Text Format Data';
 			var clipboard = Clipboard.generalClipboard;
 
@@ -46,6 +50,10 @@ class ClipboardRTFTest extends Test
 			async.done();
 		}).onError(function(result)
 		{
+				if (async.timedOut)
+				{
+					return;
+				}
 				Assert.fail(result);
 				async.done();
 		});

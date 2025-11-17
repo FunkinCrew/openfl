@@ -100,12 +100,14 @@ class DatagramSocketTest extends Test
 
 		sockA.addEventListener(DatagramSocketDataEvent.DATA, function(e)
 		{
+			if (async.timedOut) return;
 			Assert.equals(bMsg, e.data.toString());
 			gotA = true; check();
 		});
 
 		sockB.addEventListener(DatagramSocketDataEvent.DATA, function(e)
 		{
+			if (async.timedOut) return;
 			Assert.equals(aMsg, e.data.toString());
 			gotB = true; check();
 		});
