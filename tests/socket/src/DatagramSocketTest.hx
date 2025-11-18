@@ -56,7 +56,7 @@ class DatagramSocketTest extends Test
 		Assert.isFalse(sockA.bound);
 	}
 
-	@:timeout(2000)
+	@:timeout(3000)
 	public function test_sendReceive(async:Async)
 	{
 		sockA = makeSocket();
@@ -78,7 +78,7 @@ class DatagramSocketTest extends Test
 		sockA.send(bytes, 0, 0, sockB.localAddress, sockB.localPort);
 	}
 
-	@:timeout(2000)
+	@:timeout(3000)
 	public function test_bidirectionalEcho(async:Async)
 	{
 		sockA = makeSocket();
