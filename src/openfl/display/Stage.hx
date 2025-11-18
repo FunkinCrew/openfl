@@ -3227,7 +3227,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			var local = newMouseOverTarget.__globalToLocal(targetPoint, localPoint);
 			event.localX = local.x;
 			event.localY = local.y;
-			event.target = target;
+			event.target = newMouseOverTarget;
 			event.clickCount = 0;
 			#else
 			event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, newMouseOverTarget.__globalToLocal(targetPoint, localPoint),
