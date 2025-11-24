@@ -82,7 +82,8 @@ jobs:
     strategy:
       matrix:
         # Lime doesn't support Haxe 3 with HashLink
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.6]
+        # and Haxe threads in HashLink don't seem to stabilize until 4.2
+        haxe-version: [4.2.5, 4.3.6]
     runs-on: macos-latest
     env:
       SDL_VIDEODRIVER: "dummy"
@@ -143,7 +144,7 @@ jobs:
 
       - uses: joshtynjala/setup-adobe-air-action@v2
         with:
-          air-version: "33.1"
+          air-version: "51.2"
           accept-license: true
 
       - name: Set HAXEPATH
@@ -221,7 +222,7 @@ jobs:
 
       - uses: joshtynjala/setup-adobe-air-action@v2
         with:
-          air-version: "33.1"
+          air-version: "51.2"
           accept-license: true
 
       - name: Set HAXEPATH
