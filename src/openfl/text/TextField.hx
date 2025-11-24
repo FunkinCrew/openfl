@@ -2822,7 +2822,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private override function get_height():Float
 	{
 		__updateLayout();
-		return __textEngine.height * Math.abs(scaleY);
+		return __textEngine.height * Math.abs(__scaleY);
 	}
 
 	@:noCompletion private override function set_height(value:Float):Float
@@ -2831,7 +2831,7 @@ class TextField extends InteractiveObject
 		{
 			// ignore negative values completely, and keep the current size
 			// negative values may be achieved by setting scaleY, though
-			return __textEngine.height * Math.abs(scaleY);
+			return __textEngine.height * Math.abs(__scaleY);
 		}
 
 		if (value != __textEngine.height)
@@ -2844,7 +2844,7 @@ class TextField extends InteractiveObject
 			__textEngine.height = value;
 		}
 
-		return __textEngine.height * Math.abs(scaleY);
+		return __textEngine.height * Math.abs(__scaleY);
 	}
 
 	@:noCompletion private function get_htmlText():String
@@ -3259,13 +3259,13 @@ class TextField extends InteractiveObject
 		return __textEngine.type;
 	}
 
-	override private function get_width():Float
+	@:noCompletion override private function get_width():Float
 	{
 		__updateLayout();
 		return __textEngine.width * Math.abs(__scaleX);
 	}
 
-	override private function set_width(value:Float):Float
+	@:noCompletion override private function set_width(value:Float):Float
 	{
 		if (value < 0.0)
 		{
