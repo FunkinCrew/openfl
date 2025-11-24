@@ -2827,6 +2827,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private override function set_height(value:Float):Float
 	{
+		if (value < 0.0)
+		{
+			// ignore negative values completely, and keep the current size
+			// negative values may be achieved by setting scaleY, though
+			return __textEngine.height * Math.abs(scaleY);
+		}
+
 		if (value != __textEngine.height)
 		{
 			__setTransformDirty();
@@ -3260,6 +3267,13 @@ class TextField extends InteractiveObject
 
 	override private function set_width(value:Float):Float
 	{
+		if (value < 0.0)
+		{
+			// ignore negative values completely, and keep the current size
+			// negative values may be achieved by setting scaleX, though
+			return __textEngine.width * Math.abs(__scaleX);
+		}
+
 		if (value != __textEngine.width)
 		{
 			__setTransformDirty();
