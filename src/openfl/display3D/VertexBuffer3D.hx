@@ -182,7 +182,7 @@ class VertexBuffer3D
 	}
 
 	/**
-		Uploads the data for a set of points to the rendering context from am array.
+		Uploads the data for a set of points to the rendering context from an array.
 
 		@param	data	an array of 32-bit values. A single vertex is comprised of a
 		number of values stored sequentially in the array. The number of values in a

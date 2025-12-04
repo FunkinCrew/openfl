@@ -147,7 +147,7 @@ import openfl.Vector;
 	/**
 		Store in the graphics subsystem vertex indices.
 
-		@param	data	am array of vertex indices. Only the low 16 bits of each index
+		@param	data	an array of vertex indices. Only the low 16 bits of each index
 		value are used. The length of the array must be greater than or equal to count.
 		@param	startOffset	The index in this IndexBuffer3D object of the first index to
 		be loaded. A value for startOffset not equal to zero may be used to load a
