@@ -71,6 +71,15 @@ import openfl.Vector;
 		byteArrayOffset:UInt):Void;
 	public function setProgramConstantsFromMatrix(programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void;
 	public function setProgramConstantsFromVector(programType:Context3DProgramType, firstRegister:Int, data:Vector<Float>, numRegisters:Int = -1):Void;
+	public inline function setProgramConstantsFromArray(programType:Context3DProgramType, firstRegister:Int, data:Array<Float>, numRegisters:Int = -1):Void
+	{
+		var vector = new Vector<Float>(data.length);
+		for (i in 0...data.length)
+		{
+			vector[i] = data[i];
+		}
+		setProgramConstantsFromVector(programType, firstRegister, vector, numRegisters);
+	}
 	public function setRenderToBackBuffer():Void;
 	public function setRenderToTexture(texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0,
 		colorOutputIndex:Int = 0):Void;
