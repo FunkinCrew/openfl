@@ -52,7 +52,6 @@ import openfl.Vector;
 class VertexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __data:Vector<Float>;
 	@:noCompletion private var __id:GLBuffer;
 	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numVertices:Int;
