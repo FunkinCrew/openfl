@@ -143,6 +143,51 @@ import openfl.Vector;
 		uploadFromTypedArray(__tempUInt16Array);
 		#end
 	}
+
+	/**
+		Store in the graphics subsystem vertex indices.
+
+		@param	data	am array of vertex indices. Only the low 16 bits of each index
+		value are used. The length of the array must be greater than or equal to count.
+		@param	startOffset	The index in this IndexBuffer3D object of the first index to
+		be loaded. A value for startOffset not equal to zero may be used to load a
+		sub-region of the index data.
+		@param	count	The number of indices in `data`.
+		@throws	TypeError	kNullPointerError when `data` is `null`.
+		@throws	RangeError	kBadInputSize when `count is less than 0 or greater than the
+		length of `data`, or when `startOffset + count` is greater than `numIndices`
+		given in `context3D.createIndexBuffer()`.
+		@throws	Error	3768: The Stage3D API may not be used during background execution.
+	**/
+	public function uploadFromArray(data:Array<UInt>, startOffset:Int, count:Int):Void
+	{
+		#if lime
+		// TODO: Optimize more
+
+		if (data == null) return;
+		var gl = __context.gl;
+
+		var length = startOffset + count;
+		var existingUInt16Array = __tempUInt16Array;
+
+		if (__tempUInt16Array == null || __tempUInt16Array.length < count)
+		{
+			__tempUInt16Array = new UInt16Array(count);
+
+			if (existingUInt16Array != null)
+			{
+				__tempUInt16Array.set(existingUInt16Array);
+			}
+		}
+
+		for (i in startOffset...length)
+		{
+			__tempUInt16Array[i - startOffset] = data[i];
+		}
+
+		uploadFromTypedArray(__tempUInt16Array);
+		#end
+	}
 }
 #else
 typedef IndexBuffer3D = flash.display3D.IndexBuffer3D;

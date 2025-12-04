@@ -181,6 +181,56 @@ class VertexBuffer3D
 		uploadFromTypedArray(__tempFloat32Array);
 		#end
 	}
+
+	/**
+		Uploads the data for a set of points to the rendering context from am array.
+
+		@param	data	an array of 32-bit values. A single vertex is comprised of a
+		number of values stored sequentially in the array. The number of values in a
+		vertex is specified at buffer creation using the data32PerVertex parameter to the
+		Context3D `createVertexBuffer3D()` method. The length of the array must be the
+		number of values per vertex times the number of vertexes.
+		@param	startVertex	The index of the first vertex to be loaded. A value for
+		`startVertex` not equal to zero may be used to load a sub-region of the vertex data.
+		@param	numVertices	The number of vertices represented by data.
+		@throws	TypeError	Null Pointer Error: when `data` is `null`.
+		@throws	RangeError	Bad Input Size: when number of elements in data is less than
+		`numVertices * data32PerVertex` given in Context3D `createVertexBuffer()`, or
+		when `startVertex + numVertices` is greater than `numVertices` given in Context3D
+		`createVertexBuffer()`.
+	**/
+	public function uploadFromArray(data:Array<Float>, startVertex:Int, numVertices:Int):Void
+	{
+		#if lime
+		if (data == null) return;
+		var gl = __context.gl;
+
+		// TODO: Optimize more
+
+		var start = startVertex * __vertexSize;
+		var count = numVertices * __vertexSize;
+		var length = start + count;
+
+		var existingFloat32Array = __tempFloat32Array;
+
+		if (__tempFloat32Array == null || __tempFloat32Array.length < count)
+		{
+			__tempFloat32Array = new Float32Array(count);
+
+			if (existingFloat32Array != null)
+			{
+				__tempFloat32Array.set(existingFloat32Array);
+			}
+		}
+
+		for (i in start...length)
+		{
+			__tempFloat32Array[i - start] = data[i];
+		}
+
+		uploadFromTypedArray(__tempFloat32Array);
+		#end
+	}
 }
 #else
 typedef VertexBuffer3D = flash.display3D.VertexBuffer3D;

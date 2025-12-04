@@ -1649,6 +1649,63 @@ import lime.math.Vector2;
 	}
 
 	/**
+		Sets the constant inputs for the shader programs.
+
+		Sets an array of constants to be accessed by a vertex or fragment shader
+		program. Constants set in Program3D are accessed within the shader programs as
+		constant registers. Each constant register is comprised of 4 floating point
+		values (x, y, z, w). Therefore every register requires 4 entries in the data
+		Vector. The number of registers that you can set for vertex program and
+		fragment program depends on the Context3DProfile.
+
+		@param	programType	The type of shader program, either
+		`Context3DProgramType.VERTEX` or `Context3DProgramType.FRAGMENT`.
+		@param	firstRegister	the index of the first constant register to set.
+		@param	data	the floating point constant values. There must be at least
+		`numRegisters` 4 elements in data.
+		@param	numRegisters	the number of constants to set. Specify -1, the default
+		value, to set enough registers to use all of the available data.
+		@throws	TypeError	Null Pointer Error: when data is `null`.
+		@throws	RangeError	Constant Register Out Of Bounds: when attempting to set more
+		than the maximum number of shader constant registers.
+		@throws	RangeError	Bad Input Size: When the number of elements in data is less
+		than `numRegisters*4`
+	**/
+	public function setProgramConstantsFromArray(programType:Context3DProgramType, firstRegister:Int, data:Array<Float>, numRegisters:Int = -1):Void
+	{
+		if (numRegisters == 0) return;
+
+		if (__state.program != null && __state.program.__format == GLSL) {}
+		else
+		{
+			if (numRegisters == -1)
+			{
+				numRegisters = (data.length >> 2);
+			}
+
+			var isVertex = (programType == VERTEX);
+			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			var source = data;
+
+			var sourceIndex = 0;
+			var destIndex = firstRegister * 4;
+
+			for (i in 0...numRegisters)
+			{
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+			}
+
+			if (__state.program != null)
+			{
+				__state.program.__markDirty(isVertex, firstRegister, numRegisters);
+			}
+		}
+	}
+
+	/**
 		Sets the back rendering buffer as the render target. Subsequent calls to
 		`drawTriangles()` and `clear()` methods result in updates to the back buffer.
 		Use this method to resume normal rendering after using the
