@@ -778,6 +778,10 @@ class CairoGraphics
 			{
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
+					if (!hasPath)
+					{
+						cairo.moveTo(-offsetX, -offsetY);
+					}
 					hasPath = true;
 
 					if (hasScale9Grid)
@@ -826,6 +830,10 @@ class CairoGraphics
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
+					if (!hasPath)
+					{
+						cairo.moveTo(-offsetX, -offsetY);
+					}
 					hasPath = true;
 
 					if (hasScale9Grid)
@@ -974,6 +982,10 @@ class CairoGraphics
 
 				case LINE_TO:
 					var c = data.readLineTo();
+					if (!hasPath)
+					{
+						cairo.moveTo(-offsetX, -offsetY);
+					}
 					hasPath = true;
 
 					if (hasScale9Grid)
