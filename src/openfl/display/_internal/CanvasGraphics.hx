@@ -956,7 +956,7 @@ class CanvasGraphics
 			{
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
-					if (!hasPath)
+					if (!hasPath && !setStart)
 					{
 						context.moveTo(-offsetX, -offsetY);
 					}
@@ -1008,7 +1008,7 @@ class CanvasGraphics
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
-					if (!hasPath)
+					if (!hasPath && !setStart)
 					{
 						context.moveTo(-offsetX, -offsetY);
 					}
@@ -1160,7 +1160,7 @@ class CanvasGraphics
 
 				case LINE_TO:
 					var c = data.readLineTo();
-					if (!hasPath)
+					if (!hasPath && !setStart)
 					{
 						context.moveTo(-offsetX, -offsetY);
 					}

@@ -778,7 +778,7 @@ class CairoGraphics
 			{
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
-					if (!hasPath)
+					if (!hasPath && !setStart)
 					{
 						cairo.moveTo(-offsetX, -offsetY);
 					}
@@ -830,7 +830,7 @@ class CairoGraphics
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
-					if (!hasPath)
+					if (!hasPath && !setStart)
 					{
 						cairo.moveTo(-offsetX, -offsetY);
 					}
@@ -982,7 +982,7 @@ class CairoGraphics
 
 				case LINE_TO:
 					var c = data.readLineTo();
-					if (!hasPath)
+					if (!hasPath && !setStart)
 					{
 						cairo.moveTo(-offsetX, -offsetY);
 					}
