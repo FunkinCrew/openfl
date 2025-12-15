@@ -11,15 +11,13 @@ package openfl.system;
 #end
 class Security
 {
-	#if false
 	/**
 		The file is running in an AIR application, and it was installed with
 		the package (the AIR file) for that application. This content is
 		included in the AIR application resource directory (where the
 		application content is installed).
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var APPLICATION:String;
-	#end
+	public static var APPLICATION:String = "application";
 
 	/**
 		The file is a local file and has been trusted by the user, using
@@ -137,7 +135,7 @@ class Security
 		For more information related to security, see the Flash Player
 		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
-	public static var sandboxType(default, null):String;
+	public static var sandboxType(get, null):String;
 
 	/**
 		Lets SWF files in the identified domains access objects and variables
@@ -580,6 +578,24 @@ class Security
 	**/
 	// @:noCompletion @:dox(hide) public static function showSettings (panel:openfl.system.SecurityPanel = null):Void;
 	#end
+	//
+
+	private static function get_sandboxType():String
+	{
+		#if (js && html5)
+		var jsWindow = cast(js.Lib.global, js.html.Window);
+		if (jsWindow.location.protocol == "file:")
+		{
+			// it isn't necessarily exactly equivalent to Flash's localWithFile.
+			// however, it seems like a decently closest option to indicate that
+			// there are reduced permissions when using the file: protocol.
+			return Security.LOCAL_WITH_FILE;
+		}
+		return Security.REMOTE;
+		#else
+		return Security.APPLICATION;
+		#end
+	}
 }
 #else
 typedef Security = flash.system.Security;
