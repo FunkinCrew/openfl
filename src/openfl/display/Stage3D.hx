@@ -33,8 +33,8 @@ import js.Browser;
 	The Stage object is not globally accessible. You need to access it through
 	the `stage` property of a DisplayObject instance.
 
-	The Stage class has several ancestor classes נDisplayObjectContainer,
-	InteractiveObject, DisplayObject, and EventDispatcher נfrom which it
+	The Stage class has several ancestor classes (DisplayObjectContainer,
+	InteractiveObject, DisplayObject, and EventDispatcher) from which it
 	inherits properties and methods. Many of these properties and methods are
 	either inapplicable to Stage objects, or require security checks when
 	called on a Stage object. The properties and methods that require security
