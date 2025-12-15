@@ -96,14 +96,15 @@ class Security
 	**/
 	public static var exactSettings:Bool;
 
-	#if false
 	/**
-		Get the page domain containing the swf. For security reasons, the
-		method does not return the full URL, only the page domain, such as
-		http://www.example.com.
+		Get the page domain containing the SWF.
+
+		For security reasons, the method does not return the full URL, only the
+		page domain, such as `http://www.example.com`. If this SWF is not
+		contained in an HTML page, or cannot access the page domain for security
+		reasons, this property returns the string, `"undefined"`.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash11) public static var pageDomain (default, null):String;
-	#end
+	public static var pageDomain(get, null):String;
 
 	/**
 		Indicates the type of security sandbox in which the calling file is
@@ -581,6 +582,16 @@ class Security
 	public static function showSettings(panel:SecurityPanel = null):Void
 	{
 		// similar to AIR, does nothing
+	}
+
+	private static function get_pageDomain():String
+	{
+		#if (js && html5)
+		var jsWindow = cast(js.Lib.global, js.html.Window);
+		return jsWindow.location.origin;
+		#else
+		return "undefined";
+		#end
 	}
 
 	private static function get_sandboxType():String
