@@ -112,21 +112,21 @@ class Security
 		operating.
 		`Security.sandboxType` has one of the following values:
 
-		* `remote` (`Security.REMOTE`)הhis file is from an Internet URL and
+		* `remote` (`Security.REMOTE`) This file is from an Internet URL and
 		operates under domain-based sandbox rules.
-		* `localWithFile` (`Security.LOCAL_WITH_FILE`)הhis file is a local
+		* `localWithFile` (`Security.LOCAL_WITH_FILE`) This file is a local
 		file, has not been trusted by the user, and it is not a SWF file that
 		was published with a networking designation. The file may read from
 		local data sources but may not communicate with the Internet.
-		* `localWithNetwork` (`Security.LOCAL_WITH_NETWORK`)הhis SWF file
+		* `localWithNetwork` (`Security.LOCAL_WITH_NETWORK`) This SWF file
 		is a local file, has not been trusted by the user, and was published
 		with a networking designation. The SWF file can communicate with the
 		Internet but cannot read from local data sources.
-		* `localTrusted` (`Security.LOCAL_TRUSTED`)הhis file is a local
+		* `localTrusted` (`Security.LOCAL_TRUSTED`) This file is a local
 		file and has been trusted by the user, using either the Flash Player
 		Settings Manager or a FlashPlayerTrust configuration file. The file
 		can read from local data sources and communicate with the Internet.
-		* `application` (`Security.APPLICATION`)הhis file is running in an
+		* `application` (`Security.APPLICATION` This file is running in an
 		AIR application, and it was installed with the package (AIR file) for
 		that application. By default, files in the AIR application sandbox can
 		cross-script any file from any domain (although files outside the AIR
