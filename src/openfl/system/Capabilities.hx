@@ -384,6 +384,10 @@ import sys.io.Process;
 		* `"StandAlone"` for the stand-alone Flash Player
 
 		The server string is `PT`.
+
+		_OpenFL target support:_ On native targets that are considered Haxe
+		`sys` targets, returns `"Desktop"`. On the HTML5 target, returns
+		`"PlugIn"`. On all other targets, returns `"StandAlone"`.
 	**/
 	public static var playerType(default, null) = #if web "PlugIn" #elseif sys "Desktop" #else "StandAlone" #end;
 
