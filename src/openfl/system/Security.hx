@@ -90,11 +90,13 @@ class Security
 		later, set `Security.exactSettings` to `false` before calling
 		`SharedObject.getLocal()`.
 
+		_OpenFL target support:_ Changing this property in OpenFL has no effect.
+
 		@throws SecurityError An OpenFL application already used the value of
 							  `exactSettings` at least once in a decision about
 							  player settings.
 	**/
-	public static var exactSettings:Bool;
+	public static var exactSettings:Bool = true;
 
 	/**
 		Get the page domain containing the SWF.
