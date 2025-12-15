@@ -566,19 +566,22 @@ class Security
 		// var res = haxe.Http.requestUrl( url );
 	}
 
-	#if false
 	/**
 		Displays the Security Settings panel in Flash Player. This method does
 		not apply to content in Adobe AIR; calling it in an AIR application
 		has no effect.
 
+		_OpenFL target support:_ Similar to Adobe AIR, calling this method in
+		other OpenFL targets has no effect.
+
 		@param panel A value from the SecurityPanel class that specifies which
 					 Security Settings panel you want to display. If you omit
 					 this parameter, `SecurityPanel.DEFAULT` is used.
 	**/
-	// @:noCompletion @:dox(hide) public static function showSettings (panel:openfl.system.SecurityPanel = null):Void;
-	#end
-	//
+	public static function showSettings(panel:SecurityPanel = null):Void
+	{
+		// similar to AIR, does nothing
+	}
 
 	private static function get_sandboxType():String
 	{
