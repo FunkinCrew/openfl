@@ -126,7 +126,7 @@ class Security
 		file and has been trusted by the user, using either the Flash Player
 		Settings Manager or a FlashPlayerTrust configuration file. The file
 		can read from local data sources and communicate with the Internet.
-		* `application` (`Security.APPLICATION` This file is running in an
+		* `application` (`Security.APPLICATION`) This file is running in an
 		AIR application, and it was installed with the package (AIR file) for
 		that application. By default, files in the AIR application sandbox can
 		cross-script any file from any domain (although files outside the AIR
