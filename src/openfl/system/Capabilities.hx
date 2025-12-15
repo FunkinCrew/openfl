@@ -377,8 +377,7 @@ import sys.io.Process;
 		* `"Desktop"` for the Adobe AIR runtime (except for SWF
 		content loaded by an HTML page, which has
 		`Capabilities.playerType` set to `"PlugIn"`)
-		* `"External"` for the external Flash Player<ph
-		outputclass="flashonly"> or in test mode
+		* `"External"` for the external Flash Player or in test mode
 		* `"PlugIn"` for the Flash Player browser plug-in (and for
 		SWF content loaded by an HTML page in an AIR application)
 		* `"StandAlone"` for the stand-alone Flash Player
