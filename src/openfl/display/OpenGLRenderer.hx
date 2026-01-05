@@ -107,6 +107,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __values:Array<Float>;
 	@:noCompletion private var __width:Int;
 
+	@:noCompletion private var _complexBlendsSupported:Bool;
+
 	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
 	{
 		super();
@@ -139,6 +141,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			gl.enable(ext.DEBUG_OUTPUT_SYNCHRONOUS);
 		}
 		#end
+
+		_complexBlendsSupported = gl.getSupportedExtensions().contains("KHR_blend_equation_advanced");
 
 		#if (js && html5)
 		__softwareRenderer = new CanvasRenderer(null);
@@ -1066,6 +1070,16 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				__context3D.setBlendFactors(ONE, ONE);
 				__context3D.__setGLBlendEquation(0x8008); // GL_MAX
 			#end
+
+			case OVERLAY:
+				if (_complexBlendsSupported)
+				{
+					__context3D.__setGLBlendEquation(0x9296); // OVERLAY_KHR
+				}
+				else
+				{
+					__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
+				}
 
 			default:
 				__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
