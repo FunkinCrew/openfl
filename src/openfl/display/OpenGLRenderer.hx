@@ -1046,6 +1046,27 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		__blendMode = value;
 
+		if (_complexBlendsSupported)
+		{
+			var equation:Null<Int> = switch (value)
+			{
+				case MULTIPLY: 0x9294; // MULTIPLY_KHR
+				case SCREEN: 0x9295; // SCREEN_KHR
+				case OVERLAY: 0x9296; // OVERLAY_KHR
+				case DARKEN: 0x9297; // DARKEN_KHR
+				case LIGHTEN: 0x9298; // LIGHTEN_KHR
+				case HARDLIGHT: 0x929B; // HARDLIGHT_KHR
+				case DIFFERENCE: 0x929E; // DIFFERENCE_KHR
+				default: null;
+			}
+
+			if (equation != null)
+			{
+				__context3D.__setGLBlendEquation(equation);
+				return;
+			}
+		}
+
 		switch (value)
 		{
 			case ADD:
@@ -1070,16 +1091,6 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				__context3D.setBlendFactors(ONE, ONE);
 				__context3D.__setGLBlendEquation(0x8008); // GL_MAX
 			#end
-
-			case OVERLAY:
-				if (_complexBlendsSupported)
-				{
-					__context3D.__setGLBlendEquation(0x9296); // OVERLAY_KHR
-				}
-				else
-				{
-					__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
-				}
 
 			default:
 				__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
