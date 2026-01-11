@@ -1061,6 +1061,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				case COLORBURN: 0x929A; // COLORBURN_KHR
 				case SOFTLIGHT: 0x929C; // SOFTLIGHT_KHR
 				case EXCLUSION: 0x92A0; // EXCLUSION_KHR
+				case HUE: 0x92AD; // HSL_HUE_KHR
+				case SATURATION: 0x92AE; // HSL_SATURATION_KHR
+				case COLOR: 0x92AF; // HSL_COLOR_KHR
+				case LUMINOSITY: 0x92B0; // HSL_LUMINOSITY_KHR
 				default: null;
 			}
 

@@ -210,6 +210,32 @@ package openfl.display;
 	**/
 	public var EXCLUSION = 18;
 
+	/**
+		Creates a color with the hue of the source color and the saturation and luminosity of the
+		backdrop color.
+	**/
+	public var HUE = 19;
+
+	/**
+		Creates a color with the saturation of the source color and the hue and luminosity of the
+		backdrop color. Painting with this mode in an area of the backdrop that is a pure gray (no
+		saturation) produces no change.
+	**/
+	public var SATURATION = 20;
+
+	/**
+		Creates a color with the hue and saturation of the source color and the luminosity of the
+		backdrop color. This preserves the gray levels of the backdrop and is useful for coloring
+		monochrome images or tinting color images.
+	**/
+	public var COLOR = 21;
+
+	/**
+		Creates a color with the luminosity of the source color and the hue and saturation of the
+		backdrop color. This produces an inverse effect to that of the Color mode.
+	**/
+	public var LUMINOSITY = 22;
+
 	@:from private static function fromString(value:String):BlendMode
 	{
 		return switch (value)
@@ -233,6 +259,10 @@ package openfl.display;
 			case "colorburn": COLORBURN;
 			case "softlight": SOFTLIGHT;
 			case "exclusion": EXCLUSION;
+			case "hue": HUE;
+			case "saturation": SATURATION;
+			case "color": COLOR;
+			case "luminosity": LUMINOSITY;
 			default: null;
 		}
 	}
@@ -260,6 +290,10 @@ package openfl.display;
 			case BlendMode.COLORBURN: "colorburn";
 			case BlendMode.SOFTLIGHT: "softlight";
 			case BlendMode.EXCLUSION: "exclusion";
+			case BlendMode.HUE: "hue";
+			case BlendMode.SATURATION: "saturation";
+			case BlendMode.COLOR: "color";
+			case BlendMode.LUMINOSITY: "luminosity";
 			default: null;
 		}
 	}
@@ -286,6 +320,10 @@ package openfl.display;
 	public var COLORBURN = "colorburn";
 	public var SOFTLIGHT = "softlight";
 	public var EXCLUSION = "exclusion";
+	public var HUE = "hue";
+	public var SATURATION = "saturation";
+	public var COLOR = "color";
+	public var LUMINOSITY = "luminosity";
 }
 #end
 #else
