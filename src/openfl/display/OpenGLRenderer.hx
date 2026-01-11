@@ -73,6 +73,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __staticDefaultDisplayShader:DisplayObjectShader;
 	@:noCompletion private static var __staticDefaultGraphicsShader:GraphicsShader;
 	@:noCompletion private static var __staticMaskShader:Context3DMaskShader;
+	@:noCompletion private static var __complexBlendsSupported:Null<Bool>;
 
 	@:noCompletion private var __context3D:Context3D;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
@@ -107,8 +108,6 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __values:Array<Float>;
 	@:noCompletion private var __width:Int;
 
-	@:noCompletion private var _complexBlendsSupported:Bool;
-
 	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
 	{
 		super();
@@ -142,7 +141,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 		#end
 
-		_complexBlendsSupported = gl.getSupportedExtensions().contains("KHR_blend_equation_advanced");
+		if (__complexBlendsSupported == null)
+			__complexBlendsSupported = gl.getSupportedExtensions().contains("KHR_blend_equation_advanced");
 
 		#if (js && html5)
 		__softwareRenderer = new CanvasRenderer(null);
@@ -1046,7 +1046,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		__blendMode = value;
 
-		if (_complexBlendsSupported)
+		if (__complexBlendsSupported)
 		{
 			var equation:Null<Int> = switch (value)
 			{
