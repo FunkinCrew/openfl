@@ -625,10 +625,22 @@ class Shader
 			extensions += "#extension " + ext.name + " : " + ext.behavior + "\n";
 		}
 
+		var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment &&
+			(!StringTools.startsWith(__glVersion, "1") || __glVersion == "150");
+
+		if (complexBlendsSupported)
+		{
+			extensions += "#extension GL_KHR_blend_equation_advanced : enable\n";
+
+			// compiling without this gives the error
+			// 'gl_SampleID' : required extension not requested: GL_ARB_sample_shading
+			extensions += "#extension GL_ARB_sample_shading : enable\n";
+		}
+
 		// #version must be the first directive and cannot be repeated,
 		// while #extension directives must be before any non-preprocessor tokens.
 
-		return "#version "
+		var prefix = "#version "
 			+ __glVersion
 			+ "
       "
@@ -644,6 +656,13 @@ class Shader
 			+ "
 				#endif
 				";
+
+		if (complexBlendsSupported)
+		{
+			prefix += "#ifdef GL_KHR_blend_equation_advanced\nlayout (blend_support_all_equations) out;\n#endif\n";
+		}
+
+		return prefix;
 	}
 
 	@:noCompletion private function __initGL():Void
