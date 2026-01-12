@@ -2734,6 +2734,11 @@ import lime.math.Vector2;
 		}
 	}
 
+	@:noCompletion private inline function __glBlendBarrier():Void
+	{
+		gl.blendBarrier();
+	}
+
 	// Get & Set Methods
 	@:noCompletion private function get_enableErrorChecking():Bool
 	{
