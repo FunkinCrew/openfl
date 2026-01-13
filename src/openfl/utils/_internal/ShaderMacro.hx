@@ -65,7 +65,7 @@ class ShaderMacro
 					all have a second argument which, if true, will use `processGLSLText` to convert the text to be compatible with the current GLSL version.
 					Defaults to false to prevent converting user-defined GLSL.
 				**/
-				var shouldProcess = meta.params.length > 1 && cast(meta.params[1].getValue(), Bool);
+				var shouldProcess = /*meta.params.length > 1 && cast(meta.params[1].getValue(), Bool)*/ true;
 
 				switch (meta.name)
 				{
@@ -174,7 +174,7 @@ class ShaderMacro
 						all have a second argument which, if true, will use `processGLSLText` to convert the text to be compatible with the current GLSL version.
 						Defaults to false to prevent converting user-defined GLSL.
 					**/
-					var shouldProcess = meta.params.length > 1 && cast(meta.params[1].getValue(), Bool);
+					var shouldProcess = /*meta.params.length > 1 && cast(meta.params[1].getValue(), Bool)*/ true;
 
 					switch (meta.name)
 					{
@@ -442,7 +442,7 @@ class ShaderMacro
 	{
 		// Specify the default glVersion.
 		// We can use compile defines to guess the value that prevents crashes in the majority of cases.
-		return #if (android) "100" #elseif (web) "100" #elseif (mac) "120" #elseif (desktop) "150" #else "100" #end;
+		return "300 es";
 	}
 
 	/**
