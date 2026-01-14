@@ -1076,6 +1076,16 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			}
 		}
 
+		if (__complexBlendsSupported)
+		{
+			// On AMD cards going back to the standard blend equations after using advanced blends resulted in
+			// invisible/black sprites so we need to reset the blend state as a workaround
+			@:privateAccess
+			var cacheBlendState = __context3D.__contextState.__enableGLBlend;
+			__context3D.__setGLBlend(false);
+			__context3D.__setGLBlend(cacheBlendState);
+		}
+
 		switch (value)
 		{
 			case ADD:
