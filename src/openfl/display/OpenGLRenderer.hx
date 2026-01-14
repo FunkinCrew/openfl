@@ -74,6 +74,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __staticDefaultGraphicsShader:GraphicsShader;
 	@:noCompletion private static var __staticMaskShader:Context3DMaskShader;
 	@:noCompletion private static var __complexBlendsSupported:Null<Bool>;
+	@:noCompletion private static var __coherentBlendsSupported:Null<Bool>;
 
 	@:noCompletion private var __context3D:Context3D;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
@@ -142,7 +143,11 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		#end
 
 		if (__complexBlendsSupported == null)
-			__complexBlendsSupported = gl.getSupportedExtensions().contains("KHR_blend_equation_advanced");
+		{
+			var extensions = gl.getSupportedExtensions();
+			__complexBlendsSupported = extensions.contains("KHR_blend_equation_advanced");
+			__coherentBlendsSupported = extensions.contains("KHR_blend_equation_advanced_coherent");
+		}
 
 		#if (js && html5)
 		__softwareRenderer = new CanvasRenderer(null);
