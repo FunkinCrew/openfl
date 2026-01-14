@@ -2350,10 +2350,13 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 			unshift: { value: p.unshift },
 			get_length: { value: p.get_length },
 			set_length: { value: p.set_length },
+			fixed: { writable: true },
 		}
 		var _VectorData = function (length, fixed, array) {
 			if (array == null) array = [];
-			return Object.defineProperties (construct (array, length, fixed), _VectorDataDescriptor);
+			var result = Object.defineProperties (array, _VectorDataDescriptor);
+			construct (result, length, fixed);
+			return result;
 		}
 		_VectorDataDescriptor.constructor.value = _VectorData;
 		_VectorData.__name__ = ref.__name__;
