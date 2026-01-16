@@ -625,16 +625,18 @@ class Shader
 			extensions += "#extension " + ext.name + " : " + ext.behavior + "\n";
 		}
 
-		var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment &&
-			(!StringTools.startsWith(__glVersion, "1") || __glVersion == "150");
+		var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment
+			#if desktop && (!StringTools.startsWith(__glVersion, "1") || __glVersion == "150") #end;
 
 		if (complexBlendsSupported)
 		{
 			extensions += "#extension GL_KHR_blend_equation_advanced : enable\n";
 
+			#if desktop
 			// compiling without this gives the error
 			// 'gl_SampleID' : required extension not requested: GL_ARB_sample_shading
 			extensions += "#extension GL_ARB_sample_shading : enable\n";
+			#end
 		}
 
 		// #version must be the first directive and cannot be repeated,
