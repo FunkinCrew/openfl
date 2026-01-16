@@ -577,6 +577,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		Reads a multibyte string of specified length from the byte stream using
 		the specified character set.
 
+		_OpenFL target support:_ Supported by the HTML5, Flash, and AIR targets.
+		Not currently supported by native targets.
+
 		@param length  The number of bytes from the byte stream to read.
 		@param charSet The string denoting the character set to use to interpret
 					   the bytes. Possible character set strings include
@@ -957,6 +960,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	/**
 		Writes a multibyte string to the byte stream using the specified character
 		set.
+
+		_OpenFL target support:_ Not currently supported, except when targeting Flash or AIR.
 
 		@param value   The string value to be written.
 		@param charSet The string denoting the character set to use. Possible
@@ -1435,7 +1440,40 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readMultiByte(length:Int, charSet:String):String
 	{
+		#if js
+		if (position + length > __length)
+		{
+			throw new EOFError();
+		}
+		try
+		{
+			var decoder = new js.html.TextDecoder(charSet, {fatal: true});
+
+			var bytesToDecode:ByteArray = this;
+			// decode reads the full ArrayBuffer, so we need to make a copy to
+			// start from a position greater than 0 or to read fewer than length
+			// characters
+			if (position > 0 || length != this.length)
+			{
+				bytesToDecode = new ByteArray();
+				for (i in 0...length)
+				{
+					var byte = this.readByte();
+					bytesToDecode.writeByte(byte);
+				}
+			}
+
+			var arrayBuffer = (bytesToDecode : Bytes).getData();
+			return decoder.decode(arrayBuffer);
+		}
+		catch (e:Dynamic)
+		{
+			// when a charset isn't supported, fall back to UTF
+			return readUTFBytes(length);
+		}
+		#else
 		return readUTFBytes(length);
+		#end
 	}
 
 	public function readObject():Dynamic
@@ -1696,6 +1734,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function writeMultiByte(value:String, charSet:String):Void
 	{
+		// for JS, while we can use TextDecoder to read many different charsets
+		// in readMultiByte(), the matching TextEncoder supports utf-8 only.
+		if (charSet != "utf-8")
+		{
+			// if the charset isn't recognized, write all question marks
+			for (i in 0...value.length)
+			{
+				writeByte(0x3f);
+			}
+			return;
+		}
 		writeUTFBytes(value);
 	}
 
