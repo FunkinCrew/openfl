@@ -144,9 +144,15 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		if (__complexBlendsSupported == null)
 		{
+			#if desktop
 			var extensions = gl.getSupportedExtensions();
 			__complexBlendsSupported = extensions.contains("KHR_blend_equation_advanced");
 			__coherentBlendsSupported = extensions.contains("KHR_blend_equation_advanced_coherent");
+			#else
+			// TODO: actually make this work on android
+			__complexBlendsSupported = false;
+			__coherentBlendsSupported = false;
+			#end
 		}
 
 		#if (js && html5)
