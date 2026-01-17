@@ -150,11 +150,11 @@ class Assets
 		}
 
 		#if !flash
-		if (allowCompressedTextures || haxe.io.Path.extension(id) == "astc")
+		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
 		{
 			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
 
-			if (LimeAssets.exists(astcTexture, BINARY) && openfl.Lib.current.stage.context3D.isASTCSupported())
+			if (LimeAssets.exists(astcTexture, BINARY))
 			{
 				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)), false);
 
