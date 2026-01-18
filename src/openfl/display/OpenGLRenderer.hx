@@ -1095,7 +1095,6 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			if (equation != null)
 			{
 				__context3D.__setGLBlendEquation(equation);
-				// __context3D.__glBlendBarrier();
 				__context3D.__usingComplexBlend = true;
 				return;
 			}

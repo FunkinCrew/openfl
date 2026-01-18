@@ -1287,16 +1287,16 @@ import lime.math.Vector2;
 		{
 			gl.enable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
 		}
+		else if (__usingComplexBlend)
+		{
+			gl.blendBarrier();
+		}
 
 		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
 
 		if (OpenGLRenderer.__coherentBlendsSupported)
 		{
 			gl.disable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
-		}
-		else if (__usingComplexBlend)
-		{
-			gl.blendBarrier();
 		}
 	}
 
@@ -2168,16 +2168,16 @@ import lime.math.Vector2;
 		{
 			gl.enable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
 		}
+		else if (__usingComplexBlend)
+		{
+			gl.blendBarrier();
+		}
 
 		gl.drawArrays(gl.TRIANGLES, firstIndex, count);
 
 		if (OpenGLRenderer.__coherentBlendsSupported)
 		{
 			gl.disable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
-		}
-		else if (__usingComplexBlend)
-		{
-			gl.blendBarrier();
 		}
 	}
 
