@@ -144,19 +144,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		if (__complexBlendsSupported == null)
 		{
-			#if desktop
 			var extensions = gl.getSupportedExtensions();
 			__complexBlendsSupported = extensions.contains("KHR_blend_equation_advanced");
 			__coherentBlendsSupported = extensions.contains("KHR_blend_equation_advanced_coherent");
-
-			// Uncomment these lines to disable coherent blending for testing (it's enabled by default if supported)
-			// __coherentBlendsSupported = false;
-			// gl.disable(0x9285);
-			#else
-			// TODO: actually make this work on android
-			__complexBlendsSupported = false;
-			__coherentBlendsSupported = false;
-			#end
 		}
 
 		#if (js && html5)
