@@ -477,8 +477,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 #end
 private class InvertAlphaShader extends BitmapFilterShader
 {
-	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
+	@:glFragmentSource("#pragma header
 		varying vec2 vTexCoord;
 
 		void main(void) {
@@ -486,10 +485,7 @@ private class InvertAlphaShader extends BitmapFilterShader
 			gl_FragColor = vec4(texel.rgb, 1.0 - texel.a);
 		}
 	")
-	@:glVertexSource("
-		attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
+	@:glVertexSource("#pragma header
 		varying vec2 vTexCoord;
 
 		void main(void) {
@@ -509,8 +505,7 @@ private class InvertAlphaShader extends BitmapFilterShader
 #end
 private class BlurAlphaShader extends BitmapFilterShader
 {
-	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
+	@:glFragmentSource("#pragma header
 		uniform vec4 uColor;
 		uniform float uStrength;
 		varying vec2 vTexCoord;
@@ -539,13 +534,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 			gl_FragColor = uColor * clamp(a * uStrength, 0.0, 1.0);
 		}
 	")
-	@:glVertexSource("
-		attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
-
+	@:glVertexSource("#pragma header
 		uniform vec2 uRadius;
 		varying vec2 vTexCoord;
 		varying vec2 vBlurCoords[6];
@@ -582,8 +571,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 #end
 private class CombineShader extends BitmapFilterShader
 {
-	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
+	@:glFragmentSource("#pragma header
 		uniform sampler2D sourceBitmap;
 		varying vec4 textureCoords;
 
@@ -594,10 +582,7 @@ private class CombineShader extends BitmapFilterShader
 			gl_FragColor = src + glow * (1.0 - src.a);
 		}
 	")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
+	@:glVertexSource("#pragma header
 		uniform vec2 offset;
 		varying vec4 textureCoords;
 
@@ -621,8 +606,7 @@ private class CombineShader extends BitmapFilterShader
 #end
 private class InnerCombineShader extends BitmapFilterShader
 {
-	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
+	@:glFragmentSource("#pragma header
 		uniform sampler2D sourceBitmap;
 		varying vec4 textureCoords;
 
@@ -633,10 +617,7 @@ private class InnerCombineShader extends BitmapFilterShader
 			gl_FragColor = vec4((src.rgb * (1.0 - glow.a)) + (glow.rgb * src.a), src.a);
 		}
 	")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
+	@:glVertexSource("#pragma header
 		uniform vec2 offset;
 		varying vec4 textureCoords;
 
@@ -660,8 +641,7 @@ private class InnerCombineShader extends BitmapFilterShader
 #end
 private class CombineKnockoutShader extends BitmapFilterShader
 {
-	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
+	@:glFragmentSource("#pragma header
 		uniform sampler2D sourceBitmap;
 		varying vec4 textureCoords;
 
@@ -672,10 +652,7 @@ private class CombineKnockoutShader extends BitmapFilterShader
 			gl_FragColor = glow * (1.0 - src.a);
 		}
 	")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
+	@:glVertexSource("#pragma header
 		uniform vec2 offset;
 		varying vec4 textureCoords;
 
@@ -699,8 +676,7 @@ private class CombineKnockoutShader extends BitmapFilterShader
 #end
 private class InnerCombineKnockoutShader extends BitmapFilterShader
 {
-	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
+	@:glFragmentSource("#pragma header
 		uniform sampler2D sourceBitmap;
 		varying vec4 textureCoords;
 
@@ -711,10 +687,7 @@ private class InnerCombineKnockoutShader extends BitmapFilterShader
 			gl_FragColor = glow * src.a;
 		}
 	")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
+	@:glVertexSource("#pragma header
 		uniform vec2 offset;
 		varying vec4 textureCoords;
 

@@ -221,7 +221,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		#else
 		var reach = value;
 		#end
-		return Std.int(Math.ceil(reach)) + 2; 
+		return Std.int(Math.ceil(reach)) + 2;
 	}
 
 	// Get & Set Methods
@@ -291,8 +291,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 #end
 private class BlurShader extends BitmapFilterShader
 {
-	@:glFragmentSource("uniform sampler2D openfl_Texture;
-
+	@:glFragmentSource("#pragma header
 		varying vec2 vBlurCoords[7];
 
 		void main(void) {
@@ -309,11 +308,7 @@ private class BlurShader extends BitmapFilterShader
 			gl_FragColor = sum;
 
 		}")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-
-		uniform mat4 openfl_Matrix;
-
+	@:glVertexSource("#pragma header
 		uniform vec2 uRadius;
 		varying vec2 vBlurCoords[7];
 		uniform vec2 uTextureSize;
