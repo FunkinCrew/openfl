@@ -395,17 +395,11 @@ import lime.math.Vector4;
 #end
 private class DisplacementMapShader extends BitmapFilterShader
 {
-	@:glFragmentSource("
+	@:glFragmentSource("#pragma header
 
-		uniform sampler2D openfl_Texture;
 		uniform sampler2D mapTexture;
-
-		uniform mat4 openfl_Matrix;
-
 		uniform vec4 uOffsets;
 		uniform mat4 uDisplacements;
-
-		varying vec2 openfl_TextureCoordV;
 		varying vec2 mapTextureCoords;
 
 		void main(void) {

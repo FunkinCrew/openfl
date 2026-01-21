@@ -279,9 +279,8 @@ class ConvolutionFilter extends BitmapFilter
 #end
 private class ConvolutionShader extends BitmapFilterShader
 {
-	@:glFragmentSource("varying vec2 vBlurCoords[9];
-
-		uniform sampler2D openfl_Texture;
+	@:glFragmentSource("#pragma header
+		varying vec2 vBlurCoords[9];
 
 		uniform float uBias;
 		uniform mat3 uConvoMatrix;
@@ -322,13 +321,8 @@ private class ConvolutionShader extends BitmapFilterShader
 			gl_FragColor = c;
 
 		}")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-
+	@:glVertexSource("#pragma header
 		varying vec2 vBlurCoords[9];
-
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
 
 		void main(void) {
 
