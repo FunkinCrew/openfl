@@ -24,6 +24,9 @@ using StringTools;
 @:final class ASTCTexture extends TextureBase
 {
 	@:noCompletion
+	private static var __astcCompressedTexturesSupported:Null<Bool>;
+
+	@:noCompletion
 	private function new(context:Context3D, data:ByteArray):Void
 	{
 		super(context);
