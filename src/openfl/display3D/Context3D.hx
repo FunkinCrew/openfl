@@ -942,7 +942,12 @@ import lime.math.Vector2;
 	**/
 	public function isASTCSupported():Bool
 	{
-		return gl.getExtension("KHR_texture_compression_astc_ldr") != null;
+		if (ASTCTexture.__astcCompressedTexturesSupported == null)
+		{
+			ASTCTexture.__astcCompressedTexturesSupported = gl.getSupportedExtensions().contains("KHR_texture_compression_astc_ldr");
+		}
+
+		return ASTCTexture.__astcCompressedTexturesSupported == true;
 	}
 
 	/**
