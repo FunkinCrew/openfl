@@ -11,4 +11,5 @@ package openfl.display._internal;
 	var QUAD_PATH = 6;
 	var TRIANGLE_PATH = 7;
 	var SHADER = 8;
+	var TILEMAP = 9;
 }
