@@ -245,57 +245,29 @@ class CairoRenderer extends DisplayObjectRenderer
 	@:noCompletion private function __setBlendModeCairo(cairo:#if lime Cairo #else Dynamic #end, value:BlendMode):Void
 	{
 		#if lime
-		switch (value)
-		{
-			case ADD:
-				cairo.setOperator(CairoOperator.ADD);
-
-			// case ALPHA:
-
-			// TODO;
-
-			case DARKEN:
-				cairo.setOperator(CairoOperator.DARKEN);
-
-			case DIFFERENCE:
-				cairo.setOperator(CairoOperator.DIFFERENCE);
-
-			// case ERASE:
-
-			// TODO;
-
-			case HARDLIGHT:
-				cairo.setOperator(CairoOperator.HARD_LIGHT);
-
-			// case INVERT:
-
-			// TODO
-
-			case LAYER:
-				cairo.setOperator(CairoOperator.OVER);
-
-			case LIGHTEN:
-				cairo.setOperator(CairoOperator.LIGHTEN);
-
-			case MULTIPLY:
-				cairo.setOperator(CairoOperator.MULTIPLY);
-
-			case OVERLAY:
-				cairo.setOperator(CairoOperator.OVERLAY);
-
-			case SCREEN:
-				cairo.setOperator(CairoOperator.SCREEN);
-
-			// case SHADER:
-
-			// TODO
-
-			// case SUBTRACT:
-
-			// TODO;
-
-			default:
-				cairo.setOperator(CairoOperator.OVER);
+		switch (value) {
+			case ADD: cairo.setOperator(CairoOperator.ADD);
+			case ALPHA: cairo.setOperator(CairoOperator.DEST_IN);
+			case DARKEN: cairo.setOperator(CairoOperator.DARKEN);
+			case DIFFERENCE: cairo.setOperator(CairoOperator.DIFFERENCE);
+			case ERASE: cairo.setOperator(CairoOperator.XOR);
+			case HARDLIGHT: cairo.setOperator(CairoOperator.HARD_LIGHT);
+			case INVERT: cairo.setOperator(CairoOperator.DIFFERENCE);
+			case LAYER: cairo.setOperator(CairoOperator.IN);
+			case LIGHTEN: cairo.setOperator(CairoOperator.LIGHTEN);
+			case MULTIPLY: cairo.setOperator(CairoOperator.MULTIPLY);
+			case OVERLAY: cairo.setOperator(CairoOperator.OVERLAY);
+			case SCREEN: cairo.setOperator(CairoOperator.SCREEN);
+			case SUBTRACT: cairo.setOperator(CairoOperator.OUT);
+			case COLORDODGE: cairo.setOperator(CairoOperator.COLOR_DODGE);
+			case COLORBURN: cairo.setOperator(CairoOperator.COLOR_BURN);
+			case SOFTLIGHT: cairo.setOperator(CairoOperator.SOFT_LIGHT);
+			case EXCLUSION: cairo.setOperator(CairoOperator.EXCLUSION);
+			case HUE: cairo.setOperator(CairoOperator.HSL_HUE);
+			case SATURATION: cairo.setOperator(CairoOperator.HSL_SATURATION);
+			case COLOR: cairo.setOperator(CairoOperator.HSL_COLOR);
+			case LUMINOSITY: cairo.setOperator(CairoOperator.HSL_LUMINOSITY);
+			default: cairo.setOperator(CairoOperator.OVER);
 		}
 		#end
 	}
