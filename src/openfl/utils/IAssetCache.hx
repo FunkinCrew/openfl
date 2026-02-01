@@ -17,6 +17,21 @@ interface IAssetCache
 	public var enabled(get, set):Bool;
 
 	/**
+		BitmapData cache map
+	**/
+	public var bitmapData:Map<String, BitmapData>;
+
+	/**
+		Font cache map
+	**/
+	public var font:Map<String, Font>;
+
+	/**
+		Sound cache map
+	**/
+	public var sound:Map<String, Sound>;
+
+	/**
 		Clears all cached assets, or all assets with an ID that
 		matches an optional prefix.
 
