@@ -700,7 +700,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			return result;
 		}
 
-		return readUTFBytes(length);
+		var byteArray = new ByteArray(length);
+		__input.readBytes(byteArray, 0, length);
+		byteArray.position = 0;
+		return byteArray.readMultiByte(length, charSet);
 	}
 
 	/**
