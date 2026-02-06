@@ -28,6 +28,7 @@ import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
+import lime.utils.Int8Array;
 #end
 
 /**
@@ -1449,21 +1450,31 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		{
 			var decoder = new js.html.TextDecoder(charSet, {fatal: true});
 
-			var bytesToDecode:ByteArray = this;
-			// decode reads the full ArrayBuffer, so we need to make a copy to
-			// start from a position greater than 0 or to read fewer than length
-			// characters
-			if (position > 0 || length != this.length)
+			// decode reads the full ArrayBuffer, so if we're starting from a
+			// greater than 0, or we need to read fewer characters than the
+			// total length of the existig buffer, we need to make a copy to
+			// pass to the TextDecoder
+			var arrayBuffer:ArrayBuffer = null;
+			if (position == 0)
 			{
-				bytesToDecode = new ByteArray();
+				arrayBuffer = (this : Bytes).getData();
+				// the ArrayBuffer may actually be longer than the length of the
+				// ByteArray, so we may still need to make a copy
+				if (arrayBuffer.byteLength > length)
+				{
+					arrayBuffer = arrayBuffer.slice(0, length);
+				}
+			}
+			else
+			{
+				arrayBuffer = new ArrayBuffer(length);
+				var int8Array = new Int8Array(arrayBuffer);
 				for (i in 0...length)
 				{
 					var byte = this.readByte();
-					bytesToDecode.writeByte(byte);
+					int8Array[i] = byte;
 				}
 			}
-
-			var arrayBuffer = (bytesToDecode : Bytes).getData();
 			return decoder.decode(arrayBuffer);
 		}
 		catch (e:Dynamic)
