@@ -2377,9 +2377,12 @@ import lime.math.Vector2;
 					__bindGLTextureCubeMap(texture.__getTexture());
 				}
 
-				#if (desktop && !html5)
-				// TODO: Cache?
-				gl.enable(gl.TEXTURE_2D);
+				#if lime
+				if (__context.type == OPENGL)
+				{
+					// TODO: Cache?
+					gl.enable(gl.TEXTURE_2D);
+				}
 				#end
 
 				__contextState.textures[i] = texture;
@@ -2422,9 +2425,12 @@ import lime.math.Vector2;
 					texture.__alphaTexture.__setSamplerState(samplerState);
 					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 1);
 
-					#if (desktop && !html5)
-					// TODO: Cache?
-					gl.enable(gl.TEXTURE_2D);
+					#if lime
+					if (__context.type == OPENGL)
+					{
+						// TODO: Cache?
+						gl.enable(gl.TEXTURE_2D);
+					}
 					#end
 				}
 				else
