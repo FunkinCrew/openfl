@@ -73,6 +73,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __staticDefaultDisplayShader:DisplayObjectShader;
 	@:noCompletion private static var __staticDefaultGraphicsShader:GraphicsShader;
 	@:noCompletion private static var __staticMaskShader:Context3DMaskShader;
+	@:noCompletion private static var __sRGBWriteControlSupported:Null<Bool>;
 	@:noCompletion private static var __complexBlendsSupported:Null<Bool>;
 	@:noCompletion private static var __coherentBlendsSupported:Null<Bool>;
 
@@ -139,6 +140,21 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		{
 			gl.enable(ext.DEBUG_OUTPUT);
 			gl.enable(ext.DEBUG_OUTPUT_SYNCHRONOUS);
+		}
+		#end
+
+		#if lime
+		if (__context.type == OPENGLES)
+		{
+			if (__sRGBWriteControlSupported == null)
+			{
+				__sRGBWriteControlSupported = gl.getSupportedExtensions().contains("EXT_sRGB_write_control");
+			}
+
+			if (__sRGBWriteControlSupported)
+			{
+				gl.disable(0x8DB9); // GL_FRAMEBUFFER_SRGB_EXT
+			}
 		}
 		#end
 
