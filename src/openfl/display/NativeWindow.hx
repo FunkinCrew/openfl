@@ -197,6 +197,10 @@ class NativeWindow extends EventDispatcher
 				fullscreen: false,
 				frameRate: app.window.stage.frameRate,
 				borderless: __initOptions.systemChrome == NONE,
+				context:
+				{
+					hardware:false
+				},
 				width: #if (lime < "8.1.0") 0 #else 400 #end,
 				height: #if (lime < "8.1.0") 0 #else 228 #end
 			});
