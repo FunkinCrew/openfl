@@ -66,7 +66,8 @@ import openfl.geom.Point;
 
 	Important: In OpenFL 9.5.1+, only the main application window supports hardware 
 	acceleration (OpenGL). Additional NativeWindow instances are currently limited 
-	to software rendering (Cairo) to ensure stability.
+	to software rendering (Cairo) to ensure stability. This limitation applies only 
+	to non-AIR targets.
 **/
 @:access(openfl.desktop.NativeApplication)
 @:access(openfl.display.NativeWindowInitOptions)
