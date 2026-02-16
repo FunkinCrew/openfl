@@ -64,7 +64,7 @@ import openfl.geom.Point;
 	constructor has been called and before `close()` has been called. It is the
 	responsibility of the application to close its own windows.
 
-	In OpenFL 9.5.1+, only the main application window supports hardware 
+	Important: In OpenFL 9.5.1+, only the main application window supports hardware 
 	acceleration (OpenGL). Additional NativeWindow instances are currently limited 
 	to software rendering (Cairo) to ensure stability.
 **/
