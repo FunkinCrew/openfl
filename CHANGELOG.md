@@ -1,6 +1,23 @@
 Changelog
 =========
 
+9.5.1 (02/16/2026)
+------------------
+
+* Fixed custom shaders failing when rendering `Graphics` fills with hardware.
+* Fixed `TextField` rendering at incorrect scale on HiDPI screens after drawing it to `BitmapData`.
+* Fixed drawing display objects to `BitmapData` with matrix that includes negative scale values.
+* Fixed setting `TextField` width to `0.0` failing to hide the text field and rendering it at its original size instead.
+* Fixed incorrect order of `ROLL_OVER` and `MOUSE_OVER` events. Now `ROLL_OVER` is dispatched first.
+* Fixed result of `getBounds()` if child has only one of `scaleX` or `scaleY` set to `0.0`, but not both.
+* Fixed fast update paths for `scaleX` and `scaleY` setters to require `rotation` to be `0.0` instead of checking raw transformation matrix values.
+* Fixed hardware rendering issues with multiple `NativeWindow` instances by forcing additional windows to be rendered in software as a temporary workaround for now.
+* Fixed clipping of `Graphics` on native targets by aligning render transform scale with allocated surface size.
+* Fixed missing `ScreenMode` extern for Adobe AIR.
+* Fixed `__init__` code to restore compatibility with `modular` Haxelib.
+* Fixed unnecessary redundant variable assignement in `SecureSocket`.
+* Fixed `Vector` incorrectly enumerating the `fixed` field in npm version.
+
 9.5.0 (11/11/2025)
 ------------------
 
