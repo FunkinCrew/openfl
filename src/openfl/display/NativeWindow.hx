@@ -238,7 +238,7 @@ class NativeWindow extends EventDispatcher
 		__window.onMaximize.add(window_onMaximize);
 		__window.onRestore.add(window_onRestore);
 		__window.onClose.add(window_onClose);
-		__window.onMouseDown.add(window_onMouseDown);
+		__window.onMouseDown.add(window_onMouseDown, 0x7FFFFFFF);
 		__window.onMouseUp.add(window_onMouseUp);
 	}
 
