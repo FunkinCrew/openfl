@@ -80,7 +80,7 @@ class CairoGraphics
 			#if (openfl_legacy_scale9grid && !cairo)
 			var hasScale9Grid:Bool = false;
 			#else
-			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__owner.__rotation == 0.0;
 			#end
 
 			if (bitmapStrokeMatrix != null || (hasScale9Grid && strokeScale9Bounds != null && bitmapStroke != null))
@@ -182,7 +182,7 @@ class CairoGraphics
 				#if (openfl_legacy_scale9grid && !cairo)
 				var hasScale9Grid:Bool = false;
 				#else
-				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__owner.__rotation == 0.0;
 				#end
 				if (hasScale9Grid)
 				{
@@ -225,7 +225,7 @@ class CairoGraphics
 				#if (openfl_legacy_scale9grid && !cairo)
 				var hasScale9Grid:Bool = false;
 				#else
-				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__owner.__rotation == 0.0;
 				#end
 				if (hasScale9Grid)
 				{
@@ -740,7 +740,7 @@ class CairoGraphics
 		#if (openfl_legacy_scale9grid && !cairo)
 		var hasScale9Grid:Bool = false;
 		#else
-		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__owner.__rotation == 0.0;
 		#end
 		if (!hasScale9Grid)
 		{
@@ -1837,7 +1837,7 @@ class CairoGraphics
 		#if (openfl_legacy_scale9grid && !cairo)
 		var hasScale9Grid:Bool = false;
 		#else
-		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__owner.__rotation == 0.0;
 		#end
 		if (hasScale9Grid)
 		{

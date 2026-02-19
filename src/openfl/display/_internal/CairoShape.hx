@@ -105,7 +105,7 @@ class CairoShape
 				renderer.__setBlendMode(shape.__worldBlendMode);
 				renderer.__pushMaskObject(shape);
 
-				if (scale9Grid != null && transform.b == 0 && transform.c == 0)
+				if (scale9Grid != null && !shape.__isMask && shape.__rotation == 0.0)
 				{
 					#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
 					var pixelRatio = 1;
