@@ -489,12 +489,99 @@ class DisplayObjectTest extends Test
 
 	public function test_scale9Grid()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.scale9Grid;
 
-		Assert.isNull(exists);
+		// top left
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// top center
+		sprite.graphics.beginFill(0x00ff00);
+		sprite.graphics.drawRect(2.0, 0.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// top right
+		sprite.graphics.beginFill(0x0000ff);
+		sprite.graphics.drawRect(4.0, 0.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// middle left
+		sprite.graphics.beginFill(0xff00ff);
+		sprite.graphics.drawRect(0.0, 2.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// middle center
+		sprite.graphics.beginFill(0xffff00);
+		sprite.graphics.drawRect(2.0, 2.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// middle right
+		sprite.graphics.beginFill(0x00ffff);
+		sprite.graphics.drawRect(4.0, 2.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// bottom left
+		sprite.graphics.beginFill(0x000000);
+		sprite.graphics.drawRect(0.0, 4.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// bottom center
+		sprite.graphics.beginFill(0xffffff);
+		sprite.graphics.drawRect(2.0, 4.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// bottom right
+		sprite.graphics.beginFill(0x888888);
+		sprite.graphics.drawRect(4.0, 4.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		sprite.scale9Grid = new Rectangle(2.0, 2.0, 2.0, 2.0);
+
+		sprite.width = 12.0;
+		sprite.height = 12.0;
+
+		var container = new Sprite();
+		container.addChild(sprite);
+
+		var bitmapData = new BitmapData(Std.int(container.width), Std.int(container.height));
+		bitmapData.draw(container);
+
+		// top left
+		Assert.equals(0xff0000, bitmapData.getPixel(1, 1));
+
+		// top center
+		Assert.equals(0x00ff00, bitmapData.getPixel(2, 1));
+		Assert.equals(0x00ff00, bitmapData.getPixel(9, 1));
+
+		// top right
+		Assert.equals(0x0000ff, bitmapData.getPixel(10, 1));
+
+		// middle left
+		Assert.equals(0xff00ff, bitmapData.getPixel(1, 2));
+		Assert.equals(0xff00ff, bitmapData.getPixel(1, 9));
+
+		// middle center
+		Assert.equals(0xffff00, bitmapData.getPixel(2, 2));
+		Assert.equals(0xffff00, bitmapData.getPixel(9, 2));
+		Assert.equals(0xffff00, bitmapData.getPixel(2, 9));
+		Assert.equals(0xffff00, bitmapData.getPixel(9, 9));
+
+		// middle right
+		Assert.equals(0x00ffff, bitmapData.getPixel(10, 2));
+		Assert.equals(0x00ffff, bitmapData.getPixel(10, 9));
+
+		// bottom left
+		Assert.equals(0x000000, bitmapData.getPixel(1, 10));
+
+		// bottom center
+		Assert.equals(0xffffff, bitmapData.getPixel(2, 10));
+		Assert.equals(0xffffff, bitmapData.getPixel(9, 10));
+
+		// bottom right
+		Assert.equals(0x888888, bitmapData.getPixel(10, 10));
+
+		bitmapData.dispose();
 	}
 
 	public function test_scaleX()
