@@ -61,7 +61,9 @@ class Context3DGraphics
 		var bitmapMatrix:Matrix = null;
 
 		var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
-		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__owner.__rotation == 0.0;
+		// no scale9Grid for masks
+		// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 		if (!hasScale9Grid)
 		{
 			scale9Grid = null;
@@ -679,7 +681,9 @@ class Context3DGraphics
 				}
 
 				var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
-				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__owner.__rotation == 0.0;
+				// no scale9Grid for masks
+				// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 				if (!hasScale9Grid)
 				{
 					scale9Grid = null;
