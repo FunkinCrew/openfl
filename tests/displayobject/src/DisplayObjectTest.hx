@@ -233,6 +233,26 @@ class DisplayObjectTest extends Test
 		#else
 		Assert.equals(0.0, object.alpha);
 		#end
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 1.0, 1.0);
+		sprite.graphics.endFill();
+
+		var container = new Sprite();
+		container.addChild(sprite);
+
+		var bitmapData = new BitmapData(1, 1);
+		bitmapData.draw(container);
+		Assert.equals(0xff0000, bitmapData.getPixel(0, 0));
+		bitmapData.dispose();
+
+		sprite.alpha = 0.0;
+
+		var bitmapData = new BitmapData(1, 1);
+		bitmapData.draw(container);
+		Assert.equals(0xffffff, bitmapData.getPixel(0, 0));
+		bitmapData.dispose();
 	}
 
 	public function test_blendMode()
@@ -314,12 +334,31 @@ class DisplayObjectTest extends Test
 
 	public function test_height()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.height;
+		Assert.equals(0.0, sprite.height);
 
-		Assert.notNull(exists);
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 1.0, 2.0);
+		sprite.graphics.endFill();
+		Assert.equals(2.0, sprite.height);
+
+		sprite.scaleY = 2.0;
+		Assert.equals(4.0, sprite.height);
+
+		sprite.graphics.clear();
+		Assert.equals(0.0, sprite.height);
+
+		sprite.graphics.beginFill(0xff0000);
+		// don't start from 0.0
+		sprite.graphics.drawRect(0.0, 1.0, 1.0, 2.0);
+		sprite.graphics.endFill();
+		Assert.equals(4.0, sprite.height); // scale is still 2.0
+
+		sprite.scaleY = 1.0;
+		Assert.equals(2.0, sprite.height);
+
+		sprite.scaleY = 0.0;
+		Assert.equals(0.0, sprite.height);
 	}
 
 	public function test_loaderInfo()
@@ -396,6 +435,18 @@ class DisplayObjectTest extends Test
 		object.name = 'Test Name';
 
 		Assert.equals('Test Name', object.name);
+
+		var container = new Sprite();
+
+		Assert.isNull(container.getChildByName('Test Name'));
+
+		container.addChild(object);
+
+		Assert.equals(object, container.getChildByName('Test Name'));
+
+		container.removeChild(object);
+
+		Assert.isNull(container.getChildByName('Test Name'));
 	}
 
 	public function test_opaqueBackground()
@@ -411,21 +462,37 @@ class DisplayObjectTest extends Test
 	public function test_parent()
 	{
 		var sprite = new Sprite();
+		Assert.isNull(sprite.parent);
 
 		var sprite2 = new Sprite();
 		sprite2.addChild(sprite);
-
 		Assert.equals(sprite2, sprite.parent);
+
+		sprite2.removeChild(sprite);
+		Assert.isNull(sprite.parent);
 	}
 
 	public function test_root()
 	{
-		// TODO: Confirm functionality
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping root test");
+			return;
+		}
 
 		var sprite = new Sprite();
-		var exists = sprite.root;
+		Assert.isNull(sprite.root);
 
-		Assert.isNull(exists);
+		var sprite2 = new Sprite();
+		sprite2.addChild(sprite);
+		// needs to be on stage!
+		Assert.isNull(sprite.root);
+
+		Lib.current.addChild(sprite2);
+		Assert.equals(Lib.current, sprite.root);
+
+		sprite2.removeChild(sprite);
+		Assert.isNull(sprite.root);
 	}
 
 	public function test_rotation()
@@ -544,7 +611,7 @@ class DisplayObjectTest extends Test
 		var container = new Sprite();
 		container.addChild(sprite);
 
-		var bitmapData = new BitmapData(Std.int(container.width), Std.int(container.height));
+		var bitmapData = new BitmapData(12, 12);
 		bitmapData.draw(container);
 
 		// top left
@@ -586,22 +653,56 @@ class DisplayObjectTest extends Test
 
 	public function test_scaleX()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.scaleX;
+		Assert.equals(1.0, sprite.scaleX);
 
-		Assert.notNull(exists);
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 2.0, 1.0);
+		sprite.graphics.endFill();
+		// scale doesn't change when drawing
+		Assert.equals(1.0, sprite.scaleX);
+
+		sprite.width = 4.0;
+		Assert.equals(2.0, sprite.scaleX);
+
+		sprite.width = 2.0;
+		Assert.equals(1.0, sprite.scaleX);
+
+		sprite.height = 10000.0;
+		Assert.equals(1.0, sprite.scaleX);
+
+		sprite.scaleY = 0.0;
+		Assert.equals(1.0, sprite.scaleX);
+
+		sprite.width = 0.0;
+		Assert.equals(0.0, sprite.scaleX);
 	}
 
 	public function test_scaleY()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.scaleY;
+		Assert.equals(1.0, sprite.scaleY);
 
-		Assert.notNull(exists);
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 1.0, 2.0);
+		sprite.graphics.endFill();
+		// scale doesn't change when drawing
+		Assert.equals(1.0, sprite.scaleY);
+
+		sprite.height = 4.0;
+		Assert.equals(2.0, sprite.scaleY);
+
+		sprite.height = 2.0;
+		Assert.equals(1.0, sprite.scaleY);
+
+		sprite.width = 10000.0;
+		Assert.equals(1.0, sprite.scaleY);
+
+		sprite.scaleX = 0.0;
+		Assert.equals(1.0, sprite.scaleY);
+
+		sprite.height = 0.0;
+		Assert.equals(0.0, sprite.scaleY);
 	}
 
 	public function test_scrollRect()
@@ -637,22 +738,59 @@ class DisplayObjectTest extends Test
 
 	public function test_visible()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.visible;
+		Assert.isTrue(sprite.visible);
 
-		Assert.notNull(exists);
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 1.0, 1.0);
+		sprite.graphics.endFill();
+		Assert.isTrue(sprite.visible);
+
+		var container = new Sprite();
+		container.addChild(sprite);
+
+		var bitmapData = new BitmapData(1, 1);
+		bitmapData.draw(container);
+		Assert.equals(0xff0000, bitmapData.getPixel(0, 0));
+		bitmapData.dispose();
+
+		sprite.visible = false;
+
+		Assert.isFalse(sprite.visible);
+
+		var bitmapData = new BitmapData(1, 1);
+		bitmapData.draw(container);
+		Assert.equals(0xffffff, bitmapData.getPixel(0, 0));
+		bitmapData.dispose();
 	}
 
 	public function test_width()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.width;
+		Assert.equals(0.0, sprite.width);
 
-		Assert.notNull(exists);
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 2.0, 1.0);
+		sprite.graphics.endFill();
+		Assert.equals(2.0, sprite.width);
+
+		sprite.scaleX = 2.0;
+		Assert.equals(4.0, sprite.width);
+
+		sprite.graphics.clear();
+		Assert.equals(0.0, sprite.width);
+
+		sprite.graphics.beginFill(0xff0000);
+		// don't start from 0.0
+		sprite.graphics.drawRect(1.0, 0.0, 2.0, 1.0);
+		sprite.graphics.endFill();
+		Assert.equals(4.0, sprite.width); // scale is still 2.0
+
+		sprite.scaleX = 1.0;
+		Assert.equals(2.0, sprite.width);
+
+		sprite.scaleX = 0.0;
+		Assert.equals(0.0, sprite.width);
 	}
 
 	public function test_x()
