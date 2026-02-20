@@ -92,7 +92,7 @@ class CanvasShape
 				var scale9Grid = shape.__worldScale9Grid;
 				// no scale9Grid for masks
 				// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
-				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+				var hasScale9Grid = scale9Grid != null && !shape.__isMask && Math.abs(shape.__rotation) < 0.02;
 				if (!hasScale9Grid)
 				{
 					scale9Grid = null;
