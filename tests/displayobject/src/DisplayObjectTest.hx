@@ -707,13 +707,60 @@ class DisplayObjectTest extends Test
 
 	public function test_scrollRect()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		sprite.scrollRect = new Rectangle(0, 0, 100, 100);
-		var exists = sprite.scrollRect;
 
-		Assert.notNull(exists);
+		// top left
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// top right
+		sprite.graphics.beginFill(0x0000ff);
+		sprite.graphics.drawRect(2.0, 0.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// bottom left
+		sprite.graphics.beginFill(0x00ff00);
+		sprite.graphics.drawRect(0.0, 2.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		// bottom right
+		sprite.graphics.beginFill(0xff00ff);
+		sprite.graphics.drawRect(2.0, 2.0, 2.0, 2.0);
+		sprite.graphics.endFill();
+
+		Assert.equals(4.0, sprite.width);
+		Assert.equals(4.0, sprite.height);
+
+		sprite.scrollRect = new Rectangle(0.0, 0.0, 3.0, 2.0);
+
+		var bitmapData = new BitmapData(4, 4);
+		bitmapData.draw(sprite);
+
+		Assert.equals(0xff0000, bitmapData.getPixel(0, 0));
+		Assert.equals(0xff0000, bitmapData.getPixel(1, 0));
+		Assert.equals(0x0000ff, bitmapData.getPixel(2, 0));
+		Assert.equals(0xffffff, bitmapData.getPixel(3, 0));
+		Assert.equals(0xff0000, bitmapData.getPixel(0, 0));
+		Assert.equals(0xff0000, bitmapData.getPixel(0, 1));
+		Assert.equals(0xffffff, bitmapData.getPixel(0, 2));
+
+		bitmapData.dispose();
+
+		sprite.scrollRect = new Rectangle(2.0, 2.0, 3.0, 2.0);
+
+		var bitmapData = new BitmapData(4, 4);
+		bitmapData.draw(sprite);
+
+		Assert.equals(0xff00ff, bitmapData.getPixel(0, 0));
+		Assert.equals(0xff00ff, bitmapData.getPixel(1, 0));
+		Assert.equals(0xffffff, bitmapData.getPixel(2, 0));
+		Assert.equals(0xffffff, bitmapData.getPixel(3, 0));
+		Assert.equals(0xff00ff, bitmapData.getPixel(0, 0));
+		Assert.equals(0xff00ff, bitmapData.getPixel(0, 1));
+		Assert.equals(0xffffff, bitmapData.getPixel(0, 2));
+
+		bitmapData.dispose();
 	}
 
 	public function test_stage()
