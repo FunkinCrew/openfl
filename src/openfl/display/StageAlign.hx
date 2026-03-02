@@ -94,14 +94,14 @@ package openfl.display;
 	{
 		return switch (cast this : StageAlign)
 		{
-			case StageAlign.BOTTOM: "bottom";
-			case StageAlign.BOTTOM_LEFT: "bottomLeft";
-			case StageAlign.BOTTOM_RIGHT: "bottomRight";
-			case StageAlign.LEFT: "left";
-			case StageAlign.RIGHT: "right";
-			case StageAlign.TOP: "top";
-			case StageAlign.TOP_LEFT: "topLeft";
-			case StageAlign.TOP_RIGHT: "topRight";
+			case StageAlign.BOTTOM: "B";
+			case StageAlign.BOTTOM_LEFT: "BL";
+			case StageAlign.BOTTOM_RIGHT: "BR";
+			case StageAlign.LEFT: "L";
+			case StageAlign.RIGHT: "R";
+			case StageAlign.TOP: "T";
+			case StageAlign.TOP_LEFT: "TL";
+			case StageAlign.TOP_RIGHT: "TR";
 			default: null;
 		}
 	}
@@ -109,14 +109,14 @@ package openfl.display;
 #else
 @SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageAlign(String) from String to String
 {
-	public var BOTTOM = "bottom";
-	public var BOTTOM_LEFT = "bottomLeft";
-	public var BOTTOM_RIGHT = "bottomRight";
-	public var LEFT = "left";
-	public var RIGHT = "right";
-	public var TOP = "top";
-	public var TOP_LEFT = "topLeft";
-	public var TOP_RIGHT = "topRight";
+	public var BOTTOM = "B";
+	public var BOTTOM_LEFT = "BL";
+	public var BOTTOM_RIGHT = "BR";
+	public var LEFT = "L";
+	public var RIGHT = "R";
+	public var TOP = "T";
+	public var TOP_LEFT = "TL";
+	public var TOP_RIGHT = "TR";
 }
 #end
 #else
