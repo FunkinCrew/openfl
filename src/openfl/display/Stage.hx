@@ -3550,6 +3550,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var visibleY = 0.0;
 		switch (align)
 		{
+			case null:
+				// it is undocumented, but it is possible to align the stage in
+				// Flash to the center both horizontally and vertically by
+				// setting stage.align to an invalid value, such as an empty
+				// string ("")
+				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
+				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
 			case BOTTOM_RIGHT:
 				visibleX = Math.round(__logicalWidth - visibleWidth);
 				visibleY = Math.round(__logicalHeight - visibleHeight);
