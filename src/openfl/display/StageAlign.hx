@@ -50,16 +50,42 @@ package openfl.display;
 
 	@:from private static function fromString(value:String):StageAlign
 	{
+		if (value == null)
+		{
+			return null;
+		}
+		// interestingly, Flash accepts string values that are not defined on
+		// the StageAlign class.
+		var upperCaseValue = value.toUpperCase();
+		var value = "";
+		if (upperCaseValue.indexOf("T") != -1)
+		{
+			value += "T";
+		}
+		else if (upperCaseValue.indexOf("B") != -1)
+		{
+			// if a string contains both T and B, T takes precedence
+			value += "B";
+		}
+		if (upperCaseValue.indexOf("L") != -1)
+		{
+			value += "L";
+		}
+		else if (upperCaseValue.indexOf("R") != -1)
+		{
+			// if a string contains both L and R, R takes precedence
+			value += "R";
+		}
 		return switch (value)
 		{
-			case "bottom", "B", "b": BOTTOM;
-			case "bottomLeft", "BL", "bl": BOTTOM_LEFT;
-			case "bottomRight", "BR", "br": BOTTOM_RIGHT;
-			case "left", "L", "l": LEFT;
-			case "right", "R", "r": RIGHT;
-			case "top", "T", "t": TOP;
-			case "topLeft", "TL", "tl": TOP_LEFT;
-			case "topRight", "TR", "tr": TOP_RIGHT;
+			case "B": BOTTOM;
+			case "BL": BOTTOM_LEFT;
+			case "BR": BOTTOM_RIGHT;
+			case "L": LEFT;
+			case "R": RIGHT;
+			case "T": TOP;
+			case "TL": TOP_LEFT;
+			case "TR": TOP_RIGHT;
 			default: null;
 		}
 	}
