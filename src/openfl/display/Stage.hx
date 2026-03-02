@@ -1381,7 +1381,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#if openfl_dpi_aware
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				#else
-				context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+				var unscaledWindowWidth = Std.int(window.width);
+				var unscaledWindowHeight = Std.int(window.height);
+				context3D.configureBackBuffer(unscaledWindowWidth, unscaledWindowHeight, 0, true, true, true);
 				#end
 				context3D.present();
 				__renderer = new OpenGLRenderer(context3D);
@@ -3664,7 +3666,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			#if openfl_dpi_aware
 			context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 			#else
-			context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+			var unscaledWindowWidth = Std.int(window.width);
+			var unscaledWindowHeight = Std.int(window.height);
+			context3D.configureBackBuffer(unscaledWindowWidth, unscaledWindowHeight, 0, true, true, true);
 			#end
 		}
 
