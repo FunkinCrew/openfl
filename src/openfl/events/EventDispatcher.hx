@@ -327,12 +327,6 @@ class EventDispatcher implements IEventDispatcher
 			__eventMap.remove(type);
 			__iterators.remove(type);
 		}
-
-		if (!__eventMap.iterator().hasNext())
-		{
-			__eventMap = null;
-			__iterators = null;
-		}
 	}
 
 	public function toString():String
