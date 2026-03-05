@@ -3016,10 +3016,8 @@ class BitmapData implements IBitmapDrawable
 		var byteArray = new ByteArray();
 		byteArray.length = inputVector.length * 4;
 
-		var numElements = inputVector.length;
-		for (i in 0...numElements)
+		for (color in inputVector)
 		{
-			var color = inputVector[i];
 			byteArray.writeUnsignedInt(color);
 		}
 

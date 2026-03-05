@@ -2328,10 +2328,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			if (context3D != null)
 			{
-				var numElements = stage3Ds.length;
-				for (i in 0...numElements)
+				for (stage3D in stage3Ds)
 				{
-					var stage3D = stage3Ds[i];
 					context3D.__renderStage3D(stage3D);
 				}
 
@@ -2453,10 +2451,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__renderer = null;
 		context3D = null;
 
-		var numElements = stage3Ds.length;
-		for (i in 0...numElements)
+		for (stage3D in stage3Ds)
 		{
-			var stage3D = stage3Ds[i];
 			stage3D.__lostContext();
 		}
 	}
@@ -2465,10 +2461,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		__createRenderer();
 
-		var numElements = stage3Ds.length;
-		for (i in 0...numElements)
+		for (stage3D in stage3Ds)
 		{
-			var stage3D = stage3Ds[i];
 			stage3D.__restoreContext();
 		}
 	}
@@ -3667,10 +3661,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			#end
 		}
 
-		var numElements = stage3Ds.length;
-		for (i in 0...numElements)
+		for (stage3D in stage3Ds)
 		{
-			var stage3D = stage3Ds[i];
 			stage3D.__resize(windowWidth, windowHeight);
 		}
 

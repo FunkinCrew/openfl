@@ -211,10 +211,8 @@ class CanvasTextField
 
 					var advance:Float;
 
-					var numElements = textEngine.layoutGroups.length;
-					for (i in 0...numElements)
+					for (group in textEngine.layoutGroups)
 					{
-						var group = textEngine.layoutGroups[i];
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textEngine.bottomScrollV - 1) break;
 

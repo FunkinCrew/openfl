@@ -694,10 +694,8 @@ class DisplayObjectContainer extends InteractiveObject
 
 	@:noCompletion private inline function __cleanupRemovedChildren():Void
 	{
-		var numElements = __removedChildren.length;
-		for (i in 0...numElements)
+		for (orphan in __removedChildren)
 		{
-			var orphan = __removedChildren[i];
 			if (orphan.stage == null)
 			{
 				orphan.__cleanup();
