@@ -41,6 +41,8 @@ class Context3DGraphics
 	private static var tempIndicesVector:Vector<Int> = new Vector<Int>();
 	private static var tempUvtVector:Vector<Float> = new Vector<Float>();
 	private static var tempScale9VerticesVector:Vector<Float>;
+	private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
+	private static var buildBufferReader:DrawCommandReader = new DrawCommandReader(null);
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
@@ -50,7 +52,9 @@ class Context3DGraphics
 		var vertexBufferPositionUVT = 0;
 		var bounds = graphics.__bounds;
 
-		var data = new DrawCommandReader(graphics.__commands);
+		var data = buildBufferReader;
+		data.reset();
+		data.buffer = graphics.__commands;
 
 		var context = renderer.__context3D;
 
@@ -524,7 +528,10 @@ class Context3DGraphics
 			return false;
 		}
 
-		var data = new DrawCommandReader(graphics.__commands);
+		var data = renderOrHitTestReader;
+		data.reset();
+		data.buffer = graphics.__commands;
+
 		var hasColorFill = false, hasBitmapFill = false, hasShaderFill = false;
 
 		for (type in graphics.__commands.types)
@@ -685,7 +692,9 @@ class Context3DGraphics
 					scale9Grid = null;
 				}
 
-				var data = new DrawCommandReader(graphics.__commands);
+				var data = renderOrHitTestReader;
+				data.reset();
+				data.buffer = graphics.__commands;
 
 				var context = renderer.__context3D;
 				var gl = context.gl;

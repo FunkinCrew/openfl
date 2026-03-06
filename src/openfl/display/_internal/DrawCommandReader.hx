@@ -320,6 +320,7 @@ class DrawCommandReader
 	public function reset():Void
 	{
 		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = 0;
+		prev = UNKNOWN;
 	}
 
 	public inline function skip(type:DrawCommandType):Void

@@ -43,6 +43,8 @@ class CairoGraphics
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
+	private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
+	private static var playCommandsReader:DrawCommandReader = new DrawCommandReader(null);
 	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var fillPattern:CairoPattern;
 	private static var bitmapFill:BitmapData;
@@ -484,7 +486,9 @@ class CairoGraphics
 			cairo.newPath();
 			cairo.fillRule = EVEN_ODD;
 
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = renderOrHitTestReader;
+			data.reset();
+			data.buffer = graphics.__commands;
 
 			for (type in graphics.__commands.types)
 			{
@@ -755,7 +759,9 @@ class CairoGraphics
 			}
 		}
 
-		var data = new DrawCommandReader(commands);
+		var data = playCommandsReader;
+		data.reset();
+		data.buffer = commands;
 
 		var x:Float;
 		var y:Float;
@@ -1926,7 +1932,9 @@ class CairoGraphics
 			var initStrokeX = 0.0;
 			var initStrokeY = 0.0;
 
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = renderOrHitTestReader;
+			data.reset();
+			data.buffer = graphics.__commands;
 
 			for (type in graphics.__commands.types)
 			{
@@ -2168,7 +2176,9 @@ class CairoGraphics
 			var offsetX = 0;
 			var offsetY = 0;
 
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = renderOrHitTestReader;
+			data.reset();
+			data.buffer = graphics.__commands;
 
 			var x:Float;
 			var y:Float;
