@@ -42,9 +42,9 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
 @:access(openfl.errors.Error)
+@:access(openfl.events.Event)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -260,31 +260,34 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setRenderDirty();
 			__setRenderDirty();
 
-			var event = new Event(Event.ADDED);
-			event.bubbles = true;
+			#if openfl_pool_events
+			var addedEvent = Event.__pool.get();
+			addedEvent.type = Event.ADDED;
+			addedEvent.bubbles = true;
+			#else
+			var addedEvent = new Event(Event.ADDED, true);
+			#end
 
-			event.target = child;
+			child.__dispatchWithCapture(addedEvent);
 
-			child.__dispatchWithCapture(event);
-
-			// #if !openfl_disable_event_pooling
-			// Event.__pool.release(event);
-			// #end
+			#if openfl_pool_events
+			Event.__pool.release(addedEvent);
+			#end
 
 			if (addedToStage)
 			{
 				#if openfl_pool_events
-				event = Event.__pool.get();
-				event.type = Event.ADDED_TO_STAGE;
+				var addedToStageEvent = Event.__pool.get();
+				addedToStageEvent.type = Event.ADDED_TO_STAGE;
 				#else
-				event = new Event(Event.ADDED_TO_STAGE, false, false);
+				var addedToStageEvent = new Event(Event.ADDED_TO_STAGE);
 				#end
 
-				child.__dispatchWithCapture(event);
-				child.__dispatchChildren(event);
+				child.__dispatchWithCapture(addedToStageEvent);
+				child.__dispatchChildren(addedToStageEvent);
 
 				#if openfl_pool_events
-				Event.__pool.release(event);
+				Event.__pool.release(addedToStageEvent);
 				#end
 			}
 		}
@@ -467,8 +470,19 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setRenderDirty();
 			__setRenderDirty();
 
-			var event = new Event(Event.REMOVED, true);
-			child.__dispatchWithCapture(event);
+			#if openfl_pool_events
+			var removedEvent = Event.__pool.get();
+			removedEvent.type = Event.REMOVED;
+			removedEvent.bubbles = true;
+			#else
+			var removedEvent = new Event(Event.REMOVED, true);
+			#end
+
+			child.__dispatchWithCapture(removedEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(removedEvent);
+			#end
 
 			if (stage != null)
 			{
@@ -477,9 +491,20 @@ class DisplayObjectContainer extends InteractiveObject
 					stage.focus = null;
 				}
 
-				var event = new Event(Event.REMOVED_FROM_STAGE, false, false);
-				child.__dispatchWithCapture(event);
-				child.__dispatchChildren(event);
+				#if openfl_pool_events
+				var removedFromStageEvent = Event.__pool.get();
+				removedFromStageEvent.type = Event.REMOVED_FROM_STAGE;
+				#else
+				var removedFromStageEvent = new Event(Event.REMOVED_FROM_STAGE);
+				#end
+
+				child.__dispatchWithCapture(removedFromStageEvent);
+				child.__dispatchChildren(removedFromStageEvent);
+
+				#if openfl_pool_events
+				Event.__pool.release(removedFromStageEvent);
+				#end
+
 				child.__setStageReference(null);
 			}
 
@@ -1015,7 +1040,19 @@ class DisplayObjectContainer extends InteractiveObject
 		{
 			__tabChildren = value;
 
-			dispatchEvent(new Event(Event.TAB_CHILDREN_CHANGE, true, false));
+			#if openfl_pool_events
+			var tabChildrenChangeEvent = Event.__pool.get();
+			tabChildrenChangeEvent.type = Event.TAB_CHILDREN_CHANGE;
+			tabChildrenChangeEvent.bubbles = true;
+			#else
+			var tabChildrenChangeEvent = new Event(Event.TAB_CHILDREN_CHANGE, true);
+			#end
+
+			dispatchEvent(tabChildrenChangeEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(tabChildrenChangeEvent);
+			#end
 		}
 
 		return __tabChildren;

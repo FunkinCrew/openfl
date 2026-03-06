@@ -120,6 +120,7 @@ import js.html.DivElement;
 #end
 @:access(openfl.display.Graphics)
 @:access(openfl.errors.Error)
+@:access(openfl.events.Event)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -3014,7 +3015,19 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 			__textEngine.scrollH = value;
-			dispatchEvent(new Event(Event.SCROLL));
+
+			#if openfl_pool_events
+			var scrollEvent = Event.__pool.get();
+			scrollEvent.type = Event.SCROLL;
+			#else
+			var scrollEvent = new Event(Event.SCROLL);
+			#end
+
+			dispatchEvent(scrollEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(scrollEvent);
+			#end
 		}
 
 		return __textEngine.scrollH;
@@ -3037,7 +3050,19 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 			__textEngine.scrollV = value;
-			dispatchEvent(new Event(Event.SCROLL));
+
+			#if openfl_pool_events
+			var scrollEvent = Event.__pool.get();
+			scrollEvent.type = Event.SCROLL;
+			#else
+			var scrollEvent = new Event(Event.SCROLL);
+			#end
+
+			dispatchEvent(scrollEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(scrollEvent);
+			#end
 		}
 
 		return __textEngine.scrollV;
@@ -3572,7 +3597,19 @@ class TextField extends InteractiveObject
 					{
 						__replaceSelectedText("\n", true);
 
-						dispatchEvent(new Event(Event.CHANGE, true));
+						#if openfl_pool_events
+						var changeEvent = Event.__pool.get();
+						changeEvent.type = Event.CHANGE;
+						changeEvent.bubbles = true;
+						#else
+						var changeEvent = new Event(Event.CHANGE, true);
+						#end
+
+						dispatchEvent(changeEvent);
+
+						#if openfl_pool_events
+						Event.__pool.release(changeEvent);
+						#end
 					}
 				}
 				else
@@ -3592,7 +3629,19 @@ class TextField extends InteractiveObject
 					replaceSelectedText("");
 					__selectionIndex = __caretIndex;
 
-					dispatchEvent(new Event(Event.CHANGE, true));
+					#if openfl_pool_events
+					var changeEvent = Event.__pool.get();
+					changeEvent.type = Event.CHANGE;
+					changeEvent.bubbles = true;
+					#else
+					var changeEvent = new Event(Event.CHANGE, true);
+					#end
+
+					dispatchEvent(changeEvent);
+
+					#if openfl_pool_events
+					Event.__pool.release(changeEvent);
+					#end
 				}
 				else
 				{
@@ -3611,7 +3660,19 @@ class TextField extends InteractiveObject
 					replaceSelectedText("");
 					__selectionIndex = __caretIndex;
 
-					dispatchEvent(new Event(Event.CHANGE, true));
+					#if openfl_pool_events
+					var changeEvent = Event.__pool.get();
+					changeEvent.type = Event.CHANGE;
+					changeEvent.bubbles = true;
+					#else
+					var changeEvent = new Event(Event.CHANGE, true);
+					#end
+
+					dispatchEvent(changeEvent);
+
+					#if openfl_pool_events
+					Event.__pool.release(changeEvent);
+					#end
 				}
 				else
 				{
@@ -3741,7 +3802,20 @@ class TextField extends InteractiveObject
 						Clipboard.text = __text.substring(__caretIndex, __selectionIndex);
 
 						replaceSelectedText("");
-						dispatchEvent(new Event(Event.CHANGE, true));
+
+						#if openfl_pool_events
+						var changeEvent = Event.__pool.get();
+						changeEvent.type = Event.CHANGE;
+						changeEvent.bubbles = true;
+						#else
+						var changeEvent = new Event(Event.CHANGE, true);
+						#end
+
+						dispatchEvent(changeEvent);
+
+						#if openfl_pool_events
+						Event.__pool.release(changeEvent);
+						#end
 					}
 				}
 				#end
@@ -3761,7 +3835,19 @@ class TextField extends InteractiveObject
 						{
 							__replaceSelectedText(Clipboard.text, true);
 
-							dispatchEvent(new Event(Event.CHANGE, true));
+							#if openfl_pool_events
+							var changeEvent = Event.__pool.get();
+							changeEvent.type = Event.CHANGE;
+							changeEvent.bubbles = true;
+							#else
+							var changeEvent = new Event(Event.CHANGE, true);
+							#end
+
+							dispatchEvent(changeEvent);
+
+							#if openfl_pool_events
+							Event.__pool.release(changeEvent);
+							#end
 						}
 					}
 				}
@@ -3789,7 +3875,19 @@ class TextField extends InteractiveObject
 		__replaceSelectedText(value, true);
 
 		// TODO: Dispatch change if at max chars?
-		dispatchEvent(new Event(Event.CHANGE, true));
+		#if openfl_pool_events
+		var changeEvent = Event.__pool.get();
+		changeEvent.type = Event.CHANGE;
+		changeEvent.bubbles = true;
+		#else
+		var changeEvent = new Event(Event.CHANGE, true);
+		#end
+
+		dispatchEvent(changeEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(changeEvent);
+		#end
 	}
 }
 #else

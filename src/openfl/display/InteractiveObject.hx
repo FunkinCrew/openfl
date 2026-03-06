@@ -1050,6 +1050,7 @@ import openfl.geom.Rectangle;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.Event)
 class InteractiveObject extends DisplayObject
 {
 	// @:noCompletion @:dox(hide) public var accessibilityImplementation:openfl.accessibility.AccessibilityImplementation;
@@ -1304,7 +1305,19 @@ class InteractiveObject extends DisplayObject
 		{
 			__tabEnabled = value;
 
-			dispatchEvent(new Event(Event.TAB_ENABLED_CHANGE, true, false));
+			#if openfl_pool_events
+			var tabEnabledChangeEvent = Event.__pool.get();
+			tabEnabledChangeEvent.type = Event.TAB_ENABLED_CHANGE;
+			tabEnabledChangeEvent.bubbles = true;
+			#else
+			var tabEnabledChangeEvent = new Event(Event.TAB_ENABLED_CHANGE, true);
+			#end
+
+			dispatchEvent(tabEnabledChangeEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(tabEnabledChangeEvent);
+			#end
 		}
 
 		return __tabEnabled;
@@ -1323,7 +1336,19 @@ class InteractiveObject extends DisplayObject
 
 			__tabIndex = value;
 
-			dispatchEvent(new Event(Event.TAB_INDEX_CHANGE, true, false));
+			#if openfl_pool_events
+			var tabIndexChangeEvent = Event.__pool.get();
+			tabIndexChangeEvent.type = Event.TAB_INDEX_CHANGE;
+			tabIndexChangeEvent.bubbles = true;
+			#else
+			var tabIndexChangeEvent = new Event(Event.TAB_INDEX_CHANGE, true);
+			#end
+
+			dispatchEvent(tabIndexChangeEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(tabIndexChangeEvent);
+			#end
 		}
 
 		return __tabIndex;

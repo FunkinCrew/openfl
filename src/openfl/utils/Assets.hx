@@ -45,6 +45,7 @@ import lime.media.vorbis.VorbisFile;
 #end
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Sprite)
+@:access(openfl.events.Event)
 @:access(openfl.text.Font)
 @:access(openfl.utils.AssetLibrary)
 class Assets
@@ -940,6 +941,17 @@ class Assets
 	// Event Handlers
 	@:noCompletion private static function LimeAssets_onChange():Void
 	{
-		dispatchEvent(new Event(Event.CHANGE));
+		#if (openfl_pool_events && !flash)
+		var changeEvent = Event.__pool.get();
+		changeEvent.type = Event.CHANGE;
+		#else
+		var changeEvent = new Event(Event.CHANGE);
+		#end
+
+		dispatchEvent(changeEvent);
+
+		#if (openfl_pool_events && !flash)
+		Event.__pool.release(changeEvent);
+		#end
 	}
 }

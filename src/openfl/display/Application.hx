@@ -29,6 +29,7 @@ import openfl.events.InvokeEvent;
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 @:access(openfl.display.NativeWindowInitOptions)
 #end
+@:access(openfl.events.Event)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Application #if lime extends LimeApplication #end
 {
@@ -153,8 +154,20 @@ class Application #if lime extends LimeApplication #end
 		}
 		#end
 		#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+		#if (openfl_pool_events && !flash)
+		var exitingEvent = Event.__pool.get();
+		exitingEvent.type = Event.EXITING;
+		exitingEvent.cancelable = true;
+		#else
 		var exitingEvent = new Event(Event.EXITING, false, true);
+		#end
+
 		var result = NativeApplication.nativeApplication.dispatchEvent(exitingEvent);
+
+		#if (openfl_pool_events && !flash)
+		Event.__pool.release(exitingEvent);
+		#end
+
 		if (!result)
 		{
 			return;

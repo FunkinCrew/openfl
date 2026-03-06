@@ -95,6 +95,7 @@ import lime.system.BackgroundWorker;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.Event)
 class File extends FileReference
 {
 	/**
@@ -792,7 +793,19 @@ class File extends FileReference
 	override public function cancel():Void
 	{
 		__fileWorker.cancel();
-		dispatchEvent(new Event(Event.CANCEL));
+
+		#if openfl_pool_events
+		var cancelEvent = Event.__pool.get();
+		cancelEvent.type = Event.CANCEL;
+		#else
+		var cancelEvent = new Event(Event.CANCEL);
+		#end
+
+		dispatchEvent(cancelEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(cancelEvent);
+		#end
 	}
 
 	/**
@@ -1920,7 +1933,19 @@ class File extends FileReference
 		{
 			__fileDialog = null;
 		}
-		this.dispatchEvent(new Event(Event.CANCEL));
+
+		#if openfl_pool_events
+		var cancelEvent = Event.__pool.get();
+		cancelEvent.type = Event.CANCEL;
+		#else
+		var cancelEvent = new Event(Event.CANCEL);
+		#end
+
+		dispatchEvent(cancelEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(cancelEvent);
+		#end
 	}
 
 	@:noCompletion private function __dispatchSelect(?filepath:String):Void
@@ -1932,7 +1957,18 @@ class File extends FileReference
 
 		nativePath = filepath;
 
-		this.dispatchEvent(new Event(Event.SELECT));
+		#if openfl_pool_events
+		var selectEvent = Event.__pool.get();
+		selectEvent.type = Event.SELECT;
+		#else
+		var selectEvent = new Event(Event.SELECT);
+		#end
+
+		dispatchEvent(selectEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(selectEvent);
+		#end
 	}
 
 	@:noCompletion private function __dispatchSelectMultiple(?filepaths:Array<String>):Void

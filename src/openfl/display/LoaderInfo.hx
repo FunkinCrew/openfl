@@ -112,6 +112,7 @@ import js.Browser;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.Event)
 class LoaderInfo extends EventDispatcher
 {
 	@:noCompletion private static var __rootURL:String = #if (js && html5) (Browser.supported ? Browser.document.URL : "") #else "" #end;
@@ -432,7 +433,18 @@ class LoaderInfo extends EventDispatcher
 			__update(bytesLoaded, bytesTotal);
 			__completed = true;
 
-			dispatchEvent(new Event(Event.COMPLETE));
+			#if openfl_pool_events
+			var completeEvent = Event.__pool.get();
+			completeEvent.type = Event.COMPLETE;
+			#else
+			var completeEvent = new Event(Event.COMPLETE);
+			#end
+
+			dispatchEvent(completeEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(completeEvent);
+			#end
 		}
 	}
 
@@ -441,7 +453,20 @@ class LoaderInfo extends EventDispatcher
 		this.bytesLoaded = bytesLoaded;
 		this.bytesTotal = bytesTotal;
 
-		dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, bytesTotal));
+		#if openfl_pool_events
+		var progressEvent = ProgressEvent.__pool.get();
+		progressEvent.type = ProgressEvent.PROGRESS;
+		progressEvent.bytesLoaded = bytesLoaded;
+		progressEvent.bytesTotal = bytesTotal;
+		#else
+		var progressEvent = new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, bytesTotal);
+		#end
+
+		dispatchEvent(progressEvent);
+
+		#if openfl_pool_events
+		ProgressEvent.__pool.release(progressEvent);
+		#end
 	}
 }
 #else
