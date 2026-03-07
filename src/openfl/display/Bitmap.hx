@@ -134,7 +134,7 @@ class Bitmap extends DisplayObject
 		}
 	}
 
-	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
+	@:noCompletion private override function __enterFrame(deltaTime:Float):Void
 	{
 		if (__bitmapData != null && __bitmapData.image != null && __bitmapData.image.version != __imageVersion)
 		{

@@ -869,7 +869,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if (commonjs && !nodejs)
 	@:noCompletion private var __cursor:LimeMouseCursor;
 	#end
-	@:noCompletion private var __deltaTime:Int;
+	@:noCompletion private var __deltaTime:Float;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayMatrix:Matrix;
 	@:noCompletion private var __displayRect:Rectangle;
@@ -883,7 +883,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __fullscreen:Bool;
 	@:noCompletion private var __fullScreenSourceRect:Rectangle;
 	@:noCompletion private var __invalidated:Bool;
-	@:noCompletion private var __lastClickTime:Int;
+	@:noCompletion private var __lastClickTime:Float;
 	@:noCompletion private var __lastClickTarget:InteractiveObject;
 	@:noCompletion private var __logicalWidth:Int;
 	@:noCompletion private var __logicalHeight:Int;
@@ -978,7 +978,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__colorString = "#FFFFFF";
 		__contentsScaleFactor = 1;
 		__currentTabOrderIndex = 0;
-		__deltaTime = 0;
+		__deltaTime = 0.0;
 		__displayState = NORMAL;
 		__mouseX = 0;
 		__mouseY = 0;
@@ -1819,7 +1819,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		window.onActivate.add(__onLimeWindowActivate.bind(window));
 		window.onClose.add(__onLimeWindowClose.bind(window), false, -9000);
 		window.onDeactivate.add(__onLimeWindowDeactivate.bind(window));
-		window.onDropFile.add(__onLimeWindowDropFile.bind(window));
 		window.onEnter.add(__onLimeWindowEnter.bind(window));
 		window.onExpose.add(__onLimeWindowExpose.bind(window));
 		window.onFocusIn.add(__onLimeWindowFocusIn.bind(window));
@@ -2237,7 +2236,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__enterFrame(__deltaTime);
 		}
 
-		__deltaTime = 0;
+		__deltaTime = 0.0;
 
 		var cancelled = __render(context);
 		if (cancelled)
@@ -2344,7 +2343,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__onTouch(TouchEvent.TOUCH_BEGIN, touch, __primaryTouch == touch);
 	}
 
-	@:noCompletion private function __onLimeUpdate(deltaTime:Int):Void
+	@:noCompletion private function __onLimeUpdate(deltaTime:Float):Void
 	{
 		__deltaTime = deltaTime;
 
@@ -2400,8 +2399,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		// __primaryTouch = null;
 		// __broadcastEvent (new Event (Event.DEACTIVATE));
 	}
-
-	@:noCompletion private function __onLimeWindowDropFile(window:Window, file:String):Void {}
 
 	@:noCompletion private function __onLimeWindowEnter(window:Window):Void
 	{
