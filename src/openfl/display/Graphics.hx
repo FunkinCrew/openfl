@@ -99,6 +99,7 @@ import js.html.CanvasRenderingContext2D;
 	#end
 	@:noCompletion private var __bitmap:BitmapData;
 	@:noCompletion private var __bitmapScale:Float;
+	@:noCompletion private var __hasTilemap:Bool;
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
@@ -198,6 +199,27 @@ import js.html.CanvasRenderingContext2D;
 		__commands.beginFill(color & 0xFFFFFF, alpha);
 
 		if (alpha > 0) __visible = true;
+	}
+
+	/**
+	 * Fills the drawing area with a tilemap.
+	 * @param tilemap the tilemap to fill.
+	 */
+	public function beginTilemapFill(tilemap:Tilemap):Void
+	{
+		tilemap.__update(false, true);
+
+		var xSign = tilemap.width < 0 ? -1 : 1;
+		var ySign = tilemap.height < 0 ? -1 : 1;
+
+		__inflateBounds(tilemap.x - __strokePadding * xSign, tilemap.y - __strokePadding * ySign);
+		__inflateBounds(tilemap.x + tilemap.width + __strokePadding * xSign, tilemap.y + tilemap.height + __strokePadding * ySign);
+
+		__commands.beginTilemapFill(tilemap);
+
+		__dirty = true;
+		__visible = true;
+		__hasTilemap = true;
 	}
 
 	/**
@@ -654,6 +676,7 @@ import js.html.CanvasRenderingContext2D;
 		var path:GraphicsPath;
 		var trianglePath:GraphicsTrianglePath;
 		var quadPath:GraphicsQuadPath;
+		var tilemapFill:GraphicsTilemapFill;
 
 		for (graphics in graphicsData)
 		{
@@ -728,6 +751,9 @@ import js.html.CanvasRenderingContext2D;
 				case QUAD_PATH:
 					quadPath = cast graphics;
 					drawQuads(quadPath.rects, quadPath.indices, quadPath.transforms);
+				case TILEMAP:
+					tilemapFill = cast graphics;
+					beginTilemapFill(tilemapFill.tilemap);
 			}
 		}
 	}

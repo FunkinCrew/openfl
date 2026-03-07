@@ -159,6 +159,14 @@ class DrawCommandBuffer
 		b.push(smooth);
 	}
 
+	public function beginTilemapFill(tilemap:Tilemap):Void
+	{
+		prepareWrite();
+
+		types.push(BEGIN_TILEMAP_FILL);
+		o.push(tilemap);
+	}
+
 	public function beginFill(color:Int, alpha:Float):Void
 	{
 		prepareWrite();

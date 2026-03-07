@@ -62,6 +62,9 @@ class DrawCommandReader
 			case BEGIN_SHADER_FILL:
 				oPos += 1; // shaderBuffer
 
+			case BEGIN_TILEMAP_FILL:
+				oPos += 1; // Tilemap
+
 			case CUBIC_CURVE_TO:
 				fPos += 6; // controlX1, controlY1, controlX2, controlY2, anchorX, anchorY
 
@@ -189,6 +192,13 @@ class DrawCommandReader
 		advance();
 		prev = BEGIN_SHADER_FILL;
 		return new BeginShaderFillView(this);
+	}
+
+	public inline function readBeginTilemapFill():BeginTilemapFillView
+	{
+		advance();
+		prev = BEGIN_TILEMAP_FILL;
+		return new BeginTilemapFillView(this);
 	}
 
 	public inline function readCubicCurveTo():CubicCurveToView
@@ -461,6 +471,21 @@ abstract BeginShaderFillView(DrawCommandReader)
 	public var shaderBuffer(get, never):ShaderBuffer;
 
 	private inline function get_shaderBuffer():ShaderBuffer
+	{
+		return cast this.obj(0);
+	}
+}
+
+abstract BeginTilemapFillView(DrawCommandReader)
+{
+	public inline function new(d:DrawCommandReader)
+	{
+		this = d;
+	}
+
+	public var tilemap(get, never):Tilemap;
+
+	private inline function get_tilemap():Tilemap
 	{
 		return cast this.obj(0);
 	}

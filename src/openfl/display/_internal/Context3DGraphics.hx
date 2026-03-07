@@ -37,6 +37,7 @@ class Context3DGraphics
 	private static var blankBitmapData = new BitmapData(1, 1, false, 0);
 	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
+	private static var __tileRenderer:OpenGLRenderer;
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
@@ -83,6 +84,12 @@ class Context3DGraphics
 							}
 						}
 					}
+
+				case BEGIN_TILEMAP_FILL:
+					var c = data.readBeginTilemapFill();
+					c.tilemap;
+				// Context3DTilemap.buildBuffer(c.tilemap, renderer);
+				// data.skip(type);
 
 				case DRAW_QUADS:
 					// TODO: Other fill types
@@ -428,6 +435,9 @@ class Context3DGraphics
 						return false;
 					}
 
+				case BEGIN_TILEMAP_FILL:
+					data.skip(type);
+
 				case DRAW_RECT:
 					if (hasColorFill)
 					{
@@ -532,7 +542,7 @@ class Context3DGraphics
 			var width = graphics.__width;
 			var height = graphics.__height;
 
-			if (bounds != null && width >= 1 && height >= 1)
+			if (bounds != null && ((width >= 1 && height >= 1) || graphics.__hasTilemap))
 			{
 				if (graphics.__hardwareDirty
 					|| (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null))
@@ -598,6 +608,29 @@ class Context3DGraphics
 							}
 
 							fill = null;
+
+						case BEGIN_TILEMAP_FILL:
+							var c = data.readBeginTilemapFill();
+							// giving the tilemap it's own renderer MAY allow for less gl events to switch between the states made by the Context3DGraphics and Context3DTilemap
+							if (__tileRenderer == null) __tileRenderer = new OpenGLRenderer(renderer.__context3D);
+
+							__tileRenderer.__stage = renderer.__stage;
+							__tileRenderer.__allowSmoothing = c.tilemap.smoothing;
+							__tileRenderer.__overrideBlendMode = c.tilemap.blendMode;
+							__tileRenderer.__pixelRatio = renderer.__pixelRatio;
+							__tileRenderer.__worldTransform = c.tilemap.transform.matrix;
+							__tileRenderer.__worldAlpha = 1 / c.tilemap.__worldAlpha;
+							__tileRenderer.__resize(Math.ceil(c.tilemap.width), Math.ceil(c.tilemap.height));
+
+							var tilemapTransform = c.tilemap.__renderTransform;
+							var newTransform = Matrix.__pool.get();
+							newTransform.copyFrom(tilemapTransform);
+							newTransform.concat(graphics.__owner.__transform);
+							c.tilemap.__renderTransform = newTransform;
+
+							Context3DTilemap.renderDrawable(c.tilemap, __tileRenderer);
+							Matrix.__pool.release(newTransform);
+							c.tilemap.__renderTransform = tilemapTransform;
 
 						case DRAW_QUADS:
 							if (bitmap != null)

@@ -7,4 +7,5 @@ package openfl.display._internal;
 	var BITMAP_FILL = 2;
 	var END_FILL = 3;
 	var SHADER_FILL = 4;
+	var TILEMAP_FILL = 5;
 }
