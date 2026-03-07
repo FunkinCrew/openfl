@@ -126,7 +126,7 @@ class Application #if lime extends LimeApplication #end
 		#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 		// wait for the first update to dispatch invoke event
 		// to ensure that the document class constructor has completed
-		onUpdate.add(function(delta:Int):Void
+		onUpdate.add(function(_):Void
 		{
 			if (NativeApplication.nativeApplication.hasEventListener(InvokeEvent.INVOKE))
 			{

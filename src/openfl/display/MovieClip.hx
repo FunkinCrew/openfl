@@ -354,7 +354,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
+	@:noCompletion private override function __enterFrame(deltaTime:Float):Void
 	{
 		if (__timeline != null)
 		{

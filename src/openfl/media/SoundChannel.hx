@@ -442,7 +442,7 @@ import lime.utils.Int16Array;
 	#end
 
 	#if lime_openal
-	private function watchBuffers(i:Int):Void
+	private function watchBuffers(_):Void
 	{
 		var alAudioContext = __sound.__alAudioContext;
 		var hasSampleData = true;

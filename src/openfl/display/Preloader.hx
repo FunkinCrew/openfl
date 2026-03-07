@@ -108,10 +108,10 @@ class Preloader
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) class DefaultPreloader extends Sprite
 {
-	@:noCompletion private var endAnimation:Int;
+	@:noCompletion private var endAnimation:Float;
 	@:noCompletion private var outline:Shape;
 	@:noCompletion private var progress:Shape;
-	@:noCompletion private var startAnimation:Int;
+	@:noCompletion private var startAnimation:Float;
 
 	public function new()
 	{
