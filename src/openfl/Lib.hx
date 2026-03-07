@@ -224,7 +224,7 @@ class Lib
 		another SWF file is loaded later, the return value is relative to when the first
 		SWF file was loaded.
 	**/
-	public static function getTimer():Int
+	public static function getTimer():#if flash Int #else Float #end
 	{
 		#if lime
 		#if flash
