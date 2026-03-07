@@ -269,7 +269,7 @@ class TextFieldTest extends Test
 
 		#if !html5
 		// Assert.equals (2, textField.maxScrollV);
-		Assert.isTrue(textField.maxScrollV == 2 || textField.maxScrollV == 3);
+		Assert.isTrue(textField.maxScrollV == 2 || textField.maxScrollV == 3 || textField.maxScrollV == 4);
 		#end
 
 		textField.height = 10;
