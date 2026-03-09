@@ -352,24 +352,27 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	{
 		if (gl != null)
 		{
-			var values = __getMatrix(transform, AUTO);
-
-			for (i in 0...16)
-			{
-				__matrix[i] = values[i];
-			}
-
+			__getMatrix(transform, NEVER);
 			return __matrix;
 		}
 		else
 		{
-			__matrix.identity();
 			__matrix[0] = transform.a;
 			__matrix[1] = transform.b;
+			__matrix[2] = 0;
+			__matrix[3] = 0;
 			__matrix[4] = transform.c;
 			__matrix[5] = transform.d;
+			__matrix[6] = 0;
+			__matrix[7] = 0;
+			__matrix[8] = 0;
+			__matrix[9] = 0;
+			__matrix[10] = 1;
+			__matrix[11] = 0;
 			__matrix[12] = transform.tx;
 			__matrix[13] = transform.ty;
+			__matrix[14] = 0;
+			__matrix[15] = 1;
 
 			return __matrix;
 		}
@@ -525,37 +528,36 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __getMatrix(transform:Matrix, pixelSnapping:PixelSnapping):Array<Float>
 	{
-		var _matrix = Matrix.__pool.get();
-		_matrix.copyFrom(transform);
-		_matrix.concat(__worldTransform);
+		__matrix[0] = transform.a * __worldTransform.a + transform.b * __worldTransform.c;
+		__matrix[1] = transform.a * __worldTransform.b + transform.b * __worldTransform.d;
+		__matrix[2] = 0;
+		__matrix[3] = 0;
+		__matrix[4] = transform.c * __worldTransform.a + transform.d * __worldTransform.c;
+		__matrix[5] = transform.c * __worldTransform.b + transform.d * __worldTransform.d;
+		__matrix[6] = 0;
+		__matrix[7] = 0;
+		__matrix[8] = 0;
+		__matrix[9] = 0;
+		__matrix[10] = 1;
+		__matrix[11] = 0;
+		__matrix[12] = transform.tx * __worldTransform.a + transform.ty * __worldTransform.c + __worldTransform.tx;
+		__matrix[13] = transform.tx * __worldTransform.b + transform.ty * __worldTransform.d + __worldTransform.ty;
+		__matrix[14] = 0;
+		__matrix[15] = 1;
 
-		if (pixelSnapping == ALWAYS
-			|| (pixelSnapping == AUTO
-				&& _matrix.b == 0
-				&& _matrix.c == 0
-				&& (_matrix.a < 1.001 && _matrix.a > 0.999)
-				&& (_matrix.d < 1.001 && _matrix.d > 0.999)))
-		{
-			_matrix.tx = Math.round(_matrix.tx);
-			_matrix.ty = Math.round(_matrix.ty);
+		if (pixelSnapping == ALWAYS ||
+			(pixelSnapping == AUTO && (__stage == null || __stage.quality == LOW || __stage.quality == MEDIUM)
+				&& __matrix[1] == 0 && __matrix[4] == 0
+				&& __matrix[0] < 1.001 && __matrix[0] > 0.999
+			)	&& __matrix[5] < 1.001 && __matrix[5] > 0.999
+		) {
+			__matrix[12] = Math.round(__matrix[12]);
+			__matrix[13] = Math.round(__matrix[13]);
 		}
 
-		__matrix.identity();
-		__matrix[0] = _matrix.a;
-		__matrix[1] = _matrix.b;
-		__matrix[4] = _matrix.c;
-		__matrix[5] = _matrix.d;
-		__matrix[12] = _matrix.tx;
-		__matrix[13] = _matrix.ty;
 		__matrix.append(__flipped ? __projectionFlipped : __projection);
 
-		for (i in 0...16)
-		{
-			__values[i] = __matrix[i];
-		}
-
-		Matrix.__pool.release(_matrix);
-
+		for (i in 0...16) __values[i] = __matrix[i];
 		return __values;
 	}
 
@@ -967,7 +969,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		applyAlpha(1);
 		applyBitmapData(source, smooth);
 		applyColorTransform(null);
-		applyMatrix(__getMatrix(source.__renderTransform, AUTO));
+		applyMatrix(__getMatrix(source.__renderTransform, smooth ? NEVER : AUTO));
 		updateShader();
 
 		var vertexBuffer = source.getVertexBuffer(__context3D);
