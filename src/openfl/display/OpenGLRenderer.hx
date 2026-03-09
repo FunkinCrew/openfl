@@ -54,6 +54,11 @@ import lime.math.Matrix4;
 @:allow(openfl.text)
 class OpenGLRenderer extends DisplayObjectRenderer
 {
+	@:noCompletion private static var __blendMinMaxSupported:Null<Bool>;
+	@:noCompletion private static var __complexBlendsSupported:Null<Bool>;
+	@:noCompletion private static var __coherentBlendsSupported:Null<Bool>;
+	@:noCompletion private static var __sRGBWriteControlSupported:Null<Bool>;
+
 	@:noCompletion private static var __alphaValue:Array<Float> = [1];
 	@:noCompletion private static var __colorMultipliersValue:Array<Float> = [0, 0, 0, 0];
 	@:noCompletion private static var __colorOffsetsValue:Array<Float> = [0, 0, 0, 0];
@@ -73,9 +78,6 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __staticDefaultDisplayShader:DisplayObjectShader;
 	@:noCompletion private static var __staticDefaultGraphicsShader:GraphicsShader;
 	@:noCompletion private static var __staticMaskShader:Context3DMaskShader;
-	@:noCompletion private static var __sRGBWriteControlSupported:Null<Bool>;
-	@:noCompletion private static var __complexBlendsSupported:Null<Bool>;
-	@:noCompletion private static var __coherentBlendsSupported:Null<Bool>;
 
 	@:noCompletion private var __context3D:Context3D;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
@@ -143,12 +145,13 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 		#end
 
-		#if lime
+		final exts = __gl.getSupportedExtensions();
+
 		if (__context.type == OPENGLES)
 		{
 			if (__sRGBWriteControlSupported == null)
 			{
-				__sRGBWriteControlSupported = gl.getSupportedExtensions().contains("EXT_sRGB_write_control");
+				__sRGBWriteControlSupported = exts.contains("EXT_sRGB_write_control");
 			}
 
 			if (__sRGBWriteControlSupported)
@@ -156,13 +159,18 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				gl.disable(0x8DB9); // GL_FRAMEBUFFER_SRGB_EXT
 			}
 		}
-		#end
 
+		if (__blendMinMaxSupported == null)
+		{
+			__blendMinMaxSupported = exts.contains("EXT_blend_minmax");
+		}
 		if (__complexBlendsSupported == null)
 		{
-			var extensions = gl.getSupportedExtensions();
-			__complexBlendsSupported = extensions.contains("KHR_blend_equation_advanced");
-			__coherentBlendsSupported = extensions.contains("KHR_blend_equation_advanced_coherent");
+			__complexBlendsSupported = exts.contains("KHR_blend_equation_advanced");
+		}
+		if (__coherentBlendsSupported == null)
+		{
+			__coherentBlendsSupported = exts.contains("KHR_blend_equation_advanced_coherent");
 		}
 
 		#if (js && html5)
@@ -1080,60 +1088,65 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				__context3D.__setGLBlend(cacheBlendState);
 			}
 
-			var equation:Null<Int> = switch (value)
-			{
-				case OVERLAY: 0x9296; // OVERLAY_KHR
-				case DARKEN: 0x9297; // DARKEN_KHR
-				case HARDLIGHT: 0x929B; // HARDLIGHT_KHR
-				case DIFFERENCE: 0x929E; // DIFFERENCE_KHR
-				case COLORDODGE: 0x9299; // COLORDODGE_KHR
-				case COLORBURN: 0x929A; // COLORBURN_KHR
-				case SOFTLIGHT: 0x929C; // SOFTLIGHT_KHR
-				case EXCLUSION: 0x92A0; // EXCLUSION_KHR
-				case HUE: 0x92AD; // HSL_HUE_KHR
-				case SATURATION: 0x92AE; // HSL_SATURATION_KHR
-				case COLOR: 0x92AF; // HSL_COLOR_KHR
-				case LUMINOSITY: 0x92B0; // HSL_LUMINOSITY_KHR
-				default: null;
-			}
-
-			if (equation != null)
-			{
-				__context3D.__setGLBlendEquation(equation);
 				__context3D.__usingComplexBlend = true;
-				return;
-			}
+			switch (value) {
+				case DARKEN:
+					if (__context3D.__usingComplexBlend = !__blendMinMaxSupported)
+						__context3D.__setGLBlendEquation(0x9297); // DARKEN_KHR
+				case DIFFERENCE: __context3D.__setGLBlendEquation(0x929E); // DIFFERENCE_KHR
+				case HARDLIGHT: __context3D.__setGLBlendEquation(0x929B); // HARDLIGHT_KHR
+				case LIGHTEN:
+					if (__context3D.__usingComplexBlend = !__blendMinMaxSupported)
+						__context3D.__setGLBlendEquation(0x9298); // LIGHTEN_KHR
+				//case MULTIPLY: __context3D.__setGLBlendEquation(0x9294); // MULTIPLY_KHR
+				case OVERLAY: __context3D.__setGLBlendEquation(0x9296); // OVERLAY_KHR
+				//case SCREEN: __context3D.__setGLBlendEquation(0x9295); // SCREEN_KHR
+				case COLORDODGE: __context3D.__setGLBlendEquation(0x929A); // COLORDODGE_KHR
+				case COLORBURN: __context3D.__setGLBlendEquation(0x9299); // COLORBURN_KHR
+				case SOFTLIGHT: __context3D.__setGLBlendEquation(0x929C); // SOFTLIGHT_KHR
+				case EXCLUSION: __context3D.__setGLBlendEquation(0x92A0); // EXCLUSION_KHR
+				case HUE: __context3D.__setGLBlendEquation(0x92AD); // HSL_HUE_KHR
+				case SATURATION: __context3D.__setGLBlendEquation(0x92AE); // HSL_SATURATION_KHR
+				case COLOR: __context3D.__setGLBlendEquation(0x92AF); // HSL_COLOR_KHR
+				case LUMINOSITY: __context3D.__setGLBlendEquation(0x92B0); // HSL_LUMINOSITY_KHR
+				default: __context3D.__usingComplexBlend = false;
 		}
 
-		__context3D.__usingComplexBlend = false;
+			if (__context3D.__usingComplexBlend) return;
+		}
 
 		switch (value)
 		{
-			case ADD:
-				__context3D.setBlendFactors(ONE, ONE);
-
-			case MULTIPLY:
-				__context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
-
-			case SCREEN:
-				__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_COLOR);
-
+			case ADD: __context3D.setBlendFactors(ONE, ONE);
+			case ALPHA: __context3D.setBlendFactors(SOURCE_ALPHA, ONE_MINUS_SOURCE_ALPHA);
+			case DARKEN:
+				if (__blendMinMaxSupported)
+				{
+					__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
+					__context3D.__setGLBlendEquation(0x8007); // GL_MIN
+				}
+				else
+				{
+					__context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
+				}
+			case ERASE: __context3D.setBlendFactors(ZERO, ONE_MINUS_SOURCE_ALPHA);
+			case INVERT: __context3D.setBlendFactorsSeparate(ONE_MINUS_DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA, ZERO, ONE);
+			case LIGHTEN:
+				if (__blendMinMaxSupported)
+				{
+					__context3D.setBlendFactors(ONE, ONE);
+					__context3D.__setGLBlendEquation(0x8008); // GL_MAX
+				}
+				else
+				{
+					__context3D.setBlendFactors(ONE, ONE);
+				}
+			case MULTIPLY: __context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
+			case SCREEN: __context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_COLOR);
 			case SUBTRACT:
 				__context3D.setBlendFactors(ONE, ONE);
-				__context3D.__setGLBlendEquation(__gl.FUNC_REVERSE_SUBTRACT);
-
-			#if desktop
-			case DARKEN:
-				__context3D.setBlendFactors(ONE, ONE);
-				__context3D.__setGLBlendEquation(0x8007); // GL_MIN
-
-			case LIGHTEN:
-				__context3D.setBlendFactors(ONE, ONE);
-				__context3D.__setGLBlendEquation(0x8008); // GL_MAX
-			#end
-
-			default:
-				__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
+				__context3D.__setGLBlendEquation(0x800B); // GL_FUNC_REVERSE_SUBTRACT
+			default: __context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
 		}
 	}
 
