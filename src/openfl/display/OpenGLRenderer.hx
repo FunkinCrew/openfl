@@ -249,7 +249,6 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			{
 				__currentShader.__bitmap.input = bitmapData;
 				__currentShader.__bitmap.filter = (smooth && __allowSmoothing) ? LINEAR : NEAREST;
-				__currentShader.__bitmap.mipFilter = MIPNONE;
 				__currentShader.__bitmap.wrap = repeat ? REPEAT : CLAMP;
 			}
 
@@ -257,7 +256,6 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			{
 				__currentShader.__texture.input = bitmapData;
 				__currentShader.__texture.filter = (smooth && __allowSmoothing) ? LINEAR : NEAREST;
-				__currentShader.__texture.mipFilter = MIPNONE;
 				__currentShader.__texture.wrap = repeat ? REPEAT : CLAMP;
 			}
 
@@ -787,9 +785,12 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __render(object:IBitmapDrawable):Void
 	{
+		if (object.__drawableType == openfl.display._internal.IBitmapDrawableType.STAGE)
+		{
+			__context3D.setDepthTest(false, ALWAYS);
+		}
 		__context3D.setColorMask(true, true, true, true);
 		__context3D.setCulling(NONE);
-		__context3D.setDepthTest(false, ALWAYS);
 		__context3D.setStencilActions();
 		__context3D.setStencilReferenceValue(0, 0, 0);
 		__context3D.setScissorRectangle(null);
@@ -1088,7 +1089,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				__context3D.__setGLBlend(cacheBlendState);
 			}
 
-				__context3D.__usingComplexBlend = true;
+			__context3D.__usingComplexBlend = true;
 			switch (value) {
 				case DARKEN:
 					if (__context3D.__usingComplexBlend = !__blendMinMaxSupported)
@@ -1110,7 +1111,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				case COLOR: __context3D.__setGLBlendEquation(0x92AF); // HSL_COLOR_KHR
 				case LUMINOSITY: __context3D.__setGLBlendEquation(0x92B0); // HSL_LUMINOSITY_KHR
 				default: __context3D.__usingComplexBlend = false;
-		}
+			}
 
 			if (__context3D.__usingComplexBlend) return;
 		}
