@@ -103,7 +103,7 @@ import openfl.utils._internal.Lib;
 		Internet Explorer, or the `name` attribute of the
 		`embed` tag in Netscape.
 	**/
-	public static var objectID(get, null):String;
+	public static var objectID(get, never):String;
 
 	/**
 		Registers an ActionScript method as callable from the container. After a
