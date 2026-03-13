@@ -67,6 +67,7 @@ import openfl.geom.Point;
 @:access(openfl.desktop.NativeApplication)
 @:access(openfl.display.NativeWindowInitOptions)
 @:access(openfl.display.Stage)
+@:access(openfl.events.Event)
 @:access(lime.ui.Window)
 class NativeWindow extends EventDispatcher
 {
@@ -141,6 +142,7 @@ class NativeWindow extends EventDispatcher
 	@:noCompletion private var __pendingWidth:Int = 400;
 	@:noCompletion private var __pendingHeight:Int = 228;
 	#end
+	@:noCompletion private var __type:NativeWindowType = NORMAL;
 	@:noCompletion private var __closed:Bool = false;
 	@:noCompletion private var __previousX:Int;
 	@:noCompletion private var __previousY:Int;
@@ -149,6 +151,17 @@ class NativeWindow extends EventDispatcher
 	@:noCompletion private var __previousDisplayState:NativeWindowDisplayState;
 	@:noCompletion private var __active:Bool = false;
 	@:noCompletion private var __ownedWindows:Vector<NativeWindow> = new Vector();
+	@:noCompletion private var __skipClosingEvent:Bool = false;
+	@:noCompletion private var __mouseButtonDown:Bool = false;
+	@:noCompletion private var __moveInProgress:Bool = false;
+	@:noCompletion private var __moveStartWindowX:Int = 0;
+	@:noCompletion private var __moveStartWindowY:Int = 0;
+	@:noCompletion private var __lastMouseDownX:Float = 0;
+	@:noCompletion private var __lastMouseDownY:Float = 0;
+	@:noCompletion private var __moveGrabOffsetX:Float = 0;
+	@:noCompletion private var __moveGrabOffsetY:Float = 0;
+	@:noCompletion private var __dragOffsetX:Float = 0;
+	@:noCompletion private var __dragOffsetY:Float = 0;
 
 	/**
 		Creates a new NativeWindow instance and a corresponding operating system
@@ -214,6 +227,7 @@ class NativeWindow extends EventDispatcher
 		#end
 		__previousDisplayState = NORMAL;
 		__window.stage.nativeWindow = this;
+
 		NativeApplication.nativeApplication.__openedWindows.push(this);
 		__window.onActivate.add(window_onActivate);
 		__window.onDeactivate.add(window_onDeactivate);
@@ -225,6 +239,27 @@ class NativeWindow extends EventDispatcher
 		__window.onMaximize.add(window_onMaximize);
 		__window.onRestore.add(window_onRestore);
 		__window.onClose.add(window_onClose);
+		__window.onMouseDown.add(window_onMouseDown, 0x7FFFFFFF);
+		__window.onMouseUp.add(window_onMouseUp);
+	}
+
+	/**
+		 Reports the window `type` setting used to create this window.
+
+		The values returned by `NativeWindow.type` will be one of the constants
+		defined in the `NativeWindowType` class.
+
+		The `type` setting cannot be changed after a window is created.
+	**/
+	public var type(get, never):NativeWindowType;
+
+	@:noCompletion private function get_type():NativeWindowType
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		return __type;
 	}
 
 	/**
@@ -575,7 +610,8 @@ class NativeWindow extends EventDispatcher
 		#if (lime < "8.1.0")
 		return __opened;
 		#else
-		return __window.visible;
+		// visible may be null instead of false in some versions of Lime
+		return __window.visible == true;
 		#end
 	}
 
@@ -970,6 +1006,7 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		__skipClosingEvent = true;
 		__window.close();
 	}
 
@@ -1077,6 +1114,31 @@ class NativeWindow extends EventDispatcher
 		}
 	}
 
+	public function startMove():Bool
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		if (__moveInProgress)
+		{
+			return false;
+		}
+		if (!__mouseButtonDown)
+		{
+			return false;
+		}
+
+		__moveInProgress = true;
+
+		__moveStartWindowX = __window.x;
+		__moveStartWindowY = __window.y;
+
+		__window.onMouseMove.add(__onStartMoveMouseMove);
+
+		return true;
+	}
+
 	/**
 		Returns a list of the NativeWindow objects that are owned by this
 		window.
@@ -1107,6 +1169,8 @@ class NativeWindow extends EventDispatcher
 	{
 		if (__active)
 		{
+			__mouseButtonDown = false;
+			__stopStartMove();
 			window_onFocusOut();
 		}
 	}
@@ -1120,10 +1184,35 @@ class NativeWindow extends EventDispatcher
 
 		__active = true;
 		NativeApplication.nativeApplication.__activeWindow = this;
-		dispatchEvent(new Event(Event.ACTIVATE, false, false));
+
+		#if openfl_pool_events
+		var activateEvent = Event.__pool.get();
+		activateEvent.type = Event.ACTIVATE;
+		#else
+		var activateEvent = new Event(Event.ACTIVATE);
+		#end
+
+		dispatchEvent(activateEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(activateEvent);
+		#end
+
 		// TODO: dispatch only when the previously focused window was from
 		// a different application
-		NativeApplication.nativeApplication.dispatchEvent(new Event(Event.ACTIVATE, false, false));
+
+		#if openfl_pool_events
+		var activateEvent = Event.__pool.get();
+		activateEvent.type = Event.ACTIVATE;
+		#else
+		var activateEvent = new Event(Event.ACTIVATE);
+		#end
+
+		NativeApplication.nativeApplication.dispatchEvent(activateEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(activateEvent);
+		#end
 	}
 
 	@:noCompletion private function window_onFocusOut():Void
@@ -1134,14 +1223,42 @@ class NativeWindow extends EventDispatcher
 		}
 
 		__active = false;
+
+		__mouseButtonDown = false;
+		__stopStartMove();
+
 		if (NativeApplication.nativeApplication.__activeWindow == this)
 		{
 			NativeApplication.nativeApplication.__activeWindow = null;
 			// TODO: dispatch only when the next focused window isn't a part of
 			// this application
-			NativeApplication.nativeApplication.dispatchEvent(new Event(Event.DEACTIVATE, false, false));
+
+			#if openfl_pool_events
+			var deactivateEvent = Event.__pool.get();
+			deactivateEvent.type = Event.DEACTIVATE;
+			#else
+			var deactivateEvent = new Event(Event.DEACTIVATE);
+			#end
+
+			NativeApplication.nativeApplication.dispatchEvent(deactivateEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(deactivateEvent);
+			#end
 		}
-		dispatchEvent(new Event(Event.DEACTIVATE, false, false));
+
+		#if openfl_pool_events
+		var deactivateEvent = Event.__pool.get();
+		deactivateEvent.type = Event.DEACTIVATE;
+		#else
+		var deactivateEvent = new Event(Event.DEACTIVATE);
+		#end
+
+		dispatchEvent(deactivateEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(deactivateEvent);
+		#end
 	}
 
 	@:noCompletion private function window_onMove(x:Float, y:Float):Void
@@ -1191,7 +1308,31 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private function window_onClose():Void
 	{
+		if (!__skipClosingEvent)
+		{
+			#if openfl_pool_events
+			var closingEvent = Event.__pool.get();
+			closingEvent.type = Event.CLOSING;
+			closingEvent.cancelable = true;
+			#else
+			var closingEvent = new Event(Event.CLOSING, false, true);
+			#end
+
+			var result = dispatchEvent(closingEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(closingEvent);
+			#end
+
+			if (!result)
+			{
+				__window.onClose.cancel();
+				return;
+			}
+		}
+
 		// all child windows are closed when their owner is closed
+		// the child windows do not dispatch Event.CLOSING
 		while (__ownedWindows.length > 0)
 		{
 			var childWindow = __ownedWindows.pop();
@@ -1201,6 +1342,9 @@ class NativeWindow extends EventDispatcher
 		__window.onFocusIn.remove(window_onFocusIn);
 		__window.onFocusOut.remove(window_onFocusOut);
 		__window.onResize.remove(window_onResize);
+		__window.onMouseDown.remove(window_onMouseDown);
+		__window.onMouseUp.remove(window_onMouseUp);
+		__stopStartMove();
 		if (__initOptions.owner != null)
 		{
 			var index = __initOptions.owner.__ownedWindows.indexOf(this);
@@ -1214,7 +1358,86 @@ class NativeWindow extends EventDispatcher
 		{
 			NativeApplication.nativeApplication.__openedWindows.splice(index, 1);
 		}
-		dispatchEvent(new Event(Event.CLOSE));
+
+		#if openfl_pool_events
+		var closeEvent = Event.__pool.get();
+		closeEvent.type = Event.CLOSE;
+		#else
+		var closeEvent = new Event(Event.CLOSE);
+		#end
+
+		dispatchEvent(closeEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(closeEvent);
+		#end
+	}
+
+	@:noCompletion private function window_onMouseDown(x:Float, y:Float, button:Int):Void
+	{
+		if (button == 0)
+		{
+			__mouseButtonDown = true;
+			__lastMouseDownX = x;
+			__lastMouseDownY = y;
+
+			// This is the grab point inside the window
+			__dragOffsetX = x;
+			__dragOffsetY = y;
+		}
+	}
+
+	@:noCompletion private function window_onMouseUp(x:Float, y:Float, button:Int):Void
+	{
+		if (button == 0)
+		{
+			__mouseButtonDown = false;
+			__stopStartMove();
+			__lastMouseDownX = x;
+			__lastMouseDownY = y;
+		}
+	}
+
+	@:noCompletion private function __onStartMoveMouseMove(x:Float, y:Float):Void
+	{
+		if (!__moveInProgress || __closed || !__mouseButtonDown)
+		{
+			__stopStartMove();
+			return;
+		}
+
+		// Mouse in global screen space
+		var globalMouseX = __window.x + x;
+		var globalMouseY = __window.y + y;
+
+		var targetX = Std.int(globalMouseX - __dragOffsetX);
+		var targetY = Std.int(globalMouseY - __dragOffsetY);
+
+		if (targetX == __window.x && targetY == __window.y) return;
+
+		var beforeBounds = new Rectangle(__window.x, __window.y, __window.width, __window.height);
+		var afterBounds = new Rectangle(targetX, targetY, __window.width, __window.height);
+
+		var movingEvent = new NativeWindowBoundsEvent(NativeWindowBoundsEvent.MOVING, false, true, beforeBounds, afterBounds);
+
+		if (!dispatchEvent(movingEvent))
+		{
+			__stopStartMove();
+			return;
+		}
+
+		__window.move(targetX, targetY);
+	}
+
+	@:noCompletion private function __stopStartMove():Void
+	{
+		if (!__moveInProgress)
+		{
+			return;
+		}
+
+		__moveInProgress = false;
+		__window.onMouseMove.remove(__onStartMoveMouseMove);
 	}
 }
 #else

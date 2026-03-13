@@ -10,7 +10,9 @@ import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.errors.EOFError;
+import openfl.errors.RangeError;
 import openfl.net.ObjectEncoding;
+#if !flash
 import openfl.utils._internal.format.amf.AMFReader;
 import openfl.utils._internal.format.amf.AMFTools;
 import openfl.utils._internal.format.amf.AMFWriter;
@@ -19,12 +21,14 @@ import openfl.utils._internal.format.amf3.AMF3Reader;
 import openfl.utils._internal.format.amf3.AMF3Tools;
 import openfl.utils._internal.format.amf3.AMF3Value;
 import openfl.utils._internal.format.amf3.AMF3Writer;
+#end
 #if lime
 import lime.system.System;
 import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
+import lime.utils.Int8Array;
 #end
 
 /**
@@ -191,7 +195,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	/**
 		Compresses the byte array. The entire byte array is compressed. For
 		content running in Adobe AIR, you can specify a compression algorithm by
-		passing a value (defined in the CompressionAlgorithm class) as the
+		passing a value  (defined in the CompressionAlgorithm class) as the
 		`algorithm` parameter. Flash Player supports only the default
 		algorithm, zlib.
 
@@ -221,14 +225,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		the zlib compressed data format specification, those bytes (that is, the
 		portion containing the compressed version of the original data) are
 		compressed using the deflate algorithm. Consequently those bytes are
-		identical to the result of calling `compress(<ph
-		outputclass="javascript">air.CompressionAlgorithm.DEFLATE)` on the
-		original ByteArray. However, the result from `compress(<ph
-		outputclass="javascript">air.CompressionAlgorithm.ZLIB)` includes
-		the extra metadata, while the
-		`compress(CompressionAlgorithm.DEFLATE)` result includes only
-		the compressed version of the original ByteArray data and nothing
-		else.
+		identical to the result of calling
+		`compress(CompressionAlgorithm.DEFLATE)` on the original ByteArray.
+		However, the result from `compress(CompressionAlgorithm.ZLIB)` includes
+		the extra metadata, while the `compress(CompressionAlgorithm.DEFLATE)`
+		result includes only the compressed version of the original ByteArray
+		data and nothing else.
 
 		In order to use the deflate format to compress a ByteArray instance's
 		data in a specific format such as gzip or zip, you cannot simply call
@@ -575,6 +577,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	/**
 		Reads a multibyte string of specified length from the byte stream using
 		the specified character set.
+
+		_OpenFL target support:_ Supported by the HTML5, Flash, and AIR targets.
+		Not currently supported by native targets.
 
 		@param length  The number of bytes from the byte stream to read.
 		@param charSet The string denoting the character set to use to interpret
@@ -957,6 +962,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		Writes a multibyte string to the byte stream using the specified character
 		set.
 
+		_OpenFL target support:_ Not currently supported, except when targeting Flash or AIR.
+
 		@param value   The string value to be written.
 		@param charSet The string denoting the character set to use. Possible
 					   character set strings include `"shift-jis"`,
@@ -1202,7 +1209,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function new(length:Int = 0)
 	{
-		var bytes = Bytes.alloc(length);
+		var bytes:Bytes = Bytes.alloc(length);
 
 		#if sys
 		if (length > 0)
@@ -1241,9 +1248,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if js
 		if (__allocated > __length)
 		{
-			var cacheLength = __length;
+			var cacheLength:Int = __length;
 			__length = __allocated;
-			var data = Bytes.alloc(cacheLength);
+			var data:Bytes = Bytes.alloc(cacheLength);
 			data.blit(0, this, 0, cacheLength);
 			__setData(data);
 			__length = cacheLength;
@@ -1283,7 +1290,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public static function fromBytes(bytes:Bytes):ByteArrayData
 	{
-		var result = new ByteArrayData();
+		var result:ByteArrayData = new ByteArrayData();
 		result.__fromBytes(bytes);
 		return result;
 	}
@@ -1320,7 +1327,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readByte():Int
 	{
-		var value = readUnsignedByte();
+		var value:Int = readUnsignedByte();
 
 		if (value & 0x80 != 0)
 		{
@@ -1365,8 +1372,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		}
 		else
 		{
-			var ch1 = readInt();
-			var ch2 = readInt();
+			var ch1:Int = readInt();
+			var ch2:Int = readInt();
 
 			return FPHelper.i64ToDouble(ch2, ch1);
 		}
@@ -1393,10 +1400,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readInt():Int
 	{
-		var ch1 = readUnsignedByte();
-		var ch2 = readUnsignedByte();
-		var ch3 = readUnsignedByte();
-		var ch4 = readUnsignedByte();
+		var ch1:Int = readUnsignedByte();
+		var ch2:Int = readUnsignedByte();
+		var ch3:Int = readUnsignedByte();
+		var ch4:Int = readUnsignedByte();
 
 		if (endian == LITTLE_ENDIAN)
 		{
@@ -1434,7 +1441,50 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readMultiByte(length:Int, charSet:String):String
 	{
+		#if js
+		if (position + length > __length)
+		{
+			throw new EOFError();
+		}
+		try
+		{
+			var decoder = new js.html.TextDecoder(charSet, {fatal: true});
+
+			// decode reads the full ArrayBuffer, so if we're starting from a
+			// greater than 0, or we need to read fewer characters than the
+			// total length of the existig buffer, we need to make a copy to
+			// pass to the TextDecoder
+			var arrayBuffer:ArrayBuffer = null;
+			if (position == 0)
+			{
+				arrayBuffer = (this : Bytes).getData();
+				// the ArrayBuffer may actually be longer than the length of the
+				// ByteArray, so we may still need to make a copy
+				if (arrayBuffer.byteLength > length)
+				{
+					arrayBuffer = arrayBuffer.slice(0, length);
+				}
+			}
+			else
+			{
+				arrayBuffer = new ArrayBuffer(length);
+				var int8Array = new Int8Array(arrayBuffer);
+				for (i in 0...length)
+				{
+					var byte = this.readByte();
+					int8Array[i] = byte;
+				}
+			}
+			return decoder.decode(arrayBuffer);
+		}
+		catch (e:Dynamic)
+		{
+			// when a charset isn't supported, fall back to UTF
+			return readUTFBytes(length);
+		}
+		#else
 		return readUTFBytes(length);
+		#end
 	}
 
 	public function readObject():Dynamic
@@ -1442,8 +1492,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		switch (objectEncoding)
 		{
 			case AMF0:
-				var input = new BytesInput(this, position);
-				var reader = new AMFReader(input);
+				var input:BytesInput = new BytesInput(this, position);
+				var reader:AMFReader = new AMFReader(input);
 				var data = AMFTools.unwrapValue(reader.read());
 				position = input.position;
 				return data;
@@ -1456,11 +1506,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				return data;
 
 			case HXSF:
-				var data = readUTF();
+				var data:String = readUTF();
+				return Unserializer.run(data);
+
+			case LARGE_HXSF:
+				var data:String = readLargeUTF();
 				return Unserializer.run(data);
 
 			case JSON:
-				var data = readUTF();
+				var data:String = readUTF();
+				return Json.parse(data);
+
+			case LARGE_JSON:
+				var data:String = readLargeUTF();
 				return Json.parse(data);
 
 			default:
@@ -1470,8 +1528,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readShort():Int
 	{
-		var ch1 = readUnsignedByte();
-		var ch2 = readUnsignedByte();
+		var ch1:Int = readUnsignedByte();
+		var ch2:Int = readUnsignedByte();
 
 		var value:Int;
 
@@ -1509,10 +1567,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readUnsignedInt():Int
 	{
-		var ch1 = readUnsignedByte();
-		var ch2 = readUnsignedByte();
-		var ch3 = readUnsignedByte();
-		var ch4 = readUnsignedByte();
+		var ch1:Int = readUnsignedByte();
+		var ch2:Int = readUnsignedByte();
+		var ch3:Int = readUnsignedByte();
+		var ch4:Int = readUnsignedByte();
 
 		if (endian == LITTLE_ENDIAN)
 		{
@@ -1526,8 +1584,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readUnsignedShort():Int
 	{
-		var ch1 = readUnsignedByte();
-		var ch2 = readUnsignedByte();
+		var ch1:Int = readUnsignedByte();
+		var ch2:Int = readUnsignedByte();
 
 		if (endian == LITTLE_ENDIAN)
 		{
@@ -1541,7 +1599,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readUTF():String
 	{
-		var bytesCount = readUnsignedShort();
+		var bytesCount:Int = readUnsignedShort();
+		return readUTFBytes(bytesCount);
+	}
+
+	public function readLargeUTF():String
+	{
+		var bytesCount:Int = readUnsignedInt();
 		return readUTFBytes(bytesCount);
 	}
 
@@ -1563,9 +1627,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if js
 		if (__allocated > __length)
 		{
-			var cacheLength = __length;
+			var cacheLength:Int = __length;
 			__length = __allocated;
-			var data = Bytes.alloc(cacheLength);
+			var data:Bytes = Bytes.alloc(cacheLength);
 			data.blit(0, this, 0, cacheLength);
 			__setData(data);
 			__length = cacheLength;
@@ -1616,7 +1680,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function writeDouble(value:Float):Void
 	{
-		var int64 = FPHelper.doubleToI64(value);
+		var int64:Int64 = FPHelper.doubleToI64(value);
 
 		if (endian == LITTLE_ENDIAN)
 		{
@@ -1640,7 +1704,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		}
 		else
 		{
-			var int = FPHelper.floatToI32(value);
+			var int:Int = FPHelper.floatToI32(value);
 			writeInt(int);
 		}
 	}
@@ -1681,6 +1745,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function writeMultiByte(value:String, charSet:String):Void
 	{
+		// for JS, while we can use TextDecoder to read many different charsets
+		// in readMultiByte(), the matching TextEncoder supports utf-8 only.
+		if (charSet != "utf-8")
+		{
+			// if the charset isn't recognized, write all question marks
+			for (i in 0...value.length)
+			{
+				writeByte(0x3f);
+			}
+			return;
+		}
 		writeUTFBytes(value);
 	}
 
@@ -1690,14 +1765,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		{
 			case AMF0:
 				var value = AMFTools.encode(object);
-				var output = new BytesOutput();
-				var writer = new AMFWriter(output);
+				var output:BytesOutput = new BytesOutput();
+				var writer:AMFWriter = new AMFWriter(output);
 				writer.write(value);
 				writeBytes(output.getBytes());
 
 			case AMF3:
-				var output = new BytesOutput();
-				var writer = new AMF3Writer(output);
+				var output:BytesOutput = new BytesOutput();
+				var writer:AMF3Writer = new AMF3Writer(output);
 
 				if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (object, ByteArrayData))
 				{
@@ -1712,12 +1787,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				writeBytes(output.getBytes());
 
 			case HXSF:
-				var value = Serializer.run(object);
+				var value:String = Serializer.run(object);
 				writeUTF(value);
 
+			case LARGE_HXSF:
+				var value:String = Serializer.run(object);
+				writeLargeUTF(value);
+
 			case JSON:
-				var value = Json.stringify(object);
+				var value:String = Json.stringify(object);
 				writeUTF(value);
+
+			case LARGE_JSON:
+				var value:String = Json.stringify(object);
+				writeLargeUTF(value);
 
 			default:
 				return;
@@ -1747,15 +1830,28 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function writeUTF(value:String):Void
 	{
-		var bytes = Bytes.ofString(value);
+		var bytes:Bytes = Bytes.ofString(value);
+
+		if (bytes.length > 65535)
+		{
+			throw new RangeError("Length is out of range");
+		}
 
 		writeShort(bytes.length);
 		writeBytes(bytes);
 	}
 
+	public function writeLargeUTF(value:String):Void
+	{
+		var bytes:Bytes = Bytes.ofString(value);
+
+		writeUnsignedInt(bytes.length);
+		writeBytes(bytes);
+	}
+
 	public function writeUTFBytes(value:String):Void
 	{
-		var bytes = Bytes.ofString(value);
+		var bytes:Bytes = Bytes.ofString(value);
 		writeBytes(bytes);
 	}
 
@@ -1769,14 +1865,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		if (size > __allocated)
 		{
-			var bytes = Bytes.alloc(((size + 1) * 3) >> 1);
+			var bytes:Bytes = Bytes.alloc(((size + 1) * 3) >> 1);
 			#if sys
 			bytes.fill(__allocated, size - __allocated, 0);
 			#end
 
 			if (__allocated > 0)
 			{
-				var cacheLength = __length;
+				var cacheLength:Int = __length;
 				__length = __allocated;
 				bytes.blit(0, this, 0, __allocated);
 				__length = cacheLength;
@@ -1796,7 +1892,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if eval
 		// TODO: Not quite correct, but this will probably
 		// not be called while in a macro
-		var count = bytes.length < __length ? bytes.length : __length;
+		var count:Int = bytes.length < __length ? bytes.length : __length;
 		for (i in 0...count)
 			set(i, bytes.get(i));
 		#else
@@ -1989,14 +2085,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		the zlib compressed data format specification, those bytes (that is, the
 		portion containing the compressed version of the original data) are
 		compressed using the deflate algorithm. Consequently those bytes are
-		identical to the result of calling `compress(<ph
-		outputclass="javascript">air.CompressionAlgorithm.DEFLATE)` on the
-		original ByteArray. However, the result from `compress(<ph
-		outputclass="javascript">air.CompressionAlgorithm.ZLIB)` includes
-		the extra metadata, while the
-		`compress(CompressionAlgorithm.DEFLATE)` result includes only
-		the compressed version of the original ByteArray data and nothing
-		else.
+		identical to the result of calling
+		`compress(CompressionAlgorithm.DEFLATE)` on the original ByteArray.
+		However, the result from `compress(CompressionAlgorithm.ZLIB)` includes
+		the extra metadata, while the `compress(CompressionAlgorithm.DEFLATE)`
+		result includes only the compressed version of the original ByteArray
+		data and nothing else.
 
 		In order to use the deflate format to compress a ByteArray instance's
 		data in a specific format such as gzip or zip, you cannot simply call
@@ -2212,6 +2306,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	public function readUTF():String;
 
 	/**
+		Reads a UTF-8 string from the byte stream. The string is assumed to be
+		prefixed with an unsigned integer indicating the length in bytes.
+
+		@return UTF-8 encoded string.
+		@throws EOFError There is not sufficient data available to read.
+	**/
+	public function readUTF32():String;
+
+	/**
 		Reads a sequence of UTF-8 bytes specified by the `length`
 		parameter from the byte stream and returns a string.
 
@@ -2415,6 +2518,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@throws RangeError If the length is larger than 65535.
 	**/
 	public function writeUTF(value:String):Void;
+
+	/**
+		Writes a UTF-8 string to the byte stream. The length of the UTF-8 string
+		in bytes is written first, as a 32-bit integer, followed by the bytes
+		representing the characters of the string.
+
+		@param value The string value to be written.
+	**/
+	public function writeUTF32(value:String):Void;
 
 	/**
 		Writes a UTF-8 string to the byte stream. Similar to the

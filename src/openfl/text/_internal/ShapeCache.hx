@@ -38,6 +38,10 @@ class ShapeCache
 		wordKey:String = null #else TextLayout #end):#if (js && html5) Array<Float> #else Array<GlyphPosition> #end
 	{
 		var formatKey:String = formatRange.format.__cacheKey;
+		if (formatKey == null)
+		{
+			formatKey = formatRange.format.__toCacheKey();
+		}
 		#if (!(js && html5))
 		var wordKey:String = getPositions.text;
 		#end

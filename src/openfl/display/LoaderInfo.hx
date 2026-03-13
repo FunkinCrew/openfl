@@ -1,5 +1,6 @@
 package openfl.display;
 
+import openfl.utils.AssetLibrary;
 #if !flash
 import openfl.events.EventDispatcher;
 import openfl.events.Event;
@@ -111,6 +112,7 @@ import js.Browser;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.Event)
 class LoaderInfo extends EventDispatcher
 {
 	@:noCompletion private static var __rootURL:String = #if (js && html5) (Browser.supported ? Browser.document.URL : "") #else "" #end;
@@ -140,6 +142,8 @@ class LoaderInfo extends EventDispatcher
 							  to access this ApplicationDomain.
 	**/
 	public var applicationDomain(default, null):ApplicationDomain;
+
+	public var assetLibrary(default, null):AssetLibrary;
 
 	/**
 		The bytes associated with a LoaderInfo object.
@@ -238,7 +242,7 @@ class LoaderInfo extends EventDispatcher
 					  requested information.
 		@throws Error If the file is not a SWF file.
 	**/
-	public var frameRate(default, null):Float;
+	public var frameRate(default, null):Float = -1;
 
 	/**
 		The nominal height of the loaded file. This value might differ from the
@@ -248,7 +252,7 @@ class LoaderInfo extends EventDispatcher
 		@throws Error If the file is not downloaded sufficiently to retrieve the
 					  requested information.
 	**/
-	public var height(default, null):Int;
+	public var height(default, null):Int = -1;
 
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 
@@ -382,7 +386,7 @@ class LoaderInfo extends EventDispatcher
 		@throws Error If the file is not downloaded sufficiently to retrieve the
 					  requested information.
 	**/
-	public var width(default, null):Int;
+	public var width(default, null):Int = -1;
 
 	@:noCompletion private var __completed:Bool;
 
@@ -429,7 +433,18 @@ class LoaderInfo extends EventDispatcher
 			__update(bytesLoaded, bytesTotal);
 			__completed = true;
 
-			dispatchEvent(new Event(Event.COMPLETE));
+			#if openfl_pool_events
+			var completeEvent = Event.__pool.get();
+			completeEvent.type = Event.COMPLETE;
+			#else
+			var completeEvent = new Event(Event.COMPLETE);
+			#end
+
+			dispatchEvent(completeEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(completeEvent);
+			#end
 		}
 	}
 
@@ -438,7 +453,20 @@ class LoaderInfo extends EventDispatcher
 		this.bytesLoaded = bytesLoaded;
 		this.bytesTotal = bytesTotal;
 
-		dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, bytesTotal));
+		#if openfl_pool_events
+		var progressEvent = ProgressEvent.__pool.get();
+		progressEvent.type = ProgressEvent.PROGRESS;
+		progressEvent.bytesLoaded = bytesLoaded;
+		progressEvent.bytesTotal = bytesTotal;
+		#else
+		var progressEvent = new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, bytesTotal);
+		#end
+
+		dispatchEvent(progressEvent);
+
+		#if openfl_pool_events
+		ProgressEvent.__pool.release(progressEvent);
+		#end
 	}
 }
 #else

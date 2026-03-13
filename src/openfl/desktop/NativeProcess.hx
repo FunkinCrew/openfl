@@ -288,7 +288,21 @@ class NativeProcess extends EventDispatcher
 			standardOutputMutex.acquire();
 			if (pendingStdoutBytes > 0)
 			{
-				dispatchEvent(new ProgressEvent(ProgressEvent.STANDARD_OUTPUT_DATA, false, false, pendingStdoutBytes));
+				#if openfl_pool_events
+				var stdOutDataEvent = ProgressEvent.__pool.get();
+				stdOutDataEvent.type = ProgressEvent.STANDARD_OUTPUT_DATA;
+				stdOutDataEvent.bytesLoaded = pendingStdoutBytes;
+				stdOutDataEvent.bytesTotal = 0;
+				#else
+				var stdOutDataEvent = new ProgressEvent(ProgressEvent.STANDARD_OUTPUT_DATA, false, false, pendingStdoutBytes, 0);
+				#end
+
+				dispatchEvent(stdOutDataEvent);
+
+				#if openfl_pool_events
+				ProgressEvent.__pool.release(stdOutDataEvent);
+				#end
+
 				pendingStdoutBytes = 0;
 			}
 			standardOutputMutex.release();
@@ -296,7 +310,21 @@ class NativeProcess extends EventDispatcher
 			standardErrorMutex.acquire();
 			if (pendingStderrBytes > 0)
 			{
-				dispatchEvent(new ProgressEvent(ProgressEvent.STANDARD_ERROR_DATA, false, false, pendingStderrBytes));
+				#if openfl_pool_events
+				var stdErrDataEvent = ProgressEvent.__pool.get();
+				stdErrDataEvent.type = ProgressEvent.STANDARD_ERROR_DATA;
+				stdErrDataEvent.bytesLoaded = pendingStderrBytes;
+				stdErrDataEvent.bytesTotal = 0;
+				#else
+				var stdErrDataEvent = new ProgressEvent(ProgressEvent.STANDARD_ERROR_DATA, false, false, pendingStderrBytes, 0);
+				#end
+
+				dispatchEvent(stdErrDataEvent);
+
+				#if openfl_pool_events
+				ProgressEvent.__pool.release(stdErrDataEvent);
+				#end
+
 				pendingStderrBytes = 0;
 			}
 			standardErrorMutex.release();

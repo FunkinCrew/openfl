@@ -12,6 +12,7 @@ import openfl.events.IOErrorEvent;
 import openfl.net.FileFilter;
 import openfl.events.FileListEvent;
 import openfl.net.FileReference;
+import openfl.utils.ByteArray;
 import sys.FileSystem;
 import sys.io.Process;
 #if (lime && !macro)
@@ -95,6 +96,7 @@ import lime.system.BackgroundWorker;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.Event)
 class File extends FileReference
 {
 	/**
@@ -395,7 +397,7 @@ class File extends FileReference
 	// TODO
 	// public static var systemCharset:String;
 	// TODO: platorm specific code?
-	public var url(get, never):String;
+	public var url(get, set):String;
 
 	/**
 		The user's directory.
@@ -425,6 +427,50 @@ class File extends FileReference
 	**/
 	public static var userDirectory(get, never):File;
 
+	/**
+	 * Reads the contents of a file as a `ByteArray`.
+	 *
+	 * @param path The path to the file.
+	 * @return A `ByteArray` containing the file's contents.
+	 */
+	public static inline function getFileBytes(path:String):ByteArray
+	{
+		return HaxeFile.getBytes(path);
+	}
+
+	/**
+	 * Reads the contents of a file as a `String`.
+	 *
+	 * @param path The path to the file.
+	 * @return A `String` containing the file's contents.
+	 */
+	public static inline function getFileText(path:String):String
+	{
+		return HaxeFile.getContent(path);
+	}
+
+	/**
+	 * Saves a `ByteArray` to a file.
+	 *
+	 * @param path The path where the file should be saved.
+	 * @param bytes The `ByteArray` to write to the file.
+	 */
+	public static inline function saveBytes(path:String, bytes:ByteArray):Void
+	{
+		HaxeFile.saveBytes(path, bytes);
+	}
+
+	/**
+	 * Saves a `String` as a text file.
+	 *
+	 * @param path The path where the file should be saved.
+	 * @param text The `String` content to write to the file.
+	 */
+	public static inline function saveText(path:String, text:String):Void
+	{
+		HaxeFile.saveContent(path, text);
+	}
+
 	@:noCompletion private static var __driveLetters:Array<String> =
 		#if windows
 		[
@@ -439,7 +485,6 @@ class File extends FileReference
 		#end
 
 	@:noCompletion private var __fileWorker:BackgroundWorker;
-	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
 	@:noCompletion private var __fileStatsDirty:Bool = false;
 
 	/**
@@ -483,7 +528,7 @@ class File extends FileReference
 
 		if (name.length == 0)
 		{
-			var dirs:Array<String> = Path.directory(__path).split(__sep);
+			var dirs:Array<String> = Path.directory(__path).split(separator);
 			name = dirs[dirs.length - 1];
 		}
 	}
@@ -526,14 +571,14 @@ class File extends FileReference
 			directory.browseForDirectory("Select Directory");
 			directory.addEventListener(Event.SELECT, directorySelected);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Failed:", error.message);
+			trace("Failed: " + error);
 		}
 
 		function directorySelected(event:Event):Void
 		{
-			directory = event.target as File;
+			directory = cast(event.target, File);
 			var files:Array = directory.getDirectoryListing();
 			for(i in 0...files.length)
 			{
@@ -593,9 +638,9 @@ class File extends FileReference
 			fileToOpen.browseForOpen("Open", [txtFilter]);
 			fileToOpen.addEventListener(Event.SELECT, fileSelected);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Failed:", error.message);
+			trace("Failed: " + error);
 		}
 
 		function fileSelected(event:Event):Void
@@ -657,9 +702,9 @@ class File extends FileReference
 			docsDir.browseForOpenMultiple("Select Files");
 			docsDir.addEventListener(FileListEvent.SELECT_MULTIPLE, filesSelected);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Failed:", error.message);
+			trace("Failed: " + error);
 		}
 
 		function filesSelected(event:FileListEvent):Void
@@ -719,14 +764,14 @@ class File extends FileReference
 			docsDir.browseForSave("Save As");
 			docsDir.addEventListener(Event.SELECT, saveData);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Failed:", error.message);
+			trace("Failed: " + error);
 		}
 
 		function saveData(event:Event):Void
 		{
-			var newFile:File = event.target as File;
+			var newFile:File = cast(event.target, File);
 			var str:String = "Hello.";
 			if (!newFile.exists)
 			{
@@ -761,7 +806,19 @@ class File extends FileReference
 	override public function cancel():Void
 	{
 		__fileWorker.cancel();
-		dispatchEvent(new Event(Event.CANCEL));
+
+		#if openfl_pool_events
+		var cancelEvent = Event.__pool.get();
+		cancelEvent.type = Event.CANCEL;
+		#else
+		var cancelEvent = new Event(Event.CANCEL);
+		#end
+
+		dispatchEvent(cancelEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(cancelEvent);
+		#end
 	}
 
 	/**
@@ -788,9 +845,9 @@ class File extends FileReference
 	**/
 	public function canonicalize():Void
 	{
-		var segs:Array<String> = __path.split(__sep);
+		var segs:Array<String> = __path.split(separator);
 
-		var cPath:String = __driveLetters[__driveLetters.indexOf(segs[0].toUpperCase() + __sep)];
+		var cPath:String = __driveLetters[__driveLetters.indexOf(segs[0].toUpperCase() + separator)];
 		var start:Int = 1;
 		if (cPath == null)
 		{
@@ -798,11 +855,11 @@ class File extends FileReference
 			var firstSeg = segs[1];
 			if (firstSeg == "." || firstSeg == "..")
 			{
-				cPath = __sep;
+				cPath = separator;
 			}
 			else
 			{
-				cPath = __sep + segs[1] + __sep;
+				cPath = separator + firstSeg + separator;
 			}
 			start = 2;
 		}
@@ -835,7 +892,7 @@ class File extends FileReference
 
 		for (i in start...segs.length)
 		{
-			cPath += __canonicalize(cPath, segs[i]) + __sep;
+			cPath += __canonicalize(cPath, segs[i]) + separator;
 		}
 
 		__path = Path.removeTrailingSlashes(cPath);
@@ -914,9 +971,9 @@ class File extends FileReference
 		{
 			sourceFile.copyTo(destination, true);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Error:", error.message);
+			trace("Error: " + error);
 		}
 		```
 
@@ -1055,6 +1112,7 @@ class File extends FileReference
 				}
 				return;
 			}
+
 			// don't dispatch events directly from doWork because the listeners
 			// will be called in the wrong thread
 			__fileWorker.sendComplete(new Event(Event.COMPLETE));
@@ -1306,22 +1364,22 @@ class File extends FileReference
 		#if windows
 		for (fileName in fileNames)
 		{
-			files.push(new File(__path + __sep + fileName));
+			files.push(new File(__path + separator + fileName));
 		}
 		#else
-		if (__path == __sep)
+		if (__path == separator)
 		{
 			for (fileName in fileNames)
 			{
 				// avoid double // when listing unix root
-				files.push(new File(__sep + fileName));
+				files.push(new File(separator + fileName));
 			}
 		}
 		else
 		{
 			for (fileName in fileNames)
 			{
-				files.push(new File(__path + __sep + fileName));
+				files.push(new File(__path + separator + fileName));
 			}
 		}
 		#end
@@ -1402,22 +1460,22 @@ class File extends FileReference
 			#if windows
 			for (fileName in fileNames)
 			{
-				files.push(new File(__path + __sep + fileName));
+				files.push(new File(__path + separator + fileName));
 			}
 			#else
-			if (__path == __sep)
+			if (__path == separator)
 			{
 				for (fileName in fileNames)
 				{
 					// avoid double // when listing unix root
-					files.push(new File(__sep + fileName));
+					files.push(new File(separator + fileName));
 				}
 			}
 			else
 			{
 				for (fileName in fileNames)
 				{
-					files.push(new File(__path + __sep + fileName));
+					files.push(new File(__path + separator + fileName));
 				}
 			}
 			#end
@@ -1540,7 +1598,7 @@ class File extends FileReference
 
 		for (k in 0...relatives.length)
 		{
-			relativePath += relatives[k] + (k != relatives.length - 1 || refPath.length == 1 ? __sep : "");
+			relativePath += relatives[k] + (k != relatives.length - 1 || refPath.length == 1 ? separator : "");
 		}
 
 		return relativePath == "" && ref.__path != __path ? null : relativePath;
@@ -1586,9 +1644,9 @@ class File extends FileReference
 		{
 			sourceFile.moveTo(destination, true);
 		}
-		catch (error:Error)
+		catch (error:Dynamic)
 		{
-			trace("Error:" + error.message);
+			trace("Error: " + error);
 		}
 		```
 
@@ -1740,7 +1798,7 @@ class File extends FileReference
 	public function resolvePath(path:String):File
 	{
 		var directoryPath:String = Path.removeTrailingSlashes(__path);
-		return new File('$directoryPath$__sep$path');
+		return new File('$directoryPath$separator$path');
 	}
 
 	/**
@@ -1885,14 +1943,36 @@ class File extends FileReference
 
 	@:noCompletion private function __dispatchCancel():Void
 	{
-		this.dispatchEvent(new Event(Event.CANCEL));
+		#if openfl_pool_events
+		var cancelEvent = Event.__pool.get();
+		cancelEvent.type = Event.CANCEL;
+		#else
+		var cancelEvent = new Event(Event.CANCEL);
+		#end
+
+		dispatchEvent(cancelEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(cancelEvent);
+		#end
 	}
 
 	@:noCompletion private function __dispatchSelect(?filepath:String):Void
 	{
 		nativePath = filepath;
 
-		this.dispatchEvent(new Event(Event.SELECT));
+		#if openfl_pool_events
+		var selectEvent = Event.__pool.get();
+		selectEvent.type = Event.SELECT;
+		#else
+		var selectEvent = new Event(Event.SELECT);
+		#end
+
+		dispatchEvent(selectEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(selectEvent);
+		#end
 	}
 
 	@:noCompletion private function __dispatchSelectMultiple(?filepaths:Array<String>):Void
@@ -1952,7 +2032,7 @@ class File extends FileReference
 
 		for (dir in dirs)
 		{
-			path += '$dir$__sep';
+			path += '$dir$separator';
 		}
 
 		return Path.removeTrailingSlashes(path);
@@ -2106,7 +2186,7 @@ class File extends FileReference
 		return creationDate;
 	}
 
-	@:noCompletion private static function get_lineEnding():String
+	@:noCompletion private static inline function get_lineEnding():String
 	{
 		#if windows
 		return "\r\n";
@@ -2133,7 +2213,7 @@ class File extends FileReference
 		return name;
 	}
 
-	@:noCompletion private static function get_separator():String
+	@:noCompletion private inline static function get_separator():String
 	{
 		#if windows
 		return "\\";
@@ -2228,6 +2308,47 @@ class File extends FileReference
 		return "file://" + encoded;
 	}
 
+	@:noCompletion private function set_url(value:String):String
+	{
+		if (value == null)
+		{
+			throw new ArgumentError("One of the parameters is invalid.");
+		}
+
+		var resolveFromDirectory:File = null;
+		var schemeRegex = ~/^(.+?):/;
+		if (schemeRegex.match(value))
+		{
+			var scheme = schemeRegex.matched(1);
+			if (scheme == "app")
+			{
+				resolveFromDirectory = File.applicationDirectory;
+			}
+			else if (scheme == "app-storage")
+			{
+				resolveFromDirectory = File.applicationStorageDirectory;
+			}
+			else if (scheme != "file")
+			{
+				throw new ArgumentError("One of the parameters is invalid.");
+			}
+		}
+
+		value = ~/^\/{2,}/.replace(value.substr(5), "/");
+		value = StringTools.urlDecode(value);
+
+		if (resolveFromDirectory != null)
+		{
+			nativePath = resolveFromDirectory.resolvePath(value).nativePath;
+		}
+		else
+		{
+			nativePath = value;
+		}
+
+		return url;
+	}
+
 	@:noCompletion private function get_exists():Bool
 	{
 		return FileSystem.exists(__path);
@@ -2253,8 +2374,8 @@ class File extends FileReference
 		// TODO:Can we optimize this?
 		var path:String = Path.removeTrailingSlashes(__path);
 
-		var lastIndex:Int = path.lastIndexOf(__sep);
-		if (lastIndex == path.indexOf(__sep))
+		var lastIndex:Int = path.lastIndexOf(separator);
+		if (lastIndex == path.indexOf(separator))
 		{
 			lastIndex += 1;
 		}

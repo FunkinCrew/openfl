@@ -1032,7 +1032,7 @@ import lime.utils.BytePointer;
 	// TODO: it would be better to use a bitmask with a dirty bit per uniform, but not super important now
 	@:noCompletion private var __allDirty:Bool;
 	@:noCompletion private var __anyDirty:Bool;
-	@:noCompletion private var __registerLookup:Vector<Uniform>;
+	@:noCompletion private var __registerLookup:Array<Uniform>;
 	@:noCompletion private var __uniforms:Array<Uniform>;
 
 	public function new(list:Array<Uniform>)
@@ -1054,7 +1054,10 @@ import lime.utils.BytePointer;
 			}
 		}
 
-		__registerLookup = new Vector<Uniform>(total);
+		__registerLookup = [];
+		#if haxe4
+		__registerLookup.resize(total);
+		#end
 
 		for (uniform in __uniforms)
 		{

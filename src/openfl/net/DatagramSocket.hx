@@ -59,6 +59,7 @@ import sys.net.UdpSocket;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.Event)
 class DatagramSocket extends EventDispatcher
 {
 	/**
@@ -154,7 +155,7 @@ class DatagramSocket extends EventDispatcher
 			__udpSocket.bind(new Host(localAddress), localPort);
 
 			var host = __udpSocket.host();
-			//TODO: Reduce GC pressure here? Do we need to do this for other Socket API?
+			// TODO: Reduce GC pressure here? Do we need to do this for other Socket API?
 			this.localAddress = localAddress == "0.0.0.0" ? representativeHost() : localAddress;
 			this.localPort = host.port;
 
@@ -165,7 +166,18 @@ class DatagramSocket extends EventDispatcher
 			switch (e)
 			{
 				case "Bind failed":
-					dispatchEvent(new Event(Event.CLOSE));
+					#if openfl_pool_events
+					var closeEvent = Event.__pool.get();
+					closeEvent.type = Event.CLOSE;
+					#else
+					var closeEvent = new Event(Event.CLOSE);
+					#end
+
+					dispatchEvent(closeEvent);
+
+					#if openfl_pool_events
+					Event.__pool.release(closeEvent);
+					#end
 				case "Unresolved host":
 					throw new ArgumentError("One of the parameters is invalid");
 				default:
@@ -194,7 +206,18 @@ class DatagramSocket extends EventDispatcher
 		bound = false;
 		Lib.current.removeEventListener(Event.ENTER_FRAME, __onFrameUpdate);
 
-		dispatchEvent(new Event(Event.CLOSE));
+		#if openfl_pool_events
+		var closeEvent = Event.__pool.get();
+		closeEvent.type = Event.CLOSE;
+		#else
+		var closeEvent = new Event(Event.CLOSE);
+		#end
+
+		dispatchEvent(closeEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(closeEvent);
+		#end
 	}
 
 	/**

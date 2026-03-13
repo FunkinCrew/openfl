@@ -74,6 +74,7 @@ import lime.system.BackgroundWorker;
 	@see [Data formats, and choosing the read and write methods to use](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/data-formats-and-choosing-the-read-and-write-methods-to-use.html)
 	@see `openfl.filesystem.File`
 **/
+@:access(openfl.events.Event)
 @:access(openfl.utils.ByteArray)
 @:access(openfl.utils.ByteArrayData)
 @:access(openfl.filesystem.File)
@@ -265,7 +266,19 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		if (__fileStreamWorker != null)
 		{
 			__disposeFileStreamWorker();
-			dispatchEvent(new Event(Event.CLOSE));
+
+			#if openfl_pool_events
+			var closeEvent = Event.__pool.get();
+			closeEvent.type = Event.CLOSE;
+			#else
+			var closeEvent = new Event(Event.CLOSE);
+			#end
+
+			dispatchEvent(closeEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(closeEvent);
+			#end
 		}
 	}
 
@@ -700,7 +713,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			return result;
 		}
 
-		return readUTFBytes(length);
+		var byteArray = new ByteArray(length);
+		__input.readBytes(byteArray, 0, length);
+		byteArray.position = 0;
+		return byteArray.readMultiByte(length, charSet);
 	}
 
 	/**

@@ -36,14 +36,7 @@ import js.html.DivElement;
 
 /**
 	The TextField class is used to create display objects for text display and
-	input. <ph outputclass="flexonly">You can use the TextField class to
-	perform low-level text rendering. However, in Flex, you typically use the
-	Label, Text, TextArea, and TextInput controls to process text. <ph
-	outputclass="flashonly">You can give a text field an instance name in the
-	Property inspector and use the methods and properties of the TextField
-	class to manipulate it with Haxe code. TextField instance names are
-	displayed in the Movie Explorer and in the Insert Target Path dialog box in
-	the Actions panel.
+	input.
 
 	To create a text field dynamically, use the `TextField()`
 	constructor.
@@ -127,6 +120,7 @@ import js.html.DivElement;
 #end
 @:access(openfl.display.Graphics)
 @:access(openfl.errors.Error)
+@:access(openfl.events.Event)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -459,8 +453,7 @@ class TextField extends InteractiveObject
 		enter only characters in the string into the text field. The string is
 		scanned from left to right. You can specify a range by using the hyphen
 		(-) character. Only user interaction is restricted; a script can put any
-		text into the text field. <ph outputclass="flashonly">This property does
-		not synchronize with the Embed font options in the Property inspector.
+		text into the text field.
 
 		If the string begins with a caret(^) character, all characters are
 		initially accepted and succeeding characters in the string are excluded
@@ -698,6 +691,14 @@ class TextField extends InteractiveObject
 	**/
 	public var wordWrap(get, set):Bool;
 
+	/**
+		The character to be displayed when displayAsPassword is set to true.
+		The default value is `*`.
+
+		The `passwordChar` property is ignored in Flash Player and AIR targets.
+	**/
+	public var passwordChar(get, set):String;
+
 	@:noCompletion private var __wordSelection:Bool;
 	@:noCompletion private var __lineSelection:Bool;
 	@:noCompletion private var __specialSelectionInitialIndex:Int;
@@ -706,6 +707,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayAsPassword:Bool;
+	@:noCompletion private var __passwordChar:String;
 	@:noCompletion private var __domRender:Bool;
 	@:noCompletion private var __inputEnabled:Bool;
 	@:noCompletion private var __isHTML:Bool;
@@ -763,6 +765,10 @@ class TextField extends InteractiveObject
 			"displayAsPassword": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_displayAsPassword (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_displayAsPassword (v); }")
+			},
+			"passwordChar": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_passwordChar (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_passwordChar (v); }")
 			},
 			"embedFonts": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_embedFonts (); }"),
@@ -850,10 +856,18 @@ class TextField extends InteractiveObject
 
 		__wordSelection = false;
 		__drawableType = TEXT_FIELD;
-		__caretIndex = -1;
-		__selectionIndex = -1;
+		__caretIndex = 0;
+		__selectionIndex = 0;
 		__displayAsPassword = false;
+		__passwordChar = "*";
 		__graphics = new Graphics(this);
+		#if (js && html5)
+		// Graphics adds an implicit moveTo(0, 0) for HTML Canvas, but we need
+		// an empty command buffer for TextField or it won't render correctly.
+		// calling clear() adds moveTo(0, 0) as the first command again, so just
+		// clear the command buffer directly.
+		__graphics.__commands.clear();
+		#end
 		__textEngine = new TextEngine(this);
 		__layoutDirty = true;
 		__offsetX = 0;
@@ -1164,7 +1178,11 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
+		if (lineIndex < 0)
+		{
+			throw new RangeError();
+		}
+		if (lineIndex > __textEngine.numLines - 1) return -1;
 
 		for (group in __textEngine.layoutGroups)
 		{
@@ -1190,7 +1208,11 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return null;
+		if (lineIndex < 0)
+		{
+			throw new RangeError();
+		}
+		if (lineIndex > __textEngine.numLines - 1) return null;
 
 		var startIndex = -1;
 		var endIndex = -1;
@@ -2372,6 +2394,9 @@ class TextField extends InteractiveObject
 	{
 		if (stage == null) return;
 
+		var oldScrollH = scrollH;
+		var oldScrollV = scrollV;
+
 		var bounds:Rectangle = this.getBounds(this);
 
 		if (mouseX > bounds.width - 1)
@@ -2397,7 +2422,15 @@ class TextField extends InteractiveObject
 			}
 			__mouseScrollVCounter = 0;
 		}
-		stage_onMouseMove(null);
+
+		// if the scroll position changed, then we may need to update selection.
+		// however, we shouldn't call it if the scroll position hasn't changed
+		// because that might overwrite the values of a recent call to the
+		// setSelection() method.
+		if (scrollH != oldScrollH || scrollV != oldScrollV)
+		{
+			stage_onMouseMove(null);
+		}
 	}
 
 	@:noCompletion private function __updateScrollH():Void
@@ -2589,7 +2622,7 @@ class TextField extends InteractiveObject
 
 			for (i in 0...length)
 			{
-				mask += "*";
+				mask += __passwordChar;
 			}
 
 			__textEngine.text = mask;
@@ -2784,11 +2817,18 @@ class TextField extends InteractiveObject
 	@:noCompletion private override function get_height():Float
 	{
 		__updateLayout();
-		return __textEngine.height * Math.abs(scaleY);
+		return __textEngine.height * Math.abs(__scaleY);
 	}
 
 	@:noCompletion private override function set_height(value:Float):Float
 	{
+		if (value < 0.0)
+		{
+			// ignore negative values completely, and keep the current size
+			// negative values may be achieved by setting scaleY, though
+			return __textEngine.height * Math.abs(__scaleY);
+		}
+
 		if (value != __textEngine.height)
 		{
 			__setTransformDirty();
@@ -2799,16 +2839,12 @@ class TextField extends InteractiveObject
 			__textEngine.height = value;
 		}
 
-		return __textEngine.height * Math.abs(scaleY);
+		return __textEngine.height * Math.abs(__scaleY);
 	}
 
 	@:noCompletion private function get_htmlText():String
 	{
-		// #if (js && html5)
 		return __isHTML ? __htmlText : __text;
-		// #else
-		// return __text;
-		// #end
 	}
 
 	@:noCompletion private function set_htmlText(value:String):String
@@ -2979,7 +3015,19 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 			__textEngine.scrollH = value;
-			dispatchEvent(new Event(Event.SCROLL));
+
+			#if openfl_pool_events
+			var scrollEvent = Event.__pool.get();
+			scrollEvent.type = Event.SCROLL;
+			#else
+			var scrollEvent = new Event(Event.SCROLL);
+			#end
+
+			dispatchEvent(scrollEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(scrollEvent);
+			#end
 		}
 
 		return __textEngine.scrollH;
@@ -3002,7 +3050,19 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 			__textEngine.scrollV = value;
-			dispatchEvent(new Event(Event.SCROLL));
+
+			#if openfl_pool_events
+			var scrollEvent = Event.__pool.get();
+			scrollEvent.type = Event.SCROLL;
+			#else
+			var scrollEvent = new Event(Event.SCROLL);
+			#end
+
+			dispatchEvent(scrollEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(scrollEvent);
+			#end
 		}
 
 		return __textEngine.scrollV;
@@ -3214,14 +3274,21 @@ class TextField extends InteractiveObject
 		return __textEngine.type;
 	}
 
-	override private function get_width():Float
+	@:noCompletion override private function get_width():Float
 	{
 		__updateLayout();
 		return __textEngine.width * Math.abs(__scaleX);
 	}
 
-	override private function set_width(value:Float):Float
+	@:noCompletion override private function set_width(value:Float):Float
 	{
+		if (value < 0.0)
+		{
+			// ignore negative values completely, and keep the current size
+			// negative values may be achieved by setting scaleX, though
+			return __textEngine.width * Math.abs(__scaleX);
+		}
+
 		if (value != __textEngine.width)
 		{
 			__setTransformDirty();
@@ -3250,6 +3317,23 @@ class TextField extends InteractiveObject
 		}
 
 		return __textEngine.wordWrap = value;
+	}
+
+	@:noCompletion private function get_passwordChar():String
+	{
+		return __passwordChar;
+	}
+
+	@:noCompletion private function set_passwordChar(value:String):String
+	{
+		if (value != __passwordChar)
+		{
+			__passwordChar = value;
+			__setRenderDirty();
+			__updateText(__text);
+		}
+
+		return value;
 	}
 
 	@:noCompletion private override function get_x():Float
@@ -3285,8 +3369,19 @@ class TextField extends InteractiveObject
 		{
 			__updateLayout();
 
-			var position = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
-				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
+			var position:Int;
+			if (__lineSelection)
+			{
+				position = __getPositionByIdentifier(mouseX + scrollH, mouseY, true);
+			}
+			else if (__wordSelection)
+			{
+				position = __getPositionByIdentifier(mouseX + scrollH, mouseY, false);
+			}
+			else
+			{
+				position = __getPosition(mouseX + scrollH, mouseY);
+			}
 
 			if (position != __caretIndex)
 			{
@@ -3334,18 +3429,26 @@ class TextField extends InteractiveObject
 			__getWorldTransform();
 			__updateLayout();
 
-			var upPos:Int = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
-				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
-			var leftPos:Int;
-			var rightPos:Int;
+			if (__lineSelection || __wordSelection)
+			{
+				var upPos:Int = 0;
+				if (__lineSelection)
+				{
+					upPos = __getPositionByIdentifier(mouseX + scrollH, mouseY, true);
+				}
+				else if (__wordSelection)
+				{
+					upPos = __getPositionByIdentifier(mouseX + scrollH, mouseY, false);
+				}
+				var leftPos:Int = Std.int(Math.min(__selectionIndex, upPos));
+				var rightPos:Int = Std.int(Math.max(__selectionIndex, upPos));
 
-			leftPos = Std.int(Math.min(__selectionIndex, upPos));
-			rightPos = Std.int(Math.max(__selectionIndex, upPos));
+				__selectionIndex = leftPos;
+				__caretIndex = rightPos;
+			}
 
-			__selectionIndex = leftPos;
-			__caretIndex = rightPos;
-
-			__wordSelection = __lineSelection = false;
+			__wordSelection = false;
+			__lineSelection = false;
 
 			if (__inputEnabled)
 			{
@@ -3494,7 +3597,19 @@ class TextField extends InteractiveObject
 					{
 						__replaceSelectedText("\n", true);
 
-						dispatchEvent(new Event(Event.CHANGE, true));
+						#if openfl_pool_events
+						var changeEvent = Event.__pool.get();
+						changeEvent.type = Event.CHANGE;
+						changeEvent.bubbles = true;
+						#else
+						var changeEvent = new Event(Event.CHANGE, true);
+						#end
+
+						dispatchEvent(changeEvent);
+
+						#if openfl_pool_events
+						Event.__pool.release(changeEvent);
+						#end
 					}
 				}
 				else
@@ -3514,7 +3629,19 @@ class TextField extends InteractiveObject
 					replaceSelectedText("");
 					__selectionIndex = __caretIndex;
 
-					dispatchEvent(new Event(Event.CHANGE, true));
+					#if openfl_pool_events
+					var changeEvent = Event.__pool.get();
+					changeEvent.type = Event.CHANGE;
+					changeEvent.bubbles = true;
+					#else
+					var changeEvent = new Event(Event.CHANGE, true);
+					#end
+
+					dispatchEvent(changeEvent);
+
+					#if openfl_pool_events
+					Event.__pool.release(changeEvent);
+					#end
 				}
 				else
 				{
@@ -3533,7 +3660,19 @@ class TextField extends InteractiveObject
 					replaceSelectedText("");
 					__selectionIndex = __caretIndex;
 
-					dispatchEvent(new Event(Event.CHANGE, true));
+					#if openfl_pool_events
+					var changeEvent = Event.__pool.get();
+					changeEvent.type = Event.CHANGE;
+					changeEvent.bubbles = true;
+					#else
+					var changeEvent = new Event(Event.CHANGE, true);
+					#end
+
+					dispatchEvent(changeEvent);
+
+					#if openfl_pool_events
+					Event.__pool.release(changeEvent);
+					#end
 				}
 				else
 				{
@@ -3663,7 +3802,20 @@ class TextField extends InteractiveObject
 						Clipboard.text = __text.substring(__caretIndex, __selectionIndex);
 
 						replaceSelectedText("");
-						dispatchEvent(new Event(Event.CHANGE, true));
+
+						#if openfl_pool_events
+						var changeEvent = Event.__pool.get();
+						changeEvent.type = Event.CHANGE;
+						changeEvent.bubbles = true;
+						#else
+						var changeEvent = new Event(Event.CHANGE, true);
+						#end
+
+						dispatchEvent(changeEvent);
+
+						#if openfl_pool_events
+						Event.__pool.release(changeEvent);
+						#end
 					}
 				}
 				#end
@@ -3683,7 +3835,19 @@ class TextField extends InteractiveObject
 						{
 							__replaceSelectedText(Clipboard.text, true);
 
-							dispatchEvent(new Event(Event.CHANGE, true));
+							#if openfl_pool_events
+							var changeEvent = Event.__pool.get();
+							changeEvent.type = Event.CHANGE;
+							changeEvent.bubbles = true;
+							#else
+							var changeEvent = new Event(Event.CHANGE, true);
+							#end
+
+							dispatchEvent(changeEvent);
+
+							#if openfl_pool_events
+							Event.__pool.release(changeEvent);
+							#end
 						}
 					}
 				}
@@ -3711,7 +3875,19 @@ class TextField extends InteractiveObject
 		__replaceSelectedText(value, true);
 
 		// TODO: Dispatch change if at max chars?
-		dispatchEvent(new Event(Event.CHANGE, true));
+		#if openfl_pool_events
+		var changeEvent = Event.__pool.get();
+		changeEvent.type = Event.CHANGE;
+		changeEvent.bubbles = true;
+		#else
+		var changeEvent = new Event(Event.CHANGE, true);
+		#end
+
+		dispatchEvent(changeEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(changeEvent);
+		#end
 	}
 }
 #else

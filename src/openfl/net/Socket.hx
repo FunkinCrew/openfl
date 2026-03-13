@@ -127,6 +127,7 @@ import sys.net.Socket as SysSocket;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.Event)
 class Socket extends EventDispatcher implements IDataInput implements IDataOutput
 {
 	/**
@@ -1043,12 +1044,36 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	// Event Handlers
 	@:noCompletion private function socket_onClose(_):Void
 	{
-		dispatchEvent(new Event(Event.CLOSE));
+		#if openfl_pool_events
+		var closeEvent = Event.__pool.get();
+		closeEvent.type = Event.CLOSE;
+		#else
+		var closeEvent = new Event(Event.CLOSE);
+		#end
+
+		dispatchEvent(closeEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(closeEvent);
+		#end
 	}
 
 	@:noCompletion private function socket_onError(e):Void
 	{
-		dispatchEvent(new Event(IOErrorEvent.IO_ERROR));
+		// TODO: should this be an IOErrorEvent instead of an Event?
+		// if not, then we should add a comment explaining why
+		#if openfl_pool_events
+		var ioErrorEvent = Event.__pool.get();
+		ioErrorEvent.type = IOErrorEvent.IO_ERROR;
+		#else
+		var ioErrorEvent = new Event(IOErrorEvent.IO_ERROR);
+		#end
+
+		dispatchEvent(ioErrorEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(ioErrorEvent);
+		#end
 	}
 
 	@:noCompletion private function socket_onMessage(msg:Dynamic):Void
@@ -1074,7 +1099,20 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 		if (__input.bytesAvailable > 0)
 		{
-			dispatchEvent(new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, __input.bytesAvailable, 0));
+			#if openfl_pool_events
+			var socketDataEvent = ProgressEvent.__pool.get();
+			socketDataEvent.type = ProgressEvent.SOCKET_DATA;
+			socketDataEvent.bytesLoaded = __input.bytesAvailable;
+			socketDataEvent.bytesTotal = 0;
+			#else
+			var socketDataEvent = new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, __input.bytesAvailable, 0);
+			#end
+
+			dispatchEvent(socketDataEvent);
+
+			#if openfl_pool_events
+			ProgressEvent.__pool.release(socketDataEvent);
+			#end
 		}
 		#end
 	}
@@ -1082,7 +1120,19 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	@:noCompletion private function socket_onOpen(_):Void
 	{
 		__connected = true;
-		dispatchEvent(new Event(Event.CONNECT));
+
+		#if openfl_pool_events
+		var connectEvent = Event.__pool.get();
+		connectEvent.type = Event.CONNECT;
+		#else
+		var connectEvent = new Event(Event.CONNECT);
+		#end
+
+		dispatchEvent(connectEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(connectEvent);
+		#end
 	}
 
 	@:noCompletion private function this_onEnterFrame(event:Event):Void
@@ -1202,7 +1252,18 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		{
 			__cleanSocket();
 
-			dispatchEvent(new Event(Event.CLOSE));
+			#if openfl_pool_events
+			var closeEvent = Event.__pool.get();
+			closeEvent.type = Event.CLOSE;
+			#else
+			var closeEvent = new Event(Event.CLOSE);
+			#end
+
+			dispatchEvent(closeEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(closeEvent);
+			#end
 		}
 		else if (doClose)
 		{
@@ -1213,7 +1274,19 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		else if (doConnect)
 		{
 			__connected = true;
-			dispatchEvent(new Event(Event.CONNECT));
+
+			#if openfl_pool_events
+			var connectEvent = Event.__pool.get();
+			connectEvent.type = Event.CONNECT;
+			#else
+			var connectEvent = new Event(Event.CONNECT);
+			#end
+
+			dispatchEvent(connectEvent);
+
+			#if openfl_pool_events
+			Event.__pool.release(connectEvent);
+			#end
 		}
 
 		if (bLength > 0)
@@ -1229,7 +1302,20 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			__input = newInput;
 			__input.endian = __endian;
 
-			dispatchEvent(new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newData.length, 0));
+			#if openfl_pool_events
+			var socketDataEvent = ProgressEvent.__pool.get();
+			socketDataEvent.type = ProgressEvent.SOCKET_DATA;
+			socketDataEvent.bytesLoaded = newData.length;
+			socketDataEvent.bytesTotal = 0;
+			#else
+			var socketDataEvent = new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newData.length, 0);
+			#end
+
+			dispatchEvent(socketDataEvent);
+
+			#if openfl_pool_events
+			ProgressEvent.__pool.release(socketDataEvent);
+			#end
 		}
 
 		if (__socket != null)
