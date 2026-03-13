@@ -57,7 +57,7 @@ class TextLayout
 	public var autoHint:Bool;
 	public var direction(get, set):TextDirection;
 	public var font(default, set):Font;
-	@SuppressWarnings("checkstyle:Dynamic") public var glyphs(get, null):Array< #if lime Glyph #else Dynamic #end>;
+	@SuppressWarnings("checkstyle:Dynamic") public var glyphs(get, never):Array< #if lime Glyph #else Dynamic #end>;
 	public var language(get, set):String;
 	public var letterSpacing:Float = 0;
 	@:isVar public var positions(get, null):Array<GlyphPosition>;

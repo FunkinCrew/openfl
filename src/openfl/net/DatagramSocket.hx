@@ -75,7 +75,7 @@ class DatagramSocket extends EventDispatcher
 	/**
 		Indicates whether this socket object is currently connected to a remote address and port.
 	**/
-	public var connected(get, null):Bool;
+	public var connected(get, never):Bool;
 
 	/**
 		The IP address this socket is bound to on the local machine.
@@ -90,12 +90,12 @@ class DatagramSocket extends EventDispatcher
 	/**
 		The IP address of the remote machine to which this socket is connected.
 	**/
-	public var remoteAddress(get, null):String;
+	public var remoteAddress(get, never):String;
 
 	/**
 		The port on the remote machine to which this socket is connected.
 	**/
-	public var remotePort(get, null):Int;
+	public var remotePort(get, never):Int;
 
 	@:noCompletion private var __udpSocket:UdpSocket;
 	@:noCompletion private var __isReceiving:Bool;
