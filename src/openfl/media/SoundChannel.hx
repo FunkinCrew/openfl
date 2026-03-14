@@ -48,7 +48,7 @@ import lime.utils.Int16Array;
 		The current amplitude (volume) of the left channel, from 0 (silent) to 1
 		(full amplitude).
 	**/
-	public var leftPeak(default, null):Float;
+	public var leftPeak(get, never):Float;
 
 	/**
 		When the sound is playing, the `position` property indicates in
@@ -69,7 +69,7 @@ import lime.utils.Int16Array;
 		The current amplitude (volume) of the right channel, from 0 (silent) to 1
 		(full amplitude).
 	**/
-	public var rightPeak(default, null):Float;
+	public var rightPeak(get, never):Float;
 
 	/**
 		The SoundTransform object assigned to the sound channel. A SoundTransform
@@ -81,6 +81,11 @@ import lime.utils.Int16Array;
 	@:noCompletion private var __sound:Sound;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
+	#if lime_funkin
+	@:noCompletion private var __lastPeakPosition:Float;
+	@:noCompletion private var __leftPeak:Float;
+	@:noCompletion private var __rightPeak:Float;
+	#end
 	#if lime
 	@:noCompletion private var __audioSource:AudioSource;
 	#end
@@ -122,9 +127,7 @@ import lime.utils.Int16Array;
 		super(this);
 
 		__sound = sound;
-
-		leftPeak = 1;
-		rightPeak = 1;
+		__lastPeakPosition = -100;
 
 		if (soundTransform != null)
 		{
@@ -322,7 +325,32 @@ import lime.utils.Int16Array;
 		#end
 	}
 
+	#if lime_funkin
+	@:noCompletion private function __updatePeaks():Void
+	{
+		var position = __audioSource.currentTime;
+		if (Math.abs(__lastPeakPosition - position) < 8) return;
+		__lastPeakPosition = position;
+
+		var peaks = __audioSource.peaks;
+		__leftPeak = peaks[0];
+		__rightPeak = peaks[1];
+	}
+	#end
+
 	// Get & Set Methods
+	@:noCompletion private function get_leftPeak():Float
+	{
+		if (!__isValid) return 0;
+
+		#if lime_funkin
+		__updatePeaks();
+		return __leftPeak;
+		#else
+		return 0;
+		#end
+	}
+
 	@:noCompletion private function get_position():Float
 	{
 		if (!__isValid) return 0;
@@ -342,6 +370,18 @@ import lime.utils.Int16Array;
 		__audioSource.currentTime = Std.int(value) - __audioSource.offset;
 		#end
 		return value;
+	}
+
+	@:noCompletion private function get_rightPeak():Float
+	{
+		if (!__isValid) return 0;
+
+		#if lime_funkin
+		__updatePeaks();
+		return __rightPeak;
+		#else
+		return 0;
+		#end
 	}
 
 	@:noCompletion private function get_soundTransform():SoundTransform
@@ -365,7 +405,12 @@ import lime.utils.Int16Array;
 
 			if (__isValid)
 			{
-				#if lime
+				#if lime_funkin
+				__audioSource.gain = volume;
+				__audioSource.pan = pan;
+
+				return value;
+				#else
 				__audioSource.gain = volume;
 
 				var position = __audioSource.position;
