@@ -285,6 +285,7 @@ import lime.math.Vector2;
 	@:noCompletion private var __state:Context3DState;
 	@:noCompletion private var __vertexConstants:Float32Array;
 	@:noCompletion private var __usingComplexBlend:Bool;
+	@:noCompletion private var __tempMatrixData:Float32Array;
 
 	@:noCompletion private function new(stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
 	{
@@ -427,6 +428,7 @@ import lime.math.Vector2;
 		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray(data);
 		#end
+		__tempMatrixData = new Float32Array(16);
 	}
 
 	/**
@@ -1574,14 +1576,12 @@ import lime.math.Vector2;
 		{
 			__flushGLProgram();
 
-			// TODO: Cache value, prevent need to copy
-			var data = new Float32Array(16);
 			for (i in 0...16)
 			{
-				data[i] = matrix.rawData[i];
+				__tempMatrixData[i] = matrix.rawData[i];
 			}
 
-			gl.uniformMatrix4fv(cast firstRegister, transposedMatrix, data);
+			gl.uniformMatrix4fv(cast firstRegister, transposedMatrix, __tempMatrixData);
 		}
 		else
 		{

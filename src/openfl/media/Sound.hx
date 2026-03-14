@@ -349,6 +349,16 @@ class Sound extends EventDispatcher
 			__buffer.dispose();
 			__buffer = null;
 		}
+		if (__pendingAudioSource != null)
+		{
+		    __pendingAudioSource.dispose();
+			__pendingAudioSource = null;
+		}
+		if (__pendingSoundChannel != null)
+		{
+		    __pendingSoundChannel.stop();
+			__pendingSoundChannel = null;
+		}
 		#end
 	}
 

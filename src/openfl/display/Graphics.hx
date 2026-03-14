@@ -1659,6 +1659,15 @@ import js.html.CanvasRenderingContext2D;
 		}
 		#end
 
+		if (__bitmap != null)
+		{
+			@:privateAccess {
+				if (__bitmap.__texture != null)
+					__bitmap.__texture.dispose();
+			}
+			__bitmap.dispose();
+			__bitmap.disposeImage();
+		}
 		__bitmap = null;
 
 		#if (js && html5)
