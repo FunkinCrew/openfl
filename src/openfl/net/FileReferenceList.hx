@@ -56,6 +56,7 @@ import sys.FileSystem;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.Event)
 @:access(openfl.net.FileReference)
 class FileReferenceList extends EventDispatcher
 {
