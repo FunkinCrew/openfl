@@ -241,9 +241,8 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return types.exists(Type.getClassName(key));
 	}
 
-	#if (haxe5 && haxe != "5.0.0-preview.1")
-	public function size():Int
-	{
+	#if haxe5
+	public function size():Int {
 		return types.size();
 	}
 	#end
@@ -329,9 +328,8 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return indexOf(key) > -1;
 	}
 
-	#if (haxe5 && haxe != "5.0.0-preview.1")
-	public function size():Int
-	{
+	#if haxe5
+	public function size():Int {
 		return floatKeys.length;
 	}
 	#end
@@ -518,9 +516,8 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return map.exists(cast key);
 	}
 
-	#if (haxe5 && haxe != "5.0.0-preview.1")
-	public function size():Int
-	{
+	#if haxe5
+	public function size():Int {
 		return map.size();
 	}
 	#end
