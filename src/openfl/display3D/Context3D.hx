@@ -15,6 +15,7 @@ import openfl.display3D.textures.VideoTexture;
 import openfl.display.BitmapData;
 import openfl.display.Stage;
 import openfl.display.Stage3D;
+import openfl.display.OpenGLRenderer;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.events.EventDispatcher;
@@ -26,14 +27,12 @@ import openfl.utils._internal.UInt16Array;
 import openfl.utils._internal.UInt8Array;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
-import openfl.display.OpenGLRenderer;
 #if lime
 import lime.graphics.opengl.GL;
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
-import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 #end
 
@@ -284,7 +283,7 @@ import lime.math.Vector2;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
 	@:noCompletion private var __vertexConstants:Float32Array;
-	@:noCompletion private var __usingComplexBlend:Bool;
+	@:noCompletion private var __tempMatrixData:Float32Array;
 
 	@:noCompletion private function new(stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
 	{
@@ -464,7 +463,7 @@ import lime.math.Vector2;
 	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0,
 			mask:UInt = Context3DClearMask.ALL):Void
 	{
-		__clear(false, red, green, blue, alpha, depth, stencil, mask);
+		inline __clear(false, red, green, blue, alpha, depth, stencil, mask);
 	}
 
 	@:noCompletion private function __clear(useScissor:Bool, red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1,
@@ -490,11 +489,12 @@ import lime.math.Vector2;
 				|| __contextState.colorMaskBlue != true
 				|| __contextState.colorMaskAlpha != true #end)
 			{
-				gl.colorMask(true, true, true, true);
-				__contextState.colorMaskRed = true;
-				__contextState.colorMaskGreen = true;
-				__contextState.colorMaskBlue = true;
-				__contextState.colorMaskAlpha = true;
+				gl.colorMask(
+					__contextState.colorMaskRed = true,
+					__contextState.colorMaskGreen = true,
+					__contextState.colorMaskBlue = true,
+					__contextState.colorMaskAlpha = true
+				);
 			}
 
 			gl.clearColor(red, green, blue, alpha);
@@ -506,8 +506,7 @@ import lime.math.Vector2;
 
 			if (#if openfl_disable_context_cache true #else __contextState.depthMask != true #end)
 			{
-				gl.depthMask(true);
-				__contextState.depthMask = true;
+				gl.depthMask(__contextState.depthMask = true);
 			}
 
 			gl.clearDepth(depth);
@@ -519,12 +518,10 @@ import lime.math.Vector2;
 
 			if (#if openfl_disable_context_cache true #else __contextState.stencilWriteMask != 0xFF #end)
 			{
-				gl.stencilMask(0xFF);
-				__contextState.stencilWriteMask = 0xFF;
+				gl.stencilMask(__contextState.stencilWriteMask = 0xFF);
 			}
 
 			gl.clearStencil(stencil);
-			__contextState.stencilWriteMask = 0xFF;
 		}
 
 		if (clearMask == 0) return;
@@ -1141,7 +1138,7 @@ import lime.math.Vector2;
 		#if lime
 		if (destination == null) return;
 
-		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle() : new LimeRectangle(0, 0, backBufferWidth, backBufferHeight);
+		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle() : new lime.math.Rectangle(0, 0, backBufferWidth, backBufferHeight);
 		var destVector = destPoint != null ? destPoint.__toLimeVector2() : new Vector2();
 
 		if (__stage.context3D == this)
@@ -1292,7 +1289,7 @@ import lime.math.Vector2;
 		{
 			gl.enable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
 		}
-		else if (__usingComplexBlend)
+		else if (__contextState.__glBlendEquation < 0x8006 || __contextState.__glBlendEquation > 0x800B)
 		{
 			gl.blendBarrier();
 		}
@@ -2173,7 +2170,7 @@ import lime.math.Vector2;
 		{
 			gl.enable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
 		}
-		else if (__usingComplexBlend)
+		else if (__contextState.__glBlendEquation < 0x8006 || __contextState.__glBlendEquation > 0x800B)
 		{
 			gl.blendBarrier();
 		}
@@ -2518,7 +2515,7 @@ import lime.math.Vector2;
 				if (__context.type == OPENGL)
 				{
 					// TODO: Cache?
-					gl.enable(gl.TEXTURE_2D);
+					gl.enable(texture.__textureTarget);
 				}
 				#end
 
@@ -2555,7 +2552,7 @@ import lime.math.Vector2;
 					if (__context.type == OPENGL)
 					{
 						// TODO: Cache?
-						gl.enable(gl.TEXTURE_2D);
+						gl.enable(texture.__textureTarget);
 					}
 					#end
 				}
@@ -2845,11 +2842,6 @@ import lime.math.Vector2;
 			}
 			__contextState.__enableGLStencilTest = enable;
 		}
-	}
-
-	@:noCompletion private inline function __glBlendBarrier():Void
-	{
-		gl.blendBarrier();
 	}
 
 	// Get & Set Methods

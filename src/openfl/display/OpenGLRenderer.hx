@@ -1089,16 +1089,16 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				__context3D.__setGLBlend(cacheBlendState);
 			}
 
-			__context3D.__usingComplexBlend = true;
+			var success = true;
 			switch (value) {
 				case DARKEN:
-					if (__context3D.__usingComplexBlend = !__blendMinMaxSupported)
-						__context3D.__setGLBlendEquation(0x9297); // DARKEN_KHR
+					if (!__blendMinMaxSupported) __context3D.__setGLBlendEquation(0x9297); // DARKEN_KHR
+					else success = false;
 				case DIFFERENCE: __context3D.__setGLBlendEquation(0x929E); // DIFFERENCE_KHR
 				case HARDLIGHT: __context3D.__setGLBlendEquation(0x929B); // HARDLIGHT_KHR
 				case LIGHTEN:
-					if (__context3D.__usingComplexBlend = !__blendMinMaxSupported)
-						__context3D.__setGLBlendEquation(0x9298); // LIGHTEN_KHR
+					if (!__blendMinMaxSupported) __context3D.__setGLBlendEquation(0x9298); // LIGHTEN_KHR
+					else success = false;
 				//case MULTIPLY: __context3D.__setGLBlendEquation(0x9294); // MULTIPLY_KHR
 				case OVERLAY: __context3D.__setGLBlendEquation(0x9296); // OVERLAY_KHR
 				//case SCREEN: __context3D.__setGLBlendEquation(0x9295); // SCREEN_KHR
@@ -1110,10 +1110,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				case SATURATION: __context3D.__setGLBlendEquation(0x92AE); // HSL_SATURATION_KHR
 				case COLOR: __context3D.__setGLBlendEquation(0x92AF); // HSL_COLOR_KHR
 				case LUMINOSITY: __context3D.__setGLBlendEquation(0x92B0); // HSL_LUMINOSITY_KHR
-				default: __context3D.__usingComplexBlend = false;
+				default: success = false;
 			}
 
-			if (__context3D.__usingComplexBlend) return;
+			if (success) return;
 		}
 
 		switch (value)

@@ -53,7 +53,7 @@ class VertexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __id:GLBuffer;
-	@:noCompletion private var __memoryUsage:Int = -1;
+	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numVertices:Int;
 	@:noCompletion private var __stride:Int;
 	@:noCompletion private var __tempFloat32Array:Float32Array;
@@ -81,6 +81,8 @@ class VertexBuffer3D
 	{
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
+		__id = null;
+		__memoryUsage = 0;
 	}
 
 	/**
@@ -128,10 +130,15 @@ class VertexBuffer3D
 		var gl = __context.gl;
 
 		__context.__bindGLArrayBuffer(__id);
+
 		if (__memoryUsage == data.byteLength)
+		{
 			gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
+		}
 		else
+		{
 			gl.bufferData(gl.ARRAY_BUFFER, data, __usage);
+		}
 		__memoryUsage = data.byteLength;
 	}
 

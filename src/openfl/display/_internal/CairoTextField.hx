@@ -163,6 +163,8 @@ class CairoTextField
 			graphics.__managed = true;
 
 			graphics.__bitmap = bitmap;
+			graphics.__bitmapScaleX = pixelRatio;
+			graphics.__bitmapScaleY = pixelRatio;
 
 			cairo = graphics.__cairo;
 		}
