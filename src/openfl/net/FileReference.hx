@@ -870,6 +870,13 @@ class FileReference extends EventDispatcher
 		__urlLoader.load(request);
 
 		#if (lime && !macro)
+		var filters = null;
+		if (defaultFileName != null && Path.extension(defaultFileName).length > 0)
+		{
+			var ext:String = Path.extension(defaultFileName);
+			filters = [new FileDialogFilter('*.$ext', ext)];
+		}
+
 		FileDialog.saveFile(Lib.current.stage.window, function(filepath:String, filter):Void
 		{
 			if (filepath != null)
@@ -880,9 +887,7 @@ class FileReference extends EventDispatcher
 			{
 				saveFileDialog_onCancel();
 			}
-		}, [
-				new FileDialogFilter(null, defaultFileName != null ? Path.extension(defaultFileName) : null)
-		], defaultFileName);
+		}, filters, defaultFileName);
 		#end
 
 		#if (js && html5)
@@ -1119,6 +1124,13 @@ class FileReference extends EventDispatcher
 		}
 
 		#if (lime && !macro)
+		var filters = null;
+		if (defaultFileName != null && Path.extension(defaultFileName).length > 0)
+		{
+			var ext:String = Path.extension(defaultFileName);
+			filters = [new FileDialogFilter('*.$ext', ext)];
+		}
+
 		FileDialog.saveFile(Lib.current.stage.window, function(filepath:String, filter):Void
 		{
 			if (filepath != null)
@@ -1129,9 +1141,7 @@ class FileReference extends EventDispatcher
 			{
 				saveFileDialog_onCancel();
 			}
-		}, [
-				new FileDialogFilter(null, defaultFileName != null ? Path.extension(defaultFileName) : null)
-		], defaultFileName);
+		}, filters, defaultFileName);
 		#end
 	}
 
