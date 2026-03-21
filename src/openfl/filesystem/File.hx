@@ -590,7 +590,7 @@ class File extends FileReference
 	public function browseForDirectory(title:String):Void
 	{
 		#if (lime && !macro)
-		FileDialog.openDirectory(Lib.current.stage.window, function(filepaths:Array<String>):Void
+		FileDialog.openDirectory(Lib.current.stage.window, title, function(filepaths:Array<String>):Void
 		{
 			if (filepaths.length > 0)
 			{
@@ -655,7 +655,7 @@ class File extends FileReference
 	public function browseForOpen(title:String, typeFilter:Array<FileFilter> = null)
 	{
 		#if (lime && !macro)
-		FileDialog.openFile(Lib.current.stage.window, function(filepaths:Array<String>, filter):Void
+		FileDialog.openFile(Lib.current.stage.window, title, function(filepaths:Array<String>, filter):Void
 		{
 			if (filepaths.length > 0)
 			{
@@ -719,7 +719,7 @@ class File extends FileReference
 	public function browseForOpenMultiple(title:String, typeFilter:Array<FileFilter> = null):Void
 	{
 		#if (lime && !macro)
-		FileDialog.openFile(Lib.current.stage.window, function(filepaths:Array<String>, filter):Void
+		FileDialog.openFile(Lib.current.stage.window, title, function(filepaths:Array<String>, filter):Void
 		{
 			if (filepaths.length > 0)
 			{
@@ -786,7 +786,7 @@ class File extends FileReference
 	public function browseForSave(title:String):Void
 	{
 		#if (lime && !macro)
-		FileDialog.saveFile(Lib.current.stage.window, function(filepath:String, filter):Void
+		FileDialog.saveFile(Lib.current.stage.window, title, function(filepath:String, filter):Void
 		{
 			if (filepath != null)
 			{
