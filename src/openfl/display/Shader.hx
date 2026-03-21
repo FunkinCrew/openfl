@@ -627,6 +627,7 @@ class Shader
 		}
 
 		var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment;
+		var standardDerivativesSupported = OpenGLRenderer.__standardDerivativesSupported && isFragment;
 
 		#if lime
 		if (__context.__context.type == OPENGL)
@@ -651,6 +652,11 @@ class Shader
 				extensions += "#extension GL_ARB_sample_shading : enable\n";
 			}
 			#end
+		}
+
+		if (standardDerivativesSupported)
+		{
+			extensions += "#extension GL_OES_standard_derivatives : enable\n";
 		}
 
 		// #version must be the first directive and cannot be repeated,
