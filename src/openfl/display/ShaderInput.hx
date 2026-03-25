@@ -141,7 +141,7 @@ import openfl.display3D.Context3D;
 		channels = 0;
 		filter = NEAREST;
 		height = 0;
-		index = 0;
+		index = -1;
 		mipFilter = MIPNONE;
 		width = 0;
 		wrap = CLAMP;

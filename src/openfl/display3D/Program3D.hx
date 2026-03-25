@@ -8,41 +8,17 @@ import openfl.display3D._internal.AGALConverter;
 import openfl.display._internal.SamplerState;
 import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.Log;
+import openfl.display.Shader;
 import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
+import openfl.utils.GLSLSourceAssembler;
 import openfl.Vector;
 #if lime
 import lime.graphics.opengl.GL;
 import lime.utils.BytePointer;
 #end
 
-/**
-	The Program3D class represents a pair of rendering programs (also called "shaders")
-	uploaded to the rendering context.
-
-	Programs managed by a Program3D object control the entire rendering of triangles
-	during a Context3D drawTriangles() call. Upload the binary bytecode to the rendering
-	context using the upload method. (Once uploaded, the program in the original byte
-	array is no longer referenced; changing or discarding the source byte array does
-	not change the program.)
-
-	Programs always consist of two linked parts: A vertex and a fragment program.
-
-	1. The vertex program operates on data defined in VertexBuffer3D objects and is
-	responsible for projecting vertices into clip space and passing any required vertex
-	data, such as color, to the fragment shader.
-	2. The fragment shader operates on the attributes passed to it by the vertex program
-	and produces a color for every rasterized fragment of a triangle, resulting in pixel
-	colors. Note that fragment programs have several names in 3D programming literature,
-	including fragment shader and pixel shader.
-
-	Designate which program pair to use for subsequent rendering operations by passing the
-	corresponding Program3D instance to the Context3D `setProgram()` method.
-
-	You cannot create a Program3D object directly; use the Context3D `createProgram()`
-	method instead.
-**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -50,9 +26,13 @@ import lime.utils.BytePointer;
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
+@:access(openfl.display.Shader)
 @:access(openfl.display.Stage)
+@:access(openfl.utils.GLSLSourceAssembler)
 @:final class Program3D
 {
+	@:noCompletion private var __context:Context3D;
+	@:noCompletion private var __format:Context3DProgramFormat;
 	@:noCompletion private var __agalAlphaSamplerEnabled:Array<Uniform>;
 	@:noCompletion private var __agalAlphaSamplerUniforms:List<Uniform>;
 	@:noCompletion private var __agalFragmentUniformMap:UniformMap;
@@ -61,20 +41,25 @@ import lime.utils.BytePointer;
 	@:noCompletion private var __agalSamplerUsageMask:Int;
 	@:noCompletion private var __agalUniforms:List<Uniform>;
 	@:noCompletion private var __agalVertexUniformMap:UniformMap;
-	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __format:Context3DProgramFormat;
 	@:noCompletion private var __glFragmentShader:GLShader;
+	@:noCompletion private var __glVertexShader:GLShader;
 	@:noCompletion private var __glFragmentSource:String;
+	@:noCompletion private var __glFragmentVersion:String;
+	@:noCompletion private var __glVertexSource:String;
+	@:noCompletion private var __glVertexVersion:String;
 	@:noCompletion private var __glProgram:GLProgram;
+	@:noCompletion private var __glslSamplerLocations:Array<Null<GLUniformLocation>>;
+	@:noCompletion private var __glslSamplerDefaults:Array<String>;
+	@:noCompletion private var __glslSamplerNames:Array<String>;
+	@:noCompletion private var __glslAttribLocations:Array<Null<Int>>;
 	@:noCompletion private var __glslAttribNames:Array<String>;
 	@:noCompletion private var __glslAttribTypes:Array<ShaderParameterType>;
-	@:noCompletion private var __glslSamplerNames:Array<String>;
-	@:noCompletion private var __glslUniformLocations:Array<GLUniformLocation>;
+	@:noCompletion private var __glslAttribSizes:Array<Int>;
+	@:noCompletion private var __glslUniformLocations:Array<Null<GLUniformLocation>>;
+	@:noCompletion private var __glslUniformDefaults:Array<String>;
 	@:noCompletion private var __glslUniformNames:Array<String>;
 	@:noCompletion private var __glslUniformTypes:Array<ShaderParameterType>;
-	@:noCompletion private var __glVertexShader:GLShader;
-	@:noCompletion private var __glVertexSource:String;
-	// @:noCompletion private var __memUsage:Int;
+	@:noCompletion private var __glslUniformSizes:Array<Int>;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
 
 	@:noCompletion private function new(context3D:Context3D, format:Context3DProgramFormat)
@@ -84,7 +69,6 @@ import lime.utils.BytePointer;
 
 		if (__format == AGAL)
 		{
-			// __memUsage = 0;
 			__agalSamplerUsageMask = 0;
 			__agalUniforms = new List<Uniform>();
 			__agalSamplerUniforms = new List<Uniform>();
@@ -93,34 +77,28 @@ import lime.utils.BytePointer;
 		}
 		else
 		{
+			__glslSamplerLocations = new Array();
+			__glslSamplerDefaults = new Array();
+			__glslSamplerNames = new Array();
+			__glslAttribLocations = new Array();
 			__glslAttribNames = new Array();
 			__glslAttribTypes = new Array();
-			__glslSamplerNames = new Array();
+			__glslAttribSizes = new Array();
 			__glslUniformLocations = new Array();
+			__glslUniformDefaults = new Array();
 			__glslUniformNames = new Array();
 			__glslUniformTypes = new Array();
+			__glslUniformSizes = new Array();
 		}
 
 		__samplerStates = new Array<SamplerState>();
 	}
 
-	/**
-		Frees all resources associated with this object. After disposing a
-		Program3D object, calling `upload()` and rendering using this object will fail.
-	**/
 	public function dispose():Void
 	{
 		__deleteShaders();
 	}
 
-	/**
-		**BETA**
-
-		Get the index for the specified shader attribute.
-
-		@returns	The index, or -1 if the attribute is not bound or
-		was not found in the shader sources
-	**/
 	public function getAttributeIndex(name:String):Int
 	{
 		if (__format == AGAL)
@@ -140,21 +118,13 @@ import lime.utils.BytePointer;
 		{
 			for (i in 0...__glslAttribNames.length)
 			{
-				if (__glslAttribNames[i] == name) return i;
+				if (__glslAttribNames[i] == name) return __glslAttribLocations[i] == null ? -1 : __glslAttribLocations[i];
 			}
 
 			return -1;
 		}
 	}
 
-	/**
-		**BETA**
-
-		Get the index for the specified shader constant.
-
-		@returns	The index, or -1 if the constant is not bound or
-		was not found in the shader sources
-	**/
 	public function getConstantIndex(name:String):Int
 	{
 		if (__format == AGAL)
@@ -178,215 +148,16 @@ import lime.utils.BytePointer;
 		{
 			for (i in 0...__glslUniformNames.length)
 			{
-				if (__glslUniformNames[i] == name) return cast __glslUniformLocations[i];
+				if (__glslUniformNames[i] == name) return __glslUniformLocations[i] == null ? -1 : cast __glslUniformLocations[i];
 			}
 
 			return -1;
 		}
 	}
 
-	/**
-		Uploads a pair of rendering programs expressed in AGAL (Adobe Graphics Assembly
-		Language) bytecode.
-
-		Program bytecode can be created using the Pixel Bender 3D offline tools. It can
-		also be created dynamically. The AGALMiniAssembler class is a utility class
-		that compiles AGAL assembly language programs to AGAL bytecode. The class is not
-		part of the runtime. When you upload the shader programs, the bytecode is
-		compiled into the native shader language for the current device (for example,
-		OpenGL or Direct3D). The runtime validates the bytecode on upload.
-
-		The programs run whenever the Context3D `drawTriangles()` method is invoked. The
-		vertex program is executed once for each vertex in the list of triangles to be
-		drawn. The fragment program is executed once for each pixel on a triangle surface.
-
-		The "variables" used by a shader program are called registers. The following
-		registers are defined:
-
-		| Name | Number per Fragment program | Number per Vertex program | Purpose |
-		| --- | --- | --- | --- |
-		| Attribute | n/a | 8 | Vertex shader input; read from a vertex buffer specified using `Context3D.setVertexBufferAt()`. |
-		| Constant | 28 | 128 | Shader input; set using the `Context3D.setProgramConstants()` family of functions. |
-		| Temporary | 8 | 8 | Temporary register for computation, not accessible outside program. |
-		| Output | 1 | 1 | Shader output: in a vertex program, the output is the clipspace position; in a fragment program, the output is a color. |
-		| Varying | 8 | 8 | Transfer interpolated data between vertex and fragment shaders. The varying registers from the vertex program are applied as input to the fragment program. Values are interpolated according to the distance from the triangle vertices. |
-		| Sampler | 8 | n/a | Fragment shader input; read from a texture specified using `Context3D.setTextureAt()` |
-
-		A vertex program receives input from two sources: vertex buffers and constant
-		registers. Specify which vertex data to use for a particular vertex attribute
-		register using the Context3D `setVertexBufferAt()` method. You can define up to
-		eight input registers for vertex attributes. The vertex attribute values are read
-		from the vertex buffer for each vertex in the triangle list and placed in the
-		attribute register. Specify constant registers using the Context3D
-		`setProgramConstantsFromMatrix()` or `setProgramConstantsFromVector()`
-		methods. Constant registers retain the same value for every vertex in the
-		triangle list. (You can only modify the constant values between calls to
-		`drawTriangles().`)
-
-		The vertex program is responsible for projecting the triangle vertices into
-		clip space (the canonical viewing area within ±1 on the x and y axes and 0-1 on
-		the z axis) and placing the transformed coordinates in its output register.
-		(Typically, the appropriate projection matrix is provided to the shader in a set
-		of constant registers.) The vertex program must also copy any vertex attributes
-		or computed values needed by the fragment program to a special set of variables
-		called varying registers. When a fragment shader runs, the value supplied in a
-		varying register is linearly interpolated according to the distance of the
-		current fragment from each triangle vertex.
-
-		A fragment program receives input from the varying registers and from a separate
-		set of constant registers (set with `setProgramConstantsFromMatrix()` or
-		`setProgramConstantsFromVector()`). You can also read texture data from textures
-		uploaded to the rendering context using sampler registers. Specify which texture
-		to access with a particular sampler register using the Context3D `setTextureAt()`
-		method. The fragment program is responsible for setting its output register to a
-		color value.
-
-		@param	vertexProgram	AGAL bytecode for the Vertex program. The ByteArray object
-		must use the little endian format.
-		@param	fragmentProgram	AGAL bytecode for the Fragment program. The ByteArray
-		object must use the little endian format.
-		@throws	TypeError	Null Pointer Error: if vertexProgram or fragmentProgram is
-		`null`.
-		@throws	Error	Object Disposed: if the Program3D object was disposed either
-		directly by a call to `dispose()`, or indirectly by calling the Context3D
-		`dispose()` or because the rendering context was disposed because of device loss.
-		@throws	ArgumentError	Agal Program Too Small: when either program code array
-		is smaller than 31 bytes length. This is the size of the shader bytecode of a
-		one-instruction program.
-		@throws	ArgumentError	Program Must Be Little Endian: if either of the program
-		byte code arrays is not little endian.
-		@throws	Error	Native Shader Compilation Failed: if the output of the AGAL
-		translator is not a compilable native shader language program. This error is only
-		thrown in release players.
-		@throws	Error	Native Shader Compilation Failed OpenGL: if the output of the
-		AGAL translator is not a compilable OpengGL shader language program, and
-		includes compilation diagnostics. This error is only thrown in debug players.
-		@throws	Error	Native Shader Compilation Failed D3D9: if the output of the AGAL
-		translator is not a compilable Direct3D shader language program, and includes
-		compilation diagnostics. This error is only thrown in debug players.
-
-		The following errors are thrown when the AGAL bytecode validation fails:
-
-		@throws	Error	Not An Agal Program: if the header "magic byte" is wrong. The
-		first byte of the bytecode must be 0xa0. This error can indicate that the byte
-		array is set to the wrong endian order.
-		@throws	Error	Bad Agal Version: if the AGAL version is not supported by the
-		current SWF version. The AGAL version must be set to 1 for SWF version 13.
-		@throws	Error	Bad Agal Program Type: if the AGAL program type identifier is
-		not valid. The third byte in the byte code must be 0xa1. This error can indicates
-		that the byte array is set to the wrong endian order.
-		@throws	Error	Bad Agal Shader Type: if the shader type code is not either
-		fragment or vertex (1 or 0).
-		@throws	Error	Invalid Agal Opcode Out Of Range: if an invalid opcode is
-		encountered in the token stream.
-		@throws	Error	Invalid Agal Opcode Not Implemented: if an invalid opcode is
-		encountered in the token stream.
-		@throws	Error	Agal Opcode Only Allowed In Fragment Program: if an opcode is
-		encountered in the token stream of the vertex program that is only allowed in fragment programs, such as KIL or TEX.
-		@throws	Error	Bad Agal Source Operands: if both source operands are constant
-		registers. You must compute the result outside the shader program and pass it
-		in using a single constant register.
-		@throws	Error	Both Operands Are Indirect Reads: if both operands are indirect
-		reads.
-		@throws	Error	Opcode Destination Must Be All Zero: if a token with an opcode
-		(such as KIL) that has no destination sets a non-zero value for the destination
-		register.
-		@throws	Error	Opcode Destination Must Use Mask: if an opcode that produces
-		only a 3 component result is used without masking.
-		@throws	Error	Too Many Tokens: if there are too many tokens (more than 200) in
-		an AGAL program.
-		@throws	Error	Fragment Shader Type: if the fragment program type (byte 6 of
-		fragmentProgram parameter) is not set to 1.
-		@throws	Error	Vertex Shader Type: if the vertex program type (byte 6 of
-		vertexProgram parameter) is not set to 0.
-		@throws	Error	Varying Read But Not Written To: if the fragment shader reads a
-		varying register that was never written to by the vertex shader.
-		@throws	Error	Varying Partial Write: if a varying register is only partially
-		written to. All components of a varying register must be written to.
-		@throws	Error	Fragment Write All Components: if a fragment color output is only
-		partially written to. All four components of the color output must be written to.
-		@throws	Error	Vertex Write All Components: if a vertex clip space output is only
-		partially written to. All components of the vertex clip space output must be
-		written to.
-		@throws	Error	Unused Operand: if an unused operand in a token is not set to all
-		zero.
-		@throws	Error	Sampler Register Only In Fragment: if a texture sampler register
-		is used in a vertex program.
-		@throws	Error	Sampler Register Second Operand: if a sampler register is used
-		as a destination or first operand of an AGAL token.
-		@throws	Error	Indirect Only Allowed In Vertex: if indirect addressing is used
-		in a fragment program.
-		@throws	Error	Indirect Only Into Constant Registers: if indirect addressing
-		is used on a non-constant register.
-		@throws	Error	Indirect Source Type: if the indirect source type is not
-		attribute, constant or temporary register.
-		@throws	Error	Indirect Addressing Fields Must Be Zero: if not all indirect
-		addressing fields are zero for direct addressing.
-		@throws	Error	Varying Registers Only Read In Fragment: if a varying register is
-		read in a vertex program. Varying registers can only be written in vertex
-		programs and read in fragment programs.
-		@throws	Error	Attribute Registers Only Read In Vertex: if an attribute
-		registers is read in a fragment program. Attribute registers can only be read
-		in vertex programs.
-		@throws	Error	Can Not Read Output Register: if an output (position or color)
-		register is read. Output registers can only be written to, not read.
-		@throws	Error	Temp Register Read Without Write: if a temporary register is read
-		without being written to earlier.
-		@throws	Error	Temp Register Component Read Without Write: if a specific
-		temporary register component is read without being written to earlier.
-		@throws	Error	Sampler Register Cannot Be Written To: if a sampler register is
-		written to. Sampler registers can only be read, not written to.
-		@throws	Error	Varying Registers Write: if a varying register is written to in
-		a fragment program. Varying registers can only be written in vertex programs and
-		read in fragment programs.
-		@throws	Error	Attribute Register Cannot Be Written To: if an attribute
-		register is written to. Attribute registers are read-only.
-		@throws	Error	Constant Register Cannot Be Written To: if a constant register
-		is written to inside a shader program.
-		@throws	Error	Destination Writemask Is Zero: if a destination writemask is
-		zero. All components of an output register must be set.
-		@throws	Error	AGAL Reserved Bits Should Be Zero: if any reserved bits in a
-		token are not zero. This indicates an error in creating the bytecode (or
-		malformed bytecode).
-		@throws	Error	Unknown Register Type: if an invalid register type index is used.
-		@throws	Error	Sampler Register Out Of Bounds: if an invalid sampler register
-		index is used.
-		@throws	Error	Varying Register Out Of Bounds: if an invalid varying register
-		index is used.
-		@throws	Error	Attribute Register Out Of Bounds: if an invalid attribute
-		register index is used.
-		@throws	Error	Constant Register Out Of Bounds: if an invalid constant
-		register index is used.
-		@throws	Error	Output Register Out Of Bounds: if an invalid output register
-		index is used.
-		@throws	Error	Temporary Register Out Of Bounds: if an invalid temporary
-		register index is used.
-		@throws	Error	Cube Map Sampler Must Use Clamp: if a cube map sampler does not
-		set the wrap mode to clamp.
-		@throws	Error	Unknown Sampler Dimension: if a sample uses an unknown sampler
-		dimension. (Only 2D and cube textures are supported.)
-		@throws	Error	Unknown Filter Mode: if a sampler uses an unknown filter mode.
-		(Only nearest neighbor and linear filtering are supported.)
-		@throws	Error	Unknown Mipmap Mode: if a sampler uses an unknown mipmap mode.
-		(Only none, nearest neighbor, and linear mipmap modes are supported.)
-		@throws	Error	Unknown Wrapping Mode if a sampler uses an unknown wrapping mode.
-		(Only clamp and repeat wrapping modes are supported.)
-		@throws	Error	Unknown Special Flag: if a sampler uses an unknown special flag.
-		@throws	Error	Output Color Not Maskable: You cannot mask the color output
-		register in a fragment program. All components of the color register must be set.
-		@throws	Error	Second Operand Must Be Sampler Register: The AGAL tex opcode must
-		have a sampler as the second source operand.
-		@throws	Error	Indirect Not Allowed: indirect addressing used where not allowed.
-		@throws	Error	Swizzle Must Be Scalar: swizzling error.
-		@throws	Error	Cant Swizzle 2nd Source: swizzling error.
-		@throws	Error	Second Use Of Sampler Must Have Same Params: all samplers that
-		access the same texture must use the same dimension, wrap, filter, special, and
-		mipmap settings.
-		@throws	Error	3768: The Stage3D API may not be used during background execution.
-	**/
 	public function upload(vertexProgram:ByteArray, fragmentProgram:ByteArray):Void
 	{
-		if (__format != AGAL) return;
+		if (__format != AGAL) throw "Program3D.upload is AGAL only, use uploadSources";
 
 		// var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
 		var samplerStates = new Array<SamplerState>();
@@ -410,177 +181,15 @@ import lime.utils.BytePointer;
 		}
 	}
 
-	/**
-		**BETA**
-
-		Uploads a pair of rendering programs expressed in GLSL (GL Shader Language).
-	**/
 	public function uploadSources(vertexSource:String, fragmentSource:String):Void
 	{
-		if (__format != GLSL) return;
+		if (__format != GLSL) throw "Program3D.uploadSources is GL only, use upload";
 
-		// TODO: Precision hint?
-
-		var prefix = "#ifdef GL_ES
-			#ifdef GL_FRAGMENT_PRECISION_HIGH
-			precision highp float;
-			#else
-			precision mediump float;
-			#endif
-			#endif
-			";
-
-		var vertex = prefix + vertexSource;
-		var fragment = prefix + fragmentSource;
-
-		if (vertex == __glVertexSource && fragment == __glFragmentSource) return;
-
-		__processGLSLData(vertexSource, "attribute");
-		__processGLSLData(vertexSource, "uniform");
-		__processGLSLData(fragmentSource, "uniform");
+		if (vertexSource == __glVertexSource && fragmentSource == __glFragmentSource) return;
 
 		__deleteShaders();
-		__uploadFromGLSL(vertex, fragment);
-
-		// Sort by index
-
-		var samplerNames = __glslSamplerNames;
-		var attribNames = __glslAttribNames;
-		var attribTypes = __glslAttribTypes;
-		var uniformNames = __glslUniformNames;
-
-		__glslSamplerNames = new Array();
-		__glslAttribNames = new Array();
-		__glslAttribTypes = new Array();
-		__glslUniformLocations = new Array();
-
-		var gl = __context.gl;
-		var index:Int, location;
-
-		for (name in samplerNames)
-		{
-			index = cast gl.getUniformLocation(__glProgram, name);
-			__glslSamplerNames[index] = name;
-		}
-
-		for (i in 0...attribNames.length)
-		{
-			index = gl.getAttribLocation(__glProgram, attribNames[i]);
-			__glslAttribNames[index] = attribNames[i];
-			__glslAttribTypes[index] = attribTypes[i];
-		}
-
-		for (i in 0...uniformNames.length)
-		{
-			location = gl.getUniformLocation(__glProgram, uniformNames[i]);
-			__glslUniformLocations[i] = location;
-		}
-	}
-
-	@:noCompletion private function __buildAGALUniformList():Void
-	{
-		if (__format == GLSL) return;
-
-		#if lime
-		var gl = __context.gl;
-
-		__agalUniforms.clear();
-		__agalSamplerUniforms.clear();
-		__agalAlphaSamplerUniforms.clear();
-		__agalAlphaSamplerEnabled = [];
-
-		__agalSamplerUsageMask = 0;
-
-		var numActive = 0;
-		numActive = gl.getProgramParameter(__glProgram, gl.ACTIVE_UNIFORMS);
-
-		var vertexUniforms = new List<Uniform>();
-		var fragmentUniforms = new List<Uniform>();
-
-		for (i in 0...numActive)
-		{
-			var info = gl.getActiveUniform(__glProgram, i);
-			var name = info.name;
-			var size = info.size;
-			var uniformType = info.type;
-
-			var uniform = new Uniform(__context);
-			uniform.name = name;
-			uniform.size = size;
-			uniform.type = uniformType;
-
-			uniform.location = gl.getUniformLocation(__glProgram, uniform.name);
-
-			var indexBracket = uniform.name.indexOf("[");
-
-			if (indexBracket >= 0)
-			{
-				uniform.name = uniform.name.substring(0, indexBracket);
-			}
-
-			switch (uniform.type)
-			{
-				case GL.FLOAT_MAT2:
-					uniform.regCount = 2;
-				case GL.FLOAT_MAT3:
-					uniform.regCount = 3;
-				case GL.FLOAT_MAT4:
-					uniform.regCount = 4;
-				default:
-					uniform.regCount = 1;
-			}
-
-			uniform.regCount *= uniform.size;
-
-			__agalUniforms.add(uniform);
-
-			if (uniform.name == "vcPositionScale")
-			{
-				__agalPositionScale = uniform;
-			}
-			else if (StringTools.startsWith(uniform.name, "vc"))
-			{
-				uniform.regIndex = Std.parseInt(uniform.name.substring(2));
-				uniform.regData = __context.__vertexConstants;
-				vertexUniforms.add(uniform);
-			}
-			else if (StringTools.startsWith(uniform.name, "fc"))
-			{
-				uniform.regIndex = Std.parseInt(uniform.name.substring(2));
-				uniform.regData = __context.__fragmentConstants;
-				fragmentUniforms.add(uniform);
-			}
-			else if (StringTools.startsWith(uniform.name, "sampler") && uniform.name.indexOf("alpha") == -1)
-			{
-				uniform.regIndex = Std.parseInt(uniform.name.substring(7));
-				__agalSamplerUniforms.add(uniform);
-
-				for (reg in 0...uniform.regCount)
-				{
-					__agalSamplerUsageMask |= (1 << (uniform.regIndex + reg));
-				}
-			}
-			else if (StringTools.startsWith(uniform.name, "sampler") && StringTools.endsWith(uniform.name, "_alpha"))
-			{
-				var len = uniform.name.indexOf("_") - 7;
-				uniform.regIndex = Std.parseInt(uniform.name.substring(7, 7 + len)) + 4;
-				__agalAlphaSamplerUniforms.add(uniform);
-			}
-			else if (StringTools.startsWith(uniform.name, "sampler") && StringTools.endsWith(uniform.name, "_alphaEnabled"))
-			{
-				uniform.regIndex = Std.parseInt(uniform.name.substring(7));
-				__agalAlphaSamplerEnabled[uniform.regIndex] = uniform;
-			}
-
-			if (Log.level == LogLevel.VERBOSE)
-			{
-				Log.verbose('${i} name:${uniform.name} type:${uniform.type} size:${uniform.size} location:${uniform.location}');
-			}
-		}
-
-		__agalVertexUniformMap = new UniformMap(Lambda.array(vertexUniforms));
-		__agalFragmentUniformMap = new UniformMap(Lambda.array(fragmentUniforms));
-		#end
+		__uploadFromGLSL(vertexSource, fragmentSource);
+		__buildGLSLParamList();
 	}
 
 	@:noCompletion private function __deleteShaders():Void
@@ -589,6 +198,7 @@ import lime.utils.BytePointer;
 
 		if (__glProgram != null)
 		{
+			gl.deleteProgram(__glProgram);
 			__glProgram = null;
 		}
 
@@ -603,6 +213,34 @@ import lime.utils.BytePointer;
 			gl.deleteShader(__glFragmentShader);
 			__glFragmentShader = null;
 		}
+
+		#if haxe4
+		__glslSamplerLocations.resize(0);
+		__glslSamplerDefaults.resize(0);
+		__glslSamplerNames.resize(0);
+		__glslAttribLocations.resize(0);
+		__glslAttribNames.resize(0);
+		__glslAttribTypes.resize(0);
+		__glslAttribSizes.resize(0);
+		__glslUniformLocations.resize(0);
+		__glslUniformDefaults.resize(0);
+		__glslUniformNames.resize(0);
+		__glslUniformTypes.resize(0);
+		__glslUniformSizes.resize(0);
+		#else
+		__glslSamplerLocations = new Array();
+		__glslSamplerDefaults = new Array();
+		__glslSamplerNames = new Array();
+		__glslAttribLocations = new Array();
+		__glslAttribNames = new Array();
+		__glslAttribTypes = new Array();
+		__glslAttribSizes = new Array();
+		__glslUniformLocations = new Array();
+		__glslUniformDefaults = new Array();
+		__glslUniformNames = new Array();
+		__glslUniformTypes = new Array();
+		__glslUniformSizes = new Array();
+		#end
 	}
 
 	@:noCompletion private function __disable():Void
@@ -762,76 +400,110 @@ import lime.utils.BytePointer;
 		}
 	}
 
-	@:noCompletion private function __processGLSLData(source:String, storageType:String):Void
+	@:noCompletion private function __buildAGALUniformList():Void
 	{
-		var lastMatch = 0, position, regex, name, type;
+		if (__format == GLSL) return;
 
-		if (storageType == "uniform")
-		{
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
-		else
-		{
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
+		#if lime
+		var gl = __context.gl;
 
-		while (regex.matchSub(source, lastMatch))
-		{
-			type = regex.matched(1);
-			name = regex.matched(2);
+		__agalUniforms.clear();
+		__agalSamplerUniforms.clear();
+		__agalAlphaSamplerUniforms.clear();
+		__agalAlphaSamplerEnabled = [];
 
-			if (StringTools.startsWith(name, "gl_"))
+		__agalSamplerUsageMask = 0;
+
+		var numActive = 0;
+		numActive = gl.getProgramParameter(__glProgram, gl.ACTIVE_UNIFORMS);
+
+		var vertexUniforms = new List<Uniform>();
+		var fragmentUniforms = new List<Uniform>();
+
+		for (i in 0...numActive)
+		{
+			var info = gl.getActiveUniform(__glProgram, i);
+			var name = info.name;
+			var size = info.size;
+			var uniformType = info.type;
+
+			var uniform = new Uniform(__context);
+			uniform.name = name;
+			uniform.size = size;
+			uniform.type = uniformType;
+
+			uniform.location = gl.getUniformLocation(__glProgram, uniform.name);
+
+			var indexBracket = uniform.name.indexOf("[");
+
+			if (indexBracket >= 0)
 			{
-				continue;
+				uniform.name = uniform.name.substring(0, indexBracket);
 			}
 
-			if (StringTools.startsWith(type, "sampler"))
+			switch (uniform.type)
 			{
-				__glslSamplerNames.push(name);
-			}
-			else
-			{
-				var parameterType:ShaderParameterType = switch (type)
-				{
-					case "bool": BOOL;
-					case "double", "float": FLOAT;
-					case "int", "uint": INT;
-					case "bvec2": BOOL2;
-					case "bvec3": BOOL3;
-					case "bvec4": BOOL4;
-					case "ivec2", "uvec2": INT2;
-					case "ivec3", "uvec3": INT3;
-					case "ivec4", "uvec4": INT4;
-					case "vec2", "dvec2": FLOAT2;
-					case "vec3", "dvec3": FLOAT3;
-					case "vec4", "dvec4": FLOAT4;
-					case "mat2", "mat2x2": MATRIX2X2;
-					case "mat2x3": MATRIX2X3;
-					case "mat2x4": MATRIX2X4;
-					case "mat3x2": MATRIX3X2;
-					case "mat3", "mat3x3": MATRIX3X3;
-					case "mat3x4": MATRIX3X4;
-					case "mat4x2": MATRIX4X2;
-					case "mat4x3": MATRIX4X3;
-					case "mat4", "mat4x4": MATRIX4X4;
-					default: null;
-				}
-
-				if (storageType == "uniform")
-				{
-					__glslUniformNames.push(name);
-					__glslUniformTypes.push(parameterType);
-				}
-				else
-				{
-					__glslAttribNames.push(name);
-					__glslAttribTypes.push(parameterType);
-				}
+				case GL.FLOAT_MAT2:
+					uniform.regCount = 2;
+				case GL.FLOAT_MAT3:
+					uniform.regCount = 3;
+				case GL.FLOAT_MAT4:
+					uniform.regCount = 4;
+				default:
+					uniform.regCount = 1;
 			}
 
-			position = regex.matchedPos();
-			lastMatch = position.pos + position.len;
+			uniform.regCount *= uniform.size;
+
+			__agalUniforms.add(uniform);
+
+			if (uniform.name == "vcPositionScale")
+			{
+				__agalPositionScale = uniform;
+			}
+			else if (StringTools.startsWith(uniform.name, "vc"))
+			{
+				uniform.regIndex = Std.parseInt(uniform.name.substring(2));
+				uniform.regData = __context.__vertexConstants;
+				vertexUniforms.add(uniform);
+			}
+			else if (StringTools.startsWith(uniform.name, "fc"))
+			{
+				uniform.regIndex = Std.parseInt(uniform.name.substring(2));
+				uniform.regData = __context.__fragmentConstants;
+				fragmentUniforms.add(uniform);
+			}
+			else if (StringTools.startsWith(uniform.name, "sampler") && uniform.name.indexOf("alpha") == -1)
+			{
+				uniform.regIndex = Std.parseInt(uniform.name.substring(7));
+				__agalSamplerUniforms.add(uniform);
+
+				for (reg in 0...uniform.regCount)
+				{
+					__agalSamplerUsageMask |= (1 << (uniform.regIndex + reg));
+				}
+			}
+			else if (StringTools.startsWith(uniform.name, "sampler") && StringTools.endsWith(uniform.name, "_alpha"))
+			{
+				var len = uniform.name.indexOf("_") - 7;
+				uniform.regIndex = Std.parseInt(uniform.name.substring(7, 7 + len)) + 4;
+				__agalAlphaSamplerUniforms.add(uniform);
+			}
+			else if (StringTools.startsWith(uniform.name, "sampler") && StringTools.endsWith(uniform.name, "_alphaEnabled"))
+			{
+				uniform.regIndex = Std.parseInt(uniform.name.substring(7));
+				__agalAlphaSamplerEnabled[uniform.regIndex] = uniform;
+			}
+
+			if (Log.level == LogLevel.VERBOSE)
+			{
+				Log.verbose('${i} name:${uniform.name} type:${uniform.type} size:${uniform.size} location:${uniform.location}');
+			}
 		}
+
+		__agalVertexUniformMap = new UniformMap(Lambda.array(vertexUniforms));
+		__agalFragmentUniformMap = new UniformMap(Lambda.array(fragmentUniforms));
+		#end
 	}
 
 	@:noCompletion private function __setPositionScale(positionScale:Float32Array):Void
@@ -850,38 +522,56 @@ import lime.utils.BytePointer;
 		__samplerStates[sampler] = state;
 	}
 
+	@:noCompletion private function __createGLSLShader(source:String, type:Int):GLShader
+	{
+		var gl = __context.gl;
+
+		var glShader = gl.createShader(type);
+		gl.shaderSource(glShader, source);
+		gl.compileShader(glShader);
+
+		var shaderInfoLog = gl.getShaderInfoLog(glShader);
+		var hasInfoLog = shaderInfoLog != null && StringTools.trim(shaderInfoLog) != "";
+		var isError = gl.getShaderParameter(glShader, gl.COMPILE_STATUS) == 0;
+
+		if (hasInfoLog || isError)
+		{
+			var message = isError ? "Error" : "Info";
+			message += (type == gl.VERTEX_SHADER) ? " compiling vertex shader" : " compiling fragment shader";
+			message += "\n" + shaderInfoLog;
+			message += "\n" + source;
+			if (isError) Log.error(message);
+			else if (hasInfoLog) Log.debug(message);
+		}
+
+		return glShader;
+	}
+
 	@:noCompletion private function __uploadFromGLSL(vertexShaderSource:String, fragmentShaderSource:String):Void
 	{
 		var gl = __context.gl;
 
-		__glVertexSource = vertexShaderSource;
-		__glFragmentSource = fragmentShaderSource;
+		__glVertexVersion = GLSLSourceAssembler.getVersionFromSource(__glVertexSource = vertexShaderSource);
+		__glFragmentVersion = GLSLSourceAssembler.getVersionFromSource(__glFragmentSource = fragmentShaderSource);
 
-		__glVertexShader = gl.createShader(gl.VERTEX_SHADER);
-		gl.shaderSource(__glVertexShader, vertexShaderSource);
-		gl.compileShader(__glVertexShader);
+		vertexShaderSource = Shader.processGLSLParameter(vertexShaderSource, "attribute", __processGLSLParameterCallback);
+		vertexShaderSource = Shader.processGLSLParameter(vertexShaderSource, "in", __processGLSLParameterCallback);
+		vertexShaderSource = Shader.processGLSLParameter(vertexShaderSource, "uniform", __processGLSLParameterCallback);
+		fragmentShaderSource = Shader.processGLSLParameter(fragmentShaderSource, "uniform", __processGLSLParameterCallback);
 
-		if (gl.getShaderParameter(__glVertexShader, gl.COMPILE_STATUS) == 0)
-		{
-			var message = "Error compiling vertex shader";
-			message += "\n" + gl.getShaderInfoLog(__glVertexShader);
-			message += "\n" + vertexShaderSource;
-			Log.error(message);
-		}
-
-		__glFragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-		gl.shaderSource(__glFragmentShader, fragmentShaderSource);
-		gl.compileShader(__glFragmentShader);
-
-		if (gl.getShaderParameter(__glFragmentShader, gl.COMPILE_STATUS) == 0)
-		{
-			var message = "Error compiling fragment shader";
-			message += "\n" + gl.getShaderInfoLog(__glFragmentShader);
-			message += "\n" + fragmentShaderSource;
-			Log.error(message);
-		}
-
+		__glVertexShader = __createGLSLShader(vertexShaderSource, gl.VERTEX_SHADER);
+		__glFragmentShader = __createGLSLShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
 		__glProgram = gl.createProgram();
+
+		gl.attachShader(__glProgram, __glVertexShader);
+		gl.attachShader(__glProgram, __glFragmentShader);
+		gl.linkProgram(__glProgram);
+
+		if (gl.getProgramParameter(__glProgram, gl.LINK_STATUS) == 0)
+		{
+			Log.error("Unable to initialize the shader program\n" + gl.getProgramInfoLog(__glProgram));
+			return;
+		}
 
 		if (__format == AGAL)
 		{
@@ -900,26 +590,115 @@ import lime.utils.BytePointer;
 		}
 		else
 		{
-			// Fix support for drivers that don't draw if attribute 0 is disabled
-			for (name in __glslAttribNames)
+			// Fix support for drivers that don't draw if attribute 0 is disabled (just mainly for openfl old filter shaders)
+			if (gl.getAttribLocation(__glProgram, "openfl_Position") > 0)
 			{
-				if (name.indexOf("Position") > -1 && StringTools.startsWith(name, "openfl_"))
-				{
-					gl.bindAttribLocation(__glProgram, 0, name);
-					break;
-				}
+				gl.bindAttribLocation(__glProgram, 0, "openfl_Position");
+			}
+		}
+	}
+
+	@:noCompletion private function __buildGLSLParamList():Void
+	{
+		var gl = __context.gl;
+		var idx:Int, name:String, info;
+		var regexName = ~/([A-Za-z0-9_]+)(?:\[(\w+)\])?/;
+
+		var num = gl.getProgramParameter(__glProgram, gl.ACTIVE_ATTRIBUTES);
+		for (i in 0...num)
+		{
+			regexName.match((info = gl.getActiveAttrib(__glProgram, i)).name);
+			idx = __glslAttribNames.indexOf(name = regexName.matched(1));
+			if (idx == -1)
+			{
+				__glslAttribLocations.push(gl.getAttribLocation(__glProgram, info.name));
+				__glslAttribNames.push(name);
+				__glslAttribTypes.push(Shader.getParameterTypeFromGLEnum(info.type, info.size > 1));
+				__glslAttribSizes.push(info.size);
+			}
+			else
+			{
+				__glslAttribLocations[idx] = gl.getAttribLocation(__glProgram, info.name);
+				__glslAttribTypes[idx] = Shader.getParameterTypeFromGLEnum(info.type, info.size > 1);
+				__glslAttribSizes[idx] = info.size;
 			}
 		}
 
-		gl.attachShader(__glProgram, __glVertexShader);
-		gl.attachShader(__glProgram, __glFragmentShader);
-		gl.linkProgram(__glProgram);
-
-		if (gl.getProgramParameter(__glProgram, gl.LINK_STATUS) == 0)
+		var num = gl.getProgramParameter(__glProgram, gl.ACTIVE_UNIFORMS);
+		for (i in 0...num)
 		{
-			var message = "Unable to initialize the shader program";
-			message += "\n" + gl.getProgramInfoLog(__glProgram);
-			Log.error(message);
+			regexName.match((info = gl.getActiveUniform(__glProgram, i)).name);
+			name = regexName.matched(1);
+			if (info.type == gl.SAMPLER_2D || info.type == gl.SAMPLER_CUBE)
+			{
+				idx = __glslSamplerNames.indexOf(name);
+				if (idx == -1)
+				{
+					__glslSamplerLocations.push(gl.getUniformLocation(__glProgram, info.name));
+					__glslSamplerDefaults.push(null);
+					__glslSamplerNames.push(name);
+				}
+				else
+				{
+					__glslSamplerLocations[idx] = gl.getUniformLocation(__glProgram, info.name);
+				}
+			}
+			else
+			{
+				idx = __glslUniformNames.indexOf(name);
+				if (idx == -1)
+				{
+					__glslUniformLocations.push(gl.getUniformLocation(__glProgram, info.name));
+					__glslUniformDefaults.push(null);
+					__glslUniformNames.push(name);
+					__glslUniformTypes.push(Shader.getParameterTypeFromGLEnum(info.type, info.size > 1));
+					__glslUniformSizes.push(info.size);
+				}
+				else
+				{
+					__glslUniformLocations[idx] = gl.getUniformLocation(__glProgram, info.name);
+					__glslUniformTypes[idx] = Shader.getParameterTypeFromGLEnum(info.type, info.size > 1);
+					__glslUniformSizes[idx] = info.size;
+				}
+			}
+		}
+	}
+
+	@:noCompletion private function __processGLSLParameterCallback(isVertex:Bool, typeName:String, name:String, arrayLength:Int,
+			defaultAssign:Null<String>):Void
+	{
+		if (isVertex)
+		{
+			if (!__glslAttribNames.contains(name))
+			{
+				__glslAttribLocations.push(null);
+				__glslAttribNames.push(name);
+				__glslAttribTypes.push(Shader.getParameterTypeFromGLSL(typeName, arrayLength != 0));
+				__glslAttribSizes.push(arrayLength == 0 ? 1 : arrayLength);
+			}
+		}
+		else
+		{
+			if (StringTools.startsWith(typeName, "sampler"))
+			{
+				if (!__glslAttribNames.contains(name))
+				{
+					__glslSamplerLocations.push(null);
+					__glslSamplerDefaults.push(defaultAssign);
+					__glslSamplerNames.push(name);
+				}
+			}
+			else
+			{
+				if (!__glslUniformNames.contains(name))
+				{
+					__glslUniformLocations.push(null);
+					__glslUniformDefaults.push(defaultAssign);
+					__glslUniformNames.push(name);
+					__glslUniformTypes.push(Shader.getParameterTypeFromGLSL(typeName, arrayLength != 0));
+					__glslUniformSizes.push(arrayLength == 0 ? 1 : arrayLength);
+				}
+			}
 		}
 	}
 }

@@ -30,7 +30,7 @@ import openfl.Vector;
 {
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __id:GLBuffer;
-	@:noCompletion private var __memoryUsage:Int = -1;
+	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numIndices:Int;
 	@:noCompletion private var __tempUInt16Array:UInt16Array;
 	@:noCompletion private var __usage:Int;
@@ -54,6 +54,8 @@ import openfl.Vector;
 	{
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
+		__id = null;
+		__memoryUsage = 0;
 	}
 
 	/**
@@ -97,9 +99,13 @@ import openfl.Vector;
 		var gl = __context.gl;
 		__context.__bindGLElementArrayBuffer(__id);
 		if (__memoryUsage == data.byteLength)
+		{
 			gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, data);
+		}
 		else
+		{
 			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, __usage);
+		}
 		__memoryUsage = data.byteLength;
 	}
 

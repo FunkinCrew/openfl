@@ -1,15 +1,17 @@
 package openfl.display3D.textures;
 
 #if !flash
+import openfl.display._internal.SamplerState;
 import openfl.display3D._internal.GLFramebuffer;
 import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D._internal.GLTexture;
 import openfl.display3D._internal.ATFGPUFormat;
-import openfl.display._internal.SamplerState;
+import openfl.utils._internal.ArrayBufferView;
+import openfl.utils._internal.Log;
 import openfl.display.BitmapData;
+import openfl.display.Graphics;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
-import openfl.utils._internal.Log;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.Image;
@@ -29,6 +31,7 @@ import lime.graphics.RenderContext;
 @:access(openfl.display._internal.SamplerState)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 class TextureBase extends EventDispatcher
 {
@@ -111,6 +114,7 @@ class TextureBase extends EventDispatcher
 			#else
 			var dxtExtension = gl.getExtension("EXT_texture_compression_s3tc");
 			var etc1Extension = gl.getExtension("OES_compressed_ETC1_RGB8_texture");
+			var etc2Extension = gl.getExtension("OES_compressed_ETC2_RGB8_texture");
 			var pvrtcExtension = gl.getExtension("IMG_texture_compression_pvrtc");
 			#end
 
@@ -204,6 +208,41 @@ class TextureBase extends EventDispatcher
 		}
 	}
 
+	/**
+		**BETA**
+
+		Resizes and stretches this Texture object to desired width and height.
+
+		@param	width		The width of the bitmap image in pixels.
+		@param	height		The height of the bitmap image in pixels.
+
+		@since FunkinCrew's OpenFL
+
+		@see `BitmapData.resize`
+	**/
+	public function resize(width:Int, height:Int):Void
+	{
+		if (__alphaTexture != null) __alphaTexture.resize(width, height);
+
+		if (width > Graphics.maxTextureWidth) width = Graphics.maxTextureWidth;
+		if (height > Graphics.maxTextureHeight) height = Graphics.maxTextureHeight;
+
+		var gl = __context.gl;
+
+		if (gl != null && width > 0 && height > 0 && (__width != width || __height != height))
+		{
+			__width = width;
+			__height = height;
+
+			gl.bindTexture(gl.TEXTURE_2D, __textureID);
+			gl.texImage2D(__textureTarget, 0, __internalFormat, width, height, 0, __format, gl.UNSIGNED_BYTE, null);
+			__updateGLFramebuffer(false, 0, 0);
+
+			@:privateAccess
+			gl.bindTexture(gl.TEXTURE_2D, __context.__contextState.__currentGLTexture2D);
+		}
+	}
+
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
@@ -269,6 +308,36 @@ class TextureBase extends EventDispatcher
 		return __glFramebuffer;
 	}
 
+	@:noCompletion private function __updateGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
+	{
+		if (__glFramebuffer == null)
+		{
+			return __getGLFramebuffer(false, 0, 0);
+		}
+		else
+		{
+			var gl = __context.gl;
+
+			gl.bindFramebuffer(gl.FRAMEBUFFER, __glFramebuffer);
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __textureID, 0);
+
+			var seperate = __glDepthRenderbuffer != __glStencilRenderbuffer;
+
+			gl.bindRenderbuffer(gl.RENDERBUFFER, __glDepthRenderbuffer);
+			gl.renderbufferStorage(gl.RENDERBUFFER, seperate ? gl.DEPTH_COMPONENT16 : Context3D.__glDepthStencil, __width, __height);
+
+			if (seperate)
+			{
+				gl.bindRenderbuffer(gl.RENDERBUFFER, __glStencilRenderbuffer);
+				gl.renderbufferStorage(gl.RENDERBUFFER, gl.STENCIL_INDEX8, __width, __height);
+			}
+
+			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+
+			return __glFramebuffer;
+		}
+	}
+
 	#if lime
 	@:noCompletion private function __getImage(bitmapData:BitmapData):Image
 	{
@@ -330,14 +399,15 @@ class TextureBase extends EventDispatcher
 
 	@:noCompletion private function __setSamplerState(state:SamplerState):Bool
 	{
+		var gl = __context.gl;
+		if (__textureTarget != __context.gl.TEXTURE_CUBE_MAP && state.mipfilter != MIPNONE)
+		{
+			gl.generateMipmap(__textureTarget);
+			state.mipmapGenerated = true;
+		}
+
 		if (!state.equals(__samplerState))
 		{
-			var gl = __context.gl;
-
-			if (__textureTarget == __context.gl.TEXTURE_CUBE_MAP) __context.__bindGLTextureCubeMap(__textureID);
-			else
-				__context.__bindGLTexture2D(__textureID);
-
 			var wrapModeS = 0, wrapModeT = 0;
 
 			switch (state.wrap)
@@ -392,7 +462,7 @@ class TextureBase extends EventDispatcher
 			}
 
 			if (__samplerState == null) __samplerState = state.clone();
-			__samplerState.copyFrom(state);
+			else __samplerState.copyFrom(state);
 
 			return true;
 		}

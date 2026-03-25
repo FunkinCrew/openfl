@@ -7,6 +7,7 @@ import openfl.display._internal.Context3DBuffer;
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
 import openfl.display._internal.ShaderBuffer;
+import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
@@ -61,9 +62,11 @@ import js.html.CanvasRenderingContext2D;
 {
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
+	@:noCompletion private static var shaderBufferPool:ObjectPool<ShaderBuffer> = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
+	@:noCompletion private var __reader:DrawCommandReader;
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __hardwareDirty:Bool;
 	@:noCompletion private var __height:Int;
@@ -72,7 +75,6 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
 	@:noCompletion private var __renderTransform:Matrix;
-	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
 	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
@@ -117,8 +119,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__bitmapScaleX = 1;
 		__bitmapScaleY = 1;
-
-		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
 		#if (js && html5)
 		moveTo(0, 0);
@@ -393,7 +393,7 @@ import js.html.CanvasRenderingContext2D;
 		if (shader != null)
 		{
 			#if lime
-			var shaderBuffer = __shaderBufferPool.get();
+			var shaderBuffer = shaderBufferPool.get();
 			__usedShaderBuffers.add(shaderBuffer);
 			shaderBuffer.update(cast shader);
 
@@ -412,7 +412,7 @@ import js.html.CanvasRenderingContext2D;
 		#if lime
 		for (shaderBuffer in __usedShaderBuffers)
 		{
-			__shaderBufferPool.release(shaderBuffer);
+			shaderBufferPool.release(shaderBuffer);
 		}
 		#end
 
@@ -931,8 +931,8 @@ import js.html.CanvasRenderingContext2D;
 			if (maxY < tileRect.bottom) maxY = tileRect.bottom;
 		}
 
-		__inflateBounds(minX, minY);
-		__inflateBounds(maxX, maxY);
+		__inflateBounds(minX - __strokePadding, minY - __strokePadding);
+		__inflateBounds(maxX + __strokePadding, maxY + __strokePadding);
 
 		__commands.drawQuads(rects, indices, transforms);
 
@@ -1571,6 +1571,12 @@ import js.html.CanvasRenderingContext2D;
 		__commands.overrideBlendMode(blendMode);
 	}
 
+	public function overrideDepthTest(depthTest:Bool = false, compareMode:Context3DCompareMode):Void
+	{
+		if (compareMode == null) compareMode = ALWAYS;
+		__commands.overrideDepthTest(depthTest, compareMode);
+	}
+
 	/**
 		Queries a Sprite or Shape object (and optionally, its children) for its vector
 		graphics content. The result is a Vector of IGraphicsData objects. Transformations
@@ -1698,6 +1704,7 @@ import js.html.CanvasRenderingContext2D;
 
 		if (px > __bounds.x && py > __bounds.y && __bounds.contains(px, py))
 		{
+			/*
 			if (shapeFlag)
 			{
 				#if (js && html5)
@@ -1706,6 +1713,7 @@ import js.html.CanvasRenderingContext2D;
 				return CairoGraphics.hitTest(this, px, py);
 				#end
 			}
+			*/
 
 			return true;
 		}
@@ -1800,7 +1808,9 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __readGraphicsData(graphicsData:Vector<IGraphicsData>):Void
 	{
-		var data = new DrawCommandReader(__commands);
+		if (__reader == null) __reader = new DrawCommandReader(__commands);
+		else __reader.set(__commands);
+
 		var path:GraphicsPath = null;
 		var stroke:GraphicsStroke;
 
@@ -1825,41 +1835,41 @@ import js.html.CanvasRenderingContext2D;
 			switch (type)
 			{
 				case CUBIC_CURVE_TO:
-					var c = data.readCubicCurveTo();
+					var c = __reader.readCubicCurveTo();
 					path.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 
 				case CURVE_TO:
-					var c = data.readCurveTo();
+					var c = __reader.readCurveTo();
 					path.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
 
 				case LINE_TO:
-					var c = data.readLineTo();
+					var c = __reader.readLineTo();
 					path.lineTo(c.x, c.y);
 
 				case MOVE_TO:
-					var c = data.readMoveTo();
+					var c = __reader.readMoveTo();
 					path.moveTo(c.x, c.y);
 
 				case DRAW_CIRCLE:
-					var c = data.readDrawCircle();
+					var c = __reader.readDrawCircle();
 					path.__drawCircle(c.x, c.y, c.radius);
 
 				case DRAW_ELLIPSE:
-					var c = data.readDrawEllipse();
+					var c = __reader.readDrawEllipse();
 					path.__drawEllipse(c.x, c.y, c.width, c.height);
 
 				case DRAW_RECT:
-					var c = data.readDrawRect();
+					var c = __reader.readDrawRect();
 					path.__drawRect(c.x, c.y, c.width, c.height);
 
 				case DRAW_ROUND_RECT:
-					var c = data.readDrawRoundRect();
+					var c = __reader.readDrawRoundRect();
 					path.__drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 
 				case LINE_GRADIENT_STYLE:
 					// TODO
 
-					var c = data.readLineGradientStyle();
+					var c = __reader.readLineGradientStyle();
 				// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 				// stroke.fill = new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 				// graphicsData.push (stroke);
@@ -1867,39 +1877,39 @@ import js.html.CanvasRenderingContext2D;
 				case LINE_BITMAP_STYLE:
 					// TODO
 
-					var c = data.readLineBitmapStyle();
+					var c = __reader.readLineBitmapStyle();
 					path = null;
 				// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 				// stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
 				// graphicsData.push (stroke);
 
 				case LINE_STYLE:
-					var c = data.readLineStyle();
+					var c = __reader.readLineStyle();
 					stroke = new GraphicsStroke(c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 					stroke.fill = new GraphicsSolidFill(c.color, c.alpha);
 					graphicsData.push(stroke);
 
 				case END_FILL:
-					data.readEndFill();
+					__reader.readEndFill();
 					graphicsData.push(new GraphicsEndFill());
 
 				case BEGIN_BITMAP_FILL:
-					var c = data.readBeginBitmapFill();
+					var c = __reader.readBeginBitmapFill();
 					graphicsData.push(new GraphicsBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth));
 
 				case BEGIN_FILL:
-					var c = data.readBeginFill();
+					var c = __reader.readBeginFill();
 					graphicsData.push(new GraphicsSolidFill(c.color, c.alpha));
 
 				case BEGIN_GRADIENT_FILL:
-					var c = data.readBeginGradientFill();
+					var c = __reader.readBeginGradientFill();
 					graphicsData.push(new GraphicsGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
 						c.focalPointRatio));
 
 				case BEGIN_SHADER_FILL:
 
 				default:
-					data.skip(type);
+					__reader.skip(type);
 			}
 		}
 
@@ -2033,10 +2043,10 @@ import js.html.CanvasRenderingContext2D;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
-		#if openfl_disable_graphics_pixel_snapping
+		//#if openfl_disable_graphics_pixel_snapping
 		__worldTransform.tx = tx;
 		__worldTransform.ty = ty;
-		#else
+		/*#else
 		// round the world position for crisp graphics rendering
 		if (pixelRatio > 1.0)
 		{
@@ -2057,7 +2067,7 @@ import js.html.CanvasRenderingContext2D;
 		// Offset the rendering with the subpixel offset removed by Math.round above
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
-		#end
+		#end*/
 
 		// Calculate the size to contain the graphics and an extra subpixel
 		// We used to add tx and ty from __renderTransform instead of 1.0

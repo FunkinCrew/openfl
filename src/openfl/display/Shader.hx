@@ -4,113 +4,23 @@ import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 #if !flash
-import openfl.display._internal.ShaderBuffer;
-import openfl.display3D.Context3D;
-import openfl.display3D.Program3D;
 import openfl.display3D._internal.GLProgram;
 import openfl.display3D._internal.GLShader;
-import openfl.utils.ByteArray;
+import openfl.display._internal.ShaderBuffer;
 import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.Log;
+import openfl.display3D.Context3D;
+import openfl.display3D.Program3D;
+import openfl.utils.Assets;
+import openfl.utils.ByteArray;
+import openfl.utils.GLSLSourceAssembler;
 import openfl.Lib;
+#if lime
+import lime.graphics.opengl.GL;
+#end
 
 /**
 	// TODO: Document GLSL Shaders
-	A Shader instance represents a Pixel Bender shader kernel in ActionScript.
-	To use a shader in your application, you create a Shader instance for it.
-	You then use that Shader instance in the appropriate way according to the
-	effect you want to create. For example, to use the shader as a filter, you
-	assign the Shader instance to the `shader` property of a ShaderFilter
-	object.
-	A shader defines a function that executes on all the pixels in an image,
-	one pixel at a time. The result of each call to the function is the output
-	color at that pixel coordinate in the image. A shader can specify one or
-	more input images, which are images whose content can be used in
-	determining the output of the function. A shader can also specify one or
-	more parameters, which are input values that can be used in calculating
-	the function output. In a single shader execution, the input and parameter
-	values are constant. The only thing that varies is the coordinate of the
-	pixel whose color is the function result. Shader function calls for
-	multiple output pixel coordinates execute in parallel to improve shader
-	execution performance.
-
-	The shader bytecode can be loaded at run time using a URLLoader instance.
-	The following example demonstrates loading a shader bytecode file at run
-	time and linking it to a Shader instance.
-
-	```as3
-	var loader:URLLoader = new URLLoader();
-	loader.dataFormat = URLLoaderDataFormat.BINARY;
-	loader.addEventListener(Event.COMPLETE, onLoadComplete);
-	loader.load(new URLRequest("myShader.pbj"));
-	var shader:Shader;
-
-	function onLoadComplete(event:Event):void {
-		// Create a new shader and set the loaded data as its bytecode
-		shader = new Shader();
-		shader.byteCode = loader.data;
-
-		// You can also pass the bytecode to the Shader() constructor like this:
-		// shader = new Shader(loader.data);
-
-		// do something with the shader
-	}
-	```
-
-	You can also embed the shader into the SWF at compile time using the
-	`[Embed]` metadata tag. The `[Embed]` metadata tag is only available if
-	you use the Flex SDK to compile the SWF. The `[Embed]` tag's `source`
-	parameter points to the shader file, and its `mimeType` parameter is
-	`"application/octet-stream"`, as in this example:
-
-	```as3
-	[Embed(source="myShader.pbj", mimeType="application/octet-stream)] var MyShaderClass:Class;
-
-	// ...
-
-	// create a new shader and set the embedded shader as its bytecode var
-	shaderShader = new Shader();
-	shader.byteCode = new MyShaderClass();
-
-	// You can also pass the bytecode to the Shader() constructor like this:
-	// var shader:Shader = new Shader(new MyShaderClass());
-
-	// do something with the shader
-	```
-
-	In either case, you link the raw shader (the `URLLoader.data` property or
-	an instance of the `[Embed]` data class) to the Shader instance. As the
-	previous examples demonstrate, you can do this in two ways. You can pass
-	the shader bytecode as an argument to the `Shader()` constructor.
-	Alternatively, you can set it as the Shader instance's `byteCode`
-	property.
-
-	Once a Shader instance is created, it can be used in one of several ways:
-
-	* A shader fill: The output of the shader is used as a fill for content
-	drawn with the drawing API. Pass the Shader instance as an argument to the
-	`Graphics.beginShaderFill()` method.
-	* A shader filter: The output of the shader is used as a graphic filter
-	applied to a display object. Assign the Shader instance to the `shader`
-	property of a ShaderFilter instance.
-	* A blend mode: The output of the shader is rendered as the blending
-	between two overlapping display objects. Assign the Shader instance to the
-	`blendShader` property of the upper of the two display objects.
-	* Background shader processing: The shader executes in the background,
-	avoiding the possibility of freezing the display, and dispatches an event
-	when processing is complete. Assign the Shader instance to the `shader`
-	property of a ShaderJob instance.
-
-	Shader fills, filters, and blends are not supported under GPU rendering.
-
-	**Mobile Browser Support:** This feature is not supported in mobile
-	browsers.
-
-	_Adobe AIR profile support:_ This feature is supported on all desktop operating
-	systems, but it is not supported on all mobile devices. It is not
-	supported on AIR for TV devices. See
-	[AIR Profile Support](https://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
-	for more information regarding API support across multiple profiles.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -118,18 +28,109 @@ import openfl.Lib;
 #end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
+@:access(openfl.display.OpenGLRenderer)
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
-// #if (!display && !macro)
 #if !macro
 @:autoBuild(openfl.utils._internal.ShaderMacro.build())
 #end
 class Shader
 {
+	public static function getParameterTypeFromGLEnum(type:Int, isArray:Bool):Null<ShaderParameterType>
+	{
+		return switch (type)
+		{
+			case GL.BOOL: isArray ? BOOLV : BOOL;
+			case GL.FLOAT: isArray ? FLOATV : FLOAT;
+			case GL.INT, GL.UNSIGNED_INT: isArray ? INTV : INT;
+			case GL.BOOL_VEC2: isArray ? BOOL2V : BOOL2;
+			case GL.BOOL_VEC3: isArray ? BOOL3V : BOOL3;
+			case GL.BOOL_VEC4: isArray ? BOOL4V : BOOL4;
+			case GL.INT_VEC2, GL.UNSIGNED_INT_VEC2: isArray ? INT2V : INT2;
+			case GL.INT_VEC3, GL.UNSIGNED_INT_VEC3: isArray ? INT3V : INT3;
+			case GL.INT_VEC4, GL.UNSIGNED_INT_VEC4: isArray ? INT4V : INT4;
+			case GL.FLOAT_VEC2: isArray ? FLOAT2V : FLOAT2;
+			case GL.FLOAT_VEC3: isArray ? FLOAT3V : FLOAT3;
+			case GL.FLOAT_VEC4: isArray ? FLOAT4V : FLOAT4;
+			case GL.FLOAT_MAT2: isArray ? MATRIX2X2V : MATRIX2X2;
+			case GL.FLOAT_MAT2x3: isArray ? MATRIX2X3V : MATRIX2X3;
+			case GL.FLOAT_MAT2x4: isArray ? MATRIX2X4V : MATRIX2X4;
+			case GL.FLOAT_MAT3x2: isArray ? MATRIX3X2V : MATRIX3X2;
+			case GL.FLOAT_MAT3: isArray ? MATRIX3X3V : MATRIX3X3;
+			case GL.FLOAT_MAT3x4: isArray ? MATRIX3X4V : MATRIX3X4;
+			case GL.FLOAT_MAT4x2: isArray ? MATRIX4X2V : MATRIX4X2;
+			case GL.FLOAT_MAT4x3: isArray ? MATRIX4X3V : MATRIX4X3;
+			case GL.FLOAT_MAT4: isArray ? MATRIX4X4V : MATRIX4X4;
+			default: null;
+		}
+	}
+
+	public static function getParameterTypeFromGLSL(string:String, isArray:Bool):Null<ShaderParameterType>
+	{
+		return switch (string)
+		{
+			case "bool": isArray ? BOOLV : BOOL;
+			case "double", "float": isArray ? FLOATV : FLOAT;
+			case "int", "uint": isArray ? INTV : INT;
+			case "bvec2": isArray ? BOOL2V : BOOL2;
+			case "bvec3": isArray ? BOOL3V : BOOL3;
+			case "bvec4": isArray ? BOOL4V : BOOL4;
+			case "ivec2", "uvec2": isArray ? INT2V : INT2;
+			case "ivec3", "uvec3": isArray ? INT3V : INT3;
+			case "ivec4", "uvec4": isArray ? INT4V : INT4;
+			case "vec2", "dvec2": isArray ? FLOAT2V : FLOAT2;
+			case "vec3", "dvec3": isArray ? FLOAT3V : FLOAT3;
+			case "vec4", "dvec4": isArray ? FLOAT4V : FLOAT4;
+			case "mat2", "mat2x2": isArray ? MATRIX2X2V : MATRIX2X2;
+			case "mat2x3": isArray ? MATRIX2X3V : MATRIX2X3;
+			case "mat2x4": isArray ? MATRIX2X4V : MATRIX2X4;
+			case "mat3x2": isArray ? MATRIX3X2V : MATRIX3X2;
+			case "mat3", "mat3x3": isArray ? MATRIX3X3V : MATRIX3X3;
+			case "mat3x4": isArray ? MATRIX3X4V : MATRIX3X4;
+			case "mat4x2": isArray ? MATRIX4X2V : MATRIX4X2;
+			case "mat4x3": isArray ? MATRIX4X3V : MATRIX4X3;
+			case "mat4", "mat4x4": isArray ? MATRIX4X4V : MATRIX4X4;
+			default: null;
+		}
+	}
+
+	public static function processGLSLParameter(source:String, storageType:String, callback:ShaderProcessParameterCallback):String
+	{
+		var isVertex = storageType != "uniform", regex:EReg = switch (storageType)
+		{
+			case "uniform": ~/uniform\s+([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)(?:\s*)?(?:\[(\w+)\])?\s*(?:=)?\s*(.+?(?=;))?/gu;
+			case "in": ~/in\s+([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)(?:\s*)?(?:\[(\w+)\])?/gu;
+			case "attribute": ~/attribute\s+([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)(?:\s*)?(?:\[(\w+)\])?/gu;
+			default: throw "Unknown storageType for Shader.processGLSLParameter " + storageType;
+		}
+
+		var arrayLength:Null<Int>, p;
+		return regex.map(source, (_) ->
+		{
+			if (regex.matched(3) == null) arrayLength = 0;
+			else if ((arrayLength = Std.parseInt(regex.matched(3))) == null) arrayLength = 1;
+
+			callback(isVertex, regex.matched(1), regex.matched(2), arrayLength, isVertex ? null : regex.matched(4));
+
+			if (isVertex)
+			{
+				p = regex.matchedPos();
+				return source.substr(p.pos, p.len);
+			}
+			else
+			{
+				return 'uniform ${regex.matched(1)} ${regex.matched(2)}${arrayLength == 0 ? "" : "[" + regex.matched(3) + "]"}';
+			}
+		});
+	}
+
 	/**
-		The raw shader bytecode for this Shader instance.
+		The raw Pixel Bender shader bytecode for this Shader
+		instance.
+
+		This property is used only on the Flash target.
 	**/
 	public var byteCode(null, default):ByteArray;
 
@@ -148,43 +149,80 @@ class Shader
 
 	/**
 		Get or set the GLSL version used in the header when compiling with GLSL.
+		When set to null, it will sets to the default GLSL version from either
+		the source or GLSLSourceAssembler.getDefaultVersion when it gets
+		compiled later.
 
-		- `120` is required for initialization (i.e. providing a default value for) `uniform` variables
-		@default The default value is determined at compile time.
+		@default The default value is determined at compile time, or whatever assembly this shader is using.
 	**/
-	public var glVersion(get, set):String;
+	public var glVersion(get, set):Null<String>;
 
 	/**
-		Provides additional `#extension` directives to insert in the vertex and fragment shaders.
+		The raw of this GLSL Version used before being applied to compile with GLSL.
+	**/
+	public var glVersionRaw(get, never):Null<String>;
+
+	/**
+		Provides additional `#extension` directives to insert in the vertex shaders.
 
 		Example:
 		```
-		@:glExtensions([{name: "OES_standard_derivatives", behavior: "require"}])
-		@:glVertexExtensions([{name: "OES_standard_derivatives", behavior: "require"}])
-		@:glFragmentExtensions([{name: "OES_standard_derivatives", behavior: "require"}])
+		@:glVertexExtensions("OES_standard_derivatives", "require")
+		// or @:glExtensions("OES_standard_derivatives", "require")
 		```
 	**/
-	public var glVertexExtensions(get, set):Array<{name:String, behavior:String}>;
+	public var glVertexExtensions(get, set):Map<String, String>;
 
-	public var glFragmentExtensions(get, set):Array<{name:String, behavior:String}>;
+	/**
+		Provides additional `#extension` directives to insert in the fragment shaders.
+
+		Example:
+		```
+		@:glFragmentExtensions("OES_standard_derivatives", "require")
+		// or @:glExtensions("OES_standard_derivatives", "require")
+		```
+	**/
+	public var glFragmentExtensions(get, set):Map<String, String>;
+
+	/**
+		Provides an additional pragmas to use in (child class of) vertex shaders.
+
+		Example:
+		```
+		@:glVertexHeader(...)
+		@:glVertexBody(...)
+		```
+	**/
+	public var glVertexPragmas(get, set):Map<String, String>;
+
+	/**
+		Provides an additional pragmas to use in (child class of) fragment shaders.
+
+		Example:
+		```
+		@:glFragmentHeader(...)
+		@:glFragmentBody(...)
+		```
+	**/
+	public var glFragmentPragmas(get, set):Map<String, String>;
 
 	/**
 		The default GLSL vertex header, before being applied to the vertex source.
 	**/
-	public var glFragmentHeaderRaw(get, null):String;
+	public var glFragmentHeaderRaw(get, never):String;
 
 	/**
 		The default GLSL vertex body, before being applied to the vertex source.
 	**/
-	public var glFragmentBodyRaw(get, null):String;
+	public var glFragmentBodyRaw(get, never):String;
 
 	/**
 		The default GLSL fragment source, before `#pragma` values are replaced.
 	**/
-	public var glFragmentSourceRaw(get, null):String;
+	public var glFragmentSourceRaw(get, never):String;
 
 	/**
-		Get or set the fragment source used when compiling with GLSL.
+		Get or set the fragment source used when targeting OpenGL.
 
 		This property is not available on the Flash target.
 	**/
@@ -196,24 +234,23 @@ class Shader
 		This property is not available on the Flash target.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
-
 	/**
 		The default GLSL vertex header, before being applied to the vertex source.
 	**/
-	public var glVertexHeaderRaw(get, null):String;
+	public var glVertexHeaderRaw(get, never):String;
 
 	/**
 		The default GLSL vertex body, before being applied to the vertex source.
 	**/
-	public var glVertexBodyRaw(get, null):String;
+	public var glVertexBodyRaw(get, never):String;
 
 	/**
 		The default GLSL vertex source, before `#pragma` values are replaced.
 	**/
-	public var glVertexSourceRaw(get, null):String;
+	public var glVertexSourceRaw(get, never):String;
 
 	/**
-		Get or set the vertex source used when compiling with GLSL.
+		Get or set the vertex source used when targeting OpenGL.
 
 		This property is not available on the Flash target.
 	**/
@@ -258,7 +295,7 @@ class Shader
 		* `reciprocal(x)`
 		* `sqrt(x)`
 	**/
-	public var precisionHint:ShaderPrecision;
+	public var precisionHint(get, set):ShaderPrecision;
 
 	/**
 		The compiled Program3D if available.
@@ -269,20 +306,22 @@ class Shader
 
 	@:noCompletion private var __alpha:ShaderParameter<Float>;
 	@:noCompletion private var __bitmap:ShaderInput<BitmapData>;
+	@:noCompletion private var __cacheProgramId:String;
 	@:noCompletion private var __colorMultiplier:ShaderParameter<Float>;
 	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __data:ShaderData;
-	@:noCompletion private var __glVertexExtensions:Array<{name:String, behavior:String}>;
-	@:noCompletion private var __glFragmentExtensions:Array<{name:String, behavior:String}>;
+	@:noCompletion private var __fieldList:Array<String>;
+	@:noCompletion private var __glVertexExtensions:Map<String, String>;
+	@:noCompletion private var __glFragmentExtensions:Map<String, String>;
+	@:noCompletion private var __glVertexPragmas:Map<String, String>;
+	@:noCompletion private var __glFragmentPragmas:Map<String, String>;
+	@:noCompletion private var __glVersionRaw:Null<String>;
 	@:noCompletion private var __glVersion:String;
-	@:noCompletion private var __glFragmentHeaderRaw:String;
-	@:noCompletion private var __glFragmentBodyRaw:String;
 	@:noCompletion private var __glFragmentSourceRaw:String;
 	@:noCompletion private var __glFragmentSource:String;
+	@:noCompletion private var __glSourceAssembler:GLSLSourceAssembler;
 	@:noCompletion private var __glSourceDirty:Bool;
-	@:noCompletion private var __glVertexHeaderRaw:String;
-	@:noCompletion private var __glVertexBodyRaw:String;
 	@:noCompletion private var __glVertexSourceRaw:String;
 	@:noCompletion private var __glVertexSource:String;
 	@:noCompletion private var __hasColorTransform:ShaderParameter<Bool>;
@@ -294,6 +333,7 @@ class Shader
 	@:noCompletion private var __paramFloat:Array<ShaderParameter<Float>>;
 	@:noCompletion private var __paramInt:Array<ShaderParameter<Int>>;
 	@:noCompletion private var __position:ShaderParameter<Float>;
+	@:noCompletion private var __precisionHint:ShaderPrecision;
 	@:noCompletion private var __textureCoord:ShaderParameter<Float>;
 	@:noCompletion private var __texture:ShaderInput<BitmapData>;
 	@:noCompletion private var __textureSize:ShaderParameter<Float>;
@@ -306,6 +346,13 @@ class Shader
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_data (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_data (v); }")
 			},
+			"glVersion": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVersion (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glVersion (v); }")
+			},
+			"glVersionRaw": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVersionRaw (); }")
+			},
 			"glVertexExtensions": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVertexExtensions (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glVertexExtensions (v); }")
@@ -314,9 +361,13 @@ class Shader
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glFragmentExtensions (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glFragmentExtensions (v); }")
 			},
-			"glVersion": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVersion (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glVersion (v); }")
+			"glVertexPragmas": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVertexPragmas (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glVertexPragmas (v); }")
+			},
+			"glFragmentPragmas": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glFragmentPragmas (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glFragmentPragmas (v); }")
 			},
 			"glFragmentHeaderRaw": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glFragmentHeaderRaw (); }"),
@@ -344,6 +395,10 @@ class Shader
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVertexSource (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glVertexSource (v); }")
 			},
+			"precisionHint": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_precisionHint (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_precisionHint (v); }")
+			},
 		});
 	}
 	#end
@@ -356,11 +411,23 @@ class Shader
 	public function new(code:ByteArray = null)
 	{
 		byteCode = code;
-		precisionHint = FULL;
 
+		// this variable is set in macro instead to avoid the runtime shader stuff accidentally bypassing it
+		//__cacheProgramId = Type.getClassName(Type.getClass(this));
 		__glSourceDirty = true;
 		__numPasses = 1;
-		__data = new ShaderData(code);
+		__precisionHint = FULL;
+
+		__createAssembler();
+		//__data = new ShaderData(code);
+	}
+
+	@:noCompletion private function __createAssembler():Void
+	{
+		if (__glSourceAssembler == null)
+		{
+			__glSourceAssembler = new GLSLSourceAssembler();
+		}
 	}
 
 	@:noCompletion private function __clearUseArray():Void
@@ -381,151 +448,6 @@ class Shader
 		}
 	}
 
-	// private function __clone ():Shader {
-	// var classType = Type.getClass (this);
-	// var shader = Type.createInstance (classType, []);
-	// for (input in __inputBitmapData) {
-	// 	if (input.input != null) {
-	// 		var field = Reflect.field (shader.data, input.name);
-	// 		field.channels = input.channels;
-	// 		field.height = input.height;
-	// 		field.input = input.input;
-	// 		field.smoothing = input.smoothing;
-	// 		field.width = input.width;
-	// 	}
-	// }
-	// for (param in __paramBool) {
-	// 	if (param.value != null) {
-	// 		Reflect.field (shader.data, param.name).value = param.value.copy ();
-	// 	}
-	// }
-	// for (param in __paramFloat) {
-	// 	if (param.value != null) {
-	// 		Reflect.field (shader.data, param.name).value = param.value.copy ();
-	// 	}
-	// }
-	// for (param in __paramInt) {
-	// 	if (param.value != null) {
-	// 		Reflect.field (shader.data, param.name).value = param.value.copy ();
-	// 	}
-	// }
-	// return shader;
-	// }
-	@:noCompletion private function __createGLShader(source:String, type:Int):GLShader
-	{
-		var gl = __context.gl;
-
-		var shader = gl.createShader(type);
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
-		var shaderInfoLog = gl.getShaderInfoLog(shader);
-		var hasInfoLog = shaderInfoLog != null && StringTools.trim(shaderInfoLog) != "";
-		var isError = gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0;
-
-		if (hasInfoLog || isError)
-		{
-			__logGLShaderInfo(isError, type, shaderInfoLog, source);
-		}
-
-		return shader;
-	}
-
-	/**
-	 * Retrieves the line number from a shader log line.
-	 */
-	#if windows
-	// 0(5) : whatever
-	@:noCompletion private var __lineExtractor = ~/^\d+\((\d+)\) : (.+$)/;
-	#else // (html5 || macos || linux)
-	// ERROR: 0:5:whatever
-	@:noCompletion private var __lineExtractor = ~/^\w+?: \d+:(\d+):(.+$)/;
-	#end
-
-	/**
-	 * Searches for strings that have only whitespace.
-	 *
-	 * **Note:** Searching for all whitespace via `~/^\s*$/` caused false-negatives,
-	 * notably: `String.fromCharCode(0)` is `false` but `\W` is `true`.
-	 */
-	@:noCompletion private var __isEmptyLine = ~/^\W*$/;
-
-	@:noCompletion private function __logGLShaderInfo(isError:Bool, type:Int, infoLog:String, source:String):Void
-	{
-		var message = "";
-		var lines = source.split("\n");
-		var failingLine:String = null;
-		for (log in infoLog.split("\n"))
-		{
-			// ignore empty lines
-			if (__isEmptyLine.match(log)) continue;
-
-			// look for a line number
-			if (!__lineExtractor.match(log))
-			{
-				// Could not find expected info, abort pretty formatting
-				failingLine = log;
-				break;
-			}
-
-			var lineNumberStr = __lineExtractor.matched(1);
-			var lineNumber = Std.parseInt(lineNumberStr);
-			var info = __lineExtractor.matched(2);
-			if (lineNumber >= lines.length)
-			{
-				// EOF errors will not have a valid line
-				message += '\n\n $lineNumber | $info';
-			}
-			else
-			{
-				// Add the relevant line to each log
-				var line = lines[lineNumber - 1];
-				var indent = StringTools.lpad("|", " ", lineNumberStr.length + 3);
-				message += '\n\n $lineNumber | $line\n$indent ${info}';
-			}
-		}
-
-		// If we couldn't parse the logs, output the old, verbose format
-		if (failingLine != null) message = '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
-
-		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
-		if (isError) Log.error('Error compiling $typeName shader $message');
-		else
-			Log.debug('Info compiling $typeName shader $message');
-	}
-
-	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
-	{
-		var gl = __context.gl;
-
-		var vertexShader = __createGLShader(vertexSource, gl.VERTEX_SHADER);
-		var fragmentShader = __createGLShader(fragmentSource, gl.FRAGMENT_SHADER);
-
-		var program = gl.createProgram();
-
-		// Fix support for drivers that don't draw if attribute 0 is disabled
-		for (param in __paramFloat)
-		{
-			if (param.name.indexOf("Position") > -1 && StringTools.startsWith(param.name, "openfl_"))
-			{
-				gl.bindAttribLocation(program, 0, param.name);
-				break;
-			}
-		}
-
-		gl.attachShader(program, vertexShader);
-		gl.attachShader(program, fragmentShader);
-		gl.linkProgram(program);
-
-		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0)
-		{
-			var message = "Unable to initialize the shader program";
-			message += "\n" + gl.getProgramInfoLog(program);
-			Log.error(message);
-		}
-
-		return program;
-	}
-
 	@:noCompletion private function __disable():Void
 	{
 		if (program != null)
@@ -544,7 +466,6 @@ class Shader
 		{
 			input.__disableGL(__context, textureCount);
 			textureCount++;
-			if (textureCount == gl.MAX_TEXTURE_IMAGE_UNITS) break;
 		}
 
 		for (parameter in __paramBool)
@@ -591,7 +512,9 @@ class Shader
 		for (input in __inputBitmapData)
 		{
 			gl.uniform1i(input.index, textureCount);
+
 			textureCount++;
+			//if (textureCount == gl.MAX_TEXTURE_IMAGE_UNITS) break;
 		}
 
 		#if lime
@@ -602,6 +525,21 @@ class Shader
 		#end
 	}
 
+	@:noCompletion private function __resetParams():Void
+	{
+		#if haxe4
+		if (__inputBitmapData == null) __inputBitmapData = new Array(); else __inputBitmapData.resize(0);
+		if (__paramBool == null) __paramBool = new Array(); else __paramBool.resize(0);
+		if (__paramFloat == null) __paramFloat = new Array(); else __paramFloat.resize(0);
+		if (__paramInt == null) __paramInt = new Array(); else __paramInt.resize(0);
+		#else
+		__inputBitmapData = new Array();
+		__paramBool = new Array();
+		__paramFloat = new Array();
+		__paramInt = new Array();
+		#end
+	}
+
 	@:noCompletion private function __init():Void
 	{
 		if (__data == null)
@@ -609,390 +547,447 @@ class Shader
 			__data = cast new ShaderData(null);
 		}
 
-		if (__glFragmentSource != null && __glVertexSource != null && (program == null || __glSourceDirty))
+		if (__glFragmentSourceRaw != null && __glVertexSourceRaw != null && (program == null || __glSourceDirty))
 		{
 			__initGL();
 		}
 	}
 
-	@:noCompletion private function __buildSourcePrefix(isFragment:Bool):String
-	{
-		var extensions = "";
-
-		var extList = (isFragment ? __glFragmentExtensions : __glVertexExtensions);
-
-		for (ext in extList)
-		{
-			extensions += "#extension " + ext.name + " : " + ext.behavior + "\n";
-		}
-
-		var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment;
-
-		#if lime
-		if (__context.__context.type == OPENGL)
-		{
-			complexBlendsSupported = complexBlendsSupported && (__glVersion == "150" || !StringTools.startsWith(__glVersion, "1"));
-		}
-		else if (__context.__context.type == OPENGLES)
-		{
-			complexBlendsSupported = complexBlendsSupported && !StringTools.startsWith(__glVersion, "1");
-		}
-		#end
-
-		if (complexBlendsSupported)
-		{
-			extensions += "#extension GL_KHR_blend_equation_advanced : enable\n";
-
-			#if lime
-			if (__context.__context.type == OPENGL)
-			{
-				// compiling without this gives the error
-				// 'gl_SampleID' : required extension not requested: GL_ARB_sample_shading
-				extensions += "#extension GL_ARB_sample_shading : enable\n";
-			}
-			#end
-		}
-
-		// #version must be the first directive and cannot be repeated,
-		// while #extension directives must be before any non-preprocessor tokens.
-
-		var prefix = "#version "
-			+ __glVersion
-			+ "
-      "
-			+ extensions
-			+ "
-				#ifdef GL_ES
-				"
-			+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
-					precision highp float;
-				#else
-					precision mediump float;
-				#endif" : "precision lowp float;")
-			+ "
-				#endif
-				";
-
-		if (complexBlendsSupported)
-		{
-			prefix += "#ifdef GL_KHR_blend_equation_advanced\nlayout (blend_support_all_equations) out;\n#endif\n";
-		}
-
-		return prefix;
-	}
-
 	@:noCompletion private function __initGL():Void
 	{
-		if (__glSourceDirty || __paramBool == null)
+		var id = __cacheProgramId != null ? __cacheProgramId + (__precisionHint == FAST ? "FAST" : "") : null;
+
+		if (__glSourceDirty)
 		{
-			__glSourceDirty = false;
 			program = null;
+			glProgram = null;
 
-			__inputBitmapData = new Array();
-			__paramBool = new Array();
-			__paramFloat = new Array();
-			__paramInt = new Array();
+			__resetParams();
 
-			__processGLData(glVertexSource, "attribute");
-			__processGLData(glVertexSource, "in");
-			__processGLData(glVertexSource, "uniform");
-			__processGLData(glFragmentSource, "uniform");
-		}
-
-		if (__context != null && program == null)
-		{
-			var gl = __context.gl;
-
-			var vertex = __buildSourcePrefix(false) + glVertexSource;
-			var fragment = __buildSourcePrefix(true) + glFragmentSource;
-
-			var id = vertex + fragment;
-
-			if (__context.__programs.exists(id))
+			if (id != null)
 			{
-				program = __context.__programs.get(id);
-			}
-			else
-			{
-				program = __context.createProgram(GLSL);
-
-				// TODO
-				// program.uploadSources (vertex, fragment);
-
-				if (Lib.current.stage.__uncaughtErrorEvents.__enabled)
+				if (__context != null)
 				{
-					try
+					program = __context.__programs.get(id);
+				}
+				else if (Lib.current.stage != null)
+				{
+					__context = Lib.current.stage.context3D;
+					if (__context != null)
 					{
-						program.__glProgram = __createGLProgram(vertex, fragment);
-					}
-					catch (e:Dynamic)
-					{
-						Lib.current.stage.__handleError(e);
-
-						program.__glProgram = null;
+						program = __context.__programs.get(id);
 					}
 				}
-				else
-					program.__glProgram = __createGLProgram(vertex, fragment);
-
-				__context.__programs.set(id, program);
 			}
 
 			if (program != null)
 			{
 				glProgram = program.__glProgram;
+				__glVertexSource = program.__glVertexSource;
+				__glFragmentSource = program.__glFragmentSource;
+				__glVersion = program.__glFragmentVersion != null ? program.__glFragmentVersion : program.__glVertexVersion;
 
-				for (input in __inputBitmapData)
+				__buildParamData();
+			}
+			else
+			{
+				__refreshGLSource();
+
+				if (id == null)
 				{
-					if (input.__isUniform)
-					{
-						input.index = gl.getUniformLocation(glProgram, input.name);
-					}
-					else
-					{
-						input.index = gl.getAttribLocation(glProgram, input.name);
-					}
+					__cacheProgramId = __glVertexSource + __glFragmentSource;
+					id = __cacheProgramId + (__precisionHint == FAST ? "FAST" : "");
 				}
 
-				for (parameter in __paramBool)
+				if (__context != null)
 				{
-					if (parameter.__isUniform)
-					{
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-					}
-					else
-					{
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-					}
-				}
+					program = __context.__programs.get(id);
+					if (program != null) glProgram = program.__glProgram;
+					else __initProgram(id);
 
-				for (parameter in __paramFloat)
-				{
-					if (parameter.__isUniform)
-					{
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-					}
-					else
-					{
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-					}
+					__buildParamData();
 				}
-
-				for (parameter in __paramInt)
+				else
 				{
-					if (parameter.__isUniform)
-					{
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-					}
-					else
-					{
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-					}
+					processGLSLParameter(__glVertexSource, "attribute", __processGLSLParameterCallback);
+					processGLSLParameter(__glVertexSource, "in", __processGLSLParameterCallback);
+					processGLSLParameter(__glVertexSource, "uniform", __processGLSLParameterCallback);
+					processGLSLParameter(__glFragmentSource, "uniform", __processGLSLParameterCallback);
 				}
 			}
+
+			__glSourceDirty = false;
+		}
+		else if (__context != null && program == null)
+		{
+			if (id != null)
+			{
+				program = __context.__programs.get(id);
+				if (program != null) glProgram = program.__glProgram;
+				else __initProgram(id);
+			}
+			else
+			{
+				__initProgram(null);
+			}
+			__buildParamData();
 		}
 	}
 
-	@:noCompletion private function __processGLData(source:String, storageType:String):Void
+	@:noCompletion private function __initProgram(id:String):Void
 	{
-		var position, name, type, regex;
+		program = __context.createProgram(GLSL);
 
-		if (storageType == "uniform")
+		if (openfl.Lib.current.stage.__uncaughtErrorEvents.__enabled)
 		{
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
-		else if (storageType == "in")
-		{
-			regex = ~/in ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			try
+			{
+				program.uploadSources(__glVertexSource, __glFragmentSource);
+				if (id != null) __context.__programs.set(id, program);
+			}
+			catch (e:Dynamic)
+			{
+				openfl.Lib.current.stage.__handleError(e);
+			}
 		}
 		else
 		{
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			program.uploadSources(__glVertexSource, __glFragmentSource);
+			if (id != null) __context.__programs.set(id, program);
 		}
 
-		var lastMatch = 0;
+		glProgram = program.__glProgram;
+	}
 
-		while (regex.matchSub(source, lastMatch))
+	@:noCompletion private function __refreshGLSource():Void
+	{
+		__glVertexSource = __glSourceAssembler.assembleSource(__glVertexSourceRaw, __glVertexPragmas,
+			__glVertexExtensions, __glVersionRaw, true, true, __precisionHint);
+
+		__glFragmentSource = __glSourceAssembler.assembleSource(__glFragmentSourceRaw, __glFragmentPragmas,
+			__glFragmentExtensions, __glVersionRaw, false, true, __precisionHint);
+
+		__glVersion = GLSLSourceAssembler.getVersionFromSource(__glFragmentSource,
+			GLSLSourceAssembler.getVersionFromSource(__glVertexSource, GLSLSourceAssembler.getDefaultVersion()));
+	}
+
+	@:noCompletion private function __processGLSLParameterCallback(isVertex:Bool, typeName:String, name:String, arrayLength:Int,
+			defaultAssign:Null<String>):Void
+	{
+		if (StringTools.startsWith(name, "gl_"))
 		{
-			type = regex.matched(1);
-			name = regex.matched(2);
+			return;
+		}
 
+		var type = getParameterTypeFromGLSL(typeName, arrayLength != 0), isSampler = StringTools.startsWith(typeName, "sampler");
+		__registerParameter(name, type, arrayLength == 0 ? 1 : arrayLength, null, !isVertex, isSampler,
+			__getParameterDefault(defaultAssign, type, isSampler));
+	}
+
+	@:noCompletion private function __getParameterDefault(assign:Null<String>, type:ShaderParameterType, isSampler:Bool):Dynamic
+	{
+		// isSampler may not be logically possible.
+		if (assign == null || isSampler) return null;
+
+		assign = StringTools.trim(assign);
+
+		if (assign.charCodeAt(0) == '['.code && assign.charCodeAt(assign.length - 1) == ']'.code)
+		{
+			final array = [];
+
+			var index = 1, endIndex:Int, value;
+			while (index != 0)
+			{
+				value = __parseParameterValue(StringTools.trim(assign.substr(index, endIndex = assign.indexOf(',', index))), type);
+				if (value is Array) for (v in cast(value, Array<Dynamic>)) array.push(v);
+				else array.push(value);
+				index = endIndex + 1;
+			}
+
+			return array;
+		}
+		else
+		{
+			var value = __parseParameterValue(assign, type);
+			if (value is Array) return value;
+			else return [value];
+		}
+	}
+
+	@:noCompletion private function __parseParameterValue(assign:Null<String>, type:ShaderParameterType):Dynamic
+	{
+		// Poorly implemented but this is okay for now.
+		var typeMatch = ~/([A-Za-z0-9_]+)\s*\((\w+)\)/;
+		if (typeMatch.match(assign))
+		{
+			var func = typeMatch.matched(1), value = typeMatch.matched(2);
+			switch (func)
+			{
+				case 'sin': return Math.sin(Std.parseFloat(value));
+				case 'cos': return Math.cos(Std.parseFloat(value));
+				case 'tan': return Math.tan(Std.parseFloat(value));
+				case 'asin': return Math.asin(Std.parseFloat(value));
+				case 'acos': return Math.acos(Std.parseFloat(value));
+				default:
+					var matchedType = getParameterTypeFromGLSL(func, false);
+					if (matchedType == null/* || matchedType != type*/) return null;
+					else return [for (v in value.split(',')) __parseValue(StringTools.trim(v), type)];
+			}
+		}
+		else
+		{
+			return __parseValue(assign, type);
+		}
+	}
+
+	@:noCompletion private function __parseValue(value:Null<String>, type:ShaderParameterType):Dynamic
+	{
+		switch (type)
+		{
+			case BOOL, BOOL2, BOOL3, BOOL4, BOOLV, BOOL2V, BOOL3V, BOOL4V: return value == "true";
+			case FLOAT, FLOAT2, FLOAT3, FLOAT4, FLOATV, FLOAT2V, FLOAT3V, FLOAT4V: return Std.parseFloat(value);
+			case INT, INT2, INT3, INT4, INTV, INT2V, INT3V, INT4V: return Std.parseInt(value);
+			default: return null;
+		}
+	}
+
+	@:noCompletion private function __buildParamData():Void
+	{
+		var name:String;
+		for (i in 0...program.__glslAttribNames.length)
+		{
+			name = program.__glslAttribNames[i];
 			if (StringTools.startsWith(name, "gl_"))
 			{
 				continue;
 			}
 
-			var isUniform = (storageType == "uniform");
+			__registerParameter(name, program.__glslAttribTypes[i], program.__glslAttribSizes[i], program.__glslAttribLocations[i], false, false, null);
+		}
 
-			if (StringTools.startsWith(type, "sampler"))
+		for (i in 0...program.__glslSamplerNames.length)
+		{
+			__registerParameter(program.__glslSamplerNames[i], null, 1, program.__glslSamplerLocations[i],
+				true, true, __getParameterDefault(program.__glslUniformDefaults[i], null, true));
+		}
+
+		for (i in 0...program.__glslUniformNames.length)
+		{
+			name = program.__glslUniformNames[i];
+			if (StringTools.startsWith(name, "gl_"))
 			{
-				var input = new ShaderInput<BitmapData>();
-				input.name = name;
-				input.__isUniform = isUniform;
-				__inputBitmapData.push(input);
+				continue;
+			}
 
-				switch (name)
-				{
-					case "openfl_Texture":
-						__texture = input;
-					case "bitmap":
-						__bitmap = input;
-					default:
-				}
+			__registerParameter(name, program.__glslUniformTypes[i], program.__glslUniformSizes[i], program.__glslUniformLocations[i],
+				true, false, __getParameterDefault(program.__glslUniformDefaults[i], program.__glslUniformTypes[i], false));
+		}
+	}
 
-				Reflect.setField(__data, name, input);
+	@:noCompletion private function __registerParameter(name:String, type:ShaderParameterType, size:Int, location:Dynamic/*GLUniformLocation*/,
+			isUniform:Bool, isSampler:Bool, defaultValue:Dynamic)
+	{
+		var arrayLength = switch (type)
+		{
+			case MATRIX2X2, MATRIX2X3, MATRIX2X4: 2;
+			case MATRIX3X3, MATRIX3X2, MATRIX3X4: 3;
+			case MATRIX4X4, MATRIX4X2, MATRIX4X3: 4;
+			default: size;
+		}
 
+		var length = switch (type)
+		{
+			case BOOL2, BOOL2V, INT2, INT2V, FLOAT2, FLOAT2V, MATRIX2X2: 2;
+			case BOOL3, BOOL3V, INT3, INT3V, FLOAT3, FLOAT3V, MATRIX3X3: 3;
+			case BOOL4, BOOL4V, INT4, INT4V, FLOAT4, FLOAT4V, MATRIX4X4, MATRIX2X2V: 4;
+
+			case MATRIX2X3, MATRIX4X3: 3;
+			case MATRIX2X4, MATRIX3X4: 4;
+			case MATRIX3X2, MATRIX4X2: 2;
+
+			case MATRIX3X3V: 9;
+			case MATRIX4X4V: 16;
+			case MATRIX2X3V, MATRIX3X2V: 6;
+			case MATRIX2X4V, MATRIX4X2V: 8;
+			case MATRIX3X4V, MATRIX4X3V: 12;
+			default: 1;
+		}
+		length *= arrayLength;
+
+		if (location == null) location = -1;
+
+		inline function register(x:Any)
+		{
+			Reflect.setField(__data, name, x);
+			if (__isGenerated && __thisHasField(name))
+			{
 				try
 				{
-					if (__isGenerated) Reflect.setField(this, name, input);
-					if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, input);
+					Reflect.setField(this, name, x);
+					//Reflect.setProperty(this, name, x);
 				}
-				catch (e:Dynamic)
+				catch (e)
 				{
 					Log.debug('Failed to set field $name: $e');
 				}
 			}
-			else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
+		}
+
+		if (Reflect.hasField(__data, name) && Reflect.field(__data, name) != null)
+		{
+			var dyn = Reflect.field(__data, name);
+			if (isSampler)
 			{
-				var parameterType:ShaderParameterType = switch (type)
+				var input:ShaderInput<BitmapData> = cast dyn;
+				if (input != null)
 				{
-					case "bool": BOOL;
-					case "double", "float": FLOAT;
-					case "int", "uint": INT;
-					case "bvec2": BOOL2;
-					case "bvec3": BOOL3;
-					case "bvec4": BOOL4;
-					case "ivec2", "uvec2": INT2;
-					case "ivec3", "uvec3": INT3;
-					case "ivec4", "uvec4": INT4;
-					case "vec2", "dvec2": FLOAT2;
-					case "vec3", "dvec3": FLOAT3;
-					case "vec4", "dvec4": FLOAT4;
-					case "mat2", "mat2x2": MATRIX2X2;
-					case "mat2x3": MATRIX2X3;
-					case "mat2x4": MATRIX2X4;
-					case "mat3x2": MATRIX3X2;
-					case "mat3", "mat3x3": MATRIX3X3;
-					case "mat3x4": MATRIX3X4;
-					case "mat4x2": MATRIX4X2;
-					case "mat4x3": MATRIX4X3;
-					case "mat4", "mat4x4": MATRIX4X4;
-					default: null;
+					if (input.input == null) input.input = cast defaultValue;
+					if ((input.index = location) == -1) __inputBitmapData.remove(input);
+					else if (!__inputBitmapData.contains(input)) __inputBitmapData.push(input);
+					return;// register(input);
 				}
-
-				var length = switch (parameterType)
+			}
+			else
+			{
+				switch (type)
 				{
-					case BOOL2, INT2, FLOAT2: 2;
-					case BOOL3, INT3, FLOAT3: 3;
-					case BOOL4, INT4, FLOAT4, MATRIX2X2: 4;
-					case MATRIX3X3: 9;
-					case MATRIX4X4: 16;
-					default: 1;
-				}
-
-				var arrayLength = switch (parameterType)
-				{
-					case MATRIX2X2: 2;
-					case MATRIX3X3: 3;
-					case MATRIX4X4: 4;
-					default: 1;
-				}
-
-				switch (parameterType)
-				{
-					case BOOL, BOOL2, BOOL3, BOOL4:
-						var parameter = new ShaderParameter<Bool>();
-						parameter.name = name;
-						parameter.type = parameterType;
-						parameter.__arrayLength = arrayLength;
-						parameter.__isBool = true;
-						parameter.__isUniform = isUniform;
-						parameter.__length = length;
-						__paramBool.push(parameter);
-
-						if (name == "openfl_HasColorTransform")
+					case BOOL, BOOL2, BOOL3, BOOL4, BOOLV, BOOL2V, BOOL3V, BOOL4V:
+						var parameter:ShaderParameter<Bool> = cast dyn;
+						if (parameter != null)
 						{
-							__hasColorTransform = parameter;
+							if (parameter.value == null) parameter.value = cast defaultValue;
+							parameter.__arrayLength = arrayLength;
+							parameter.__isUniform = isUniform;
+							parameter.__length = length;
+
+							if ((parameter.index = location) == -1) __paramBool.remove(parameter);
+							else if (!__paramBool.contains(parameter)) __paramBool.push(parameter);
+							return;// register(parameter);
 						}
-
-						Reflect.setField(__data, name, parameter);
-
-						try
+					case INT, INT2, INT3, INT4, INTV, INT2V, INT3V, INT4V:
+						var parameter:ShaderParameter<Int> = cast dyn;
+						if (parameter != null)
 						{
-							if (__isGenerated) Reflect.setField(this, name, parameter);
-							if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
-						}
-						catch (e:Dynamic)
-						{
-							Log.debug('Failed to set field $name: $e');
-						}
+							if (parameter.value == null) parameter.value = cast defaultValue;
+							parameter.__arrayLength = arrayLength;
+							parameter.__isUniform = isUniform;
+							parameter.__length = length;
 
-					case INT, INT2, INT3, INT4:
-						var parameter = new ShaderParameter<Int>();
-						parameter.name = name;
-						parameter.type = parameterType;
-						parameter.__arrayLength = arrayLength;
-						parameter.__isInt = true;
-						parameter.__isUniform = isUniform;
-						parameter.__length = length;
-						__paramInt.push(parameter);
-
-						Reflect.setField(__data, name, parameter);
-
-						try
-						{
-							if (__isGenerated) Reflect.setField(this, name, parameter);
-							if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
-						}
-						catch (e:Dynamic)
-						{
-							Log.debug('Failed to set field $name: $e');
+							if ((parameter.index = location) == -1) __paramInt.remove(parameter);
+							else if (!__paramInt.contains(parameter)) __paramInt.push(parameter);
+							return;// register(parameter);
 						}
 					default:
-						var parameter = new ShaderParameter<Float>();
-						parameter.name = name;
-						parameter.type = parameterType;
-						parameter.__arrayLength = arrayLength;
-						#if lime
-						if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array(arrayLength * arrayLength);
-						#end
-						parameter.__isFloat = true;
-						parameter.__isUniform = isUniform;
-						parameter.__length = length;
-						__paramFloat.push(parameter);
-
-						if (StringTools.startsWith(name, "openfl_"))
+						var parameter:ShaderParameter<Float> = cast dyn;
+						if (parameter != null)
 						{
-							switch (name)
-							{
-								case "openfl_Alpha": __alpha = parameter;
-								case "openfl_ColorMultiplier": __colorMultiplier = parameter;
-								case "openfl_ColorOffset": __colorOffset = parameter;
-								case "openfl_Matrix": __matrix = parameter;
-								case "openfl_Position": __position = parameter;
-								case "openfl_TextureCoord": __textureCoord = parameter;
-								case "openfl_TextureSize": __textureSize = parameter;
-								default:
-							}
-						}
+							if (parameter.value == null) parameter.value = cast defaultValue;
+							parameter.__arrayLength = arrayLength;
+							parameter.__isUniform = isUniform;
+							parameter.__length = length;
 
-						Reflect.setField(__data, name, parameter);
-
-						try
-						{
-							if (__isGenerated) Reflect.setField(this, name, parameter);
-							if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
-						}
-						catch (e:Dynamic)
-						{
-							Log.debug('Failed to set field $name: $e');
+							if ((parameter.index = location) == -1) __paramFloat.remove(parameter);
+							else if (!__paramFloat.contains(parameter)) __paramFloat.push(parameter);
+							return;// register(parameter);
 						}
 				}
 			}
-
-			position = regex.matchedPos();
-			lastMatch = position.pos + position.len;
 		}
+
+		if (isSampler)
+		{
+			var input = new ShaderInput<BitmapData>();
+			input.input = cast defaultValue;
+			input.name = name;
+			input.__isUniform = true;
+
+			switch (name) {
+				case "openfl_Texture": __texture = input;
+				case "bitmap": __bitmap = input;
+				default:
+			}
+
+			if ((input.index = location) == -1) __inputBitmapData.remove(input);
+			else if (!__inputBitmapData.contains(input)) __inputBitmapData.push(input);
+			register(input);
+		}
+		else
+		{
+			switch (type)
+			{
+				case BOOL, BOOL2, BOOL3, BOOL4, BOOLV, BOOL2V, BOOL3V, BOOL4V:
+					var parameter = new ShaderParameter<Bool>();
+					parameter.name = name;
+					parameter.type = type;
+					parameter.value = cast defaultValue;
+					parameter.__arrayLength = arrayLength;
+					parameter.__isBool = true;
+					parameter.__isUniform = isUniform;
+					parameter.__length = length;
+
+					if (name == "openfl_HasColorTransform")
+					{
+						__hasColorTransform = parameter;
+					}
+
+					if ((parameter.index = location) == -1) __paramBool.remove(parameter);
+					else if (!__paramBool.contains(parameter)) __paramBool.push(parameter);
+					register(parameter);
+
+				case INT, INT2, INT3, INT4, INTV, INT2V, INT3V, INT4V:
+					var parameter = new ShaderParameter<Int>();
+					parameter.name = name;
+					parameter.type = type;
+					parameter.value = cast defaultValue;
+					parameter.__arrayLength = arrayLength;
+					parameter.__isInt = true;
+					parameter.__isUniform = isUniform;
+					parameter.__length = length;
+
+					if ((parameter.index = location) == -1) __paramInt.remove(parameter);
+					else if (!__paramInt.contains(parameter)) __paramInt.push(parameter);
+					register(parameter);
+
+				default:
+					var parameter = new ShaderParameter<Float>();
+					parameter.name = name;
+					parameter.type = type;
+					parameter.value = cast defaultValue;
+					parameter.__arrayLength = arrayLength;
+					#if lime
+					if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array(length);
+					#end
+					parameter.__isFloat = true;
+					parameter.__isUniform = isUniform;
+					parameter.__length = length;
+						
+					switch (name)
+					{
+						case "openfl_Alpha": __alpha = parameter;
+						case "openfl_ColorMultiplier": __colorMultiplier = parameter;
+						case "openfl_ColorOffset": __colorOffset = parameter;
+						case "openfl_Matrix": __matrix = parameter;
+						case "openfl_Position": __position = parameter;
+						case "openfl_TextureCoord": __textureCoord = parameter;
+						case "openfl_TextureSize": __textureSize = parameter;
+						default:
+					}
+
+					if ((parameter.index = location) == -1) __paramFloat.remove(parameter);
+					else if (!__paramFloat.contains(parameter)) __paramFloat.push(parameter);
+					register(parameter);
+			}
+		}
+	}
+
+	@:noCompletion private function __thisHasField(name:String)
+	{
+		// Reflect.hasField(this, name) is REALLY expensive so we cache the result.
+		if (__fieldList == null)
+		{
+			__fieldList = Reflect.fields(this).concat(Type.getInstanceFields(Type.getClass(this)));
+		}
+		return __fieldList.indexOf(name) != -1;
 	}
 
 	@:noCompletion private function __update():Void
@@ -1015,10 +1010,14 @@ class Shader
 	{
 		var textureCount = 0;
 
+		var gl = __context.gl;
+
 		for (input in __inputBitmapData)
 		{
 			input.__updateGL(__context, textureCount);
 			textureCount++;
+
+			//if (textureCount == gl.MAX_TEXTURE_IMAGE_UNITS) break;
 		}
 
 		for (parameter in __paramBool)
@@ -1037,8 +1036,7 @@ class Shader
 		}
 	}
 
-	@:noCompletion private function __updateGLFromBuffer(shaderBuffer:ShaderBuffer, bufferOffset:Int):Void
-	{
+	@:noCompletion private function __updateGLFromBuffer(shaderBuffer:ShaderBuffer, bufferOffset:Int):Void {
 		var textureCount = 0;
 		var input:ShaderInput<BitmapData>;
 		var inputData:BitmapData;
@@ -1046,16 +1044,15 @@ class Shader
 		var inputMipFilter:Context3DMipFilter;
 		var inputWrap:Context3DWrapMode;
 
-		for (i in 0...shaderBuffer.inputCount)
-		{
+		// not this
+		for (i in 0...shaderBuffer.inputCount) {
 			input = shaderBuffer.inputRefs[i];
 			inputData = shaderBuffer.inputs[i];
 			inputFilter = shaderBuffer.inputFilter[i];
 			inputMipFilter = shaderBuffer.inputMipFilter[i];
 			inputWrap = shaderBuffer.inputWrap[i];
 
-			if (inputData != null)
-			{
+			if (inputData != null) {
 				input.__updateGL(__context, textureCount, inputData, inputFilter, inputMipFilter, inputWrap);
 				textureCount++;
 			}
@@ -1063,10 +1060,8 @@ class Shader
 
 		var gl = __context.gl;
 
-		if (shaderBuffer.paramDataLength > 0)
-		{
-			if (shaderBuffer.paramDataBuffer == null)
-			{
+		if (shaderBuffer.paramDataLength > 0) {
+			if (shaderBuffer.paramDataBuffer == null) {
 				shaderBuffer.paramDataBuffer = gl.createBuffer();
 			}
 
@@ -1074,9 +1069,7 @@ class Shader
 
 			__context.__bindGLArrayBuffer(shaderBuffer.paramDataBuffer);
 			gl.bufferData(gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
-		}
-		else
-		{
+		} else {
 			// Log.verbose ("bind buffer null");
 
 			__context.__bindGLArrayBuffer(null);
@@ -1098,18 +1091,14 @@ class Shader
 		var overrideFloatValue:Array<Float> = null;
 		var overrideIntValue:Array<Int> = null;
 
-		for (i in 0...shaderBuffer.paramCount)
-		{
+		for (i in 0...shaderBuffer.paramCount) {
 			hasOverride = false;
 
-			if (i < boolCount)
-			{
+			if (i < boolCount) {
 				boolRef = shaderBuffer.paramRefs_Bool[boolIndex];
 
-				for (j in 0...shaderBuffer.overrideBoolCount)
-				{
-					if (boolRef.name == shaderBuffer.overrideBoolNames[j])
-					{
+				for (j in 0...shaderBuffer.overrideBoolCount) {
+					if (boolRef.name == shaderBuffer.overrideBoolNames[j]) {
 						overrideBoolValue = shaderBuffer.overrideBoolValues[j];
 						hasOverride = true;
 						break;
@@ -1126,15 +1115,11 @@ class Shader
 				}
 
 				boolIndex++;
-			}
-			else if (i < boolCount + floatCount)
-			{
+			} else if (i < boolCount + floatCount) {
 				floatRef = shaderBuffer.paramRefs_Float[floatIndex];
 
-				for (j in 0...shaderBuffer.overrideFloatCount)
-				{
-					if (floatRef.name == shaderBuffer.overrideFloatNames[j])
-					{
+				for (j in 0...shaderBuffer.overrideFloatCount) {
+					if (floatRef.name == shaderBuffer.overrideFloatNames[j]) {
 						overrideFloatValue = shaderBuffer.overrideFloatValues[j];
 						hasOverride = true;
 						break;
@@ -1151,15 +1136,11 @@ class Shader
 				}
 
 				floatIndex++;
-			}
-			else
-			{
+			} else {
 				intRef = shaderBuffer.paramRefs_Int[intIndex];
 
-				for (j in 0...shaderBuffer.overrideIntCount)
-				{
-					if (intRef.name == shaderBuffer.overrideIntNames[j])
-					{
+				for (j in 0...shaderBuffer.overrideIntCount) {
+					if (intRef.name == shaderBuffer.overrideIntNames[j]) {
 						overrideIntValue = cast shaderBuffer.overrideIntValues[j];
 						hasOverride = true;
 						break;
@@ -1180,6 +1161,15 @@ class Shader
 		}
 	}
 
+	@:noCompletion private function __setDirty():Void
+	{
+		//if (!__glSourceDirty)
+		//{
+		__cacheProgramId = null;
+		__glSourceDirty = true;
+		//}
+	}
+
 	// Get & Set Methods
 	@:noCompletion private function get_data():ShaderData
 	{
@@ -1193,17 +1183,86 @@ class Shader
 
 	@:noCompletion private function set_data(value:ShaderData):ShaderData
 	{
-		return __data = cast value;
+		return __data = value;
+	}
+
+	@:noCompletion private function get_glVersionRaw():Null<String>
+	{
+		return __glVersionRaw;
+	}
+
+	@:noCompletion private function get_glVersion():Null<String>
+	{
+		if (__glSourceDirty)
+		{
+			__init();
+		}
+
+		return __glVersion;
+	}
+
+	@:noCompletion private function set_glVersion(value:Null<String>):Null<String>
+	{
+		if (__glSourceDirty ? value != __glVersionRaw : value != __glVersion)
+		{
+			__setDirty();
+		}
+
+		return __glVersionRaw = value;
+	}
+
+	@:noCompletion private function get_glVertexExtensions():Map<String, String>
+	{
+		return __glVertexExtensions;
+	}
+
+	@:noCompletion private function get_glFragmentExtensions():Map<String, String>
+	{
+		return __glFragmentExtensions;
+	}
+
+	@:noCompletion private function set_glVertexExtensions(value:Map<String, String>):Map<String, String>
+	{
+		__setDirty();
+		return __glVertexExtensions = value;
+	}
+
+	@:noCompletion private function set_glFragmentExtensions(value:Map<String, String>):Map<String, String>
+	{
+		__setDirty();
+		return __glFragmentExtensions = value;
+	}
+
+	@:noCompletion private function get_glVertexPragmas():Map<String, String>
+	{
+		return __glVertexPragmas;
+	}
+
+	@:noCompletion private function get_glFragmentPragmas():Map<String, String>
+	{
+		return __glFragmentPragmas;
+	}
+
+	@:noCompletion private function set_glVertexPragmas(value:Map<String, String>):Map<String, String>
+	{
+		__setDirty();
+		return __glVertexPragmas = value;
+	}
+
+	@:noCompletion private function set_glFragmentPragmas(value:Map<String, String>):Map<String, String>
+	{
+		__setDirty();
+		return __glFragmentPragmas = value;
 	}
 
 	@:noCompletion private function get_glFragmentHeaderRaw():String
 	{
-		return __glFragmentHeaderRaw;
+		return __glFragmentPragmas.get("header");
 	}
 
 	@:noCompletion private function get_glFragmentBodyRaw():String
 	{
-		return __glFragmentBodyRaw;
+		return __glFragmentPragmas.get("body");
 	}
 
 	@:noCompletion private function get_glFragmentSourceRaw():String
@@ -1213,72 +1272,28 @@ class Shader
 
 	@:noCompletion private function get_glFragmentSource():String
 	{
+		if (__glSourceDirty)
+		{
+			__init();
+		}
+
 		return __glFragmentSource;
-	}
-
-	@:noCompletion private function get_glVersion():String
-	{
-		return __glVersion;
-	}
-
-	@:noCompletion private function get_glVertexExtensions():Array<{name:String, behavior:String}>
-	{
-		return __glVertexExtensions;
-	}
-
-	@:noCompletion private function get_glFragmentExtensions():Array<{name:String, behavior:String}>
-	{
-		return __glFragmentExtensions;
 	}
 
 	@:noCompletion private function set_glFragmentSource(value:String):String
 	{
-		if (value != __glFragmentSource)
-		{
-			__glSourceDirty = true;
-		}
-
-		return __glFragmentSource = value;
-	}
-
-	@:noCompletion private function set_glVersion(value:String):String
-	{
-		if (value != __glVersion)
-		{
-			__glSourceDirty = true;
-		}
-
-		return __glVersion = value;
-	}
-
-	@:noCompletion private function set_glVertexExtensions(value:Array<{name:String, behavior:String}>):Array<{name:String, behavior:String}>
-	{
-		if (value != __glVertexExtensions)
-		{
-			__glSourceDirty = true;
-		}
-
-		return __glVertexExtensions = value;
-	}
-
-	@:noCompletion private function set_glFragmentExtensions(value:Array<{name:String, behavior:String}>):Array<{name:String, behavior:String}>
-	{
-		if (value != __glFragmentExtensions)
-		{
-			__glSourceDirty = true;
-		}
-
-		return __glFragmentExtensions = value;
+		__setDirty();
+		return __glFragmentSourceRaw = value;
 	}
 
 	@:noCompletion private function get_glVertexHeaderRaw():String
 	{
-		return __glVertexHeaderRaw;
+		return __glVertexPragmas.get("header");
 	}
 
 	@:noCompletion private function get_glVertexBodyRaw():String
 	{
-		return __glVertexBodyRaw;
+		return __glVertexPragmas.get("body");
 	}
 
 	@:noCompletion private function get_glVertexSourceRaw():String
@@ -1288,31 +1303,49 @@ class Shader
 
 	@:noCompletion private function get_glVertexSource():String
 	{
+		if (__glSourceDirty)
+		{
+			__init();
+		}
+
 		return __glVertexSource;
 	}
 
 	@:noCompletion private function set_glVertexSource(value:String):String
 	{
-		if (value != __glVertexSource)
-		{
-			__glSourceDirty = true;
-		}
-
-		return __glVertexSource = value;
+		__setDirty();
+		return __glVertexSourceRaw = value;
 	}
 
-	private var __fieldList:Array<String> = null;
-
-	private function thisHasField(name:String)
+	@:noCompletion private function get_precisionHint():ShaderPrecision
 	{
-		// Reflect.hasField(this, name) is REALLY expensive so we cache the result.
-		if (__fieldList == null)
+		return __precisionHint;
+	}
+
+	@:noCompletion private function set_precisionHint(value:ShaderPrecision):ShaderPrecision
+	{
+		if (__precisionHint != value && program != null && !__glSourceDirty)
 		{
-			__fieldList = Reflect.fields(this).concat(Type.getInstanceFields(Type.getClass(this)));
+			var id = __cacheProgramId != null ? __cacheProgramId + (value == FAST ? "FAST" : "") : null;
+
+			if (id != null && __context != null && __context.__programs.exists(id))
+			{
+				program = __context.__programs.get(id);
+				__glVertexSource = program.__glVertexSource;
+				__glFragmentSource = program.__glFragmentSource;
+			}
+			else
+			{
+				program = null;
+				__refreshGLSource();
+			}
 		}
-		return __fieldList.indexOf(name) != -1;
+		return __precisionHint = value;
 	}
 }
+
+//typedef ShaderProcessParameterCallback = (isVertex:Bool, typeName:String, name:String, arrayLength:Int, defaultAssign:Null<String>) -> Void;
+typedef ShaderProcessParameterCallback = Bool->String->String->Int->Null<String>->Void;
 #else
 typedef Shader = flash.display.Shader;
 #end
