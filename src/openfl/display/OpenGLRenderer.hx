@@ -1091,9 +1091,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 			__context3D.__usingComplexBlend = true;
 			switch (value) {
-				case DARKEN:
-					if (__context3D.__usingComplexBlend = !__blendMinMaxSupported)
-						__context3D.__setGLBlendEquation(0x9297); // DARKEN_KHR
+				case DARKEN: __context3D.__setGLBlendEquation(0x9297); // DARKEN_KHR
 				case DIFFERENCE: __context3D.__setGLBlendEquation(0x929E); // DIFFERENCE_KHR
 				case HARDLIGHT: __context3D.__setGLBlendEquation(0x929B); // HARDLIGHT_KHR
 				case LIGHTEN:
@@ -1123,11 +1121,13 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			case DARKEN:
 				if (__blendMinMaxSupported)
 				{
-					__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
+					// Transparency doesn't fully work with this, so it needs khronos extension version of DARKEN instead.
+					__context3D.setBlendFactors(ONE, ONE);
 					__context3D.__setGLBlendEquation(0x8007); // GL_MIN
 				}
 				else
 				{
+					// Alternative innacurate implementation if unsupported
 					__context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
 				}
 			case ERASE: __context3D.setBlendFactors(ZERO, ONE_MINUS_SOURCE_ALPHA);
@@ -1140,6 +1140,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				}
 				else
 				{
+					// Alternative innacurate implementation if unsupported
 					__context3D.setBlendFactors(ONE, ONE);
 				}
 			case MULTIPLY: __context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
