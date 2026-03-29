@@ -55,6 +55,7 @@ import lime.math.Matrix4;
 class OpenGLRenderer extends DisplayObjectRenderer
 {
 	@:noCompletion private static var __blendMinMaxSupported:Null<Bool>;
+	@:noCompletion private static var __standardDerivativesSupported:Null<Bool>;
 	@:noCompletion private static var __complexBlendsSupported:Null<Bool>;
 	@:noCompletion private static var __coherentBlendsSupported:Null<Bool>;
 	@:noCompletion private static var __sRGBWriteControlSupported:Null<Bool>;
@@ -171,6 +172,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		if (__coherentBlendsSupported == null)
 		{
 			__coherentBlendsSupported = exts.contains("KHR_blend_equation_advanced_coherent");
+		}
+		if (__standardDerivativesSupported == null)
+		{
+			__standardDerivativesSupported = exts.contains("OES_standard_derivatives");
 		}
 
 		#if (js && html5)
