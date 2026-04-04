@@ -36,8 +36,8 @@ class CairoShape
 		{
 			CairoGraphics.render(graphics, renderer);
 
-			var width = graphics.__renderWidth;
-			var height = graphics.__renderHeight;
+			var width = graphics.__width;
+			var height = graphics.__height;
 			var cairo = renderer.cairo;
 
 			if (cairo != null && graphics.__visible && width >= 1 && height >= 1)
@@ -88,8 +88,8 @@ class CairoShape
 		{
 			CairoGraphics.render(graphics, renderer);
 
-			var width = graphics.__renderWidth;
-			var height = graphics.__renderHeight;
+			var width = graphics.__width;
+			var height = graphics.__height;
 			var cairo = renderer.cairo;
 
 			if (cairo != null && graphics.__cairo != null && graphics.__visible && width >= 1 && height >= 1)

@@ -1994,7 +1994,7 @@ class CanvasGraphics
 		#end
 	}
 
-	public static function render(graphics:Graphics, renderer:CanvasRenderer):Void
+	public static function render(graphics:Graphics, renderer:CanvasRenderer, allowRenderSizeReuse:Bool = false):Void
 	{
 		#if (js && html5)
 		#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
@@ -2020,7 +2020,7 @@ class CanvasGraphics
 			graphics.__bitmapScaleY = 1;
 		}
 
-		graphics.__update(renderer.__worldTransform, pixelRatio);
+		graphics.__update(renderer.__worldTransform, pixelRatio, allowRenderSizeReuse);
 
 		var width = graphics.__renderWidth;
 		var height = graphics.__renderHeight;
