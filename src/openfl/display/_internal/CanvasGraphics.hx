@@ -2022,6 +2022,30 @@ class CanvasGraphics
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
 
+		var width = graphics.__renderWidth;
+		var height = graphics.__renderHeight;
+
+		if (!graphics.__softwareDirty)
+		{
+			if (graphics.__canvas == null || graphics.__bitmap == null)
+			{
+				graphics.__softwareDirty = true;
+			}
+			else if (renderer.__isDOM)
+			{
+				var scaledWidth = Std.int(width * renderer.__pixelRatio);
+				var scaledHeight = Std.int(height * renderer.__pixelRatio);
+				if (graphics.__canvas.width != scaledWidth || graphics.__canvas.height != scaledHeight)
+				{
+					graphics.__softwareDirty = true;
+				}
+			}
+			else if (graphics.__canvas.width != width || graphics.__canvas.height != height)
+			{
+				graphics.__softwareDirty = true;
+			}
+		}
+
 		if (graphics.__softwareDirty)
 		{
 			hitTesting = false;
@@ -2030,9 +2054,6 @@ class CanvasGraphics
 			CanvasGraphics.allowSmoothing = renderer.__allowSmoothing;
 			CanvasGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
 			bounds = graphics.__bounds;
-
-			var width = graphics.__width;
-			var height = graphics.__height;
 
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 			{

@@ -5,6 +5,7 @@ import openfl.display._internal.CanvasGraphics;
 import openfl.display._internal.Context3DBuffer;
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
+import openfl.display._internal.IBitmapDrawableType;
 import openfl.display._internal.ShaderBuffer;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.IndexBuffer3D;
@@ -58,6 +59,7 @@ import js.html.CanvasRenderingContext2D;
 {
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
+	@:noCompletion private static inline var __renderSizePadding:Float = 1.25;
 
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
@@ -76,7 +78,9 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
+	@:noCompletion private var __renderHeight:Int;
 	@:noCompletion private var __renderTransform:Matrix;
+	@:noCompletion private var __renderWidth:Int;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
 	@:noCompletion private var __strokePadding:Float;
@@ -119,6 +123,8 @@ import js.html.CanvasRenderingContext2D;
 		__worldTransform = new Matrix();
 		__width = 0;
 		__height = 0;
+		__renderWidth = 0;
+		__renderHeight = 0;
 
 		__bitmapScaleX = 1;
 		__bitmapScaleY = 1;
@@ -1945,6 +1951,8 @@ import js.html.CanvasRenderingContext2D;
 			if (__width >= 1 || __height >= 1) __dirty = true;
 			__width = 0;
 			__height = 0;
+			__renderWidth = 0;
+			__renderHeight = 0;
 			return;
 		}
 
@@ -2018,6 +2026,8 @@ import js.html.CanvasRenderingContext2D;
 			if (__width >= 1 || __height >= 1) __dirty = true;
 			__width = 0;
 			__height = 0;
+			__renderWidth = 0;
+			__renderHeight = 0;
 			return;
 		}
 
@@ -2033,6 +2043,49 @@ import js.html.CanvasRenderingContext2D;
 			scaleY = maxTextureHeight / __bounds.height;
 		}
 
+		var newWidth = Math.ceil(width + 1.0);
+		var newHeight = Math.ceil(height + 1.0);
+
+		// Keep the display size exact, but allow software-backed graphics to
+		// reuse a larger raster allocation across nearby zoom levels.
+		var renderWidth = newWidth;
+		var renderHeight = newHeight;
+		var useExactRenderScale = (__owner.__drawableType == TEXT_FIELD);
+		var allowRenderSizeReuse = !useExactRenderScale;
+
+		#if !openfl_disable_graphics_upscaling
+		if (allowRenderSizeReuse && __owner.__worldScale9Grid == null)
+		{
+			if (__renderWidth > 0 && renderWidth <= __renderWidth)
+			{
+				renderWidth = __renderWidth;
+			}
+			else if (__renderWidth > 0 && renderWidth > __renderWidth)
+			{
+				renderWidth = Math.ceil(Math.max(renderWidth, __renderWidth * __renderSizePadding));
+			}
+
+			if (__renderHeight > 0 && renderHeight <= __renderHeight)
+			{
+				renderHeight = __renderHeight;
+			}
+			else if (__renderHeight > 0 && renderHeight > __renderHeight)
+			{
+				renderHeight = Math.ceil(Math.max(renderHeight, __renderHeight * __renderSizePadding));
+			}
+
+			if (maxTextureWidth != null && renderWidth > maxTextureWidth)
+			{
+				renderWidth = maxTextureWidth;
+			}
+
+			if (maxTextureHeight != null && renderHeight > maxTextureHeight)
+			{
+				renderHeight = maxTextureHeight;
+			}
+		}
+		#end
+
 		var inverseA:Float;
 		var inverseD:Float;
 
@@ -2045,8 +2098,8 @@ import js.html.CanvasRenderingContext2D;
 		}
 		else
 		{
-			__renderTransform.a = width / __bounds.width;
-			__renderTransform.d = height / __bounds.height;
+			__renderTransform.a = (useExactRenderScale ? width : renderWidth) / __bounds.width;
+			__renderTransform.d = (useExactRenderScale ? height : renderHeight) / __bounds.height;
 			inverseA = (1 / __renderTransform.a);
 			inverseD = (1 / __renderTransform.d);
 		}
@@ -2088,15 +2141,7 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
 		#end
 
-		// Calculate the size to contain the graphics and an extra subpixel
-		// We used to add tx and ty from __renderTransform instead of 1.0
-		// but it improves performance if we keep the size consistent when the
-		// extra pixel isn't needed
-		var newWidth = Math.ceil(width + 1.0);
-		var newHeight = Math.ceil(height + 1.0);
-
-		// Mark dirty if render size changed
-		if (newWidth != __width || newHeight != __height)
+		if (useExactRenderScale && (newWidth != __width || newHeight != __height))
 		{
 			#if !openfl_disable_graphics_upscaling
 			__dirty = true;
@@ -2105,6 +2150,8 @@ import js.html.CanvasRenderingContext2D;
 
 		__width = newWidth;
 		__height = newHeight;
+		__renderWidth = renderWidth;
+		__renderHeight = renderHeight;
 	}
 
 	// Get & Set Methods

@@ -1865,6 +1865,25 @@ class CairoGraphics
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
 
+		var width = graphics.__renderWidth;
+		var height = graphics.__renderHeight;
+
+		if (!graphics.__softwareDirty)
+		{
+			if (graphics.__cairo == null || graphics.__bitmap == null)
+			{
+				graphics.__softwareDirty = true;
+			}
+			else
+			{
+				var existingSurface:CairoImageSurface = cast graphics.__cairo.target;
+				if (existingSurface == null || existingSurface.width != width || existingSurface.height != height)
+				{
+					graphics.__softwareDirty = true;
+				}
+			}
+		}
+
 		if (!graphics.__softwareDirty || graphics.__managed)
 		{
 			CairoGraphics.graphics = null;
@@ -1872,9 +1891,6 @@ class CairoGraphics
 		}
 
 		bounds = graphics.__bounds;
-
-		var width = graphics.__width;
-		var height = graphics.__height;
 
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 		{
@@ -1884,22 +1900,19 @@ class CairoGraphics
 		else
 		{
 			hitTesting = false;
-			var needsUpscaling = false;
-
 			if (graphics.__cairo != null)
 			{
 				var surface:CairoImageSurface = cast graphics.__cairo.target;
 
-				if (width > surface.width || height > surface.height)
+				if (surface == null || width != surface.width || height != surface.height)
 				{
 					graphics.__cairo = null;
-					needsUpscaling = true;
 				}
 			}
 
-			if (graphics.__cairo == null || graphics.__bitmap == null)
+			if (graphics.__cairo == null || graphics.__bitmap == null || graphics.__bitmap.width != width || graphics.__bitmap.height != height)
 			{
-				var bitmap = needsUpscaling ? new BitmapData(Std.int(width * 1.25), Std.int(height * 1.25), true, 0) : new BitmapData(width, height, true, 0);
+				var bitmap = new BitmapData(width, height, true, 0);
 				var surface = bitmap.getSurface();
 				graphics.__cairo = new Cairo(surface);
 				graphics.__bitmap = bitmap;
