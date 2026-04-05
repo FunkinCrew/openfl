@@ -5,6 +5,7 @@ import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D._internal.GLTexture;
 import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
+import openfl.display.Graphics;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
 import openfl.utils._internal.ArrayBufferView;
@@ -24,6 +25,7 @@ import lime.graphics.RenderContext;
 @:access(openfl.display._internal.SamplerState)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 class TextureBase extends EventDispatcher
 {
@@ -129,6 +131,39 @@ class TextureBase extends EventDispatcher
 		}
 	}
 
+	/**
+		**BETA**
+
+		Resizes and stretches this Texture object to desired width and height.
+
+		@param	width		The width of the bitmap image in pixels.
+		@param	height		The height of the bitmap image in pixels.
+
+		@since FunkinCrew's OpenFL
+
+		@see `BitmapData.resize`
+	**/
+	public function resize(width:Int, height:Int):Void
+	{
+		if (width > Graphics.maxTextureWidth) width = Graphics.maxTextureWidth;
+		if (height > Graphics.maxTextureHeight) height = Graphics.maxTextureHeight;
+
+		var gl = __context.gl;
+
+		if (gl != null && width > 0 && height > 0 && (__width != width || __height != height))
+		{
+			__memoryWidth = __width = width;
+			__memoryHeight = __height = height;
+
+			__context.__bindGLTexture2D(__textureID);
+
+			gl.texImage2D(__textureTarget, 0, __internalFormat, width, height, 0, __format, gl.UNSIGNED_BYTE, null);
+			__updateGLFramebuffer(false, 0, 0);
+
+			__context.__bindGLTexture2D(null);
+		}
+	}
+
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
@@ -192,6 +227,36 @@ class TextureBase extends EventDispatcher
 		}
 
 		return __glFramebuffer;
+	}
+
+	@:noCompletion private function __updateGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
+	{
+		if (__glFramebuffer == null)
+		{
+			return __getGLFramebuffer(false, 0, 0);
+		}
+		else
+		{
+			var gl = __context.gl;
+
+			gl.bindFramebuffer(gl.FRAMEBUFFER, __glFramebuffer);
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __textureID, 0);
+
+			var seperate = __glDepthRenderbuffer != __glStencilRenderbuffer;
+
+			gl.bindRenderbuffer(gl.RENDERBUFFER, __glDepthRenderbuffer);
+			gl.renderbufferStorage(gl.RENDERBUFFER, seperate ? gl.DEPTH_COMPONENT16 : Context3D.__glDepthStencil, __width, __height);
+
+			if (seperate)
+			{
+				gl.bindRenderbuffer(gl.RENDERBUFFER, __glStencilRenderbuffer);
+				gl.renderbufferStorage(gl.RENDERBUFFER, gl.STENCIL_INDEX8, __width, __height);
+			}
+
+			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+
+			return __glFramebuffer;
+		}
 	}
 
 	#if lime
