@@ -320,14 +320,15 @@ class TextureBase extends EventDispatcher
 
 	@:noCompletion private function __setSamplerState(state:SamplerState):Bool
 	{
+		var gl = __context.gl;
+		if (__textureTarget != __context.gl.TEXTURE_CUBE_MAP && state.mipfilter != MIPNONE)
+		{
+			gl.generateMipmap(__textureTarget);
+			state.mipmapGenerated = true;
+		}
+
 		if (!state.equals(__samplerState))
 		{
-			var gl = __context.gl;
-
-			if (__textureTarget == __context.gl.TEXTURE_CUBE_MAP) __context.__bindGLTextureCubeMap(__textureID);
-			else
-				__context.__bindGLTexture2D(__textureID);
-
 			var wrapModeS = 0, wrapModeT = 0;
 
 			switch (state.wrap)
@@ -375,12 +376,15 @@ class TextureBase extends EventDispatcher
 			gl.texParameteri(__textureTarget, gl.TEXTURE_WRAP_S, wrapModeS);
 			gl.texParameteri(__textureTarget, gl.TEXTURE_WRAP_T, wrapModeT);
 
-			if (__samplerState == null)
+			#if lime
+			if (__context.__context.type == OPENGL)
 			{
-				__samplerState = state.clone();
+				gl.texParameterf(__textureTarget, 0x8501, state.lodBias); // GL_TEXTURE_LOD_BIAS
 			}
+			#end
 
-			__samplerState.copyFrom(state);
+			if (__samplerState == null) __samplerState = state.clone();
+			else __samplerState.copyFrom(state);
 
 			return true;
 		}
