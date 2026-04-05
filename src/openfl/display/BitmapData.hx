@@ -10,6 +10,7 @@ import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+import openfl.display.Graphics;
 import openfl.errors.Error;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
@@ -123,7 +124,6 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.DisplayObjectShader)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shader)
 @:access(openfl.filters.BitmapFilter)
@@ -141,6 +141,9 @@ class BitmapData implements IBitmapDrawable
 	#if lime
 	@:noCompletion private static var __tempVector:Vector2 = new Vector2();
 	@:noCompletion private static var __fillRectRectangle:Rectangle = new Rectangle();
+	#if (cpp && lime_cffi && !macro && sys)
+	@:noCompletion private static var __imageAssetCache:Image = new Image(new ImageBuffer(new UInt8Array(haxe.io.Bytes.alloc(0))));
+	#end
 	#end
 
 	/**
@@ -217,7 +220,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
-	@:noCompletion private var __textureShared:Bool = true;
+	@:noCompletion private var __textureShared:Bool;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
@@ -1270,21 +1273,24 @@ class BitmapData implements IBitmapDrawable
 		format, such as PNG or JPG. To use raw ARGB pixel data, call
 		`setPixels` or `setVector` instead.
 
+		When creating BitmapData asynchronously with this method with true in `hardware`
+		parameter, it will always return `null`.
+
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`. Other targets will return `null` if decoding was unsuccessful.
 
 		@param	base64	Base64-encoded data
 		@param	type	The MIME-type for the encoded data ("image/jpeg", etc)
+		@param	hardware	Should it be a hardware-only BItmapData object.
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
-	public static function fromBase64(base64:String, type:String):BitmapData
+	public static function fromBase64(base64:String, type:String, hardware:Bool = false):BitmapData
 	{
 		#if (js && html5)
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData.__fromBase64(base64, type);
-		return bitmapData;
+		return bitmapData.__fromBase64(base64, type, hardware) ? bitmapData : null;
 		#end
 	}
 	#end
@@ -1297,6 +1303,9 @@ class BitmapData implements IBitmapDrawable
 		supported bitmap file format, such as PNG or JPG. To use raw ARGB pixel
 		data, call `setPixels` or `setVector` instead.
 
+		When creating BitmapData asynchronously with this method with true in `hardware`
+		parameter, it will always return `null`.
+
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`. Other targets will return `null` if decoding was unsuccessful.
 
@@ -1305,16 +1314,16 @@ class BitmapData implements IBitmapDrawable
 
 		@param	bytes	A haxe.io.Bytes or openfl.utils.ByteArray instance
 		@param	rawAlpha	An optional byte array with alpha data
+		@param	hardware	Should it be a hardware-only BItmapData object.
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
-	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData
+	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null, hardware:Bool = false):BitmapData
 	{
 		#if (js && html5)
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData.__fromBytes(bytes, rawAlpha);
-		return bitmapData;
+		return bitmapData.__fromBytes(bytes, rawAlpha, hardware) ? bitmapData : null;
 		#end
 	}
 	#end
@@ -1346,23 +1355,26 @@ class BitmapData implements IBitmapDrawable
 		Creates a new BitmapData from a file path synchronously. This means that the
 		BitmapData will be returned immediately (if supported).
 
+		When creating BitmapData asynchronously with this method with true in `hardware`
+		parameter, it will always return `null`.
+
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`.
 
 		In order to load files from a remote web address, use the `loadFromFile` method,
 		which supports asynchronous loading.
 
-		@param	path	A local file path containing an image
+		@param	path		A local file path containing an image
+		@param	hardware	Should it be a hardware-only BItmapData object.
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
-	public static function fromFile(path:String):BitmapData
+	public static function fromFile(path:String, hardware:Bool = false):BitmapData
 	{
 		#if (js && html5)
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData.__fromFile(path);
-		return bitmapData.image != null ? bitmapData : null;
+		return bitmapData.__fromFile(path, hardware) ? bitmapData : null;
 		#end
 	}
 	#end
@@ -1407,13 +1419,49 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (texture == null) return null;
 
-		var bitmapData = new BitmapData(texture.__width, texture.__height, true, 0);
-		bitmapData.readable = false;
+		var bitmapData = new BitmapData(0, 0, true, 0);
 		bitmapData.__texture = texture;
 		bitmapData.__textureContext = texture.__textureContext;
 		bitmapData.__textureShared = shared;
-		bitmapData.__surface = null;
-		bitmapData.image = null;
+		bitmapData.__resize(texture.__width, texture.__height);
+		bitmapData.__isValid = true;
+		return bitmapData;
+	}
+
+	/**
+		**BETA**
+		
+		Creates a new hardware-only BitmapData instance from a Stage3D context.
+		Only purpose is to be only rendered and not be readable.
+
+		This method is not supported by the Flash target.
+
+		@param	context	A Stage3D context
+		@param	width		The width of the bitmap image in pixels.
+		@param	height		The height of the bitmap image in pixels.
+		@param	fillColor	A 32-bit ARGB color value that you use to fill
+							the bitmap image area. The default value is
+							0x00000000 (full transparency).
+		@returns	A new BitmapData if successful, or `null` if unsuccessful
+
+		@see `BitmapData.readable`
+		@since	FunkinCrew's OpenFL
+	**/
+	public static function fromContext(context:Context3D, width:Int, height:Int, fillColor:UInt = 0):BitmapData
+	{
+		if (context == null || context.gl == null) return null;
+
+		if (width > Graphics.maxTextureWidth) width = Graphics.maxTextureWidth;
+		if (height > Graphics.maxTextureHeight) height = Graphics.maxTextureHeight;
+
+		var bitmapData = new BitmapData(0, 0, true, 0);
+		bitmapData.__texture = context.createRectangleTexture(width, height, BGRA, false);
+		bitmapData.__textureContext = bitmapData.__texture.__textureContext;
+		bitmapData.__resize(bitmapData.__texture.__width, bitmapData.__texture.__height);
+		bitmapData.__texture.__getGLFramebuffer(true, 0, 0);
+		bitmapData.__isValid = true;
+		bitmapData.__fillRect(bitmapData.rect, fillColor, true);
+		bitmapData.readable = false;
 		return bitmapData;
 	}
 
@@ -2326,7 +2374,7 @@ class BitmapData implements IBitmapDrawable
 			__textureHeight = textureImage.buffer.height;
 		}
 
-		if (!readable && image != null)
+		if (!readable && (image != null || __surface != null))
 		{
 			__surface = null;
 			image = null;
@@ -3134,6 +3182,176 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function unlock(changeRect:Rectangle = null):Void {}
 
+	/**
+		**BETA**
+
+		Resize this BitmapData object to a desired width and height. This will stretch this
+		BitmapData object to the new dimension.
+
+		@param	width		The width of the bitmap image in pixels.
+		@param	height		The height of the bitmap image in pixels.
+
+		@since	FunkinCrew's OpenFL
+	**/
+	public function resize(width:Int, height:Int):Void
+	{
+		if (this.width != width || this.height != height)
+		{
+			__resize(width, height);
+
+			if (__surface != null) __surface.flush();
+			if (image != null) image.resize(width, height);
+
+			if (__texture != null)
+			{
+				__texture.resize(width, height);
+
+				__framebufferContext = __textureContext;
+				__indexBufferContext = __textureContext;
+				__framebuffer = __texture.__glFramebuffer;
+				__stencilBuffer = __texture.__glStencilRenderbuffer;
+				__vertexBuffer = null;
+
+				getVertexBuffer(__texture.__context);
+			}
+		}
+	}
+
+	/**
+		**BETA**
+
+		Convert this BitmapData object to be hardware-only, that is only accessible for
+		graphics to render and making it unreadable.
+
+		This method is not supported by the Flash target.
+
+		@param	context	Optional; A Context3D instance
+
+		@since	FunkinCrew's OpenFL
+	**/
+	public function toHardware(?context:Context3D):Void
+	{
+		if (image != null)
+		{
+			if (context == null)
+			{
+				if (Lib.current.stage == null || Lib.current.stage.context3D == null) return;
+				context = Lib.current.stage.context3D;
+			}
+
+			if (__texture == null || __textureContext != context.__context)
+			{
+				__textureContext = context.__context;
+				__texture = context.createRectangleTexture(width, height, BGRA, false);
+			}
+
+			#if (js && html5)
+			ImageCanvasUtil.sync(image, false);
+			#end
+
+			if (__surface != null) __surface.flush();
+
+			#if (js && html5)
+			if (#if openfl_power_of_two true || #end (!TextureBase.__supportsBGRA && image.format != RGBA32))
+			{
+				image.format = RGBA32;
+				// image.buffer.premultiplied = true;
+				#if openfl_power_of_two
+				image.powerOfTwo = true;
+				#end
+			}
+			#else
+			if (#if openfl_power_of_two !image.powerOfTwo || #end (!image.premultiplied && image.transparent))
+			{
+				image.premultiplied = true;
+				#if openfl_power_of_two
+				image.powerOfTwo = true;
+				#end
+			}
+			#end
+
+			__texture.__uploadFromImage(image);
+			__textureVersion = image.version;
+			__textureWidth = image.buffer.width;
+			__textureHeight = image.buffer.height;
+			__surface = null;
+
+			readable = false;
+			image = null;
+		}
+	}
+
+	/**
+		**BETA**
+
+		Convert this BitmapData object from hardware-only to be be readable and modifiable.
+
+		This method is not supported by the Flash target.
+
+		@since	FunkinCrew's OpenFL
+	**/
+	public function toReadable():Void
+	{
+		if (__texture == null || __texture.__glFramebuffer == null) return;
+
+		var context = __texture.__context;
+		if (context == null) return;
+
+		var gl = context.gl;
+		if (gl == null) return;
+
+		readable = true;
+		__textureContext = __texture.__textureContext;
+		__resize(__texture.__width, __texture.__height);
+
+		var buffer:ImageBuffer = image.buffer;
+		if (buffer == null || buffer.width != width || buffer.height != height || buffer.bitsPerPixel != 32)
+		{
+			buffer = new ImageBuffer(new UInt8Array(width * height * 4), width, height, 32);
+			#if (js && html5)
+			Reflect.setField(buffer, "format", lime.graphics.PixelFormat.RGBA32);
+			#elseif sys
+			Reflect.setField(buffer, "format", lime.graphics.PixelFormat.BGRA32);
+			Reflect.setField(buffer, "premultiplied", true);
+			#end
+		}
+
+		if (image == null)
+		{
+			image = new Image(buffer, 0, 0, width, height);
+		}
+		else
+		{
+			image.offsetX = 0;
+			image.offsetY = 0;
+			image.width = width;
+			image.height = height;
+			image.type = DATA;
+			image.buffer = buffer;
+			image.version = __textureVersion;
+		}
+
+		var cacheRTT = context.__state.renderToTexture;
+		var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+
+		context.setRenderToTexture(__texture);
+		context.__flushGLFramebuffer();
+		context.__flushGLViewport();
+
+		gl.readPixels(0, 0, width, height, __texture.__format, gl.UNSIGNED_BYTE, buffer.data);
+
+		if (cacheRTT != null)
+		{
+			context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+		}
+		else
+		{
+			context.setRenderToBackBuffer();
+		}
+	}
+
 	@:noCompletion private function __applyAlpha(alpha:ByteArray):Void
 	{
 		#if (js && html5)
@@ -3284,34 +3502,112 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
-	@:noCompletion private inline function __fromBase64(base64:String, type:String):Void
+	@:noCompletion private inline function __fromBase64(base64:String, type:String, hardware:Bool = false):Bool
 	{
 		#if lime
-		var image = Image.fromBase64(base64, type);
-		__fromImage(image);
+		return __fromBytes(lime._internal.format.Base64.decode(base64), null, hardware);
+		#else
+		return false;
 		#end
 	}
 
-	@:noCompletion private inline function __fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Void
+	@:noCompletion private function __fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null, hardware:Bool = false):Bool
+	@:privateAccess
 	{
 		#if lime
-		var image = Image.fromBytes(bytes);
-		__fromImage(image);
 
-		if (rawAlpha != null)
+		#if (cpp && lime_cffi && !macro && sys)
+		if (hardware && Lib.current.stage != null && Lib.current.stage.context3D != null)
 		{
-			__applyAlpha(rawAlpha);
+			if (lime._internal.backend.native.NativeCFFI.lime_image_load_bytes(bytes, __imageAssetCache.buffer) != null)
+			{
+				var data = __imageAssetCache.buffer.data;
+				for (i in 0...rawAlpha.length) data[i * 4 + 3] = rawAlpha.readUnsignedByte();
+				__fromImageAssetCache(Lib.current.stage.context3D);
+				return true;
+			}
+
+			return false;
 		}
+		else
+		{
+			__fromImage(Image.fromBytes(bytes));
+			if (image == null) return false;
+			else if (rawAlpha != null) __applyAlpha(rawAlpha);
+
+			return true;
+		}
+		#else
+		__fromImage(Image.fromBytes(bytes));
+		if (image == null) return false;
+		else if (rawAlpha != null) __applyAlpha(rawAlpha);
+
+		if (hardware) toHardware();
+		return true;
+		#end
+
+		#else
+		return false;
 		#end
 	}
 
-	@:noCompletion private function __fromFile(path:String):Void
+	@:noCompletion private function __fromFile(path:String, hardware:Bool = false):Bool
+	@:privateAccess
 	{
 		#if lime
-		var image = Image.fromFile(path);
-		__fromImage(image);
+
+		#if (cpp && lime_cffi && !macro && sys)
+		if (hardware && Lib.current.stage != null && Lib.current.stage.context3D != null)
+		{
+			if (lime._internal.backend.native.NativeCFFI.lime_image_load_file(path, __imageAssetCache.buffer) != null)
+			{
+				__fromImageAssetCache(Lib.current.stage.context3D);
+				return true;
+			}
+
+			return false;
+		}
+		else
+		{
+			__fromImage(Image.fromFile(path));
+			return image != null;
+		}
+		#else
+		__fromImage(Image.fromFile(path));
+		if (image == null) return false;
+		else if (hardware) toHardware();
+
+		return true;
+		#end
+
+		#else
+		return false;
 		#end
 	}
+
+	#if (cpp && lime_cffi && !macro && sys)
+	@:noCompletion private inline function __fromImageAssetCache(context:Context3D):Void
+	@:privateAccess
+	{
+		Reflect.setField(__imageAssetCache.buffer, "format", lime.graphics.PixelFormat.RGBA32);
+		lime._internal.graphics.ImageDataUtil.setFormat(__imageAssetCache, BGRA32);
+		lime._internal.graphics.ImageDataUtil.multiplyAlpha(__imageAssetCache);
+		Reflect.setField(__imageAssetCache.buffer, "premultiplied", true);
+		__imageAssetCache.__fromImageBuffer(__imageAssetCache.buffer);
+
+		__resize(__imageAssetCache.buffer.width, __imageAssetCache.buffer.height);
+		__isValid = true;
+
+		__texture = context.createRectangleTexture(width, height, BGRA, false);
+		__textureContext = context.__context;
+		__textureVersion = 0;
+		__texture.__uploadFromImage(__imageAssetCache);
+
+		image = null;
+		__surface = null;
+		readable = false;
+	}
+	#end
 
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __fromImage(image:#if lime Image #else Dynamic #end):Void
@@ -3321,12 +3617,7 @@ class BitmapData implements IBitmapDrawable
 		{
 			this.image = image;
 
-			width = image.width;
-			height = image.height;
-			rect = new Rectangle(0, 0, image.width, image.height);
-
-			__textureWidth = width;
-			__textureHeight = height;
+			__resize(image.width, image.height);
 
 			#if sys
 			image.format = BGRA32;
@@ -3423,8 +3714,16 @@ class BitmapData implements IBitmapDrawable
 	{
 		this.width = width;
 		this.height = height;
-		this.rect.width = width;
-		this.rect.height = height;
+
+		if (rect == null)
+		{
+			rect = new Rectangle(0, 0, width, height);
+		}
+		else
+		{
+			rect.width = width;
+			rect.height = height;
+		}
 
 		__textureWidth = width;
 		__textureHeight = height;
