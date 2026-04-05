@@ -2293,13 +2293,7 @@ class BitmapData implements IBitmapDrawable
 	@:dox(hide) public function getSurface():#if lime CairoImageSurface #else Dynamic #end
 	{
 		#if lime
-		if (!readable) return null;
-
-		if (__surface == null)
-		{
-			__surface = CairoImageSurface.fromImage(image);
-		}
-
+		if (__surface == null && image != null) __surface = CairoImageSurface.fromImage(image);
 		return __surface;
 		#else
 		return null;
