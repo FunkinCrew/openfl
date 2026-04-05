@@ -864,28 +864,28 @@ class Sound extends EventDispatcher
 		return new ID3Info();
 	}
 
-	@:noCompletion private function get_length():Int
+	@:noCompletion private function get_length():Float
 	{
 		#if lime
 		if (__buffer != null)
 		{
 			#if (js && html5 && howlerjs)
-			return Std.int(__buffer.src.duration() * 1000);
+			return __buffer.src.duration() * 1000;
 			#else
-			if (__buffer.data != null)
+			#if lime_funkin
+			if (__buffer.decoder != null)
 			{
-				var samples = (__buffer.data.length * 8.0) / (__buffer.channels * __buffer.bitsPerSample);
-				return Std.int(samples / __buffer.sampleRate * 1000);
+				var samples:Int64 = __buffer.decoder.total();
+				return (samples.high * 4294967296.0 + (samples.low >>> 0)) / __buffer.decoder.sampleRate * 1000;
 			}
-			else if (__buffer.__srcVorbisFile != null)
+			#else
+			if (__buffer.__srcVorbisFile != null)
 			{
-				var samples = Int64.toInt(__buffer.__srcVorbisFile.pcmTotal());
-				return Std.int(samples / __buffer.sampleRate * 1000);
+				var samples:Int64 = __buffer.__srcVorbisFile.pcmTotal();
+				return (samples.high * 4294967296.0 + (samples.low >>> 0)) / __buffer.sampleRate * 1000;
 			}
-			else
-			{
-				return 0;
-			}
+			#end
+			else if (__buffer.data != null) return __buffer.data.length / (__buffer.bitsPerSample >> 3) / __buffer.channels / __buffer.sampleRate * 1000;
 			#end
 		}
 		#end
