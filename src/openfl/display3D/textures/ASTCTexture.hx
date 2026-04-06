@@ -1,6 +1,7 @@
 package openfl.display3D.textures;
 
 #if !flash
+import openfl.display._internal.SamplerState;
 import openfl.display3D.Context3D;
 import openfl.display3D._internal.ASTCReader;
 import openfl.errors.IllegalOperationError;
@@ -65,41 +66,29 @@ using StringTools;
 		reader = null;
 	}
 
-	@:noCompletion
-	private override function __setSamplerState(state:openfl.display._internal.SamplerState):Bool
+	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
 		if (super.__setSamplerState(state))
 		{
-			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
-			{
-				__context.gl.generateMipmap(__textureTarget);
-				__samplerState.mipmapGenerated = true;
-			}
+			var gl = __context.gl;
 
 			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
 			{
-				var aniso:Int = -1;
-
-				if (state != null && state.filter != null)
+				var aniso = switch (state.filter)
 				{
-					switch (state.filter)
-					{
-						case ANISOTROPIC2X:
-							aniso = 2;
-						case ANISOTROPIC4X:
-							aniso = 4;
-						case ANISOTROPIC8X:
-							aniso = 8;
-						case ANISOTROPIC16X:
-							aniso = 16;
-						default:
-							aniso = 1;
-					}
+					case ANISOTROPIC2X: 2;
+					case ANISOTROPIC4X: 4;
+					case ANISOTROPIC8X: 8;
+					case ANISOTROPIC16X: 16;
+					default: 1;
 				}
 
-				if (aniso > Context3D.__glMaxTextureMaxAnisotropy) aniso = Context3D.__glMaxTextureMaxAnisotropy;
+				if (aniso > Context3D.__glMaxTextureMaxAnisotropy)
+				{
+					aniso = Context3D.__glMaxTextureMaxAnisotropy;
+				}
 
-				__context.gl.texParameterf(__context.gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
 			}
 
 			return true;
