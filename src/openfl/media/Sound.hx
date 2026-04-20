@@ -869,7 +869,7 @@ class Sound extends EventDispatcher
 		#if lime
 		if (__buffer != null)
 		{
-			#if (js && html5 && howlerjs)
+			#if (js && html5 && lime_howlerjs)
 			return Std.int(__buffer.src.duration() * 1000);
 			#else
 			if (__buffer.data != null)
