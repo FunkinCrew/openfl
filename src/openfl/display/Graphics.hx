@@ -1988,7 +1988,7 @@ import js.html.CanvasRenderingContext2D;
 				scaleY = Math.sqrt(parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
 			}
 
-			if (displayMatrix != null)
+			if (displayMatrix != null && __owner.__worldScale9Grid == null)
 			{
 				if (displayMatrix.b == 0)
 				{
