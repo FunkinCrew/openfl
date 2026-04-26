@@ -425,33 +425,11 @@ class DatagramSocket extends EventDispatcher
 
 	@:noCompletion private function get_connected():Bool
 	{
-		#if neko
-		try
-		{
-			__udpSocket.peer();
-			return true;
-		}
-		catch (e:Dynamic)
-		{
-			return false;
-		}
-		#else
 		return (__udpSocket.peer() != null);
-		#end
 	}
 
 	@:noCompletion private function get_remoteAddress():String
 	{
-		#if neko
-		try
-		{
-			return __udpSocket.peer().host.host;
-		}
-		catch (e:Dynamic)
-		{
-			return null;
-		}
-		#else
 		var host = __udpSocket.peer();
 
 		if (host == null)
@@ -459,7 +437,6 @@ class DatagramSocket extends EventDispatcher
 			return "";
 		}
 		return host.host.host;
-		#end
 	}
 
 	@:noCompletion private function get_remotePort():Int

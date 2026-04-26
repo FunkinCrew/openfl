@@ -229,12 +229,7 @@ class ServerSocket extends EventDispatcher
 		{
 			// Setting haxe tcp backlog to 0 doesn't seem to force the maximum limit as it does in
 			// AIR so instead we set it to maximum integer which should clamp it to the maximum limit.
-			#if neko
-			// neko throws std@socket_listen if this value is too large
-			backlog = 0x3FFFFFFF;
-			#else
 			backlog = 0x7FFFFFFF;
-			#end
 		}
 
 		__serverSocket.listen(backlog);

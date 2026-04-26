@@ -7,7 +7,6 @@ class DOMSimpleButton
 {
 	public static function renderDrawable(simpleButton:SimpleButton, renderer:DOMRenderer):Void
 	{
-		#if !neko
 		renderer.__pushMaskObject(simpleButton);
 
 		for (previousState in simpleButton.__previousStates)
@@ -30,7 +29,6 @@ class DOMSimpleButton
 		renderer.__popMaskObject(simpleButton);
 
 		renderer.__renderEvent(simpleButton);
-		#end
 	}
 
 	public static function renderDrawableClear(simpleButton:SimpleButton, renderer:DOMRenderer):Void

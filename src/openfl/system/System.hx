@@ -5,9 +5,7 @@ package openfl.system;
 import lime.system.Clipboard;
 import lime.system.System as LimeSystem;
 #end
-#if neko
-import neko.vm.Gc;
-#elseif cpp
+#if cpp
 import cpp.vm.Gc;
 #elseif hl
 import hl.Gc;
@@ -212,7 +210,7 @@ import hl.Gc;
 	**/
 	public static function gc():Void
 	{
-		#if (cpp || neko)
+		#if cpp
 		return Gc.run(true);
 		#elseif hl
 		return Gc.major();
@@ -276,9 +274,7 @@ import hl.Gc;
 	// Getters & Setters
 	@:noCompletion private static function get_totalMemory():Int
 	{
-		#if neko
-		return Gc.stats().heap;
-		#elseif cpp
+		#if cpp
 		return untyped __global__.__hxcpp_gc_used_bytes();
 		#elseif (js && html5)
 		return

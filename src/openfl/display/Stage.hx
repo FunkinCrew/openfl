@@ -1694,8 +1694,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			#if (cpp && !cppia)
 			untyped __cpp__("throw e");
-			#elseif neko
-			neko.Lib.rethrow(e);
 			#elseif js
 			try
 			{
@@ -2322,12 +2320,12 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __renderAfterEvent():Void
 	{
-		#if (cpp || hl || neko)
+		#if (cpp || hl)
 		// TODO: should Lime have a public API to force rendering?
 		window.__backend.render();
 		#end
 		var cancelled = __render(window.context);
-		#if (cpp || hl || neko)
+		#if (cpp || hl)
 		if (!cancelled)
 		{
 			window.__backend.contextFlip();

@@ -753,8 +753,6 @@ class Loader extends DisplayObjectContainer
 		{
 			#if cpp
 			cpp.vm.Gc.run(false);
-			#elseif neko
-			neko.vm.Gc.run(false);
 			#end
 		}
 	}

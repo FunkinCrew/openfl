@@ -8,8 +8,8 @@
 	<set name="expect-lime-version" value="${lime-version}" if="lime-version" />
 	<!-- <set name="lime-version" value="${expect-lime-version}" if="setup" unless="lime-version" /> -->
 
-	<haxedef name="native" if="cpp || neko" />
-	<set name="native" if="cpp || neko" />
+	<haxedef name="native" if="cpp || hl" />
+	<set name="native" if="cpp || hl" />
 
 	<window stencil-buffer="true" depth-buffer="true" color-depth="32" />
 

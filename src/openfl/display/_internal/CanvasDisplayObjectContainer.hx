@@ -14,7 +14,6 @@ class CanvasDisplayObjectContainer
 			|| (displayObjectContainer.mask != null
 				&& (displayObjectContainer.mask.width <= 0 || displayObjectContainer.mask.height <= 0))) return;
 
-		#if !neko
 		CanvasDisplayObject.renderDrawable(displayObjectContainer, renderer);
 
 		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender) return;
@@ -40,7 +39,6 @@ class CanvasDisplayObjectContainer
 		}
 
 		renderer.__popMaskObject(displayObjectContainer);
-		#end
 	}
 
 	public static function renderDrawableMask(displayObjectContainer:DisplayObjectContainer, renderer:CanvasRenderer):Void

@@ -1194,7 +1194,6 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			}
 			catch (e:Dynamic)
 			{
-				// not connected yet (neko)
 				if (Sys.time() - __timestamp > timeout / 1000)
 				{
 					doClose = true;

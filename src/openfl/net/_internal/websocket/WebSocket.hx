@@ -954,10 +954,10 @@ class WebSocket
 		return acceptedSocket;
 	}
 
-	/*We should replace this with cprng from the operating system. 
+	/*We should replace this with cprng from the operating system.
 		Notably, the websocket specification doesn't
 		actually mention using cryptographically secure randomness, so this may
-		be suitable enough for now. Considering why we mask in websocket, the 
+		be suitable enough for now. Considering why we mask in websocket, the
 		security implications are such as that it be random enough to prevent
 		certain attacks. The mask itself is sent with every websocket frame anyway,
 		so I don't know if it's critically relevant. Instead we try to add a bit
@@ -971,7 +971,7 @@ class WebSocket
 		#if cpp
 		// Add process ID to the seed for additional entropy
 		seed += cpp.NativeSys.sys_get_pid();
-		#elseif (hl || neko)
+		#elseif hl
 		seed += Sys.cpuTime();
 		#end
 

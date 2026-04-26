@@ -1,7 +1,7 @@
 package openfl.profiler;
 
 #if !flash
-#if ((cpp || neko) && hxtelemetry && !macro)
+#if (cpp && hxtelemetry && !macro)
 import hxtelemetry.HxTelemetry;
 #end
 import openfl.utils._internal.Lib;
@@ -27,7 +27,7 @@ import openfl.utils._internal.Lib;
 	**/
 	public static var spanMarker(default, null) = 0.0;
 
-	#if ((cpp || neko) && hxtelemetry && !macro)
+	#if (cpp && hxtelemetry && !macro)
 	@:noCompletion private static var telemetry:HxTelemetry;
 	#end
 
@@ -122,21 +122,21 @@ import openfl.utils._internal.Lib;
 
 	@:noCompletion private static inline function __advanceFrame():Void
 	{
-		#if ((cpp || neko) && hxtelemetry && !macro)
+		#if (cpp && hxtelemetry && !macro)
 		telemetry.advance_frame();
 		#end
 	}
 
 	@:noCompletion private static inline function __endTiming(name:String):Void
 	{
-		#if ((cpp || neko) && hxtelemetry && !macro)
+		#if (cpp && hxtelemetry && !macro)
 		telemetry.end_timing(name);
 		#end
 	}
 
 	@:noCompletion private static inline function __initialize():Void
 	{
-		#if ((cpp || neko) && hxtelemetry && !macro)
+		#if (cpp && hxtelemetry && !macro)
 		var meta = Lib.application.meta;
 
 		var config = new hxtelemetry.HxTelemetry.Config();
@@ -154,21 +154,21 @@ import openfl.utils._internal.Lib;
 
 	@:noCompletion private static inline function __rewindStack(stack:String):Void
 	{
-		#if ((cpp || neko) && hxtelemetry && !macro)
+		#if (cpp && hxtelemetry && !macro)
 		telemetry.rewind_stack(stack);
 		#end
 	}
 
 	@:noCompletion private static inline function __startTiming(name:String):Void
 	{
-		#if ((cpp || neko) && hxtelemetry && !macro)
+		#if (cpp && hxtelemetry && !macro)
 		telemetry.start_timing(name);
 		#end
 	}
 
 	@:noCompletion private static inline function __unwindStack():String
 	{
-		#if ((cpp || neko) && hxtelemetry && !macro)
+		#if (cpp && hxtelemetry && !macro)
 		return telemetry.unwind_stack();
 		#else
 		return "";
@@ -178,7 +178,7 @@ import openfl.utils._internal.Lib;
 	// Get & Set Methods
 	@:noCompletion private static function get_connected():Bool
 	{
-		#if ((cpp || neko) && hxtelemetry && !macro)
+		#if (cpp && hxtelemetry && !macro)
 		return true;
 		#else
 		return false;

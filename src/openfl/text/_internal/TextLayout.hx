@@ -188,7 +188,7 @@ class TextLayout
 			#if haxe4
 			#if (lime >= "8.3.0")
 			__hbBuffer.addString(text, 0, -1);
-			#elseif (neko || (cpp && disable_unicode_strings))
+			#elseif (cpp && disable_unicode_strings)
 			__hbBuffer.addUTF8(text, 0, -1);
 			#elseif hl
 			__hbBuffer.addUTF16(text, text.length, 0, -1);
