@@ -21,6 +21,7 @@ import lime.math.Vector4;
 	mottled effect to any object that inherits from the DisplayObject class,
 	such as MovieClip, SimpleButton, TextField, and Video objects, as well as
 	to BitmapData objects.
+
 	The use of filters depends on the object to which you apply the filter:
 
 	* To apply filters to a display object, use the `filters` property of the
@@ -53,6 +54,9 @@ import lime.math.Vector4;
 	`scaleX` and `scaleY` properties are set to a value other than 1.0), the
 	filter effect is not scaled. It is scaled only when the user zooms in on
 	the Stage.
+
+	@see `openfl.display.DisplayObject.filters`
+	@see `openfl.display.BitmapData.applyFilter`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -391,17 +395,11 @@ import lime.math.Vector4;
 #end
 private class DisplacementMapShader extends BitmapFilterShader
 {
-	@:glFragmentSource("
+	@:glFragmentSource("#pragma header
 
-		uniform sampler2D openfl_Texture;
 		uniform sampler2D mapTexture;
-
-		uniform mat4 openfl_Matrix;
-
 		uniform vec4 uOffsets;
 		uniform mat4 uDisplacements;
-
-		varying vec2 openfl_TextureCoordV;
 		varying vec2 mapTextureCoords;
 
 		void main(void) {

@@ -33,7 +33,7 @@
         repository: openfl/openfl
         path: openfl
         ref: x.y.z
-    
+
     - uses: actions/checkout@v4
       with:
         repository: openfl/lime
@@ -66,7 +66,7 @@
 	git push origin x.y.z
 	```
 - Download _openfl-npm_ artifact for tag from GitHub Actions
-- Submit _.tgz file to Haxelib with following command:
-		```sh
-		npm publish openfl-npm.tgz
-		```
+- Submit _.tgz_ file to npm with following command:
+	```sh
+	npm publish openfl-npm.tgz
+	```

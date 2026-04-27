@@ -2,7 +2,6 @@ package openfl.display3D.textures;
 
 #if !flash
 import openfl.display3D.Context3D;
-import openfl.utils._internal.UInt8Array;
 import openfl.display3D._internal.ASTCReader;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
@@ -25,6 +24,9 @@ using StringTools;
 @:final class ASTCTexture extends TextureBase
 {
 	@:noCompletion
+	private static var __astcCompressedTexturesSupported:Null<Bool>;
+
+	@:noCompletion
 	private function new(context:Context3D, data:ByteArray):Void
 	{
 		super(context);
@@ -32,34 +34,35 @@ using StringTools;
 		final extension:Null<Dynamic> = __context.gl.getExtension("KHR_texture_compression_astc_ldr");
 
 		if (extension == null)
-		{
 			throw new IllegalOperationError("ASTC texture compression is not supported on this device (missing GL extension: GL_KHR_texture_compression_astc_ldr).");
-		}
 
-		__textureTarget = __context.gl.TEXTURE_2D;
+		var reader:ASTCReader = new ASTCReader(data);
 
-		final reader:ASTCReader = new ASTCReader(data);
-
-		__width = reader.width;
-
-		__height = reader.height;
-
-		final format:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_ASTC_${reader.blockX}x${reader.blockY}_KHR');
-
-		if (format == null)
 		{
-			throw new IllegalOperationError('ASTC format ${reader.blockX}x${reader.blockY} is not supported on this device (GL extension KHR_texture_compression_astc_ldr is present, but this block size is missing).');
+			final format:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_ASTC_${reader.blockX}x${reader.blockY}_KHR');
+
+			if (format == null)
+				throw new IllegalOperationError('ASTC format ${reader.blockX}x${reader.blockY} is not supported on this device (GL extension KHR_texture_compression_astc_ldr is present, but this block size is missing).');
+
+			__textureTarget = __context.gl.TEXTURE_2D;
+			__width = reader.width;
+			__height = reader.height;
+			__format = format;
+			__internalFormat = format;
+			__premultiplyAlpha = true;
+
+			{
+				__context.__bindGLTexture2D(__textureID);
+
+				__context.gl.compressedTexImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, reader.getCompressedData());
+
+				__context.__bindGLTexture2D(null);
+			}
+
+			reader.dispose();
 		}
 
-		__format = format;
-
-		__internalFormat = format;
-
-		__context.__bindGLTexture2D(__textureID);
-
-		__context.gl.compressedTexImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, reader.getCompressedData());
-
-		__context.__bindGLTexture2D(null);
+		reader = null;
 	}
 
 	@:noCompletion
@@ -67,8 +70,6 @@ using StringTools;
 	{
 		if (super.__setSamplerState(state))
 		{
-			var gl = __context.gl;
-
 			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
 			{
 				__context.gl.generateMipmap(__textureTarget);

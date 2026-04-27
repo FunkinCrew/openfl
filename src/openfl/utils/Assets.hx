@@ -109,11 +109,29 @@ class Assets
 	}
 
 	/**
-		Gets an instance of an embedded bitmap
+		Gets an instance of an embedded bitmap.
 
 		```haxe
 		var bitmap = new Bitmap (Assets.getBitmapData ("image.png"));
 		```
+
+		_Note:_ This method may behave differently, depending on the target
+		platform. On targets that can quickly create new BitmapData instances
+		synchronously, every call to `Assets.getBitmapData()` with the same ID
+		will return a BitmapData instance with its own separate copy of the
+		underlying image data. However, on other targets where loading
+		BitmapData synchronously is unacceptably slow, or where BitmapData may
+		not be loaded synchronously at all (meaning that there is no choice but
+		to load it asynchronously), every call to `Assets.getBitmapData()` with
+		the same ID may return a BitmapData instance that shares the same
+		underlying image data each time.
+
+		With that in mind, modifying or disposing the contents of the BitmapData
+		returned by `Assets.getBitmapData()` may affect the results of future
+		calls to `Assets.getBitmapData()` on some targets. To access a
+		BitmapData instance that may be modified or disposed without affecting
+		future calls to `Assets.getBitmapData()`, call the BitmapData instance's
+		`clone()` method to manually create a copy.
 
 		@param	id		The ID or asset path for the bitmap
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
@@ -138,11 +156,15 @@ class Assets
 		}
 
 		#if !flash
+<<<<<<< vram-caching
 		if ((allowCompressedTextures && Assets.allowCompressedTextures) || haxe.io.Path.extension(id) == "astc")
+=======
+		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
+>>>>>>> mobile/main
 		{
 			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
 
-			if (LimeAssets.exists(astcTexture, BINARY) && openfl.Lib.current.stage.context3D.isASTCSupported())
+			if (LimeAssets.exists(astcTexture, BINARY))
 			{
 				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)), false);
 
@@ -169,6 +191,7 @@ class Assets
 			var bitmapData = image.src;
 			#else
 			var bitmapData = BitmapData.fromImage(image);
+<<<<<<< vram-caching
 
 			if (allowUncompressedTextures && Assets.allowUncompressedTextures)
 			{
@@ -178,6 +201,9 @@ class Assets
 
 				bitmapData = BitmapData.fromTexture(uncompressedTexture, false);
 			}
+=======
+			bitmapData.__asset = true;
+>>>>>>> mobile/main
 			#end
 
 			if (useCache && cache.enabled)
@@ -594,6 +620,7 @@ class Assets
 				var bitmapData = image.src;
 				#else
 				var bitmapData = BitmapData.fromImage(image);
+<<<<<<< vram-caching
 
 				if (allowUncompressedTextures && Assets.allowUncompressedTextures)
 				{
@@ -603,6 +630,9 @@ class Assets
 
 					bitmapData = BitmapData.fromTexture(uncompressedTexture, false);
 				}
+=======
+				bitmapData.__asset = true;
+>>>>>>> mobile/main
 				#end
 
 				if (useCache && cache.enabled)

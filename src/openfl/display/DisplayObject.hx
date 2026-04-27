@@ -255,7 +255,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		The following table describes the `blendMode` settings. The
 		BlendMode class defines string values you can use. The illustrations in
 		the table show `blendMode` values applied to a circular display
-		object(2) superimposed on another display object(1).
+		object (2) superimposed on another display object (1).
 
 		![Square Number 1](/images/blendMode-0a.jpg)  ![Circle Number 2](/images/blendMode-0b.jpg)
 
@@ -330,7 +330,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		significantly faster depending on the complexity of the vector content.
 
 		The `cacheAsBitmap` property is automatically set to
-		`true` whenever you apply a filter to a display object(when
+		`true` whenever you apply a filter to a display object (when
 		its `filter` array is not empty), and if a display object has a
 		filter applied to it, `cacheAsBitmap` is reported as
 		`true` for that display object, even if you set the property to
@@ -497,7 +497,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		is adjusted accordingly, as shown in the following code:
 
 		Except for TextField and Video objects, a display object with no
-		content(such as an empty sprite) has a height of 0, even if you try to
+		content (such as an empty sprite) has a height of 0, even if you try to
 		set `height` to a different value.
 
 		@see [Manipulating size and scaling objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/manipulating-size-and-scaling-objects.html)
@@ -745,7 +745,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		* All fills (including bitmaps, video, and gradients) are stretched to
 		fit their shapes.
 
-		If a display object is rotated, all subsequent scaling is normal(and
+		If a display object is rotated, all subsequent scaling is normal (and
 		the `scale9Grid` property is ignored).
 
 		For example, consider the following display object and a rectangle that
@@ -817,7 +817,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		The properties of the `scrollRect` Rectangle object use the
 		display object's coordinate space and are scaled just like the overall
 		display object. The corner bounds of the cropped window on the scrolling
-		display object are the origin of the display object(0,0) and the point
+		display object are the origin of the display object (0,0) and the point
 		defined by the width and height of the rectangle. They are not centered
 		around the origin, but use the origin to define the upper-left corner of
 		the area. A scrolled display object always scrolls in whole pixel
@@ -912,7 +912,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		is adjusted accordingly, as shown in the following code:
 
 		Except for TextField and Video objects, a display object with no
-		content(such as an empty sprite) has a width of 0, even if you try to set
+		content (such as an empty sprite) has a width of 0, even if you try to set
 		`width` to a different value.
 
 		@see [Manipulating size and scaling objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/manipulating-size-and-scaling-objects.html)
@@ -1277,7 +1277,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		To use this method, first create an instance of the Point class. The
 		_x_ and _y_ values that you assign represent global coordinates
-		because they relate to the origin(0,0) of the main display area. Then
+		because they relate to the origin (0,0) of the main display area. Then
 		pass the Point instance as the parameter to the
 		`globalToLocal()` method. The method returns a new Point object
 		with _x_ and _y_ values that relate to the origin of the display
@@ -1358,7 +1358,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		coordinates to the Stage (global) coordinates.
 
 		This method allows you to convert any given _x_ and _y_
-		coordinates from values that are relative to the origin(0,0) of a
+		coordinates from values that are relative to the origin (0,0) of a
 		specific display object (local coordinates) to values that are relative to
 		the origin of the Stage (global coordinates).
 
@@ -1428,8 +1428,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__cairo = null;
 
 		#if (js && html5)
-		__canvas = null;
-		__context = null;
+		if (__canvas != null)
+		{
+			__canvas.width = 0;
+			__canvas.height = 0;
+			__canvas = null;
+		}
+
+		if (__context != null)
+		{
+			__context.clearRect(0, 0, 0, 0);
+			__context = null;
+		}
 		#end
 
 		if (__graphics != null)
@@ -1536,7 +1546,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		return __dispatchEvent(event);
 	}
 
-	@:noCompletion private function __enterFrame(deltaTime:Int):Void {}
+	@:noCompletion private function __enterFrame(deltaTime:Float):Void {}
 
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
@@ -1956,8 +1966,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function set_alpha(value:Float):Float
 	{
-		if (value > 1.0) value = 1.0;
-		if (value < 0.0) value = 0.0;
+		if (value != value) value = 0.0; // flash converts NaN to 0.0
+		else if (value > 1.0) value = 1.0;
+		else if (value < 0.0) value = 0.0;
 
 		if (value != __alpha && !cacheAsBitmap) __setRenderDirty();
 		return __alpha = value;
@@ -2094,6 +2105,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value == __mask)
 		{
 			return value;
+		}
+
+		if (value != null && value.__maskTarget != null)
+		{
+			// a single mask cannot be applied to more than one display object,
+			// so if the new mask already has a target, remove the mask
+			value.__maskTarget.mask = null;
 		}
 
 		if (value != __mask)
@@ -2313,6 +2331,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			if (__scrollRect == null) __scrollRect = new Rectangle();
 			__scrollRect.copyFrom(value);
+			if (__scrollRect.width < 0.0)
+			{
+				__scrollRect.width = 0.0;
+			}
+			if (__scrollRect.height < 0.0)
+			{
+				__scrollRect.height = 0.0;
+			}
 		}
 		else
 		{
@@ -2326,7 +2352,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setRenderDirty();
 		}
 
-		return value;
+		return __scrollRect;
 	}
 
 	@:noCompletion private function get_shader():Shader
@@ -2364,7 +2390,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 
 		__setTransformDirty();
-		__objectTransform.matrix = value.matrix;
+
+		if (value.__hasMatrix)
+		{
+			var other = value.__displayObject.__transform;
+			__objectTransform.__setTransform(other.a, other.b, other.c, other.d, other.tx, other.ty);
+		}
+		else
+		{
+			__objectTransform.__hasMatrix = false;
+		}
 
 		if (!__objectTransform.__colorTransform.__equals(value.__colorTransform, true)
 			|| (!cacheAsBitmap && __objectTransform.__colorTransform.alphaMultiplier != value.__colorTransform.alphaMultiplier))
@@ -2426,6 +2461,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function set_x(value:Float):Float
 	{
+		if (value != value) value = 0.0; // flash converts NaN to 0.0
 		if (value != __transform.tx) __setTransformDirty();
 		return __transform.tx = value;
 	}
@@ -2437,6 +2473,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function set_y(value:Float):Float
 	{
+		if (value != value) value = 0.0; // flash converts NaN to 0.0
 		if (value != __transform.ty) __setTransformDirty();
 		return __transform.ty = value;
 	}

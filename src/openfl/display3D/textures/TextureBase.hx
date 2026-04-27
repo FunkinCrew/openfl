@@ -50,6 +50,7 @@ class TextureBase extends EventDispatcher
 	// private var __memoryUsage:Int;
 	@:noCompletion private var __optimizeForRenderToTexture:Bool;
 	// private var __outputTextureMemoryUsage:Bool = false;
+	@:noCompletion private var __premultiplyAlpha:Bool;
 	@:noCompletion private var __samplerState:SamplerState;
 	@:noCompletion private var __streamingLevels:Int;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
@@ -84,6 +85,7 @@ class TextureBase extends EventDispatcher
 				__supportsBGRA = true;
 				__textureFormat = bgraExtension.BGRA_EXT;
 
+				// Note: Get rid of this when `ANGLE` is added.
 				#if (lime && !ios && !tvos)
 				if (context.__context.type == OPENGLES)
 				{
@@ -368,8 +370,13 @@ class TextureBase extends EventDispatcher
 			gl.texParameteri(__textureTarget, gl.TEXTURE_MAG_FILTER, magFilter);
 			gl.texParameteri(__textureTarget, gl.TEXTURE_WRAP_S, wrapModeS);
 			gl.texParameteri(__textureTarget, gl.TEXTURE_WRAP_T, wrapModeT);
-			gl.texParameterf(__textureTarget, 34049, state.lodBias); // GL_TEXTURE_LOD_BIAS
 
+			#if lime
+			if (__context.__context.type == OPENGL)
+			{
+				gl.texParameterf(__textureTarget, 0x8501, state.lodBias); // GL_TEXTURE_LOD_BIAS
+			}
+			#end
 
 			if (__samplerState == null) __samplerState = state.clone();
 			__samplerState.copyFrom(state);

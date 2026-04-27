@@ -16,7 +16,6 @@ package openfl.display;
 	@see `flash.display.BitmapData.draw()`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(Null<Int>)
-
 {
 	/**
 		Adds the values of the constituent colors of the display object to the
@@ -191,6 +190,52 @@ package openfl.display;
 	**/
 	public var SUBTRACT = 14;
 
+	/**
+		Brightens the backdrop color to reflect the source color. Painting with black produces no changes.
+	**/
+	public var COLORDODGE = 15;
+
+	/**
+		Darkens the backdrop color to reflect the source color. Painting with white produces no change.
+	**/
+	public var COLORBURN = 16;
+
+	/**
+		Darkens or lightens the colors, depending on the source color value. The effect is similar to shining a diffused spotlight on the backdrop.
+	**/
+	public var SOFTLIGHT = 17;
+
+	/**
+		Produces an effect similar to that of the Difference mode but lower in contrast. Painting with white inverts the backdrop color; painting with black produces no change
+	**/
+	public var EXCLUSION = 18;
+
+	/**
+		Creates a color with the hue of the source color and the saturation and luminosity of the
+		backdrop color.
+	**/
+	public var HUE = 19;
+
+	/**
+		Creates a color with the saturation of the source color and the hue and luminosity of the
+		backdrop color. Painting with this mode in an area of the backdrop that is a pure gray (no
+		saturation) produces no change.
+	**/
+	public var SATURATION = 20;
+
+	/**
+		Creates a color with the hue and saturation of the source color and the luminosity of the
+		backdrop color. This preserves the gray levels of the backdrop and is useful for coloring
+		monochrome images or tinting color images.
+	**/
+	public var COLOR = 21;
+
+	/**
+		Creates a color with the luminosity of the source color and the hue and saturation of the
+		backdrop color. This produces an inverse effect to that of the Color mode.
+	**/
+	public var LUMINOSITY = 22;
+
 	@:from private static function fromString(value:String):BlendMode
 	{
 		return switch (value)
@@ -210,6 +255,14 @@ package openfl.display;
 			case "screen": SCREEN;
 			case "shader": SHADER;
 			case "subtract": SUBTRACT;
+			case "colordodge": COLORDODGE;
+			case "colorburn": COLORBURN;
+			case "softlight": SOFTLIGHT;
+			case "exclusion": EXCLUSION;
+			case "hue": HUE;
+			case "saturation": SATURATION;
+			case "color": COLOR;
+			case "luminosity": LUMINOSITY;
 			default: null;
 		}
 	}
@@ -233,14 +286,20 @@ package openfl.display;
 			case BlendMode.SCREEN: "screen";
 			case BlendMode.SHADER: "shader";
 			case BlendMode.SUBTRACT: "subtract";
+			case BlendMode.COLORDODGE: "colordodge";
+			case BlendMode.COLORBURN: "colorburn";
+			case BlendMode.SOFTLIGHT: "softlight";
+			case BlendMode.EXCLUSION: "exclusion";
+			case BlendMode.HUE: "hue";
+			case BlendMode.SATURATION: "saturation";
+			case BlendMode.COLOR: "color";
+			case BlendMode.LUMINOSITY: "luminosity";
 			default: null;
 		}
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(String) from String to String
 {
 	public var ADD = "add";
 	public var ALPHA = "alpha";
@@ -257,6 +316,14 @@ package openfl.display;
 	public var SCREEN = "screen";
 	public var SHADER = "shader";
 	public var SUBTRACT = "subtract";
+	public var COLORDODGE = "colordodge";
+	public var COLORBURN = "colorburn";
+	public var SOFTLIGHT = "softlight";
+	public var EXCLUSION = "exclusion";
+	public var HUE = "hue";
+	public var SATURATION = "saturation";
+	public var COLOR = "color";
+	public var LUMINOSITY = "luminosity";
 }
 #end
 #else

@@ -323,7 +323,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 
 		The scaling behavior of the movie in full-screen mode is determined by
-		the `scaleMode` setting(set using the
+		the `scaleMode` setting (set using the
 		`Stage.scaleMode` property or the SWF file's `embed`
 		tag settings in the HTML file). If the `scaleMode` property is
 		set to `noScale` while the application transitions to
@@ -335,7 +335,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		dispatch a `resize` event.
 
 		The following restrictions apply to SWF files that play within an HTML
-		page(not those using the stand-alone Flash Player or not running in the
+		page (not those using the stand-alone Flash Player or not running in the
 		AIR runtime):
 
 
@@ -379,7 +379,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `displayState` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -431,7 +431,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `frameRate` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -536,7 +536,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		* `StageQuality.BEST` - Very high rendering quality.
 		Graphics are anti-aliased using a 4 x 4 pixel grid. If
 		`Bitmap.smoothing` is `true` the runtime uses a high
-		quality downscale algorithm that produces fewer artifacts(however, using
+		quality downscale algorithm that produces fewer artifacts (however, using
 		`StageQuality.BEST` with `Bitmap.smoothing` set to
 		`true` slows performance significantly and is not a recommended
 		setting).
@@ -556,7 +556,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		For content running in Adobe AIR, setting the `quality`
 		property of one Stage object changes the rendering quality for all Stage
-		objects(used by different NativeWindow objects).
+		objects (used by different NativeWindow objects).
 		**_Note:_** The operating system draws the device fonts, which are
 		therefore unaffected by the `quality` property.
 
@@ -597,7 +597,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `scaleMode` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -708,7 +708,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `stageHeight` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -869,7 +869,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if (commonjs && !nodejs)
 	@:noCompletion private var __cursor:LimeMouseCursor;
 	#end
-	@:noCompletion private var __deltaTime:Int;
+	@:noCompletion private var __deltaTime:Float;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayMatrix:Matrix;
 	@:noCompletion private var __displayRect:Rectangle;
@@ -883,7 +883,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __fullscreen:Bool;
 	@:noCompletion private var __fullScreenSourceRect:Rectangle;
 	@:noCompletion private var __invalidated:Bool;
-	@:noCompletion private var __lastClickTime:Int;
+	@:noCompletion private var __lastClickTime:Float;
 	@:noCompletion private var __lastClickTarget:InteractiveObject;
 	@:noCompletion private var __logicalWidth:Int;
 	@:noCompletion private var __logicalHeight:Int;
@@ -916,6 +916,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
+		#if haxe4
+		// when using Haxe 4, this value doesn't seem to get initialized,
+		// so it is undefined, which breaks ObjectMap. this line changes it
+		// from undefined to 0, but won't mess with numeric value > 0.
+		untyped #if haxe4 js.Syntax.code #else __js__ #end ("$global.$haxeUID |= 0;");
+		#end
+
 		untyped Object.defineProperties(Stage.prototype, {
 			"color": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
@@ -971,7 +978,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__colorString = "#FFFFFF";
 		__contentsScaleFactor = 1;
 		__currentTabOrderIndex = 0;
-		__deltaTime = 0;
+		__deltaTime = 0.0;
 		__displayState = NORMAL;
 		__mouseX = 0;
 		__mouseY = 0;
@@ -1125,7 +1132,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	/**
 		Calling the `invalidate()` method signals Flash runtimes to
 		alert display objects on the next opportunity it has to render the display
-		list(for example, when the playhead advances to a new frame). After you
+		list (for example, when the playhead advances to a new frame). After you
 		call the `invalidate()` method, when the display list is next
 		rendered, the Flash runtime sends a `render` event to each
 		display object that has registered to listen for the `render`
@@ -1232,6 +1239,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (__renderer != null)
 		{
+			__renderer.__clear();
+
 			__renderer.__allowSmoothing = (quality != LOW);
 			__renderer.__pixelRatio = #if openfl_disable_hdpi 1 #else window.scale #end;
 			__renderer.__worldTransform = __displayMatrix;
@@ -1533,8 +1542,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		MouseEvent.__altKey = modifier.altKey;
 		MouseEvent.__commandKey = modifier.metaKey;
-		MouseEvent.__controlKey = modifier.ctrlKey && !modifier.metaKey;
-		MouseEvent.__ctrlKey = modifier.ctrlKey;
+		MouseEvent.__controlKey = modifier.ctrlKey;
+		MouseEvent.__ctrlKey = __macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey;
 		MouseEvent.__shiftKey = modifier.shiftKey;
 
 		var stack = new Array<DisplayObject>();
@@ -1552,7 +1561,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			var keyLocation = Keyboard.__getKeyLocation(keyCode);
 			var keyCode = Keyboard.__convertKeyCode(keyCode);
-			var charCode = Keyboard.__getCharCode(keyCode, modifier.shiftKey);
+			var charCode = Keyboard.__getCharCode(keyCode, modifier.shiftKey, modifier.capsLock);
 
 			if (type == KeyboardEvent.KEY_UP && (keyCode == Keyboard.SPACE || keyCode == Keyboard.ENTER) && (__focus is Sprite))
 			{
@@ -1810,7 +1819,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		window.onActivate.add(__onLimeWindowActivate.bind(window));
 		window.onClose.add(__onLimeWindowClose.bind(window), false, -9000);
 		window.onDeactivate.add(__onLimeWindowDeactivate.bind(window));
-		window.onDropFile.add(__onLimeWindowDropFile.bind(window));
 		window.onEnter.add(__onLimeWindowEnter.bind(window));
 		window.onExpose.add(__onLimeWindowExpose.bind(window));
 		window.onFocusIn.add(__onLimeWindowFocusIn.bind(window));
@@ -2162,11 +2170,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__endTiming(TelemetryCommandName.RENDER);
 		Telemetry.__rewindStack(stack);
 		#end
-		
+
 		#if HXCPP_TRACY
 		cpp.vm.tracy.TracyProfiler.frameMark();
 		#end
-		
+
 		return cancelled;
 	}
 
@@ -2211,8 +2219,24 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 
 		__renderable = true;
-		__enterFrame(__deltaTime);
-		__deltaTime = 0;
+
+		if (__uncaughtErrorEvents.__enabled)
+		{
+			try
+			{
+				__enterFrame(__deltaTime);
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+			}
+		}
+		else
+		{
+			__enterFrame(__deltaTime);
+		}
+
+		__deltaTime = 0.0;
 
 		var cancelled = __render(context);
 		if (cancelled)
@@ -2319,7 +2343,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__onTouch(TouchEvent.TOUCH_BEGIN, touch, __primaryTouch == touch);
 	}
 
-	@:noCompletion private function __onLimeUpdate(deltaTime:Int):Void
+	@:noCompletion private function __onLimeUpdate(deltaTime:Float):Void
 	{
 		__deltaTime = deltaTime;
 
@@ -2375,8 +2399,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		// __primaryTouch = null;
 		// __broadcastEvent (new Event (Event.DEACTIVATE));
 	}
-
-	@:noCompletion private function __onLimeWindowDropFile(window:Window, file:String):Void {}
 
 	@:noCompletion private function __onLimeWindowEnter(window:Window):Void
 	{
