@@ -49,6 +49,10 @@ import lime.media.vorbis.VorbisFile;
 @:access(openfl.utils.AssetLibrary)
 class Assets
 {
+	public static var allowCompressedTextures:Bool = true;
+
+	public static var allowUncompressedTextures:Bool = #if desktop true #else false #end;
+
 	public static var cache:IAssetCache = new AssetCache();
 
 	@:noCompletion private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher() #end;
@@ -82,7 +86,7 @@ class Assets
 	{
 		#if lime
 		#if !flash
-		if (allowCompressedTextures)
+		if (allowCompressedTextures && Assets.allowCompressedTextures)
 		{
 			if (id != null && haxe.io.Path.extension(id) == "png")
 			{
@@ -132,11 +136,13 @@ class Assets
 		@param	id		The ID or asset path for the bitmap
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@param  allowCompressedTextures		(Optional) Wether to allow compressed textures to be used to get this bitmap (Default: true)
+		@param	allowUncompressedTextures		(Optional) Wether to allow uncompressed textures to be used (Default: true)
+		We wont load graphic to GPU, if it Compressed.
 		@return		A new BitmapData object
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true):BitmapData
+	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true, allowUncompressedTextures:Bool = true):BitmapData
 	{
 		#if (lime && tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
@@ -150,7 +156,11 @@ class Assets
 		}
 
 		#if !flash
+<<<<<<< vram-caching
+		if ((allowCompressedTextures && Assets.allowCompressedTextures) || haxe.io.Path.extension(id) == "astc")
+=======
 		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
+>>>>>>> mobile/main
 		{
 			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
 
@@ -181,7 +191,19 @@ class Assets
 			var bitmapData = image.src;
 			#else
 			var bitmapData = BitmapData.fromImage(image);
+<<<<<<< vram-caching
+
+			if (allowUncompressedTextures && Assets.allowUncompressedTextures)
+			{
+				var uncompressedTexture = openfl.Lib.current.stage.context3D.createTexture(bitmapData.width, bitmapData.height, BGRA, false);
+
+				uncompressedTexture.uploadFromBitmapData(bitmapData);
+
+				bitmapData = BitmapData.fromTexture(uncompressedTexture, false);
+			}
+=======
 			bitmapData.__asset = true;
+>>>>>>> mobile/main
 			#end
 
 			if (useCache && cache.enabled)
@@ -567,11 +589,12 @@ class Assets
 
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+		@param	allowUncompressedTextures		(Optional) Wether to allow uncompressed textures to be used (Default: true)
 		@return		Returns a Future<BitmapData>
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function loadBitmapData(id:String, useCache:Null<Bool> = true):Future<BitmapData>
+	public static function loadBitmapData(id:String, useCache:Null<Bool> = true, allowUncompressedTextures:Bool = true):Future<BitmapData>
 	{
 		if (useCache == null) useCache = true;
 
@@ -597,7 +620,19 @@ class Assets
 				var bitmapData = image.src;
 				#else
 				var bitmapData = BitmapData.fromImage(image);
+<<<<<<< vram-caching
+
+				if (allowUncompressedTextures && Assets.allowUncompressedTextures)
+				{
+					var uncompressedTexture = openfl.Lib.current.stage.context3D.createTexture(bitmapData.width, bitmapData.height, BGRA, false);
+
+					uncompressedTexture.uploadFromBitmapData(bitmapData);
+
+					bitmapData = BitmapData.fromTexture(uncompressedTexture, false);
+				}
+=======
 				bitmapData.__asset = true;
+>>>>>>> mobile/main
 				#end
 
 				if (useCache && cache.enabled)
@@ -905,8 +940,7 @@ class Assets
 	public static function loadText(id:String):Future<String>
 	{
 		#if lime
-		var future = LimeAssets.loadText(id);
-		return future;
+		return LimeAssets.loadText(id);
 		#else
 		return Future.withValue(getText(id));
 		#end
