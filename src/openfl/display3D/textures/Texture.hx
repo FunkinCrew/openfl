@@ -265,12 +265,6 @@ import openfl.utils.ByteArray;
 		{
 			var gl = __context.gl;
 
-			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
-			{
-				gl.generateMipmap(gl.TEXTURE_2D);
-				__samplerState.mipmapGenerated = true;
-			}
-
 			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)
