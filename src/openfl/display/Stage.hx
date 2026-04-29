@@ -2287,11 +2287,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (deltaMode == PIXELS)
 		{
-			__onMouseWheel(Std.int(deltaX * window.scale), Std.int(deltaY * window.scale), deltaMode);
+			__onMouseWheel(deltaX * window.scale, deltaY * window.scale, deltaMode);
 		}
 		else
 		{
-			__onMouseWheel(Std.int(deltaX), Std.int(deltaY), deltaMode);
+			__onMouseWheel(deltaX, deltaY, deltaMode);
 		}
 	}
 
@@ -3364,9 +3364,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var targetPoint = Point.__pool.get();
 		targetPoint.setTo(x, y);
 		__displayMatrix.__transformInversePoint(targetPoint);
-		var delta = Std.int(deltaY);
 
-		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta);
+		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, deltaX, deltaY);
 		event.cancelable = true;
 		__dispatchStack(event, stack);
 		if (event.isDefaultPrevented()) window.onMouseWheel.cancel();
