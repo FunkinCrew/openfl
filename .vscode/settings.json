@@ -16,11 +16,5 @@
     "editor.codeLens": false,
     "editor.insertSpaces": false,
     "editor.trimAutoWhitespace": true,
-    "files.trimTrailingWhitespace": true,
-    "haxe.configurations": [
-        [ "scripts/completion.hxml" ],
-        [ "-main", "TestMain", "-cp", "src", "-cp", "test/haxelib/unit/src", "-lib", "munit", "-D", "openfl-unit-testing" ]
-    ],
-    "haxe.enableServerView": true,
-    "lime.projectFile": "tests/functional/project.xml"
+    "files.trimTrailingWhitespace": true
 }
