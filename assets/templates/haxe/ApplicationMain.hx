@@ -144,7 +144,7 @@ class ApplicationMain
 
 		var result = app.exec();
 
-		#if (sys && !ios && !nodejs && !emscripten)
+		#if (sys && !ios && !nodejs)
 		lime.system.System.exit(result);
 		#end
 	}
