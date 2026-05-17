@@ -288,6 +288,13 @@ class ApplicationMain
 		};
 		::end::
 	}
+
+	#if !macro
+	@:noCompletion @:dox(hide) public static function __init__()
+	{
+		var init = lime.app.Application;
+	}
+	#end
 }
 
 #if !macro
