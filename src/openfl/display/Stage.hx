@@ -2059,7 +2059,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		window.onClose.add(__onLimeWindowClose.bind(window), false, -9000);
 		window.onDeactivate.add(__onLimeWindowDeactivate.bind(window));
 		window.onEnter.add(__onLimeWindowEnter.bind(window));
-		window.onExpose.add(__onLimeWindowExpose.bind(window));
 		window.onFocusIn.add(__onLimeWindowFocusIn.bind(window));
 		window.onFocusOut.add(__onLimeWindowFocusOut.bind(window));
 		window.onFullscreen.add(__onLimeWindowFullscreen.bind(window));
@@ -2687,13 +2686,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __onLimeWindowEnter(window:Window):Void
 	{
 		// if (this.window == null || this.window != window) return;
-	}
-
-	@:noCompletion private function __onLimeWindowExpose(window:Window):Void
-	{
-		if (this.window == null || this.window != window) return;
-
-		__renderDirty = true;
 	}
 
 	@:noCompletion private function __onLimeWindowFocusIn(window:Window):Void
