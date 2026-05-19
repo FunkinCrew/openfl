@@ -13,10 +13,6 @@ import lime.app.Promise;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
 #end
-#if lime_vorbis
-import lime.media.AudioBuffer;
-import lime.media.vorbis.VorbisFile;
-#end
 
 /**
 	The Assets class provides a cross-platform interface to access
@@ -321,23 +317,8 @@ class Assets
 
 	public static function getMusic(id:String, useCache:Bool = true):Sound
 	{
-		#if (lime_vorbis && lime > "7.9.0")
-		var path = getPath(id);
-		var vorbisFile = VorbisFile.fromFile(path);
-		if (vorbisFile != null)
-		{
-			var buffer = AudioBuffer.fromVorbisFile(vorbisFile);
-			return Sound.fromAudioBuffer(buffer);
-		}
-		else
-		{
-			// TODO: Streaming sound
-			return getSound(id, useCache);
-		}
-		#else
 		// TODO: Streaming sound
 		return getSound(id, useCache);
-		#end
 	}
 
 	/**
