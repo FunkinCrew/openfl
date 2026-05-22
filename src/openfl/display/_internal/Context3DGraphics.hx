@@ -32,6 +32,11 @@ import openfl.display._internal.stats.DrawCallContext;
 class Context3DGraphics
 {
 	private static var blankBitmapData = new BitmapData(1, 1, false, 0);
+
+	public static inline function getBlankBitmapData():BitmapData
+	{
+		return blankBitmapData;
+	}
 	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
 	private static var tempVerticesVector:Vector<Float> = new Vector<Float>();
@@ -45,6 +50,7 @@ class Context3DGraphics
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
+
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
@@ -210,7 +216,9 @@ class Context3DGraphics
 		{
 			for (part in graphics.__tessellatedFillParts)
 			{
-				buildDrawTrianglesBuffer(part.vertices, part.indices, null, NONE);
+				bitmap = part.bitmap;
+				bitmapMatrix = part.bitmapMatrix;
+				buildDrawTrianglesBuffer(part.vertices, part.indices, part.uvtData, NONE);
 			}
 		}
 		else
@@ -583,6 +591,7 @@ class Context3DGraphics
 
 		Rectangle.__pool.release(tileRect);
 		Matrix.__pool.release(tileTransform);
+
 	}
 
 	private static function isCompatible(graphics:Graphics):Bool
@@ -611,6 +620,12 @@ class Context3DGraphics
 		}
 
 		#if !openfl_disable_graphics_tessellator
+		if (GraphicsTessellator.commandsContainGradient(graphics))
+		{
+			graphics.__tessellatedFillParts = null;
+			return cacheCompatibility(false);
+		}
+
 		if (GraphicsTessellator.prepare(graphics))
 		{
 			return cacheCompatibility(true);
@@ -860,7 +875,8 @@ class Context3DGraphics
 	{
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 
-		if ((graphics.__bitmap != null && !graphics.__dirty) || !isCompatible(graphics))
+		// Do not reuse the Cairo bitmap when the GPU tessellator can render this shape.
+		if (!isCompatible(graphics))
 		{
 			// if (graphics.__quadBuffer != null || graphics.__triangleIndexBuffer != null) {
 
@@ -1105,11 +1121,25 @@ class Context3DGraphics
 				{
 					for (part in graphics.__tessellatedFillParts)
 					{
-						fill = part.fill;
 						shaderBuffer = null;
-						bitmap = null;
-						bitmapMatrix = null;
-						renderDrawTriangles(part.vertices.length, part.indices.length, 0, NONE);
+
+						if (part.bitmap != null)
+						{
+							bitmap = part.bitmap;
+							bitmapMatrix = part.bitmapMatrix;
+							smooth = part.smooth;
+							repeat = part.repeat;
+							fill = null;
+							var uvLength = part.uvtData != null ? part.uvtData.length : 0;
+							renderDrawTriangles(part.vertices.length, part.indices.length, uvLength, NONE);
+						}
+						else
+						{
+							fill = part.fill;
+							bitmap = null;
+							bitmapMatrix = null;
+							renderDrawTriangles(part.vertices.length, part.indices.length, 0, NONE);
+						}
 					}
 
 					graphics.__dirty = false;
@@ -1435,6 +1465,7 @@ class Context3DGraphics
 			graphics.__dirty = false;
 		}
 		graphics.__hardwareDirty = false;
+
 	}
 
 	public static function renderMask(graphics:Graphics, renderer:OpenGLRenderer):Void
