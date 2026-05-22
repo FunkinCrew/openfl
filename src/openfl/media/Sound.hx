@@ -710,11 +710,10 @@ class Sound extends EventDispatcher
 
 		#if lime
 		var audioBuffer = new AudioBuffer();
-		audioBuffer.bitsPerSample = bitsPerSample;
 		audioBuffer.channels = channels;
+		audioBuffer.dataFormat = (format == "float" ? F32 : S16);
 		audioBuffer.data = new UInt8Array(bytes);
 		audioBuffer.sampleRate = Std.int(sampleRate);
-
 		__buffer = audioBuffer;
 
 		#if openfl_pool_events
