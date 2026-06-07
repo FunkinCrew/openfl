@@ -863,7 +863,7 @@ class Sound extends EventDispatcher
 		return new ID3Info();
 	}
 
-	@:noCompletion private function get_length():Int
+	@:noCompletion private function get_length():Float
 	{
 		#if lime
 		if (__buffer != null)
@@ -875,16 +875,18 @@ class Sound extends EventDispatcher
 
 				if (sprite != null)
 				{
-					return Std.int(sprite[1]);
+					return sprite[1];
 				}
 			}
 
-			return Std.int(__buffer.src.duration() * 1000);
+			return __buffer.src.duration() * 1000;
 			#else
 			if (__buffer.data != null)
 			{
-				var samples = (__buffer.data.length * 8.0) / (__buffer.channels * __buffer.bitsPerSample);
-				return Std.int(samples / __buffer.sampleRate * 1000);
+				var bytesPerFrame = __buffer.channels * (__buffer.bitsPerSample / 8.0);
+				var totalFrames = __buffer.data.length / bytesPerFrame;
+
+				return (totalFrames / __buffer.sampleRate) * 1000.0;
 			}
 			else
 			{
