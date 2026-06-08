@@ -2449,7 +2449,7 @@ class TextField extends InteractiveObject
 
 		// margins are ignored here
 
-		if (__caretIndex == 0 || getLineOffset(getLineIndexOfChar(__caretIndex)) == __caretIndex)
+		if (__caretIndex <= 0 || getLineOffset(getLineIndexOfChar(__caretIndex)) == __caretIndex)
 		{
 			// first index in a line is always at 0 scrollH
 			tempScrollH = 0;
