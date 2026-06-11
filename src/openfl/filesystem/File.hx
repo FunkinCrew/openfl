@@ -2037,6 +2037,7 @@ class File extends FileReference
 		return Path.removeTrailingSlashes(path);
 	}
 
+	#if (lime && !macro)
 	@:noCompletion private static function __getFilterTypes(typeFilter:Array<FileFilter>):Array<FileDialogFilter>
 	{
 		var filters:Array<FileDialogFilter> = [];
@@ -2058,6 +2059,7 @@ class File extends FileReference
 
 		return filters;
 	}
+	#end
 
 	@:noCompletion private static function __getTempPath(dir:Bool):String
 	{

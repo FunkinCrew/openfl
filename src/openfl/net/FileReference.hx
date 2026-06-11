@@ -639,7 +639,7 @@ class FileReference extends EventDispatcher
 		}
 		__inputControl.click();
 		return true;
-		#else
+		#elseif (lime && !macro)
 		FileDialog.openFile(Lib.current.stage.window, function(paths:Array<String>, filter):Void
 		{
 			if (paths.length > 0)
