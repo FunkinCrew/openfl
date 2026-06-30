@@ -48,7 +48,6 @@
 	<dependency path="dist/openfl.min.js" if="html5 openfl-html5-extern" unless="debug" embed="true" />
 	<dependency path="dist/openfl.js" if="html5 openfl-html5-extern debug" embed="true" />
 
-	<source path="lib/flash-externs/src" if="flash" />
 	<!-- <source path="src-draft" if="draft" /> -->
 	<source path="lib/draft-api/src" if="draft" />
 
