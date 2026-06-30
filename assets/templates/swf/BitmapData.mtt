@@ -1,4 +1,4 @@
-package ::PACKAGE_NAME::; #if !flash
+package ::PACKAGE_NAME::;
 
 
 import openfl._internal.formats.swf.SWFLite;
@@ -23,17 +23,3 @@ class ::CLASS_NAME:: extends ::BASE_CLASS_NAME:: {
 
 }
 
-
-#else
-@:bind @:native("::NATIVE_CLASS_NAME::") class ::CLASS_NAME:: extends ::BASE_CLASS_NAME:: {
-
-
-	public function new (width:Int = 0, height:Int = 0, transparent:Bool = false, background:Int = 0) {
-
-		super (width, height, transparent, background);
-
-	}
-
-
-}
-#end
