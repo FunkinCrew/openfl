@@ -48,9 +48,6 @@
 	<dependency path="dist/openfl.min.js" if="html5 openfl-html5-extern" unless="debug" embed="true" />
 	<dependency path="dist/openfl.js" if="html5 openfl-html5-extern debug" embed="true" />
 
-	<!-- <source path="src-draft" if="draft" /> -->
-	<source path="lib/draft-api/src" if="draft" />
-
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
 
