@@ -98,8 +98,4 @@ class GeolocationEvent extends Event
 		return new GeolocationEvent(type, bubbles, cancelable, latitude, longitude, altitude, horizontalAccuracy, verticalAccuracy, speed, heading, timestamp);
 	}
 }
-#else
-#if air
-typedef GeolocationEvent = flash.events.GeolocationEvent;
-#end
 #end

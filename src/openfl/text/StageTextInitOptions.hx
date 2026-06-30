@@ -25,8 +25,4 @@ class StageTextInitOptions
 		this.multiline = multiline;
 	}
 }
-#else
-#if air
-typedef StageTextInitOptions = flash.text.StageTextInitOptions;
-#end
 #end

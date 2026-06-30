@@ -80,8 +80,4 @@ class NativeProcessExitEvent extends Event
 		exitCode = Math.NaN;
 	}
 }
-#else
-#if air
-typedef NativeProcessExitEvent = flash.events.NativeProcessExitEvent;
-#end
 #end

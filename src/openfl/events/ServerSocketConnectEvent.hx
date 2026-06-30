@@ -55,8 +55,4 @@ class ServerSocketConnectEvent extends Event
 		return '[ServerSocketConnectEvent type=$type bubbles=$type cancelable=$cancelable socket=$socket]';
 	}
 }
-#else
-#if air
-typedef ServerSocketConnectEvent = flash.events.ServerSocketConnectEvent;
-#end
 #end

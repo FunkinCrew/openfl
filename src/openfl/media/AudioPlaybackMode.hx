@@ -83,8 +83,4 @@ package openfl.media;
 		}
 	}
 }
-#else
-#if air
-typedef AudioPlaybackMode = flash.media.AudioPlaybackMode;
-#end
 #end

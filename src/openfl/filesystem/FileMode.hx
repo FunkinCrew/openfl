@@ -47,8 +47,4 @@ package openfl.filesystem;
 	**/
 	var WRITE:String = "write";
 }
-#else
-#if air
-typedef FileMode = flash.filesystem.FileMode;
-#end
 #end

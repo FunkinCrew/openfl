@@ -54,8 +54,4 @@ package openfl.permissions;
 		}
 	}
 }
-#else
-#if air
-typedef PermissionStatus = flash.permissions.PermissionStatus;
-#end
 #end

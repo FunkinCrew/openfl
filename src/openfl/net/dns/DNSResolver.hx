@@ -83,8 +83,4 @@ class DNSResolver extends EventDispatcher
 	**/
 	public function lookup(host:String, recordType:Class<ResourceRecord>):Void {}
 }
-#else
-#if air
-typedef DNSResolver = flash.net.dns.DNSResolver;
-#end
 #end

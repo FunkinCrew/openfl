@@ -52,8 +52,4 @@ class DNSResolverEvent extends Event
 		return new DNSResolverEvent(type, bubbles, cancelable, host, resourceRecords);
 	}
 }
-#else
-#if air
-typedef DNSResolverEvent = flash.events.DNSResolverEvent;
-#end
 #end

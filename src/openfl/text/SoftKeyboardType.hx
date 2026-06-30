@@ -88,8 +88,4 @@ package openfl.text;
 		}
 	}
 }
-#else
-#if air
-typedef SoftKeyboardType = flash.text.SoftKeyboardType;
-#end
 #end

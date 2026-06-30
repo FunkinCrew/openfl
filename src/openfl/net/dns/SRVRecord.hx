@@ -45,8 +45,4 @@ class SRVRecord extends ResourceRecord
 		super();
 	}
 }
-#else
-#if air
-typedef SRVRecord = flash.net.dns.SRVRecord;
-#end
 #end

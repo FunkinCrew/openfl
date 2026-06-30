@@ -140,8 +140,4 @@ class InvokeEvent extends Event
 		return new InvokeEvent(type, bubbles, cancelable, currentDirectory, arguments, reason);
 	}
 }
-#else
-#if air
-typedef InvokeEvent = flash.events.InvokeEvent;
-#end
 #end

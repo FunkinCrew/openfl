@@ -53,8 +53,4 @@ class SystemTrayIcon extends InteractiveIcon
 	**/
 	public var tooltip:String;
 }
-#else
-#if air
-typedef SystemTrayIcon = flash.desktop.SystemTrayIcon;
-#end
 #end

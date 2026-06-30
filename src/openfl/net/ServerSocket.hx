@@ -327,8 +327,4 @@ class ServerSocket extends EventDispatcher
 		#end
 	}
 }
-#else
-#if air
-typedef ServerSocket = flash.net.ServerSocket;
-#end
 #end

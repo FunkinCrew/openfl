@@ -26,8 +26,4 @@ class ARecord extends ResourceRecord
 		super();
 	}
 }
-#else
-#if air
-typedef ARecord = flash.net.dns.ARecord;
-#end
 #end

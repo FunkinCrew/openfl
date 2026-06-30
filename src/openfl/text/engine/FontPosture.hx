@@ -40,8 +40,4 @@ package openfl.text.engine;
 		}
 	}
 }
-#else
-#if air
-typedef FontPosture = flash.text.engine.FontPosture;
-#end
 #end

@@ -93,8 +93,4 @@ class Updater
 		throw new IllegalOperationError("Not supported");
 	}
 }
-#else
-#if air
-typedef Updater = flash.desktop.Updater;
-#end
 #end

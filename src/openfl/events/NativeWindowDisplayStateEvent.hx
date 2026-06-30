@@ -92,8 +92,4 @@ class NativeWindowDisplayStateEvent extends Event
 		return __formatToString("NativeWindowDisplayStateEvent", ["type", "bubbles", "cancelable", "beforeDisplayState", "afterDisplayState"]);
 	}
 }
-#else
-#if air
-typedef NativeWindowDisplayStateEvent = flash.events.NativeWindowDisplayStateEvent;
-#end
 #end

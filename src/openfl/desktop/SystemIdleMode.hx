@@ -44,8 +44,4 @@ package openfl.desktop;
 		}
 	}
 }
-#else
-#if air
-typedef SystemIdleMode = flash.desktop.SystemIdleMode;
-#end
 #end

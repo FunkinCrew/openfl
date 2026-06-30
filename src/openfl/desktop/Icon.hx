@@ -50,8 +50,4 @@ class Icon extends EventDispatcher
 	**/
 	public var bitmaps:Array<BitmapData> = [];
 }
-#else
-#if air
-typedef Icon = flash.desktop.Icon;
-#end
 #end

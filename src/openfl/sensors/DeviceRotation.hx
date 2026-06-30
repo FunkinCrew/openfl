@@ -184,8 +184,4 @@ class DeviceRotation extends EventDispatcher
 		return value;
 	}
 }
-#else
-#if air
-typedef DeviceRotation = flash.sensors.DeviceRotation;
-#end
 #end

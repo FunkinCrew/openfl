@@ -57,8 +57,4 @@ package openfl.desktop;
 		}
 	}
 }
-#else
-#if air
-typedef InvokeEventReason = flash.desktop.InvokeEventReason;
-#end
 #end

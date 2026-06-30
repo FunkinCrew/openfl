@@ -167,8 +167,4 @@ class ScreenMouseEvent extends MouseEvent
 		return new ScreenMouseEvent(type, bubbles, cancelable, screenX, screenY, ctrlKey, altKey, shiftKey, buttonDown, commandKey, controlKey);
 	}
 }
-#else
-#if air
-typedef ScreenMouseEvent = flash.events.ScreenMouseEvent;
-#end
 #end

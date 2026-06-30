@@ -47,8 +47,4 @@ package openfl.media;
 		}
 	}
 }
-#else
-#if air
-typedef CameraPosition = flash.media.CameraPosition;
-#end
 #end

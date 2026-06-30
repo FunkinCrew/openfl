@@ -346,8 +346,4 @@ class NativeApplication extends EventDispatcher
 	**/
 	public function setAsDefaultApplication(extension:String):Void {}
 }
-#else
-#if air
-typedef NativeApplication = flash.desktop.NativeApplication;
-#end
 #end

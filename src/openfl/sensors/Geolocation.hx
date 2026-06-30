@@ -151,8 +151,4 @@ class Geolocation
 	**/
 	public function setRequestedUpdateInterval(interval:Float):Void {}
 }
-#else
-#if air
-typedef Geolocation = flash.sensors.Geolocation;
-#end
 #end

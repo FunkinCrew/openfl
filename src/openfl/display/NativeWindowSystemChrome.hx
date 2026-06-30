@@ -67,8 +67,4 @@ package openfl.display;
 		}
 	}
 }
-#else
-#if air
-typedef NativeWindowSystemChrome = flash.display.NativeWindowSystemChrome;
-#end
 #end

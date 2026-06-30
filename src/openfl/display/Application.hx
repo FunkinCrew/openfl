@@ -7,7 +7,7 @@ import lime.app.Application as LimeApplication;
 import lime.ui.Window as LimeWindow;
 import lime.ui.WindowAttributes;
 #end
-#if ((sys || air) && (!flash_doc_gen || air_doc_gen))
+#if (sys && (!flash_doc_gen || air_doc_gen))
 import openfl.desktop.NativeApplication;
 #end
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
@@ -167,7 +167,7 @@ class Application #if lime extends LimeApplication #end
 		{
 			return;
 		}
-		#if ((sys || air) && (!flash_doc_gen || air_doc_gen))
+		#if (sys && (!flash_doc_gen || air_doc_gen))
 		if (!NativeApplication.nativeApplication.autoExit)
 		{
 			return;

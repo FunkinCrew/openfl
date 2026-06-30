@@ -26,8 +26,4 @@ class PTRRecord extends ResourceRecord
 		super();
 	}
 }
-#else
-#if air
-typedef PTRRecord = flash.net.dns.PTRRecord;
-#end
 #end

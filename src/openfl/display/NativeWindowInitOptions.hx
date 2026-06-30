@@ -171,8 +171,4 @@ class NativeWindowInitOptions
 	// used by openfl.display.Application for the initial window
 	@:noCompletion private var __window:Window;
 }
-#else
-#if air
-typedef NativeWindowInitOptions = flash.display.NativeWindowInitOptions;
-#end
 #end

@@ -43,8 +43,4 @@ package openfl.desktop;
 		}
 	}
 }
-#else
-#if air
-typedef NotificationType = flash.desktop.NotificationType;
-#end
 #end

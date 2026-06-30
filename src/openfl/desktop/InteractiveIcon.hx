@@ -43,8 +43,4 @@ class InteractiveIcon extends Icon
 	**/
 	public var height(default, never):Int = 0;
 }
-#else
-#if air
-typedef InteractiveIcon = flash.desktop.InteractiveIcon;
-#end
 #end

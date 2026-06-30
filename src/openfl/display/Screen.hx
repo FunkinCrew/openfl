@@ -181,8 +181,4 @@ class Screen extends EventDispatcher
 		return new Screen(0);
 	}
 }
-#else
-#if air
-typedef Screen = flash.display.Screen;
-#end
 #end

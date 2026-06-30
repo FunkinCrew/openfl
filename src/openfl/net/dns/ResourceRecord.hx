@@ -27,8 +27,4 @@ class ResourceRecord
 	**/
 	public var ttl:Int;
 }
-#else
-#if air
-typedef ResourceRecord = flash.net.dns.ResourceRecord;
-#end
 #end

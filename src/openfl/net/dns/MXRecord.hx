@@ -34,8 +34,4 @@ class MXRecord extends ResourceRecord
 		super();
 	}
 }
-#else
-#if air
-typedef MXRecord = flash.net.dns.MXRecord;
-#end
 #end

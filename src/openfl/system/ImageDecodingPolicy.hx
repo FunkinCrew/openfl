@@ -42,8 +42,4 @@ package openfl.system;
 		}
 	}
 }
-#else
-#if air
-typedef ImageDecodingPolicy = flash.system.ImageDecodingPolicy;
-#end
 #end

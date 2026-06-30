@@ -67,8 +67,4 @@ class DockIcon extends InteractiveIcon
 		throw new IllegalOperationError("Not supported");
 	}
 }
-#else
-#if air
-typedef DockIcon = flash.desktop.DockIcon;
-#end
 #end

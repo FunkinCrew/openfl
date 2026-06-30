@@ -764,8 +764,4 @@ class StageText extends EventDispatcher
 		event.stopPropagation();
 	}
 }
-#else
-#if air
-typedef StageText = flash.text.StageText;
-#end
 #end

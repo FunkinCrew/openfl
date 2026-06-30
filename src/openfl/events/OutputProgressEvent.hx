@@ -56,8 +56,4 @@ class OutputProgressEvent extends Event
 		bytesTotal = Math.NaN;
 	}
 }
-#else
-#if air
-typedef OutputProgressEvent = flash.events.OutputProgressEvent;
-#end
 #end

@@ -45,8 +45,4 @@ class ScreenMode
 		_displayMode = displayMode;
 	}
 }
-#else
-#if air
-typedef ScreenMode = flash.display.ScreenMode;
-#end
 #end

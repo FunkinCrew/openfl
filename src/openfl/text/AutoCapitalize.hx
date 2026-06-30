@@ -53,8 +53,4 @@ package openfl.text;
 		}
 	}
 }
-#else
-#if air
-typedef AutoCapitalize = flash.text.AutoCapitalize;
-#end
 #end

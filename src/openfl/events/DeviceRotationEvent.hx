@@ -69,8 +69,4 @@ class DeviceRotationEvent extends Event
 		return new DeviceRotationEvent(type, bubbles, cancelable, timestamp, roll, pitch, yaw, quaternion);
 	}
 }
-#else
-#if air
-typedef DeviceRotationEvent = flash.events.DeviceRotationEvent;
-#end
 #end

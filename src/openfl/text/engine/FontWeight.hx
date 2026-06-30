@@ -40,8 +40,4 @@ package openfl.text.engine;
 		}
 	}
 }
-#else
-#if air
-typedef FontWeight = flash.text.engine.FontWeight;
-#end
 #end

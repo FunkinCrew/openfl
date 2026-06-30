@@ -75,9 +75,6 @@ import openfl.utils._internal.NullUtils;
 	**/
 	public var STANDARD_EXTENDED = 5;
 
-	#if air
-	// public var ENHANCED = 6;
-	#end
 	@:from private static function fromString(value:String):Context3DProfile
 	{
 		return switch (value)
@@ -87,11 +84,7 @@ import openfl.utils._internal.NullUtils;
 			case "baselineExtended": BASELINE_EXTENDED;
 			case "standard": STANDARD;
 			case "standardConstrained": STANDARD_CONSTRAINED;
-			case "standardExtended":
-				STANDARD_EXTENDED;
-				#if air
-				// case "enhanced": ENHANCED;
-				#end
+			case "standardExtended": STANDARD_EXTENDED;
 			default: null;
 		}
 	}
@@ -105,11 +98,7 @@ import openfl.utils._internal.NullUtils;
 			case Context3DProfile.BASELINE_EXTENDED: "baselineExtended";
 			case Context3DProfile.STANDARD: "standard";
 			case Context3DProfile.STANDARD_CONSTRAINED: "standardConstrained";
-			case Context3DProfile.STANDARD_EXTENDED:
-				"standardExtended";
-				#if air
-				// case Context3DProfile.ENHANCED: "enhanced";
-				#end
+			case Context3DProfile.STANDARD_EXTENDED: "standardExtended";
 			default: null;
 		}
 	}

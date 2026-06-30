@@ -53,8 +53,4 @@ package openfl.text;
 		}
 	}
 }
-#else
-#if air
-typedef StageTextClearButtonMode = flash.text.StageTextClearButtonMode;
-#end
 #end

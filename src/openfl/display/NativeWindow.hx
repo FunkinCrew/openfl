@@ -1440,8 +1440,4 @@ class NativeWindow extends EventDispatcher
 		__window.onMouseMove.remove(__onStartMoveMouseMove);
 	}
 }
-#else
-#if air
-typedef NativeWindow = flash.display.NativeWindow;
-#end
 #end

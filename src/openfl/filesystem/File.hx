@@ -2383,8 +2383,4 @@ class File extends FileReference
 		return lastIndex > 0 ? new File(__path.substring(0, (lastIndex - path.length) + path.length)) : null;
 	}
 }
-#else
-#if air
-typedef File = flash.filesystem.File;
-#end
 #end

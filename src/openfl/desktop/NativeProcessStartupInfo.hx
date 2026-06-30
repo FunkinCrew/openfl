@@ -55,8 +55,4 @@ class NativeProcessStartupInfo
 	**/
 	public var workingDirectory:File;
 }
-#else
-#if air
-typedef NativeProcessStartupInfo = flash.desktop.NativeProcessStartupInfo;
-#end
 #end

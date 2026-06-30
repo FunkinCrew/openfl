@@ -124,8 +124,4 @@ class NativeWindowBoundsEvent extends Event
 		return __formatToString("NativeWindowBoundsEvent", ["type", "bubbles", "cancelable", "beforeBounds", "afterBounds"]);
 	}
 }
-#else
-#if air
-typedef NativeWindowBoundsEvent = flash.events.NativeWindowBoundsEvent;
-#end
 #end

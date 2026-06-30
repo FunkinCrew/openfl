@@ -82,8 +82,4 @@ package openfl.display;
 		}
 	}
 }
-#else
-#if air
-typedef StageOrientation = flash.display.StageOrientation;
-#end
 #end

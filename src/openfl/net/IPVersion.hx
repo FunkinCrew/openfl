@@ -42,8 +42,4 @@ package openfl.net;
 		}
 	}
 }
-#else
-#if air
-typedef IPVersion = flash.net.IPVersion;
-#end
 #end

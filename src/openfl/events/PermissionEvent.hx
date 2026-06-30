@@ -69,8 +69,4 @@ class PermissionEvent extends Event
 		status = DENIED;
 	}
 }
-#else
-#if air
-typedef PermissionEvent = flash.events.PermissionEvent;
-#end
 #end

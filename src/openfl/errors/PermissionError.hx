@@ -24,8 +24,4 @@ class PermissionError extends Error
 		name = "PermissionError";
 	}
 }
-#else
-#if air
-typedef PermissionError = flash.errors.PermissionError;
-#end
 #end

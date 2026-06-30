@@ -62,8 +62,4 @@ package openfl.display;
 		}
 	}
 }
-#else
-#if air
-typedef NativeWindowDisplayState = flash.display.NativeWindowDisplayState;
-#end
 #end

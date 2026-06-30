@@ -60,8 +60,4 @@ package openfl.text;
 		}
 	}
 }
-#else
-#if air
-typedef ReturnKeyLabel = flash.text.ReturnKeyLabel;
-#end
 #end

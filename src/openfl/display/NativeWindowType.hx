@@ -68,8 +68,4 @@ package openfl.display;
 		}
 	}
 }
-#else
-#if air
-typedef NativeWindowType = flash.display.NativeWindowType;
-#end
 #end

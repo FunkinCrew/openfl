@@ -1655,8 +1655,4 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		return position = value;
 	}
 }
-#elseif flash
-#if air
-typedef FileStream = flash.filesystem.FileStream;
-#end
 #end

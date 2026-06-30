@@ -48,8 +48,4 @@ package openfl.display;
 		}
 	}
 }
-#else
-#if air
-typedef FocusDirection = flash.display.FocusDirection;
-#end
 #end
