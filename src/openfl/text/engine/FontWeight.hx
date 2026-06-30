@@ -1,7 +1,6 @@
 package openfl.text.engine;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The FontWeight class is an enumeration of constant values used with
 	`FontDescription.fontWeight` and `StageText.fontWeight` to set text to bold
@@ -41,13 +40,6 @@ package openfl.text.engine;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract FontWeight(String) from String to String
-{
-	public var BOLD = "bold";
-	public var NORMAL = "normal";
-}
-#end
 #else
 #if air
 typedef FontWeight = flash.text.engine.FontWeight;

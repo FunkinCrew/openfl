@@ -31,18 +31,6 @@ import openfl.utils._internal.Lib;
 	@:noCompletion private static var telemetry:HxTelemetry;
 	#end
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Telemetry, "connected", {
-			get: function()
-			{
-				return Telemetry.get_connected();
-			}
-		});
-	}
-	#end
-
 	/**
 		Register a function that can be called by issuing a command over a socket
 

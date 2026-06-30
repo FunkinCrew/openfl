@@ -1,7 +1,6 @@
 package openfl.desktop;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The InvokeEventReason class enumerates values returned by the `reason`
 	property of an InvokeEvent object.
@@ -58,15 +57,6 @@ package openfl.desktop;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract InvokeEventReason(String) from String to String
-{
-	public var LOGIN = "login";
-	public var NOTIFICATION = "notification";
-	public var OPEN_URL = "openURL";
-	public var STANDARD = "standard";
-}
-#end
 #else
 #if air
 typedef InvokeEventReason = flash.desktop.InvokeEventReason;

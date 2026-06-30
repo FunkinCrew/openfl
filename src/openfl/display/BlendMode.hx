@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-#if !openfljs
 /**
 	A class that provides constant values for visual blend mode effects. These
 	constants are used in the following:
@@ -298,34 +297,6 @@ package openfl.display;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(String) from String to String
-{
-	public var ADD = "add";
-	public var ALPHA = "alpha";
-	public var DARKEN = "darken";
-	public var DIFFERENCE = "difference";
-	public var ERASE = "erase";
-	public var HARDLIGHT = "hardlight";
-	public var INVERT = "invert";
-	public var LAYER = "layer";
-	public var LIGHTEN = "lighten";
-	public var MULTIPLY = "multiply";
-	public var NORMAL = "normal";
-	public var OVERLAY = "overlay";
-	public var SCREEN = "screen";
-	public var SHADER = "shader";
-	public var SUBTRACT = "subtract";
-	public var COLORDODGE = "colordodge";
-	public var COLORBURN = "colorburn";
-	public var SOFTLIGHT = "softlight";
-	public var EXCLUSION = "exclusion";
-	public var HUE = "hue";
-	public var SATURATION = "saturation";
-	public var COLOR = "color";
-	public var LUMINOSITY = "luminosity";
-}
-#end
 #else
 typedef BlendMode = flash.display.BlendMode;
 #end

@@ -1,7 +1,6 @@
 package openfl.media;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The CameraPosition class defines constants for the `position` property of
 	the Camera class.
@@ -48,14 +47,6 @@ package openfl.media;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract CameraPosition(String) from String to String
-{
-	public var BACK = "back";
-	public var FRONT = "front";
-	public var UNKNOWN = "unknown";
-}
-#end
 #else
 #if air
 typedef CameraPosition = flash.media.CameraPosition;

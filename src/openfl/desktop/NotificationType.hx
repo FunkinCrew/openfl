@@ -1,7 +1,6 @@
 package openfl.desktop;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The NotificationType class defines constants for use in the priority
 	parameter of the DockIcon `bounce()` method and the type parameter of the
@@ -44,13 +43,6 @@ package openfl.desktop;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract NotificationType(String) from String to String
-{
-	public var CRITICAL = "critical";
-	public var INFORMATIONAL = "informational";
-}
-#end
 #else
 #if air
 typedef NotificationType = flash.desktop.NotificationType;

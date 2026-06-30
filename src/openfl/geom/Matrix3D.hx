@@ -86,22 +86,6 @@ class Matrix3D
 	**/
 	public var rawData:Vector<Float>;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Matrix3D.prototype, {
-			"determinant": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_determinant (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_determinant (v); }")
-			},
-			"position": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_position (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_position (v); }")
-			},
-		});
-	}
-	#end
-
 	public function new(v:Vector<Float> = null)
 	{
 		if (v != null && v.length == 16)

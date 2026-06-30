@@ -147,7 +147,7 @@ class Loader extends DisplayObjectContainer
 
 	@:noCompletion private static function __init__()
 	{
-		#if openfljs inline #end Loader.__registerDefaultLoaders();
+		Loader.__registerDefaultLoaders();
 	}
 
 	/**

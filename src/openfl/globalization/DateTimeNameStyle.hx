@@ -10,7 +10,6 @@ package openfl.globalization;
 	The `LONG_ABBREVIATION` and `SHORT_ABBREVIATION` may be the same or
 	different depending on the operating system and browser settings.
 **/
-#if !openfljs
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameStyle(Null<Int>)
 {
 	/**
@@ -63,25 +62,6 @@ package openfl.globalization;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameStyle(String) from String to String
-{
-	public var FULL = "full";
-	public var LONG_ABBREVIATION = "longAbbreviation";
-	public var SHORT_ABBREVIATION = "shortAbbreviation";
-
-	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameStyle
-	{
-		return switch (value)
-		{
-			case 0: FULL;
-			case 1: LONG_ABBREVIATION;
-			case 2: SHORT_ABBREVIATION;
-			default: null;
-		}
-	}
-}
-#end
 #else
 typedef DateTimeNameStyle = flash.globalization.DateTimeNameStyle;
 #end

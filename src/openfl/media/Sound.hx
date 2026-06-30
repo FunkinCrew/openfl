@@ -264,16 +264,6 @@ class Sound extends EventDispatcher
 	private var __alAudioContext:OpenALAudioContext = null;
 	#end
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Sound.prototype, {
-			"id3": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_id3 (); }")},
-			"length": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }")},
-		});
-	}
-	#end
-
 	/**
 		Creates a new Sound object. If you pass a valid URLRequest object to the
 		Sound constructor, the constructor automatically calls the

@@ -1,7 +1,7 @@
 package openfl.utils;
 
 #if (!flash || display)
-#if (!openfljs || !js)
+#if (!js)
 import haxe.ds.StringMap;
 import haxe.ds.IntMap;
 import haxe.ds.ObjectMap;
@@ -242,7 +242,8 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 
 	#if haxe5
-	public function size():Int {
+	public function size():Int
+	{
 		return types.size();
 	}
 	#end
@@ -329,7 +330,8 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 
 	#if haxe5
-	public function size():Int {
+	public function size():Int
+	{
 		return floatKeys.length;
 	}
 	#end
@@ -517,7 +519,8 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 
 	#if haxe5
-	public function size():Int {
+	public function size():Int
+	{
 		return map.size();
 	}
 	#end

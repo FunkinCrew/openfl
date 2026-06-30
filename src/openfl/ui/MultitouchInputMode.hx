@@ -1,7 +1,6 @@
 package openfl.ui;
 
 #if !flash
-#if !openfljs
 /**
 	The MultitouchInputMode class provides values for the
 	`inputMode` property in the openfl.ui.Multitouch class. These
@@ -52,14 +51,6 @@ package openfl.ui;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract MultitouchInputMode(String) from String to String
-{
-	public var GESTURE = "gesture";
-	public var NONE = "none";
-	public var TOUCH_POINT = "touchPoint";
-}
-#end
 #else
 typedef MultitouchInputMode = flash.ui.MultitouchInputMode;
 #end

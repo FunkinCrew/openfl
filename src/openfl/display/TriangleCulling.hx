@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-#if !openfljs
 /**
 	Defines codes for culling algorithms that determine which triangles not to
 	render when drawing triangle paths.
@@ -63,14 +62,6 @@ package openfl.display;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TriangleCulling(String) from String to String
-{
-	public var NEGATIVE = "negative";
-	public var NONE = "none";
-	public var POSITIVE = "positive";
-}
-#end
 #else
 typedef TriangleCulling = flash.display.TriangleCulling;
 #end

@@ -132,16 +132,6 @@ class ColorTransform
 	**/
 	public var redOffset:Float;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(ColorTransform.prototype, "color", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
-			set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }")
-		});
-	}
-	#end
-
 	/**
 		Creates a ColorTransform object for a display object with the specified
 		color channel values and alpha values.

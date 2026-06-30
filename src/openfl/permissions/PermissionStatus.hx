@@ -1,7 +1,6 @@
 package openfl.permissions;
 
 #if !flash
-#if !openfljs
 /**
 	The PermissionStatus class is an enumeration of constant values that specify
 	the authorization status of a permission.
@@ -55,15 +54,6 @@ package openfl.permissions;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract PermissionStatus(String) from String to String
-{
-	public var DENIED = "denied";
-	public var GRANTED = "granted";
-	public var ONLY_WHEN_IN_USE = "onlyWhenInUse";
-	public var UNKNOWN = "unknown";
-}
-#end
 #else
 #if air
 typedef PermissionStatus = flash.permissions.PermissionStatus;

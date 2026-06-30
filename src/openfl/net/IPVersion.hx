@@ -1,7 +1,6 @@
 package openfl.net;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The IPVersion class defines constants representing the different families of
 	IP addresses.
@@ -43,13 +42,6 @@ package openfl.net;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract IPVersion(String) from String to String
-{
-	public var IPV4 = "IPv4";
-	public var IPV6 = "IPv6";
-}
-#end
 #else
 #if air
 typedef IPVersion = flash.net.IPVersion;

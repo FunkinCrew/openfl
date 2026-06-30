@@ -1,7 +1,6 @@
 package openfl.display3D;
 
 #if !flash
-#if !openfljs
 #if cs
 import openfl.utils._internal.NullUtils;
 #end
@@ -104,19 +103,6 @@ import openfl.utils._internal.NullUtils;
 	}
 	#end
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DStencilAction(String) from String to String
-{
-	public var DECREMENT_SATURATE = "decrementSaturate";
-	public var DECREMENT_WRAP = "decrementWrap";
-	public var INCREMENT_SATURATE = "incrementSaturate";
-	public var INCREMENT_WRAP = "incrementWrap";
-	public var INVERT = "invert";
-	public var KEEP = "keep";
-	public var SET = "set";
-	public var ZERO = "zero";
-}
-#end
 #else
 typedef Context3DStencilAction = flash.display3D.Context3DStencilAction;
 #end

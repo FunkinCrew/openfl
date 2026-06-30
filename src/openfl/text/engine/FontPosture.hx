@@ -1,7 +1,6 @@
 package openfl.text.engine;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The FontPosture class is an enumeration of constant values used with
 	`FontDescription.fontPosture` and `StageText.fontPostures` to set text to
@@ -41,13 +40,6 @@ package openfl.text.engine;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract FontPosture(String) from String to String
-{
-	public var ITALIC = "italic";
-	public var NORMAL = "normal";
-}
-#end
 #else
 #if air
 typedef FontPosture = flash.text.engine.FontPosture;

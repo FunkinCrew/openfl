@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-#if !openfljs
 /**
 	The GraphicsPathWinding class provides values for the
 	`openfl.display.GraphicsPath.winding` property and the
@@ -59,13 +58,6 @@ package openfl.display;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract GraphicsPathWinding(String) from String to String
-{
-	public var EVEN_ODD = "evenOdd";
-	public var NON_ZERO = "nonZero";
-}
-#end
 #else
 typedef GraphicsPathWinding = flash.display.GraphicsPathWinding;
 #end

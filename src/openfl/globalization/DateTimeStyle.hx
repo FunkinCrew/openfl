@@ -12,7 +12,6 @@ package openfl.globalization;
 	as the `timeStyle` and `dateStyle` property as a side effect of calling the
 	`DateTimeFormatter.setDateTimePattern()` method.
 **/
-#if !openfljs
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeStyle(Null<Int>)
 {
 	/**
@@ -77,29 +76,6 @@ package openfl.globalization;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeStyle(String) from String to String
-{
-	public var CUSTOM = "custom";
-	public var LONG = "long";
-	public var MEDIUM = "medium";
-	public var NONE = "none";
-	public var SHORT = "short";
-
-	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeStyle
-	{
-		return switch (value)
-		{
-			case 0: CUSTOM;
-			case 1: LONG;
-			case 2: MEDIUM;
-			case 3: NONE;
-			case 4: SHORT;
-			default: null;
-		}
-	}
-}
-#end
 #else
 typedef DateTimeStyle = flash.globalization.DateTimeStyle;
 #end

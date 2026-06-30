@@ -1,7 +1,6 @@
 package openfl.text;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The SoftKeyboardType class defines the types of soft keyboards for mobile
 	applications. You select the keyboard type with the `softKeyboardType`
@@ -89,19 +88,6 @@ package openfl.text;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract SoftKeyboardType(String) from String to String
-{
-	public var CONTACT = "contact";
-	public var DECIMAL = "decimalpad";
-	public var DEFAULT = "default";
-	public var EMAIL = "email";
-	public var NUMBER = "number";
-	public var PHONE = "phone";
-	public var PUNCTUATION = "punctuation";
-	public var URL = "url";
-}
-#end
 #else
 #if air
 typedef SoftKeyboardType = flash.text.SoftKeyboardType;

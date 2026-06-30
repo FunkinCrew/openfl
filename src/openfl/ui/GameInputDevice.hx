@@ -52,15 +52,6 @@ import lime.ui.Gamepad;
 	@:noCompletion private var __gamepad:Gamepad;
 	#end
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(GameInputDevice.prototype, {
-			"numControls": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numControls (); }")},
-		});
-	}
-	#end
-
 	@:noCompletion private function new(gamepad:Gamepad)
 	{
 		this.__gamepad = gamepad;

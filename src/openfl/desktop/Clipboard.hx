@@ -122,21 +122,6 @@ class Clipboard
 	@:noCompletion private var __systemClipboard:Bool;
 	@:noCompletion private var __text:String;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped global.Object.defineProperty(Clipboard, "generalClipboard", {
-			get: function()
-			{
-				return Clipboard.get_generalClipboard();
-			}
-		});
-		untyped global.Object.defineProperty(Clipboard.prototype, "formats", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_formats (); }")
-		});
-	}
-	#end
-
 	@:noCompletion private function new() {}
 
 	/**

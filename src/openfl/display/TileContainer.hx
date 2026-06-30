@@ -24,15 +24,6 @@ class TileContainer extends Tile implements ITileContainer
 
 	@:noCompletion private var __tiles:Array<Tile>;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(TileContainer.prototype, "numTiles", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numTiles (); }")
-		});
-	}
-	#end
-
 	public function new(x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0)
 	{
 		super(-1, x, y, scaleX, scaleY, rotation, originX, originY);

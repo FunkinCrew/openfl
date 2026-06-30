@@ -95,22 +95,6 @@ class Accelerometer extends EventDispatcher
 	@:noCompletion private var __muted:Bool;
 	@:noCompletion private var __timer:Timer;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Accelerometer.prototype, "muted", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_muted (); }"),
-			set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_muted (v); }")
-		});
-		untyped Object.defineProperty(Accelerometer, "isSupported", {
-			get: function()
-			{
-				return Accelerometer.get_isSupported();
-			}
-		});
-	}
-	#end
-
 	/**
 		Creates a new Accelerometer instance.
 	**/

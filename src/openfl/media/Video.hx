@@ -181,16 +181,6 @@ class Video extends DisplayObject
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __width:Float;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Video.prototype, {
-			"videoHeight": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_videoHeight (); }")},
-			"videoWidth": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_videoWidth (); }")},
-		});
-	}
-	#end
-
 	/**
 		Creates a new Video instance. If no values for the `width` and
 		`height` parameters are supplied, the default values are used. You can

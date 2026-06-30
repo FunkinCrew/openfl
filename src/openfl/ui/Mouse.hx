@@ -68,22 +68,6 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	@:noCompletion private static var __cursor:MouseCursor = MouseCursor.AUTO;
 	@:noCompletion private static var __hidden:Bool;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Mouse, "cursor", {
-			get: function()
-			{
-				return Mouse.get_cursor();
-			},
-			set: function(value)
-			{
-				return Mouse.set_cursor(value);
-			}
-		});
-	}
-	#end
-
 	/**
 		Hides the pointer. The pointer is visible by default.
 

@@ -145,26 +145,6 @@ import hl.Gc;
 	**/
 	@:noCompletion @:dox(hide) public static var vmVersion(get, never):String;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(System, {
-			"totalMemory": {
-				get: function()
-				{
-					return System.get_totalMemory();
-				}
-			},
-			"vmVersion": {
-				get: function()
-				{
-					return System.get_vmVersion();
-				}
-			},
-		});
-	}
-	#end
-
 	/**
 		Makes the specified XML object immediately available for garbage
 		collection. This method will remove parent and child connections

@@ -57,15 +57,6 @@ class Point
 	**/
 	public var y:Float;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Point.prototype, "length", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }")
-		});
-	}
-	#end
-
 	/**
 		Creates a new point. If you pass no parameters to this method, a point is
 		created at (0,0).

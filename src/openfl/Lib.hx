@@ -38,26 +38,6 @@ class Lib
 	private static var __unusedImports:Array<Class<Dynamic>> = [SWFLibrary, SWFLiteLibrary];
 	#end
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Lib, {
-			"application": {
-				get: function()
-				{
-					return Lib.get_application();
-				}
-			},
-			"current": {
-				get: function()
-				{
-					return Lib.get_current();
-				}
-			}
-		});
-	}
-	#end
-
 	public static function as<T>(v:Dynamic, c:Class<T>):Null<T>
 	{
 		#if flash

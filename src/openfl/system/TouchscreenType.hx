@@ -1,7 +1,6 @@
 package openfl.system;
 
 #if !flash
-#if !openfljs
 /**
 	The TouchscreenType class is an enumeration class that provides values for
 	the different types of touch screens.
@@ -47,14 +46,6 @@ package openfl.system;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TouchscreenType(String) from String to String
-{
-	public var FINGER = "finger";
-	public var NONE = "none";
-	public var STYLUS = "stylus";
-}
-#end
 #else
 typedef TouchscreenType = flash.system.TouchscreenType;
 #end

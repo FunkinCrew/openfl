@@ -1,7 +1,6 @@
 package openfl.system;
 
 #if !flash
-#if !openfljs
 /**
 	The SecurityPanel class provides values for specifying which Security
 	Settings panel you want to display.
@@ -100,18 +99,6 @@ package openfl.system;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract SecurityPanel(String) from String to String
-{
-	public var CAMERA = "camera";
-	public var DEFAULT = "default";
-	public var DISPLAY = "display";
-	public var LOCAL_STORAGE = "localStorage";
-	public var MICROPHONE = "microphone";
-	public var PRIVACY = "privacy";
-	public var SETTINGS_MANAGER = "settingsManager";
-}
-#end
 #else
 typedef SecurityPanel = flash.system.SecurityPanel;
 #end

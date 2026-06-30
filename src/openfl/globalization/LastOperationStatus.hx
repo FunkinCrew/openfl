@@ -7,7 +7,6 @@ package openfl.globalization;
 	be retrieved through the read-only property `lastOperationStatus` available
 	in most globalization classes.
 **/
-#if !openfljs
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract LastOperationStatus(Null<Int>)
 {
 	/**
@@ -174,53 +173,6 @@ package openfl.globalization;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract LastOperationStatus(String) from String to String
-{
-	public var BUFFER_OVERFLOW_ERROR = "bufferOverflowError";
-	public var ERROR_CODE_UNKNOWN = "errorCodeUnknown";
-	public var ILLEGAL_ARGUMENT_ERROR = "illegalArgumentError";
-	public var INDEX_OUT_OF_BOUNDS_ERROR = "indexOutOfBoundsError";
-	public var INVALID_ATTR_VALUE = "invalidAttrValue";
-	public var INVALID_CHAR_FOUND = "invalidCharFound";
-	public var MEMORY_ALLOCATION_ERROR = "memoryAllocationError";
-	public var NO_ERROR = "noError";
-	public var NUMBER_OVERFLOW_ERROR = "numberOverflowError";
-	public var PARSE_ERROR = "parseError";
-	public var PATTERN_SYNTAX_ERROR = "patternSyntaxError";
-	public var PLATFORM_API_FAILED = "platformAPIFailed";
-	public var TRUNCATED_CHAR_FOUND = "truncatedCharFound";
-	public var UNEXPECTED_TOKEN = "unexpectedToken";
-	public var UNSUPPORTED_ERROR = "unsupportedError";
-	public var USING_DEFAULT_WARNING = "usingDefaultWarning";
-	public var USING_FALLBACK_WARNING = "usingFallbackWarning";
-
-	@:noCompletion private inline static function fromInt(value:Null<Int>):LastOperationStatus
-	{
-		return switch (value)
-		{
-			case 0: BUFFER_OVERFLOW_ERROR;
-			case 1: ERROR_CODE_UNKNOWN;
-			case 2: ILLEGAL_ARGUMENT_ERROR;
-			case 3: INDEX_OUT_OF_BOUNDS_ERROR;
-			case 4: INVALID_ATTR_VALUE;
-			case 5: INVALID_CHAR_FOUND;
-			case 6: MEMORY_ALLOCATION_ERROR;
-			case 7: NO_ERROR;
-			case 8: NUMBER_OVERFLOW_ERROR;
-			case 9: PARSE_ERROR;
-			case 10: PATTERN_SYNTAX_ERROR;
-			case 11: PLATFORM_API_FAILED;
-			case 12: TRUNCATED_CHAR_FOUND;
-			case 13: UNEXPECTED_TOKEN;
-			case 14: UNSUPPORTED_ERROR;
-			case 15: USING_DEFAULT_WARNING;
-			case 16: USING_FALLBACK_WARNING;
-			default: null;
-		}
-	}
-}
-#end
 #else
 typedef LastOperationStatus = flash.globalization.LastOperationStatus;
 #end

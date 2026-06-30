@@ -28,15 +28,6 @@ class Shape extends DisplayObject
 	**/
 	public var graphics(get, never):Graphics;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Shape.prototype, "graphics", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_graphics (); }")
-		});
-	}
-	#end
-
 	/**
 		Creates a new Shape object.
 	**/

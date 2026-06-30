@@ -222,21 +222,6 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	@:noCompletion private var __socket:#if sys SysSocket #else Dynamic #end;
 	@:noCompletion private var __timestamp:Float;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Socket.prototype, {
-			"bytesAvailable": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bytesAvailable (); }")},
-			"bytesPending": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bytesPending (); }")},
-			"connected": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_connected (); }")},
-			"endian": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_endian (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_endian (v); }")
-			}
-		});
-	}
-	#end
-
 	/**
 		Creates a new Socket object. If no parameters are specified, an
 		initially disconnected socket is created. If parameters are specified,

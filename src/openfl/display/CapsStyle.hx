@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-#if !openfljs
 /**
 	The CapsStyle class is an enumeration of constant values that specify the
 	caps style to use in drawing lines. The constants are provided for use as
@@ -63,25 +62,6 @@ package openfl.display;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract CapsStyle(String) from String to String
-{
-	public var NONE = "none";
-	public var ROUND = "round";
-	public var SQUARE = "square";
-
-	@:noCompletion private inline static function fromInt(value:Null<Int>):CapsStyle
-	{
-		return switch (value)
-		{
-			case 0: NONE;
-			case 1: ROUND;
-			case 2: SQUARE;
-			default: null;
-		}
-	}
-}
-#end
 #else
 typedef CapsStyle = flash.display.CapsStyle;
 #end

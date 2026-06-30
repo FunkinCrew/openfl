@@ -615,15 +615,6 @@ class MouseEvent extends Event
 
 	@:noCompletion private var __updateAfterEventFlag:Bool;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(MouseEvent.prototype, "delta", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_delta (); }")
-		});
-	}
-	#end
-
 	/**
 		Creates an Event object that contains information about mouse events.
 		Event objects are passed as parameters to event listeners.

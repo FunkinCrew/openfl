@@ -1,7 +1,6 @@
 package openfl.text;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The ReturnKeyLabel class defines the values to use for the `returnKeyLabel`
 	property of the StageText class.
@@ -61,16 +60,6 @@ package openfl.text;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ReturnKeyLabel(String) from String to String
-{
-	public var DEFAULT = "default";
-	public var DONE = "done";
-	public var GO = "go";
-	public var NEXT = "next";
-	public var SEARCH = "search";
-}
-#end
 #else
 #if air
 typedef ReturnKeyLabel = flash.text.ReturnKeyLabel;

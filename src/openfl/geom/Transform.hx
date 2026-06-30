@@ -140,30 +140,6 @@ class Transform
 	@:noCompletion private var __hasMatrix:Bool;
 	@:noCompletion private var __hasMatrix3D:Bool;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Transform.prototype, {
-			"colorTransform": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_colorTransform (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_colorTransform (v); }")
-			},
-			"concatenatedMatrix": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_concatenatedMatrix (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_concatenatedMatrix (v); }")
-			},
-			"matrix": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix (v); }")
-			},
-			"matrix3D": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix3D (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix3D (v); }")
-			},
-		});
-	}
-	#end
-
 	public function new(displayObject:DisplayObject)
 	{
 		__colorTransform = new ColorTransform();

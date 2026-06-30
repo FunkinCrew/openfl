@@ -1086,8 +1086,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		#if display
 		return 0;
-		#elseif openfljs
-		return this == null ? 0 : this.__length;
 		#else
 		return this == null ? 0 : this.length;
 		#end
@@ -1105,11 +1103,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			if (value < this.position) this.position = value;
 		}
 
-		#if openfljs
-		this.__length = value;
-		#else
 		this.length = value;
-		#end
 		#end
 
 		return value;
@@ -1164,48 +1158,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	@:noCompletion private var __amf3Reader:AMF3Reader;
 
 	/**
-		An alias for `length`, except guaranteed not to have side effects. This
-		matters in openfljs mode, where setting `length` calls`__resize()`, but
-		setting `__length` does not.
+		An alias for `length`, except guaranteed not to have side effects.
 	**/
-	#if openfljs
-	@:noCompletion private var __length:Int;
-	#else
 	@:noCompletion private var __length(get, set):Int;
-	#end
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped global.Object.defineProperty(ByteArrayData, "defaultEndian", {
-			get: ByteArrayData.get_defaultEndian,
-			set: ByteArrayData.set_defaultEndian
-		});
-		untyped global.Object.defineProperties(ByteArrayData.prototype, {
-			"bytesAvailable": {
-				get: ByteArrayData.prototype.get_bytesAvailable
-			},
-			"endian": {
-				get: ByteArrayData.prototype.get_endian,
-				set: ByteArrayData.prototype.set_endian
-			},
-			"length": {
-				get: ByteArrayData.prototype.openfljs_get_length,
-				set: ByteArrayData.prototype.openfljs_set_length
-			}
-		});
-	}
-
-	private function openfljs_get_length():Int
-	{
-		return __length;
-	}
-
-	private function openfljs_set_length(value:Int):Int
-	{
-		return (this : ByteArray).length = value;
-	}
-	#end
 
 	public function new(length:Int = 0)
 	{
@@ -1226,9 +1181,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		super(length, bytes.getData());
 		#end
 
-		#if openfljs
-		__length = length;
-		#end
 		__allocated = length;
 
 		endian = defaultEndian;
@@ -1281,13 +1233,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		compress(CompressionAlgorithm.DEFLATE);
 	}
 
-	#if openfljs
-	public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArrayData
-	{
-		return ByteArray.fromArrayBuffer(buffer);
-	}
-	#end
-
 	public static function fromBytes(bytes:Bytes):ByteArrayData
 	{
 		var result:ByteArrayData = new ByteArrayData();
@@ -1299,18 +1244,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		uncompress(CompressionAlgorithm.DEFLATE);
 	}
-
-	#if openfljs
-	public static function loadFromBytes(bytes:Bytes):Future<ByteArray>
-	{
-		return ByteArray.loadFromBytes(bytes);
-	}
-
-	public static function loadFromFile(path:String):Future<ByteArray>
-	{
-		return ByteArray.loadFromFile(path);
-	}
-	#end
 
 	public function readBoolean():Bool
 	{
@@ -1950,7 +1883,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return __endian = value;
 	}
 
-	#if !openfljs
 	@:noCompletion private inline function get___length():Int
 	{
 		return length;
@@ -1960,7 +1892,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		return length = value;
 	}
-	#end
 }
 #else
 #if flash

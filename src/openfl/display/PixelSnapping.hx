@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-#if !openfljs
 /**
 	The PixelSnapping class is an enumeration of constant values for setting
 	the pixel snapping options by using the `pixelSnapping` property
@@ -55,14 +54,6 @@ package openfl.display;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract PixelSnapping(String) from String to String
-{
-	public var ALWAYS = "always";
-	public var AUTO = "auto";
-	public var NEVER = "never";
-}
-#end
 #else
 typedef PixelSnapping = flash.display.PixelSnapping;
 #end

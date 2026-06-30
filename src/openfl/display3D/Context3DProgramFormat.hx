@@ -1,6 +1,6 @@
 package openfl.display3D;
 
-#if (!flash && !openfljs)
+#if !flash
 #if cs
 import openfl.utils._internal.NullUtils;
 #end
@@ -53,11 +53,5 @@ import openfl.utils._internal.NullUtils;
 		return !equals(a, b);
 	}
 	#end
-}
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramFormat(String) from String to String
-{
-	public var AGAL = "agal";
-	public var GLSL = "glsl";
 }
 #end

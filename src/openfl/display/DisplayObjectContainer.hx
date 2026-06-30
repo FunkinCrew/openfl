@@ -101,15 +101,6 @@ class DisplayObjectContainer extends InteractiveObject
 	@:noCompletion private var __removedChildren:Vector<DisplayObject>;
 	@:noCompletion private var __tabChildren:Bool;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(DisplayObjectContainer.prototype, "numChildren", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numChildren (); }")
-		});
-	}
-	#end
-
 	/**
 		Calling the `new DisplayObjectContainer()` constructor throws
 		an `ArgumentError` exception. You _can_, however, call

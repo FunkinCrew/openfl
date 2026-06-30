@@ -1,7 +1,7 @@
 package openfl;
 
 #if (!flash || display)
-#if (!openfljs || !js)
+#if !js
 import haxe.Constraints.Function;
 
 /**

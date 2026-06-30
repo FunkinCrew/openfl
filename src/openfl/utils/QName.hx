@@ -29,20 +29,6 @@ class QName
 	@:noCompletion private var __uri:String;
 	@:noCompletion private var __localName:String;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped global.Object.defineProperties(QName.prototype, {
-			"uri": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_uri (); }")
-			},
-			"localName": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_localName (); }")
-			}
-		});
-	}
-	#end
-
 	/**
 		Creates a QName object. The values assigned to the uri and localName
 		properties of the new QName object depend on the type of value

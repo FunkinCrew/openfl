@@ -292,15 +292,6 @@ class SharedObject extends EventDispatcher
 	@:noCompletion private var __localPath:String;
 	@:noCompletion private var __name:String;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped global.Object.defineProperty(SharedObject.prototype, "size", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_size (); }")
-		});
-	}
-	#end
-
 	@:noCompletion private function new()
 	{
 		super();

@@ -11,7 +11,6 @@ package openfl.globalization;
 	locales and operating systems. For most locales, the lists of month names
 	and weekday names do not differ by context.
 **/
-#if !openfljs
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameContext(Null<Int>)
 {
 	/**
@@ -56,23 +55,6 @@ package openfl.globalization;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameContext(String) from String to String
-{
-	public var FORMAT = "format";
-	public var STANDALONE = "standalone";
-
-	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameContext
-	{
-		return switch (value)
-		{
-			case 0: FORMAT;
-			case 1: STANDALONE;
-			default: null;
-		}
-	}
-}
-#end
 #else
 typedef DateTimeNameContext = flash.globalization.DateTimeNameContext;
 #end

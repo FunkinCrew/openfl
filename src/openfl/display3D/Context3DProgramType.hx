@@ -1,7 +1,6 @@
 package openfl.display3D;
 
 #if !flash
-#if !openfljs
 #if cs
 import openfl.utils._internal.NullUtils;
 #end
@@ -56,13 +55,6 @@ import openfl.utils._internal.NullUtils;
 	}
 	#end
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramType(String) from String to String
-{
-	public var FRAGMENT = "fragment";
-	public var VERTEX = "vertex";
-}
-#end
 #else
 typedef Context3DProgramType = flash.display3D.Context3DProgramType;
 #end

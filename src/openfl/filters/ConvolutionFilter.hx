@@ -171,18 +171,6 @@ class ConvolutionFilter extends BitmapFilter
 
 	@:noCompletion private var __matrix:Array<Float>;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(ConvolutionFilter.prototype, {
-			"matrix": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix (v); }")
-			},
-		});
-	}
-	#end
-
 	/**
 		Initializes a ConvolutionFilter instance with the specified
 		parameters.

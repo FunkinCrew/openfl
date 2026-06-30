@@ -103,37 +103,6 @@ class Vector3D
 	**/
 	public var z:Float;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Vector3D, {
-			"X_AXIS": {
-				get: function()
-				{
-					return Vector3D.get_X_AXIS();
-				}
-			},
-			"Y_AXIS": {
-				get: function()
-				{
-					return Vector3D.get_Y_AXIS();
-				}
-			},
-			"Z_AXIS": {
-				get: function()
-				{
-					return Vector3D.get_Z_AXIS();
-				}
-			}
-		});
-
-		untyped Object.defineProperties(Vector3D.prototype, {
-			"length": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }")},
-			"lengthSquared": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_lengthSquared (); }")},
-		});
-	}
-	#end
-
 	/**
 		Creates an instance of a Vector3D object. If you do not specify a parameter for
 		the constructor, a Vector3D object is created with the elements (0,0,0,0).

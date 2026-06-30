@@ -1129,22 +1129,6 @@ class NetStream extends EventDispatcher
 	@:noCompletion private var __video(default, null):VideoElement;
 	#end
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(NetStream.prototype, {
-			"soundTransform": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_soundTransform (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_soundTransform (v); }")
-			},
-			"speed": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_speed (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_speed (v); }")
-			},
-		});
-	}
-	#end
-
 	/**
 		Creates a stream that you can use to play media files and send data
 		over a NetConnection object.

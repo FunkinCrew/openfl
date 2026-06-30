@@ -149,18 +149,6 @@ class NativeApplication extends EventDispatcher
 		return false;
 	}
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped global.Object.defineProperty(NativeApplication, "nativeApplication", {
-			get: function()
-			{
-				return NativeApplication.get_nativeApplication();
-			}
-		});
-	}
-	#end
-
 	@:noCompletion private var __activeWindow:NativeWindow;
 
 	/**

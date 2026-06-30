@@ -1,13 +1,11 @@
 package openfl.display;
 
 #if !flash
-#if !openfljs
 /**
 	The StageOrientation class defines constants enumerating the possible
 	orientations of the stage and the device.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageOrientation(Null<Int>)
-
 {
 	/**
 		Specifies that the stage is currently in the default orientation of the
@@ -84,31 +82,6 @@ package openfl.display;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageOrientation(String) from String to String
-
-{
-	public var DEFAULT = "default";
-	public var ROTATED_LEFT = "rotatedLeft";
-	public var ROTATED_RIGHT = "rotatedRight";
-	public var UNKNOWN = "unknown";
-	public var UPSIDE_DOWN = "upsideDown";
-
-	@:noCompletion private inline static function fromInt(value:Null<Int>):StageOrientation
-	{
-		return switch (value)
-		{
-			case 0: DEFAULT;
-			case 1: ROTATED_LEFT;
-			case 2: ROTATED_RIGHT;
-			case 3: UNKNOWN;
-			case 4: UPSIDE_DOWN;
-			default: null;
-		}
-	}
-}
-#end
 #else
 #if air
 typedef StageOrientation = flash.display.StageOrientation;

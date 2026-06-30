@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-#if !openfljs
 /**
 	The JointStyle class is an enumeration of constant values that specify the
 	joint style to use in drawing lines. These constants are provided for use
@@ -62,25 +61,6 @@ package openfl.display;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract JointStyle(String) from String to String
-{
-	public var BEVEL = "bevel";
-	public var MITER = "miter";
-	public var ROUND = "round";
-
-	@:noCompletion private inline static function fromInt(value:Null<Int>):JointStyle
-	{
-		return switch (value)
-		{
-			case 0: BEVEL;
-			case 1: MITER;
-			case 2: ROUND;
-			default: null;
-		}
-	}
-}
-#end
 #else
 typedef JointStyle = flash.display.JointStyle;
 #end

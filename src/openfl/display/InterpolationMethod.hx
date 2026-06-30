@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-#if !openfljs
 /**
 	The InterpolationMethod class provides values for the
 	`interpolationMethod` parameter in the
@@ -69,23 +68,6 @@ package openfl.display;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract InterpolationMethod(String) from String to String
-{
-	public var LINEAR_RGB = "linearRGB";
-	public var RGB = "rgb";
-
-	@:noCompletion private inline static function fromInt(value:Null<Int>):InterpolationMethod
-	{
-		return switch (value)
-		{
-			case 0: LINEAR_RGB;
-			case 1: RGB;
-			default: null;
-		}
-	}
-}
-#end
 #else
 typedef InterpolationMethod = flash.display.InterpolationMethod;
 #end

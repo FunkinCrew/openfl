@@ -1,7 +1,6 @@
 package openfl.printing;
 
 #if !flash
-#if !openfljs
 /**
 	This class provides values that are used by the `PrintJob.orientation`
 	property for the image position of a printed page.
@@ -42,13 +41,6 @@ package openfl.printing;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract PrintJobOrientation(String) from String to String
-{
-	public var LANDSCAPE = "landscape";
-	public var PORTRAIT = "portrait";
-}
-#end
 #else
 typedef PrintJobOrientation = flash.printing.PrintJobOrientation;
 #end

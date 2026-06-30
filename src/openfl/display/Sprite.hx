@@ -138,19 +138,6 @@ class Sprite extends DisplayObjectContainer
 	@:noCompletion private var __pendingBindClassName:String;
 	@:noCompletion private var __pendingBindLibrary:AssetLibrary;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Sprite.prototype, {
-			"buttonMode": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_buttonMode (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_buttonMode (v); }")
-			},
-			"graphics": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_graphics (); }")},
-		});
-	}
-	#end
-
 	/**
 		Creates a new Sprite instance. After you create the Sprite instance, call
 		the `DisplayObjectContainer.addChild()` or

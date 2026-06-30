@@ -1196,22 +1196,6 @@ class InteractiveObject extends DisplayObject
 	@:noCompletion private var __tabEnabled:Null<Bool>;
 	@:noCompletion private var __tabIndex:Int;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(InteractiveObject.prototype, {
-			"tabEnabled": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tabEnabled (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tabEnabled (v); }")
-			},
-			"tabIndex": {
-				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tabIndex (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tabIndex (v); }")
-			},
-		});
-	}
-	#end
-
 	/**
 		Calling the `new InteractiveObject()` constructor throws an
 		`ArgumentError` exception. You can, however, call constructors

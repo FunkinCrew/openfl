@@ -1,7 +1,6 @@
 package openfl.text;
 
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-#if !openfljs
 /**
 	The StageTextClearButtonMode class defines the values to use for the
 	`clearButtonMode` property of the StageText class.
@@ -54,15 +53,6 @@ package openfl.text;
 		}
 	}
 }
-#else
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageTextClearButtonMode(String) from String to String
-{
-	public var ALWAYS = "default";
-	public var NEVER = "done";
-	public var UNLESS_EDITING = "unlessEditing";
-	public var WHILE_EDITING = "whileEditing";
-}
-#end
 #else
 #if air
 typedef StageTextClearButtonMode = flash.text.StageTextClearButtonMode;

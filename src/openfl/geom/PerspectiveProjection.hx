@@ -79,16 +79,6 @@ class PerspectiveProjection
 	@:noCompletion private var __fieldOfView:Float;
 	@:noCompletion private var matrix3D:Matrix3D;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView", {
-			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_fieldOfView (); }"),
-			set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_fieldOfView (v); }")
-		});
-	}
-	#end
-
 	/**
 		Creates an instance of a PerspectiveProjection object.
 	**/
