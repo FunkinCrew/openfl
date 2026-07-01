@@ -1,6 +1,6 @@
 package openfl.display._internal;
 
-@:dox(hide) #if (haxe_ver >= 4.0) enum #else @:enum #end abstract GraphicsDataType(Int)
+@:dox(hide) enum abstract GraphicsDataType(Int)
 {
 	var STROKE = 0;
 	var SOLID = 1;

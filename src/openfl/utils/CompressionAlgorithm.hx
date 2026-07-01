@@ -7,7 +7,7 @@ package openfl.utils;
 	`algorithm` parameter of the `ByteArray.compress()` and
 	`ByteArray.uncompress()` methods.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract CompressionAlgorithm(Null<Int>)
+enum abstract CompressionAlgorithm(Null<Int>)
 {
 	/**
 		Defines the string to use for the deflate compression algorithm.

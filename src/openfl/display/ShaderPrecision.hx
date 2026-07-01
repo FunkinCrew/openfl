@@ -24,7 +24,7 @@ package openfl.display;
 	* `reciprocal(x)`
 	* `sqrt(x)`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ShaderPrecision(Null<Int>)
+enum abstract ShaderPrecision(Null<Int>)
 {
 	/**
 		Represents fast precision mode.

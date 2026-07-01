@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Defines the values to use for specifying a Program3D source format.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramFormat(Null<Int>)
+enum abstract Context3DProgramFormat(Null<Int>)
 {
 	/**
 		The program will use the AGAL (Adobe Graphics Assembly Language) format

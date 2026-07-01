@@ -1084,7 +1084,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#if mac
 		__macKeyboard = true;
 		#elseif (js && html5)
-		__macKeyboard = untyped #if haxe4 js.Syntax.code #else __js__ #end ("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
+		__macKeyboard = untyped js.Syntax.code("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
 		#end
 
 		__clearBeforeRender = true;
@@ -1656,17 +1656,17 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#end
 				if (exc != null && Reflect.hasField(exc, "stack") && exc.stack != null && exc.stack != "")
 				{
-					untyped #if haxe4 js.Syntax.code #else __js__ #end ("console.log")(exc.stack);
+					untyped js.Syntax.code("console.log")(exc.stack);
 					e.stack = exc.stack;
 				}
 				else
 				{
 					var msg = CallStack.toString(CallStack.callStack());
-					untyped #if haxe4 js.Syntax.code #else __js__ #end ("console.log")(msg);
+					untyped js.Syntax.code("console.log")(msg);
 				}
 			}
 			catch (e2:Dynamic) {}
-			untyped #if haxe4 js.Syntax.code #else __js__ #end ("throw e");
+			untyped js.Syntax.code("throw e");
 			#elseif hl
 			hl.Api.rethrow(e);
 			#else
@@ -1913,9 +1913,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						// TODO: handle border around focus
 					}
 				}
-				else if (type == KeyboardEvent.KEY_DOWN
-					&& focus != null
-					&& !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (focus, TextField))
+				else if (type == KeyboardEvent.KEY_DOWN && focus != null && !Std.isOfType(focus, TextField))
 				{
 					var ctrlKey = (__macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey);
 					if (ctrlKey && !modifier.altKey && !modifier.shiftKey)

@@ -18,7 +18,7 @@ import lime.system.Endian as LimeEndian;
 	it. Use the endian byte order that matches the protocol of the server that
 	is sending or receiving data.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Endian(Null<Int>)
+enum abstract Endian(Null<Int>)
 {
 	/**
 		Indicates the most significant byte of the multibyte number

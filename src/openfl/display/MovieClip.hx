@@ -52,7 +52,7 @@ import openfl.events.MouseEvent;
 #end
 @:access(openfl.display.Timeline)
 @:access(openfl.geom.ColorTransform)
-class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
+class MovieClip extends Sprite
 {
 	/**
 		Specifies the number of the frame in which the playhead is located in the
@@ -230,7 +230,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 		@see [Controlling movie clip playback](https://books.openfl.org/openfl-developers-guide/working-with-movie-clips/controlling-movie-clip-playback.html)
 	**/
-	public function gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
+	public function gotoAndPlay(frame:Any, scene:String = null):Void
 	{
 		if (__timeline != null)
 		{
@@ -257,7 +257,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 		@see [Controlling movie clip playback](https://books.openfl.org/openfl-developers-guide/working-with-movie-clips/controlling-movie-clip-playback.html)
 	**/
-	public function gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
+	public function gotoAndStop(frame:Any, scene:String = null):Void
 	{
 		if (__timeline != null)
 		{

@@ -460,12 +460,12 @@ class URLLoader extends EventDispatcher
 
 		#if (lime && !doc_gen)
 		// some targets won't allow us to cast to HTTPRequest<Dynamic>
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (__httpRequest, _HTTPRequest_Bytes))
+		if (Std.isOfType(__httpRequest, _HTTPRequest_Bytes))
 		{
 			var bytesRequest:_HTTPRequest_Bytes<Bytes> = cast __httpRequest;
 			data = bytesRequest.responseData;
 		}
-		else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (__httpRequest, _HTTPRequest_String))
+		else if (Std.isOfType(__httpRequest, _HTTPRequest_String))
 		{
 			var stringRequest:_HTTPRequest_String<String> = cast __httpRequest;
 			data = stringRequest.responseData;

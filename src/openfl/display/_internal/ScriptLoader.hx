@@ -34,7 +34,7 @@ class ScriptLoader implements IDisplayObjectLoader
 				// script.innerHTML = loader.data;
 				// Browser.document.head.appendChild (script);
 
-				untyped #if haxe4 js.Syntax.code #else __js__ #end ("eval")("(function () {" + loader.data + "})()");
+				untyped js.Syntax.code("eval")("(function () {" + loader.data + "})()");
 				#end
 				promise.complete(new Sprite());
 			});

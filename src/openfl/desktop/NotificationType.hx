@@ -9,7 +9,7 @@ package openfl.desktop;
 	@see `openfl.desktop.DockIcon.bounce()`
 	@see `openfl.display.NativeWindow.notifyUser()`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract NotificationType(Null<Int>)
+enum abstract NotificationType(Null<Int>)
 {
 	/**
 		Specifies that a notification alert is critical in nature and the user

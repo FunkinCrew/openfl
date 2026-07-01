@@ -5,7 +5,7 @@ package openfl.net;
 	The URLLoaderDataFormat class provides values that specify how downloaded
 	data is received.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract URLLoaderDataFormat(Null<Int>)
+enum abstract URLLoaderDataFormat(Null<Int>)
 {
 	/**
 		Specifies that downloaded data is received as raw binary data.

@@ -8,7 +8,7 @@ package openfl.desktop;
 	The transfer mode provides a hint about whether to return a reference or a
 	copy when accessing an object contained on a clipboard.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ClipboardTransferMode(Null<Int>)
+enum abstract ClipboardTransferMode(Null<Int>)
 {
 	/**
 		The Clipboard object should only return a copy.

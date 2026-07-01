@@ -7,7 +7,7 @@ package openfl.system;
 	Use the values defined by the TouchscreenType class with the
 	`Capabilities.touchscreenType` property.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TouchscreenType(Null<Int>)
+enum abstract TouchscreenType(Null<Int>)
 {
 	/**
 		A touchscreen designed to respond to finger touches.

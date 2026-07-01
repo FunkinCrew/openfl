@@ -7,7 +7,7 @@ package openfl.media;
 
 	@see `openfl.media.Camera`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract CameraPosition(Null<Int>)
+enum abstract CameraPosition(Null<Int>)
 {
 	/**
 		The `Camera.position` property returns this value for a back camera.

@@ -22,7 +22,7 @@ class Log
 		if (level >= LogLevel.DEBUG)
 		{
 			#if js
-			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").debug("[" + info.className + "] " + message);
+			untyped js.Syntax.code("console").debug("[" + info.className + "] " + message);
 			#else
 			println("[" + info.className + "] " + Std.string(message));
 			#end
@@ -42,7 +42,7 @@ class Log
 			else
 			{
 				#if js
-				untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").error(message);
+				untyped js.Syntax.code("console").error(message);
 				#else
 				println(message);
 				#end
@@ -55,7 +55,7 @@ class Log
 		if (level >= LogLevel.INFO)
 		{
 			#if js
-			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").info("[" + info.className + "] " + message);
+			untyped js.Syntax.code("console").info("[" + info.className + "] " + message);
 			#else
 			println("[" + info.className + "] " + Std.string(message));
 			#end
@@ -69,7 +69,7 @@ class Log
 		#elseif flash
 		untyped __global__["trace"](Std.string(message));
 		#elseif js
-		untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").log(message);
+		untyped js.Syntax.code("console").log(message);
 		#else
 		@SuppressWarnings("checkstyle:Trace") trace(message);
 		#end
@@ -82,7 +82,7 @@ class Log
 		#elseif flash
 		untyped __global__["trace"](Std.string(message));
 		#elseif js
-		untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").log(message);
+		untyped js.Syntax.code("console").log(message);
 		#else
 		@SuppressWarnings("checkstyle:Trace") trace(Std.string(message));
 		#end
@@ -101,7 +101,7 @@ class Log
 		if (level >= LogLevel.WARN)
 		{
 			#if js
-			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console").warn("[" + info.className + "] WARNING: " + message);
+			untyped js.Syntax.code("console").warn("[" + info.className + "] WARNING: " + message);
 			#else
 			println("[" + info.className + "] WARNING: " + Std.string(message));
 			#end
@@ -133,11 +133,11 @@ class Log
 		#end
 
 		#if js
-		if (untyped #if haxe4 js.Syntax.code #else __js__ #end ("typeof console") == "undefined")
+		if (untyped js.Syntax.code("typeof console") == "undefined")
 		{
-			untyped #if haxe4 js.Syntax.code #else __js__ #end ("console = {}");
+			untyped js.Syntax.code("console = {}");
 		}
-		var _console = untyped #if haxe4 js.Syntax.code #else __js__ #end ("console");
+		var _console = untyped js.Syntax.code("console");
 		if (_console.log == null)
 		{
 			_console.log = function() {};
@@ -146,7 +146,7 @@ class Log
 	}
 }
 
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract LogLevel(Int) from Int to Int from UInt to UInt
+enum abstract LogLevel(Int) from Int to Int from UInt to UInt
 {
 	public var NONE = 0;
 	public var ERROR = 1;

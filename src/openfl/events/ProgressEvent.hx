@@ -53,7 +53,7 @@ class ProgressEvent extends Event
 	**/
 	public static inline var SOCKET_DATA:EventType<ProgressEvent> = "socketData";
 
-	#if (haxe4 && sys)
+	#if sys
 	/**
 		Defines the value of the `type` property of a `standardOutputData` event
 		object.

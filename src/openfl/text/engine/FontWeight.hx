@@ -8,7 +8,7 @@ package openfl.text.engine;
 
 	@see `openfl.text.StageText.fontWeight`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract FontWeight(Null<Int>)
+enum abstract FontWeight(Null<Int>)
 {
 	/**
 		Used to indicate bold font weight.

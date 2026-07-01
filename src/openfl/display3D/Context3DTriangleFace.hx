@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Constants to specify the orientation of a triangle relative to the view point.
 **/
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DTriangleFace(Null<Int>)
+@SuppressWarnings("checkstyle:FieldDocComment") enum abstract Context3DTriangleFace(Null<Int>)
 {
 	public var BACK = 0;
 	public var FRONT = 1;

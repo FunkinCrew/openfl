@@ -7,7 +7,7 @@ package openfl.text;
 
 	@see `openfl.text.StageText.returnKeyLabel`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ReturnKeyLabel(Null<Int>)
+enum abstract ReturnKeyLabel(Null<Int>)
 {
 	/**
 		Use the default label.

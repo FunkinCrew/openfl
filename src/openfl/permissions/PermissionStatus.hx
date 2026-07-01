@@ -5,7 +5,7 @@ package openfl.permissions;
 	The PermissionStatus class is an enumeration of constant values that specify
 	the authorization status of a permission.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract PermissionStatus(Null<Int>)
+enum abstract PermissionStatus(Null<Int>)
 {
 	/**
 		Specifies that the permission has been denied.

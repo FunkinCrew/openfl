@@ -35,7 +35,7 @@ class IOErrorEvent extends ErrorEvent
 	**/
 	public static inline var IO_ERROR:EventType<IOErrorEvent> = "ioError";
 
-	#if (haxe4 && sys)
+	#if sys
 	/**
 		The `standardOutputIoError` event is dispatched when an error occurs
 		while reading data from the `standardOutput` stream of a NativeProcess

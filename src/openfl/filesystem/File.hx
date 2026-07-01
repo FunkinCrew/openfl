@@ -1990,7 +1990,7 @@ class File extends FileReference
 	{
 		if (hasEventListener(IOErrorEvent.IO_ERROR))
 		{
-			if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (e, Error))
+			if (Std.isOfType(e, Error))
 			{
 				var error = (e : Error);
 				return new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, error.message, error.errorID);

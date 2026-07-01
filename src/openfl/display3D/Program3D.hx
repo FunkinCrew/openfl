@@ -1055,9 +1055,8 @@ import lime.utils.BytePointer;
 		}
 
 		__registerLookup = [];
-		#if haxe4
+
 		__registerLookup.resize(total);
-		#end
 
 		for (uniform in __uniforms)
 		{

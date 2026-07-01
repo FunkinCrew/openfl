@@ -955,13 +955,8 @@ class DisplayObjectRenderer extends EventDispatcher
 		return false;
 	}
 
-	#if (haxe_ver >= 4.2)
 	@:noCompletion private inline function __isShaderFilter(f:Dynamic):Bool
 		return Std.isOfType(f, ShaderFilter);
-	#else
-	@:noCompletion private inline function __isShaderFilter(f:Dynamic):Bool
-		return Std.is(f, ShaderFilter);
-	#end
 }
 #else
 typedef DisplayObjectRenderer = Dynamic;

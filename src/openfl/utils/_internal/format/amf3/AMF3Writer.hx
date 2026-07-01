@@ -90,44 +90,9 @@ class AMF3Writer
 
 	function writeString(s:String)
 	{
-		#if haxe4
 		var bytes = haxe.io.Bytes.ofString(s, UTF8);
 		writeUInt(bytes.length, true);
 		o.writeBytes(bytes, 0, bytes.length);
-		#else
-		// TODO: multibyte chars are broken in haxe3, we need to write the length in bytes!
-		writeUInt(s.length, true);
-		var j = 0, it = 0;
-		for (i in 0...s.length)
-		{
-			j = s.charCodeAt(i);
-			if (j < 0x7f)
-			{
-				o.writeByte(j);
-				it = 0;
-			}
-			else if (j < 0x7ff)
-			{
-				o.writeByte(j >> 6 | 0xc0);
-				j &= 0x3f;
-				it = 1;
-			}
-			else if (j < 0xffff)
-			{
-				o.writeByte(j >> 12 | 0xe0);
-				j &= 0x0fff;
-				it = 2;
-			}
-			else if (j < 0x10ffff)
-			{
-				o.writeByte(j >> 18 | 0xf0);
-				j &= 0x2ffff;
-				it = 3;
-			}
-			while (it-- > 0)
-				o.writeByte(j >> (6 * it));
-		}
-		#end
 	}
 
 	function writeIntVector(v:Vector<Int>)

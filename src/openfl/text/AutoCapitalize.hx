@@ -7,7 +7,7 @@ package openfl.text;
 
 	@see `openfl.text.StageText.autoCapitalize`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract AutoCapitalize(Null<Int>)
+enum abstract AutoCapitalize(Null<Int>)
 {
 	/**
 		Capitalize every character.

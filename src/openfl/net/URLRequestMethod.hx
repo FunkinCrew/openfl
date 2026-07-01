@@ -10,7 +10,7 @@ package openfl.net;
 	@see `openfl.net.URLRequest`
 	@see `openfl.net.URLLoader`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract URLRequestMethod(String) from String to String
+enum abstract URLRequestMethod(String) from String to String
 {
 	/**
 		Specifies that the URLRequest object is a `DELETE`.

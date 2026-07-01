@@ -155,7 +155,6 @@ class TextLayout
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
 
-			#if haxe4
 			#if (lime >= "8.3.0")
 			__hbBuffer.addString(text, 0, -1);
 			#elseif (cpp && disable_unicode_strings)
@@ -164,14 +163,6 @@ class TextLayout
 			__hbBuffer.addUTF16(text, text.length, 0, -1);
 			#elseif cpp
 			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
-			#end
-			#else
-			// if haxe3
-			#if hl
-			__hbBuffer.addUTF16(text, text.length, 0, -1);
-			#else
-			__hbBuffer.addUTF8(text, 0, -1);
-			#end
 			#end
 
 			HB.shape(__hbFont, __hbBuffer);
@@ -307,7 +298,7 @@ class TextLayout
 	}
 }
 
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextDirection(Int) to Int
+@SuppressWarnings("checkstyle:FieldDocComment") enum abstract TextDirection(Int) to Int
 {
 	public var INVALID = 0;
 	public var LEFT_TO_RIGHT = 4;
@@ -371,7 +362,7 @@ class TextLayout
 	}
 }
 
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextScript(String) to (String)
+@SuppressWarnings("checkstyle:FieldDocComment") enum abstract TextScript(String) to (String)
 {
 	public var COMMON = "Zyyy";
 	public var INHERITED = "Zinh";

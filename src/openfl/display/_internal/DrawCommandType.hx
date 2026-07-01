@@ -1,8 +1,7 @@
 package openfl.display._internal;
 
 #if !flash
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DrawCommandType(Int)
-
+enum abstract DrawCommandType(Int)
 {
 	var BEGIN_BITMAP_FILL;
 	var BEGIN_FILL;

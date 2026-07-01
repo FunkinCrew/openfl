@@ -194,7 +194,6 @@ class DrawCommandBuffer
 
 	public function clear():Void
 	{
-		#if haxe4
 		if (!copyOnWrite)
 		{
 			// if these arrays have already been copied, then we should be able
@@ -212,7 +211,6 @@ class DrawCommandBuffer
 
 			return;
 		}
-		#end
 
 		types = empty.types;
 

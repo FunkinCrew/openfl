@@ -14,7 +14,7 @@ package openfl.display;
 	@see `flash.display.DisplayObject.blendMode`
 	@see `flash.display.BitmapData.draw()`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(Null<Int>)
+enum abstract BlendMode(Null<Int>)
 {
 	/**
 		Adds the values of the constituent colors of the display object to the

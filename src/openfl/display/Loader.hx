@@ -760,7 +760,7 @@ class Loader extends DisplayObjectContainer
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __dispatchError(error:Dynamic):Void
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (error, Event))
+		if (Std.isOfType(error, Event))
 		{
 			contentLoaderInfo.dispatchEvent(cast error);
 		}

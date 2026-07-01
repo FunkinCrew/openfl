@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Defines the values to use for specifying the Context3D profile.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProfile(Null<Int>)
+enum abstract Context3DProfile(Null<Int>)
 {
 	/**
 		Use the default feature support profile.

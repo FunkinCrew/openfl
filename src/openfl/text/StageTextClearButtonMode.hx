@@ -7,7 +7,7 @@ package openfl.text;
 
 	@see `openfl.text.StageText.clearButtonMode`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageTextClearButtonMode(Null<Int>)
+enum abstract StageTextClearButtonMode(Null<Int>)
 {
 	/**
 		The StageText clear button is always shown.

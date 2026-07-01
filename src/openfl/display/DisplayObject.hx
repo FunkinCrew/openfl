@@ -196,7 +196,7 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.geom.Transform)
-class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
+class DisplayObject extends EventDispatcher implements IBitmapDrawable
 {
 	#if (openfl_enable_experimental_update_queue && !dom)
 	@:noCompletion private static var updateQueue:Array<DisplayObject> = [];

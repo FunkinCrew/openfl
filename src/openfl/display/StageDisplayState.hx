@@ -5,7 +5,7 @@ package openfl.display;
 	The StageDisplayState class provides values for the
 	`Stage.displayState` property.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageDisplayState(Null<Int>)
+enum abstract StageDisplayState(Null<Int>)
 {
 	/**
 		Specifies that the Stage is in full-screen mode.

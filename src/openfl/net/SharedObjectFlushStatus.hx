@@ -5,7 +5,7 @@ package openfl.net;
 	The SharedObjectFlushStatus class provides values for the code returned
 	from a call to the `SharedObject.flush()` method.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract SharedObjectFlushStatus(Null<Int>)
+enum abstract SharedObjectFlushStatus(Null<Int>)
 {
 	/**
 		Indicates that the flush completed successfully.

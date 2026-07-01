@@ -22,7 +22,7 @@ package openfl.display;
 	`TriangleCulling.NEGATIVE` algorithm is used, triangles with
 	negative normals will not be rendered.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TriangleCulling(Null<Int>)
+enum abstract TriangleCulling(Null<Int>)
 {
 	/**
 		Specifies culling of all triangles facing toward the current view point.

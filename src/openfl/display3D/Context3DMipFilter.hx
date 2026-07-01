@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Defines the values to use for sampler mipmap filter mode
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DMipFilter(Null<Int>)
+enum abstract Context3DMipFilter(Null<Int>)
 {
 	/**
 		Select the two closest MIP levels and linearly blend between them (the highest

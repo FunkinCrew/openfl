@@ -8,7 +8,7 @@ package openfl.desktop;
 
 	@see `openfl.desktop.NativeApplication.systemIdleMode`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract SystemIdleMode(Null<Int>)
+enum abstract SystemIdleMode(Null<Int>)
 {
 	/**
 		Prevents the system from dropping into an idle mode.

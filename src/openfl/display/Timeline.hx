@@ -286,13 +286,13 @@ class Timeline
 		__evaluateFrameScripts(__currentFrame);
 	}
 
-	@:noCompletion private function __gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
+	@:noCompletion private function __gotoAndPlay(frame:Any, scene:String = null):Void
 	{
 		__play();
 		__goto(__resolveFrameReference(frame));
 	}
 
-	@:noCompletion private function __gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
+	@:noCompletion private function __gotoAndStop(frame:Any, scene:String = null):Void
 	{
 		__stop();
 		__goto(__resolveFrameReference(frame));
@@ -338,7 +338,7 @@ class Timeline
 		__isPlaying = false;
 	}
 
-	@:noCompletion private function __resolveFrameReference(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end):Int
+	@:noCompletion private function __resolveFrameReference(frame:Any):Int
 	{
 		if ((frame is Int))
 		{

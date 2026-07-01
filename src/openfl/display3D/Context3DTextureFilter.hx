@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Defines the values to use for sampler filter mode.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DTextureFilter(Null<Int>)
+enum abstract Context3DTextureFilter(Null<Int>)
 {
 	/**
 		Use anisotropic filter with radio 16 when upsampling textures

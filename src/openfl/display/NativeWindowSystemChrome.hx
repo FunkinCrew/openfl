@@ -14,7 +14,7 @@ package openfl.display;
 	@see `openfl.display.NativeWindow`
 	@see `openfl.display.NativeWindowInitOptions`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract NativeWindowSystemChrome(Null<Int>)
+enum abstract NativeWindowSystemChrome(Null<Int>)
 {
 	/**
 		Reserved for future use.

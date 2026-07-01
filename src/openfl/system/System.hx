@@ -257,8 +257,7 @@ import hl.Gc;
 		#if cpp
 		return untyped __global__.__hxcpp_gc_used_bytes();
 		#elseif (js && html5)
-		return
-			untyped #if haxe4 js.Syntax.code #else __js__ #end ("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
+		return untyped js.Syntax.code("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
 		#elseif hl
 		return Std.int(Gc.stats().currentMemory);
 		#else

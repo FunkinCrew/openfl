@@ -2,7 +2,7 @@ package openfl.globalization;
 
 import haxe.EnumTools.EnumValueTools;
 import openfl.Vector;
-#if (js && html5 && haxe4)
+#if (js && html5)
 import js.lib.intl.DateTimeFormat;
 #end
 
@@ -108,17 +108,10 @@ import js.lib.intl.DateTimeFormat;
 		var result = "";
 		if (this.dateStyle != NONE)
 		{
-			#if haxe4
 			var fullYear = utc ? date.getUTCFullYear() : date.getFullYear();
 			var month = utc ? date.getUTCMonth() : date.getMonth();
 			var dateOfMonth = utc ? date.getUTCDate() : date.getDate();
 			var weekday = utc ? date.getUTCDay() : date.getDay();
-			#else
-			var fullYear = date.getFullYear();
-			var month = date.getMonth();
-			var dateOfMonth = date.getDate();
-			var weekday = date.getDay();
-			#end
 			result += switch (this.dateStyle)
 			{
 				case MEDIUM: '${MONTH_NAMES_EN[month]} ${dateOfMonth}, ${fullYear}';
@@ -132,15 +125,9 @@ import js.lib.intl.DateTimeFormat;
 		}
 		if (this.timeStyle != NONE)
 		{
-			#if haxe4
 			var hours = utc ? date.getUTCHours() : date.getHours();
 			var minutes = utc ? date.getUTCMinutes() : date.getMinutes();
 			var seconds = utc ? date.getUTCSeconds() : date.getSeconds();
-			#else
-			var hours = date.getHours();
-			var minutes = date.getMinutes();
-			var seconds = date.getSeconds();
-			#end
 			var meridiem = MERIDIEM_AM;
 			if (hours > 12)
 			{
@@ -160,7 +147,6 @@ import js.lib.intl.DateTimeFormat;
 	{
 		var result = "";
 		var tokens = DateTimeFormatTokenizer.tokenize(this.dateTimePattern);
-		#if haxe4
 		var fullYear = utc ? date.getUTCFullYear() : date.getFullYear();
 		var month = utc ? date.getUTCMonth() : date.getMonth();
 		var dateOfMonth = utc ? date.getUTCDate() : date.getDate();
@@ -168,15 +154,6 @@ import js.lib.intl.DateTimeFormat;
 		var hours = utc ? date.getUTCHours() : date.getHours();
 		var minutes = utc ? date.getUTCMinutes() : date.getMinutes();
 		var seconds = utc ? date.getUTCSeconds() : date.getSeconds();
-		#else
-		var fullYear = date.getFullYear();
-		var month = date.getMonth();
-		var dateOfMonth = date.getDate();
-		var weekday = date.getDay();
-		var hours = date.getHours();
-		var minutes = date.getMinutes();
-		var seconds = date.getSeconds();
-		#end
 
 		for (token in tokens)
 		{
@@ -416,7 +393,7 @@ import js.lib.intl.DateTimeFormat;
 		}
 	}
 }
-#elseif haxe4
+#else
 @:final class DateTimeFormatter
 {
 	public static function getAvailableLocaleIDNames():Vector<String>

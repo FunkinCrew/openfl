@@ -5,7 +5,7 @@ package openfl.display;
 	The StageQuality class provides values for the `Stage.quality`
 	property.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageQuality(Null<Int>)
+enum abstract StageQuality(Null<Int>)
 {
 	/**
 		Specifies very high rendering quality: graphics are anti-aliased using a 4

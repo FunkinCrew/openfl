@@ -211,11 +211,7 @@ import lime.utils.Int16Array;
 				__processor = webAudioContext.createScriptProcessor(bufferSize, 0, 2);
 				__processor.connect(webAudioContext.destination);
 				__processor.onaudioprocess = onSample;
-				#if (haxe_ver >= 4.2)
 				webAudioContext.resume();
-				#else
-				Reflect.callMethod(webAudioContext, Reflect.field(webAudioContext, "resume"), []);
-				#end
 			}
 		}
 		#end

@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Defines the values to use for specifying a texture format.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DTextureFormat(Null<Int>)
+enum abstract Context3DTextureFormat(Null<Int>)
 {
 	/**
 		16 bit, bgr packed as 5:6:5

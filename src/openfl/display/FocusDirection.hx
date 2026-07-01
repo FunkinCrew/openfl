@@ -6,7 +6,7 @@ package openfl.display;
 	parameter of the `assignFocus()` method of a Stage object and for the
 	`direction` property of a FocusEvent object.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract FocusDirection(Null<Int>)
+enum abstract FocusDirection(Null<Int>)
 {
 	/**
 		Indicates that focus should be given to the object at the end of the

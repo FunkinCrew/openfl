@@ -25,7 +25,7 @@ package openfl.display;
 	@see `flash.filters.DisplacementMapFilter.componentX`
 	@see `flash.filters.DisplacementMapFilter.componentY`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract BitmapDataChannel(Int) from Int to Int from UInt to UInt
+enum abstract BitmapDataChannel(Int) from Int to Int from UInt to UInt
 {
 	/**
 		The alpha channel.

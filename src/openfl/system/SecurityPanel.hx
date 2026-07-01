@@ -11,7 +11,7 @@ package openfl.system;
 
 	@see `openfl.system.Security.showSettings()`
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract SecurityPanel(Null<Int>)
+enum abstract SecurityPanel(Null<Int>)
 {
 	/**
 		When passed to `Security.showSettings()`, displays the Camera panel in

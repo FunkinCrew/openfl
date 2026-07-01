@@ -43,7 +43,7 @@ class Lib
 		#if flash
 		return flash.Lib.as(v, c);
 		#else
-		return #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (v, c) ? v : null;
+		return Std.isOfType(v, c) ? v : null;
 		#end
 	}
 

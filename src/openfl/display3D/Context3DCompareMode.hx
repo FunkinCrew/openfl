@@ -5,7 +5,7 @@ package openfl.display3D;
 	Defines the values to use for specifying 3D buffer comparisons in the
 	`setDepthTest()` and `setStencilAction()` methods of a Context3D instance.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DCompareMode(Null<Int>)
+enum abstract Context3DCompareMode(Null<Int>)
 {
 	/**
 		The comparison always evaluates as true.

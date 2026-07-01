@@ -5,9 +5,6 @@ import openfl.display.DisplayObjectContainer;
 
 @:transitive
 @:callable
-#if !haxe4
-@:forward
-#end
 abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 {
 	public inline function new()
@@ -39,7 +36,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:noCompletion @:dox(hide) public function iterator():Iterator<String>
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Array))
+		if (Std.isOfType(this, Array))
 		{
 			var arr:Array<Dynamic> = cast this;
 			return arr.iterator();
@@ -48,7 +45,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		{
 			var fields = Reflect.fields(this);
 			if (fields == null) fields = [];
-			if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
+			if (Std.isOfType(this, DisplayObjectContainer))
 			{
 				var container:DisplayObjectContainer = cast this;
 				for (i in 0...container.numChildren)
@@ -67,9 +64,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 
 	public inline function propertyIsEnumerable(name:String):Bool
 	{
-		return (this != null
-			&& Reflect.hasField(this, name)
-			&& #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (Reflect.field(this, name), Iterable_));
+		return (this != null && Reflect.hasField(this, name) && Std.isOfType(Reflect.field(this, name), Iterable_));
 	}
 
 	public inline function toLocaleString():String
@@ -93,13 +88,11 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		return __get(name);
 	}
 
-	#if haxe4
 	@:op(a.b)
 	private inline function __fieldWrite(name:String, value:Object):Object
 	{
 		return __set(name, value);
 	}
-	#end
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public /*inline*/ function __get(key:String):Object
@@ -110,7 +103,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		{
 			return Reflect.field(this, key);
 		}
-		else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
+		else if (Std.isOfType(this, DisplayObjectContainer))
 		{
 			var container:DisplayObjectContainer = cast this;
 			var child = container.getChildByName(key);
@@ -126,7 +119,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 			// function.
 			// Note: We don't need to do the same for Reflect.field() above
 			// because Reflect.hasField() returns false for methods.
-			result = untyped #if haxe4 js.Syntax.code #else __js__ #end ("Function.prototype.bind.call")(result, this);
+			result = untyped js.Syntax.code("Function.prototype.bind.call")(result, this);
 		}
 		return result;
 		#else
@@ -168,7 +161,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 
 	@:to private function toFloat():Float
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Float))
+		if (Std.isOfType(this, Float))
 		{
 			return cast this;
 		}
@@ -185,11 +178,11 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 
 	@:to private function toBool():Bool
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Bool))
+		if (Std.isOfType(this, Bool))
 		{
 			return cast this;
 		}
-		else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Float))
+		else if (Std.isOfType(this, Float))
 		{
 			return this != 0;
 		}
@@ -199,7 +192,6 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		}
 	}
 
-	#if haxe4
 	@:op(-A) private inline function __negate():Dynamic
 	{
 		var float:Float = cast this;
@@ -232,8 +224,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 
 	@:op(A + B) private static inline function __add(a:Object, b:Object):Dynamic
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (a, String)
-			|| #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (b, String))
+		if (Std.isOfType(a, String) || Std.isOfType(b, String))
 		{
 			return Std.string(a) + Std.string(b);
 		}
@@ -626,10 +617,8 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		var intB:Int = cast b;
 		return a << intB;
 	}
-	#end
 }
 
-#if (haxe_ver > "3.3.0")
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:keep @:native("haxe.lang.Iterator") private interface Iterator_<T>
 {
@@ -642,7 +631,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 {
 	public function iterator():Iterator_<T>;
 }
-#end
+
 #if !flash
 @:dox(hide) @:noCompletion typedef ObjectType = Dynamic;
 #else

@@ -220,11 +220,7 @@ import openfl.net.FileFilter;
 import openfl.net.FileReference;
 import openfl.events.EventDispatcher;
 import openfl.events.Event;
-#if haxe4
 import js.lib.DataView;
-#else
-import js.html.DataView;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

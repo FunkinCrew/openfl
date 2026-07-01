@@ -5,7 +5,7 @@ package openfl.display3D;
 	Defines the values to use for specifying whether a shader program is a fragment
 	or a vertex program.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramType(Null<Int>)
+enum abstract Context3DProgramType(Null<Int>)
 {
 	/**
 		A fragment (or pixel) program.

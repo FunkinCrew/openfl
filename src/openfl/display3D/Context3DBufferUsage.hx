@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Defines the values to use for specifying the buffer usage type.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DBufferUsage(Null<Int>)
+enum abstract Context3DBufferUsage(Null<Int>)
 {
 	/**
 		Indicates the buffer will be used for drawing and be updated frequently

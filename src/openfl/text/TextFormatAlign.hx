@@ -5,7 +5,7 @@ package openfl.text;
 	The TextFormatAlign class provides values for text alignment in the
 	TextFormat class.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextFormatAlign(Null<Int>)
+enum abstract TextFormatAlign(Null<Int>)
 {
 	/**
 		Constant; centers the text in the text field. Use the syntax

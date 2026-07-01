@@ -5,7 +5,7 @@ package openfl.text;
 	The TextFieldType class is an enumeration of constant values used in
 	setting the `type` property of the TextField class.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextFieldType(Null<Int>)
+enum abstract TextFieldType(Null<Int>)
 {
 	/**
 		Used to specify a `dynamic` TextField.

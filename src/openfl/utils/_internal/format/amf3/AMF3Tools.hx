@@ -83,15 +83,6 @@ class AMF3Tools
 						for (k in o.extra)
 							m[k] = encode(o.extra[k]);
 						AArray(a, m);
-					// TODO: Handle native array types?
-					// #if !haxe4
-					// case cast HaxeVector:
-					// 	var o:HaxeVector<Dynamic> = o;
-					// 	var a = new HaxeVector<AMF3Value>(o.length);
-					// 	for (i in 0...o.length)
-					// 		a[i] = encode(o[i]);
-					// 	AVector(a, false, null);
-					// #end
 					case cast haxe.io.Bytes:
 						AByteArray(ByteArray.fromBytes(o));
 					case cast ByteArrayData:
@@ -99,7 +90,7 @@ class AMF3Tools
 					case cast Date:
 						ADate(o);
 					case _:
-						/*if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (o, Vector))
+						/*if (Std.isOfType(o, Vector))
 							{
 								// // case cast openfl.Vector.IntVector:
 								// // 	AIntVector(o);
@@ -113,7 +104,7 @@ class AMF3Tools
 								AObjectVector(v);
 							}
 							else */
-						if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (o, IExternalizable))
+						if (Std.isOfType(o, IExternalizable))
 						{
 							AExternal(o);
 						}
@@ -360,14 +351,14 @@ class AMF3Tools
 			case AMap(m):
 				for (f in m.keys())
 				{
-					if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (f, Int))
+					if (Std.isOfType(f, Int))
 					{
 						var p = new Map<Int, Dynamic>();
 						for (f in m.keys())
 							p.set(decode(f), decode(m.get(f)));
 						p;
 					}
-					else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (f, String))
+					else if (Std.isOfType(f, String))
 					{
 						var p = new Map<String, Dynamic>();
 						for (f in m.keys())

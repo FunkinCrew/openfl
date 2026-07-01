@@ -18,7 +18,7 @@ package openfl.display;
 	@see [Drawing paths](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/drawing-paths.html)
 	@see [Defining winding rules](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/defining-winding-rules.html)
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract GraphicsPathWinding(Null<Int>)
+enum abstract GraphicsPathWinding(Null<Int>)
 {
 	/**
 		Establishes the even-odd winding type. The even-odd winding type is the rule

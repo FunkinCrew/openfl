@@ -41,7 +41,7 @@ package openfl.display3D;
 
 	Note that not all combinations of blend factors are useful and that you can sometimes achieve the same effect in different ways.
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DBlendFactor(Null<Int>)
+enum abstract Context3DBlendFactor(Null<Int>)
 {
 	/**
 		The blend factor is (D<sub>a</sub>,D<sub>a</sub>,D<sub>a</sub>,D<sub>a</sub>),

@@ -918,7 +918,7 @@ class BitmapData implements IBitmapDrawable
 
 		var wasVisible = true;
 		var sourceAsDisplayObject:DisplayObject = null;
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (source, DisplayObject))
+		if (Std.isOfType(source, DisplayObject))
 		{
 			sourceAsDisplayObject = cast(source, DisplayObject);
 			if (!sourceAsDisplayObject.visible)

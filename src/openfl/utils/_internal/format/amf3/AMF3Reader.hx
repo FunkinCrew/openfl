@@ -92,7 +92,7 @@ class AMF3Reader
 			case HExternal(className):
 				var o = AMF3Tools.object(AObject(null, null, className));
 
-				if (o != null && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (o, IExternalizable))
+				if (o != null && Std.isOfType(o, IExternalizable))
 				{
 					var external:IExternalizable = cast o;
 					external.readExternal(new AMF3ReaderInput(this));
@@ -385,50 +385,8 @@ class AMF3Reader
 	{
 		if (len == 0) return AString(""); // 0x01 is empty string and is never sent by reference
 		// get the string characters
-		#if haxe4
-		var ret = AString(i.readString(len, UTF8));
-		#else
-		var u = new haxe.Utf8(len);
-		var c = 0, d = 0, j:Int = 0, it = 0;
-		while (j < len)
-		{
-			c = i.readByte();
-			if (c < 0x80)
-			{
-				it = 0;
-				d = c;
-			}
-			else if (c < 0xe0)
-			{
-				it = 1;
-				d = c & 0x1f;
-			}
-			else if (c < 0xf0)
-			{
-				it = 2;
-				d = c & 0x0f;
-			}
-			else if (c < 0xf1)
-			{
-				it = 3;
-				d = c & 0x07;
-			}
-			c = it;
-			while (c-- > 0)
-			{
-				d <<= 6;
-				d |= i.readByte() & 0x3f;
-			}
-			j += it + 1;
-			if (d != 0x01)
-			{
-				u.addChar(d);
-			}
-		}
-		var ret = AString(u.toString());
-		#end
-
 		// store the string off for if it gets referenced later
+		var ret = AString(i.readString(len, UTF8));
 		stringTable.push(ret);
 		return ret;
 	}

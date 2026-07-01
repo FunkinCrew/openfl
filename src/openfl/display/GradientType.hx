@@ -9,7 +9,7 @@ package openfl.display;
 
 	@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
 **/
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract GradientType(Null<Int>)
+enum abstract GradientType(Null<Int>)
 {
 	/**
 		Value used to specify a linear gradient fill.

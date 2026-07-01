@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Defines the values to use for specifying vertex buffers.
 **/
-@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DVertexBufferFormat(Null<Int>)
+@SuppressWarnings("checkstyle:FieldDocComment") enum abstract Context3DVertexBufferFormat(Null<Int>)
 {
 	public var BYTES_4 = 0;
 	public var FLOAT_1 = 1;
