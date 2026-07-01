@@ -1,6 +1,5 @@
 package openfl.utils;
 
-#if !flash
 /**
 	The Namespace class contains methods and properties for defining and working
 	with namespaces. There are three scenarios for using namespaces:
@@ -132,6 +131,3 @@ class Namespace
 		return __prefix;
 	}
 }
-#else
-typedef Namespace = flash.utils.Namespace;
-#end

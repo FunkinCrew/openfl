@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The LineScaleMode class provides values for the `scaleMode`
 	parameter in the `Graphics.lineStyle()` method.
@@ -76,6 +75,3 @@ enum abstract LineScaleMode(Null<Int>)
 		}
 	}
 }
-#else
-typedef LineScaleMode = flash.display.LineScaleMode;
-#end

@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.text._internal.HTMLParser;
 import openfl.text._internal.TextEngine;
 import openfl.display.DOMRenderer;
@@ -451,4 +450,3 @@ class DOMTextField
 		return regex.matched(2) != null ? regex.matched(2) : regex.matched(3);
 	}
 }
-#end

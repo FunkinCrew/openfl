@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.events.MouseEvent;
 
 /**
@@ -589,7 +588,3 @@ class MovieClip extends Sprite
 		}
 	}
 }
-#else
-typedef MovieClip = flash.display.MovieClip;
-typedef MovieClip2 = flash.display.MovieClip.MovieClip2;
-#end

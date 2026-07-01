@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.utils._internal.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -658,4 +657,3 @@ class Context3DTilemap
 		vertexBufferData = tilemap.__buffer.vertexBufferData;
 	}
 }
-#end

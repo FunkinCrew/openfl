@@ -78,7 +78,6 @@ class Assets
 	public static function exists(id:String, type:AssetType = null, allowCompressedTextures:Bool = true):Bool
 	{
 		#if lime
-		#if !flash
 		if (allowCompressedTextures)
 		{
 			if (id != null && haxe.io.Path.extension(id) == "png")
@@ -93,7 +92,6 @@ class Assets
 				type = AssetType.BINARY;
 			}
 		}
-		#end
 
 		return LimeAssets.exists(id, cast type);
 		#else
@@ -146,7 +144,6 @@ class Assets
 			}
 		}
 
-		#if !flash
 		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
 		{
 			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
@@ -168,18 +165,14 @@ class Assets
 				return null;
 			}
 		}
-		#end
 
 		var image = LimeAssets.getImage(id, false);
 
 		if (image != null)
 		{
-			#if flash
-			var bitmapData = image.src;
-			#else
 			var bitmapData = BitmapData.fromImage(image);
+
 			bitmapData.__asset = true;
-			#end
 
 			if (useCache && cache.enabled)
 			{
@@ -239,12 +232,9 @@ class Assets
 
 		if (limeFont != null)
 		{
-			#if flash
-			var font = limeFont.src;
-			#else
 			var font = new Font();
+
 			font.__fromLimeFont(limeFont);
-			#end
 
 			if (useCache && cache.enabled)
 			{
@@ -370,11 +360,7 @@ class Assets
 
 		if (buffer != null)
 		{
-			#if flash
-			var sound = buffer.src;
-			#else
 			var sound = Sound.fromAudioBuffer(buffer);
-			#end
 
 			if (useCache && cache.enabled)
 			{
@@ -436,7 +422,7 @@ class Assets
 		if (libraryBindings.exists(className))
 		{
 			var library = libraryBindings.get(className);
-			#if !flash
+
 			if (instance == null)
 			{
 				Sprite.__constructor = function(instance:Sprite)
@@ -449,10 +435,6 @@ class Assets
 				Sprite.__constructor = null;
 				instance.__bind(library, className);
 			}
-			#else
-			// TODO: Consolidate behavior
-			library.bind(className);
-			#end
 		}
 		else
 		{
@@ -504,20 +486,8 @@ class Assets
 	@:analyzer(ignore) private static function isValidBitmapData(bitmapData:BitmapData):Bool
 	{
 		#if (lime && tools && !display)
-		#if flash
-		try
-		{
-			bitmapData.width;
-			return true;
-		}
-		catch (e:Dynamic)
-		{
-			return false;
-		}
-		#else
 		return (bitmapData != null
 			&& #if !lime_hybrid (bitmapData.image != null || bitmapData.__texture != null) #else bitmapData.__handle != null #end);
-		#end
 		#else
 		return true;
 		#end
@@ -582,12 +552,9 @@ class Assets
 		{
 			if (image != null)
 			{
-				#if flash
-				var bitmapData = image.src;
-				#else
 				var bitmapData = BitmapData.fromImage(image);
+
 				bitmapData.__asset = true;
-				#end
 
 				if (useCache && cache.enabled)
 				{
@@ -665,12 +632,9 @@ class Assets
 		LimeAssets.loadFont(id)
 			.onComplete(function(limeFont)
 			{
-				#if flash
-				var font = limeFont.src;
-				#else
 				var font = new Font();
+
 				font.__fromLimeFont(limeFont);
-				#end
 
 				if (useCache && cache.enabled)
 				{
@@ -753,11 +717,7 @@ class Assets
 			{
 				if (buffer != null)
 				{
-					#if flash
-					var sound = buffer.src;
-					#else
 					var sound = Sound.fromAudioBuffer(buffer);
-					#end
 
 					if (useCache && cache.enabled)
 					{
@@ -854,11 +814,7 @@ class Assets
 			{
 				if (buffer != null)
 				{
-					#if flash
-					var sound = buffer.src;
-					#else
 					var sound = Sound.fromAudioBuffer(buffer);
-					#end
 
 					if (useCache && cache.enabled)
 					{
@@ -935,16 +891,7 @@ class Assets
 
 	@:noCompletion private static function resolveEnum(name:String):Enum<Dynamic>
 	{
-		var value = Type.resolveEnum(name);
-
-		#if flash
-		if (value == null)
-		{
-			return cast Type.resolveClass(name);
-		}
-		#end
-
-		return value;
+		return Type.resolveEnum(name);
 	}
 
 	public static function unloadLibrary(name:String):Void
@@ -970,7 +917,7 @@ class Assets
 	// Event Handlers
 	@:noCompletion private static function LimeAssets_onChange():Void
 	{
-		#if (openfl_pool_events && !flash)
+		#if openfl_pool_events
 		var changeEvent = Event.__pool.get();
 		changeEvent.type = Event.CHANGE;
 		#else
@@ -979,7 +926,7 @@ class Assets
 
 		dispatchEvent(changeEvent);
 
-		#if (openfl_pool_events && !flash)
+		#if openfl_pool_events
 		Event.__pool.release(changeEvent);
 		#end
 	}

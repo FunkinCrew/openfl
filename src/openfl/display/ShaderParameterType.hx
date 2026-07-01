@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	This class defines the constants that represent the possible values for
 	the ShaderParameter class's `type` property. Each constant represents one
@@ -232,6 +231,3 @@ enum abstract ShaderParameterType(Null<Int>)
 		}
 	}
 }
-#else
-typedef ShaderParameterType = flash.display.ShaderParameterType;
-#end

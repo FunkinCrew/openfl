@@ -5,7 +5,7 @@ package openfl.display;
 import js.html.Element;
 #end
 
-class DOMElement extends #if flash Sprite #else DisplayObject #end
+class DOMElement extends DisplayObject
 {
 	@:noCompletion private var __active:Bool;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __element:#if (js && html5) Element #else Dynamic #end;
@@ -15,9 +15,7 @@ class DOMElement extends #if flash Sprite #else DisplayObject #end
 	{
 		super();
 
-		#if !flash
 		__drawableType = DOM_ELEMENT;
-		#end
 		__element = element;
 	}
 }

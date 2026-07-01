@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.Context3DBitmap;
 import openfl.display._internal.Context3DBitmapData;
 import openfl.display._internal.Context3DDisplayObject;
@@ -1196,6 +1195,3 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 }
-#else
-typedef OpenGLRenderer = Dynamic;
-#end

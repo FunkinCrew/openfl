@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
@@ -1047,6 +1046,3 @@ class DisplayObjectContainer extends InteractiveObject
 		return __tabChildren;
 	}
 }
-#else
-typedef DisplayObjectContainer = flash.display.DisplayObjectContainer;
-#end

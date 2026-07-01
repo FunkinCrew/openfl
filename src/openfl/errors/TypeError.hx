@@ -1,6 +1,5 @@
 package openfl.errors;
 
-#if !flash
 /**
 	A TypeError exception is thrown when the actual type of an operand is
 	different from the expected type.
@@ -18,6 +17,3 @@ class TypeError extends Error
 		name = "TypeError";
 	}
 }
-#else
-typedef TypeError = flash.errors.TypeError;
-#end

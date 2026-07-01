@@ -1,6 +1,5 @@
 package openfl.filters;
 
-#if !flash
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObjectRenderer;
@@ -215,6 +214,3 @@ class ShaderFilter extends BitmapFilter
 		return shader;
 	}
 }
-#else
-typedef ShaderFilter = flash.filters.ShaderFilter;
-#end

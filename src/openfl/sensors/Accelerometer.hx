@@ -1,6 +1,5 @@
 package openfl.sensors;
 
-#if !flash
 import haxe.Timer;
 import openfl.errors.ArgumentError;
 import openfl.events.AccelerometerEvent;
@@ -218,6 +217,3 @@ class Accelerometer extends EventDispatcher
 		return value;
 	}
 }
-#else
-typedef Accelerometer = flash.sensors.Accelerometer;
-#end

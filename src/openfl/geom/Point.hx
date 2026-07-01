@@ -1,6 +1,5 @@
 package openfl.geom;
 
-#if !flash
 import openfl.utils.ObjectPool;
 #if lime
 import lime.math.Vector2;
@@ -350,6 +349,3 @@ class Point
 		return Math.sqrt(x * x + y * y);
 	}
 }
-#else
-typedef Point = flash.geom.Point;
-#end

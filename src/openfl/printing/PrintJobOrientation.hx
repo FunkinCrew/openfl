@@ -1,6 +1,5 @@
 package openfl.printing;
 
-#if !flash
 /**
 	This class provides values that are used by the `PrintJob.orientation`
 	property for the image position of a printed page.
@@ -41,6 +40,3 @@ enum abstract PrintJobOrientation(Null<Int>)
 		}
 	}
 }
-#else
-typedef PrintJobOrientation = flash.printing.PrintJobOrientation;
-#end

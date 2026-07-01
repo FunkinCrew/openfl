@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The StageOrientation class defines constants enumerating the possible
 	orientations of the stage and the device.
@@ -82,4 +81,3 @@ enum abstract StageOrientation(Null<Int>)
 		}
 	}
 }
-#end

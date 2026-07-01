@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 /**
 	The TextFormat class represents character formatting information. Use the
 	TextFormat class to create specific text formatting for text fields. You
@@ -382,6 +381,3 @@ class TextFormat
 		return italic;
 	}
 }
-#else
-typedef TextFormat = flash.text.TextFormat;
-#end

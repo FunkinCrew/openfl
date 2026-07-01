@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying stencil actions.
 
@@ -85,6 +84,3 @@ enum abstract Context3DStencilAction(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DStencilAction = flash.display3D.Context3DStencilAction;
-#end

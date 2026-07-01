@@ -1,6 +1,6 @@
 package openfl.net;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The IPVersion class defines constants representing the different families of
 	IP addresses.

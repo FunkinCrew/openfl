@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.IBitmapDrawableType;
 import openfl.utils.ObjectPool;
 import openfl.utils._internal.Lib;
@@ -2448,6 +2447,3 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 		return __transform.ty = value;
 	}
 }
-#else
-typedef DisplayObject = flash.display.DisplayObject;
-#end

@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.IBitmapDrawableType;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -32,6 +31,3 @@ interface IBitmapDrawable
 	@:noCompletion private var __mask:DisplayObject;
 	@:noCompletion private var __scrollRect:Rectangle;
 }
-#else
-typedef IBitmapDrawable = flash.display.IBitmapDrawable;
-#end

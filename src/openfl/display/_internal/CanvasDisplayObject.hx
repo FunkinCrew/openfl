@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
 #if lime
@@ -74,4 +73,3 @@ class CanvasDisplayObject
 		}
 	}
 }
-#end

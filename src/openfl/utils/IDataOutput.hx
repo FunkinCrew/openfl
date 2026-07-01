@@ -1,6 +1,5 @@
 package openfl.utils;
 
-#if !flash
 import openfl.net.ObjectEncoding;
 
 /**
@@ -144,6 +143,3 @@ interface IDataOutput
 	**/
 	public function writeUTFBytes(value:String):Void;
 }
-#else
-typedef IDataOutput = flash.utils.IDataOutput;
-#end

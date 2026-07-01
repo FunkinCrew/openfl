@@ -1,6 +1,6 @@
 package openfl.text;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The AutoCapitalize class defines constants for the `autoCapitalize` property
 	of the StageText class.

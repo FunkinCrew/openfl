@@ -1,6 +1,5 @@
 package openfl.utils;
 
-#if !flash
 import haxe.Timer as HaxeTimer;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
@@ -248,6 +247,3 @@ class Timer extends EventDispatcher
 		}
 	}
 }
-#else
-typedef Timer = flash.utils.Timer;
-#end

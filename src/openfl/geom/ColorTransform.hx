@@ -1,6 +1,5 @@
 package openfl.geom;
 
-#if !flash
 import openfl.utils.ObjectPool;
 #if lime
 import openfl.utils._internal.Float32Array;
@@ -342,6 +341,3 @@ class ColorTransform
 	}
 	#end
 }
-#else
-typedef ColorTransform = flash.geom.ColorTransform;
-#end

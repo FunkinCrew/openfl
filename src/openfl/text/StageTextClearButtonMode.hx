@@ -1,6 +1,6 @@
 package openfl.text;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The StageTextClearButtonMode class defines the values to use for the
 	`clearButtonMode` property of the StageText class.

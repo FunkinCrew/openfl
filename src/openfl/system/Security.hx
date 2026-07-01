@@ -1,6 +1,5 @@
 package openfl.system;
 
-#if !flash
 /**
 	The Security class lets you specify how content in different domains can
 	communicate with each other.
@@ -613,6 +612,3 @@ class Security
 		#end
 	}
 }
-#else
-typedef Security = flash.system.Security;
-#end

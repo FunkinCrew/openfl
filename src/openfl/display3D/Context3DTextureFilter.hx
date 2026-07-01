@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for sampler filter mode.
 **/
@@ -65,6 +64,3 @@ enum abstract Context3DTextureFilter(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DTextureFilter = flash.display3D.Context3DTextureFilter;
-#end

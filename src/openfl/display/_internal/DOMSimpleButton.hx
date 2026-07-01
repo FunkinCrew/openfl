@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.SimpleButton)
 class DOMSimpleButton
@@ -36,4 +35,3 @@ class DOMSimpleButton
 		DOMDisplayObject.renderDrawableClear(simpleButton, renderer);
 	}
 }
-#end

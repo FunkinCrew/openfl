@@ -1,6 +1,5 @@
 package openfl.system;
 
-#if !flash
 import haxe.macro.Compiler;
 import openfl.utils._internal.Lib;
 #if lime
@@ -759,6 +758,3 @@ import sys.io.Process;
 		return value;
 	}
 }
-#else
-typedef Capabilities = flash.system.Capabilities;
-#end

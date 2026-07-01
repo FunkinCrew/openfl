@@ -632,8 +632,4 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	public function iterator():Iterator_<T>;
 }
 
-#if !flash
 @:dox(hide) @:noCompletion typedef ObjectType = Dynamic;
-#else
-@:dox(hide) typedef ObjectType = flash.utils.Object;
-#end

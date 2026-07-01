@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 import openfl.net.URLRequestHeader;
 
@@ -151,6 +150,3 @@ class HTTPStatusEvent extends Event
 		redirected = false;
 	}
 }
-#else
-typedef HTTPStatusEvent = flash.events.HTTPStatusEvent;
-#end

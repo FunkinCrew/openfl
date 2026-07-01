@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	Defines codes for culling algorithms that determine which triangles not to
 	render when drawing triangle paths.
@@ -62,6 +61,3 @@ enum abstract TriangleCulling(Null<Int>)
 		}
 	}
 }
-#else
-typedef TriangleCulling = flash.display.TriangleCulling;
-#end

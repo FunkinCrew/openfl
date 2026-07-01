@@ -335,7 +335,7 @@ class AMF3Reader
 			b.set(j, i.readByte());
 		var ba = ByteArray.fromBytes(b);
 		ba.endian = BIG_ENDIAN;
-		#if (!display && !flash)
+		#if !display
 		@:privateAccess (ba : ByteArrayData).__amf3Reader = this;
 		#end
 		var ret = AByteArray(ba);

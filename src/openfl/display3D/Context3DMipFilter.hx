@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for sampler mipmap filter mode
 **/
@@ -44,6 +43,3 @@ enum abstract Context3DMipFilter(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DMipFilter = flash.display3D.Context3DMipFilter;
-#end

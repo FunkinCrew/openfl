@@ -1,6 +1,5 @@
 package openfl.external;
 
-#if !flash
 import openfl.utils._internal.Lib;
 
 /**
@@ -310,6 +309,3 @@ import openfl.utils._internal.Lib;
 		return null;
 	}
 }
-#else
-typedef ExternalInterface = flash.external.ExternalInterface;
-#end

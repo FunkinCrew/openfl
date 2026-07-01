@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	Defines the values to use for specifying path-drawing commands.
 
@@ -68,6 +67,3 @@ enum abstract GraphicsPathCommand(Int) from Int to Int from UInt to UInt
 	**/
 	public var WIDE_MOVE_TO = 4;
 }
-#else
-typedef GraphicsPathCommand = flash.display.GraphicsPathCommand;
-#end

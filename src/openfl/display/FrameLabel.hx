@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.events.EventDispatcher;
 
 /**
@@ -32,6 +31,3 @@ import openfl.events.EventDispatcher;
 		this.frame = frame;
 	}
 }
-#else
-typedef FrameLabel = flash.display.FrameLabel;
-#end

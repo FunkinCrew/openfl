@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The JointStyle class is an enumeration of constant values that specify the
 	joint style to use in drawing lines. These constants are provided for use
@@ -61,6 +60,3 @@ enum abstract JointStyle(Null<Int>)
 		}
 	}
 }
-#else
-typedef JointStyle = flash.display.JointStyle;
-#end

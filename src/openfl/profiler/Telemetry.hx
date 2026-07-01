@@ -1,6 +1,5 @@
 package openfl.profiler;
 
-#if !flash
 #if (cpp && hxtelemetry && !macro)
 import hxtelemetry.HxTelemetry;
 #end
@@ -180,6 +179,3 @@ import openfl.utils._internal.Lib;
 	public var EVENT = ".event";
 	public var RENDER = ".render";
 }
-#else
-typedef Telemetry = flash.profiler.Telemetry;
-#end

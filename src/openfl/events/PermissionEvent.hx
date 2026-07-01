@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 import openfl.permissions.PermissionStatus;
 
 /**
@@ -69,4 +68,3 @@ class PermissionEvent extends Event
 		status = DENIED;
 	}
 }
-#end

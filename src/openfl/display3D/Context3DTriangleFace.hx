@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Constants to specify the orientation of a triangle relative to the view point.
 **/
@@ -35,6 +34,3 @@ package openfl.display3D;
 		}
 	}
 }
-#else
-typedef Context3DTriangleFace = flash.display3D.Context3DTriangleFace;
-#end

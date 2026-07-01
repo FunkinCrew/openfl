@@ -1,6 +1,5 @@
 package openfl;
 
-#if !flash
 import openfl.utils.ByteArray;
 
 /**
@@ -205,6 +204,3 @@ class Memory
 		return value;
 	}
 }
-#else
-typedef Memory = flash.Memory;
-#end

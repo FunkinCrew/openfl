@@ -631,11 +631,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	**/
 	public function attachTimeline(timeline:Timeline):Void
 	{
-		#if flash
-		cast(this, openfl.display.MovieClip.MovieClip2).attachTimeline(timeline);
-		#else
 		cast(this, MovieClip).attachTimeline(timeline);
-		#end
 	}
 
 	/**
@@ -1025,21 +1021,12 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	@:arrayAccess
 	private function __resolve(childName:String):ChildAccess<DisplayObject>
 	{
-		#if flash
-		if (this != null && Std.isOfType(this, DisplayObjectContainer))
-		{
-			var container:DisplayObjectContainer = cast this;
-			return container.getChildByName(childName);
-		}
-		return null;
-		#else
 		if (this == null || this.__children == null) return null;
 		for (child in this.__children)
 		{
 			if (child.name == childName) return child;
 		}
 		return null;
-		#end
 	}
 
 	/**

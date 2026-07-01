@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 
@@ -195,6 +194,3 @@ class FocusEvent extends Event
 		relatedObject = null;
 	}
 }
-#else
-typedef FocusEvent = flash.events.FocusEvent;
-#end

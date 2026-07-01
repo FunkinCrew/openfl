@@ -1,6 +1,5 @@
 package openfl.text._internal;
 
-#if !flash
 import haxe.Timer;
 import openfl.display3D._internal.GLTexture;
 import openfl.utils._internal.Log;
@@ -2113,4 +2112,3 @@ private class DefaultFontSet
 		return normal;
 	}
 }
-#end

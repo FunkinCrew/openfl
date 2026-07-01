@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.AssetManifestLoader;
 import openfl.display._internal.BitmapDataLoader;
 import openfl.display._internal.ScriptLoader;
@@ -835,6 +834,3 @@ class Loader extends DisplayObjectContainer
 		#end
 	}
 }
-#else
-typedef Loader = flash.display.Loader;
-#end

@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.text._internal.HTMLParser;
 import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
@@ -497,4 +496,3 @@ class CanvasTextField
 		CanvasDisplayObject.renderDrawableMask(textField, renderer);
 	}
 }
-#end

@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 import openfl.events.EventDispatcher;
 import openfl.text._internal.CSSParser;
 import openfl.utils.Object;
@@ -378,6 +377,3 @@ class StyleSheet extends EventDispatcher /*implements Dynamic*/
 		return __styleNames;
 	}
 }
-#else
-typedef StyleSheet = flash.text.StyleSheet;
-#end

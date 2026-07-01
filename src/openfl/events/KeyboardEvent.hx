@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 import openfl.ui.KeyLocation;
 
@@ -242,6 +241,3 @@ class KeyboardEvent extends Event
 		__updateAfterEventFlag = false;
 	}
 }
-#else
-typedef KeyboardEvent = flash.events.KeyboardEvent;
-#end

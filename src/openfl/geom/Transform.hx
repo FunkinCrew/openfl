@@ -1,6 +1,5 @@
 package openfl.geom;
 
-#if !flash
 import openfl.display.DisplayObject;
 
 /**
@@ -334,6 +333,3 @@ class Transform
 		}
 	}
 }
-#else
-typedef Transform = flash.geom.Transform;
-#end

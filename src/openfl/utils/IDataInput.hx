@@ -1,6 +1,5 @@
 package openfl.utils;
 
-#if !flash
 import openfl.net.ObjectEncoding;
 
 /**
@@ -184,6 +183,3 @@ interface IDataInput
 	**/
 	public function readUTFBytes(length:Int):String;
 }
-#else
-typedef IDataInput = flash.utils.IDataInput;
-#end

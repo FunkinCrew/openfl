@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
@@ -306,6 +305,3 @@ class Font #if lime extends LimeFont #end
 		#end
 	}
 }
-#else
-typedef Font = flash.text.Font;
-#end

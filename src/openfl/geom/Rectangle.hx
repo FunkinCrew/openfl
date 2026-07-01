@@ -1,6 +1,5 @@
 package openfl.geom;
 
-#if !flash
 import openfl.utils.ObjectPool;
 #if lime
 import lime.math.Rectangle as LimeRectangle;
@@ -790,6 +789,3 @@ class Rectangle
 		return p.clone();
 	}
 }
-#else
-typedef Rectangle = flash.geom.Rectangle;
-#end

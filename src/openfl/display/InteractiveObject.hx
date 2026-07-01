@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
@@ -1338,6 +1337,3 @@ class InteractiveObject extends DisplayObject
 		return __tabIndex;
 	}
 }
-#else
-typedef InteractiveObject = flash.display.InteractiveObject;
-#end

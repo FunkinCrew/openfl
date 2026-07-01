@@ -207,10 +207,6 @@ class Tile
 	@:noCompletion private var __shader:Shader;
 	@:noCompletion private var __tileset:Tileset;
 	@:noCompletion private var __visible:Bool;
-	#if flash
-	@:noCompletion private var __tempMatrix = new Matrix();
-	@:noCompletion private var __tempRectangle = new Rectangle();
-	#end
 
 	public function new(id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0)
 	{
@@ -253,13 +249,7 @@ class Tile
 
 		if (__colorTransform != null)
 		{
-			#if flash
-			tile.__colorTransform = new ColorTransform(__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier,
-				__colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset,
-				__colorTransform.alphaOffset);
-			#else
 			tile.__colorTransform = __colorTransform.__clone();
-			#end
 		}
 
 		return tile;
@@ -280,21 +270,19 @@ class Tile
 		__findTileRect(result);
 
 		// Copied from DisplayObject. Create the translation matrix.
-		var matrix = #if flash __tempMatrix #else Matrix.__pool.get() #end;
+		var matrix = Matrix.__pool.get();
 
 		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
 		{
 			matrix.copyFrom(__getWorldTransform()); // ? Is this correct?
-			var targetMatrix = #if flash new Matrix() #else Matrix.__pool.get() #end;
+			var targetMatrix = Matrix.__pool.get();
 
 			targetMatrix.copyFrom(targetCoordinateSpace.__getWorldTransform());
 			targetMatrix.invert();
 
 			matrix.concat(targetMatrix);
 
-			#if !flash
 			Matrix.__pool.release(targetMatrix);
-			#end
 		}
 		else
 		{
@@ -303,53 +291,14 @@ class Tile
 
 		__getBounds(result, matrix);
 
-		#if !flash
 		Matrix.__pool.release(matrix);
-		#end
 
 		return result;
 	}
 
 	@:noCompletion private function __getBounds(result:Rectangle, matrix:Matrix):Void
 	{
-		#if flash
-		function __transform(rect:Rectangle, m:Matrix):Void
-		{
-			var tx0 = m.a * rect.x + m.c * rect.y;
-			var tx1 = tx0;
-			var ty0 = m.b * rect.x + m.d * rect.y;
-			var ty1 = ty0;
-
-			var tx = m.a * (rect.x + rect.width) + m.c * rect.y;
-			var ty = m.b * (rect.x + rect.width) + m.d * rect.y;
-
-			if (tx < tx0) tx0 = tx;
-			if (ty < ty0) ty0 = ty;
-			if (tx > tx1) tx1 = tx;
-			if (ty > ty1) ty1 = ty;
-
-			tx = m.a * (rect.x + rect.width) + m.c * (rect.y + rect.height);
-			ty = m.b * (rect.x + rect.width) + m.d * (rect.y + rect.height);
-
-			if (tx < tx0) tx0 = tx;
-			if (ty < ty0) ty0 = ty;
-			if (tx > tx1) tx1 = tx;
-			if (ty > ty1) ty1 = ty;
-
-			tx = m.a * rect.x + m.c * (rect.y + rect.height);
-			ty = m.b * rect.x + m.d * (rect.y + rect.height);
-
-			if (tx < tx0) tx0 = tx;
-			if (ty < ty0) ty0 = ty;
-			if (tx > tx1) tx1 = tx;
-			if (ty > ty1) ty1 = ty;
-
-			rect.setTo(tx0 + m.tx, ty0 + m.ty, tx1 - tx0, ty1 - ty0);
-		}
-		__transform(result, matrix);
-		#else
 		result.__transform(result, matrix);
-		#end
 	}
 
 	/**
@@ -452,7 +401,6 @@ class Tile
 
 	@:noCompletion private function __setRenderDirty():Void
 	{
-		#if !flash
 		if (!__dirty)
 		{
 			__dirty = true;
@@ -462,7 +410,6 @@ class Tile
 				parent.__setRenderDirty();
 			}
 		}
-		#end
 	}
 
 	// Get & Set Methods
@@ -516,30 +463,26 @@ class Tile
 
 	@:keep @:noCompletion private function get_height():Float
 	{
-		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+		var result:Rectangle = Rectangle.__pool.get();
 
 		__findTileRect(result);
 
 		__getBounds(result, matrix);
 		var h = result.height;
-		#if !flash
 		Rectangle.__pool.release(result);
-		#end
 		return h;
 	}
 
 	@:keep @:noCompletion private function set_height(value:Float):Float
 	{
-		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+		var result:Rectangle = Rectangle.__pool.get();
 
 		__findTileRect(result);
 		if (result.height != 0)
 		{
 			scaleY = value / result.height;
 		}
-		#if !flash
 		Rectangle.__pool.release(result);
-		#end
 		return value;
 	}
 
@@ -811,30 +754,26 @@ class Tile
 	@:keep @:noCompletion private function get_width():Float
 	{
 		// TODO how does pooling work with flash target?
-		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
+		var result:Rectangle = Rectangle.__pool.get();
 
 		__findTileRect(result);
 
 		__getBounds(result, matrix);
 		var w = result.width;
-		#if !flash
 		Rectangle.__pool.release(result);
-		#end
 		return w;
 	}
 
 	@:keep @:noCompletion private function set_width(value:Float):Float
 	{
-		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+		var result:Rectangle = Rectangle.__pool.get();
 
 		__findTileRect(result);
 		if (result.width != 0)
 		{
 			scaleX = value / result.width;
 		}
-		#if !flash
 		Rectangle.__pool.release(result);
-		#end
 		return value;
 	}
 

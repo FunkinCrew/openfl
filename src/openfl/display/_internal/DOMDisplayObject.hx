@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.DisplayObject;
 import openfl.display.DOMRenderer;
 
@@ -66,4 +65,3 @@ class DOMDisplayObject
 		DOMDisplayObject.clear(displayObject, renderer);
 	}
 }
-#end

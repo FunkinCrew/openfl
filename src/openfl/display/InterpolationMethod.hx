@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The InterpolationMethod class provides values for the
 	`interpolationMethod` parameter in the
@@ -68,6 +67,3 @@ enum abstract InterpolationMethod(Null<Int>)
 		}
 	}
 }
-#else
-typedef InterpolationMethod = flash.display.InterpolationMethod;
-#end

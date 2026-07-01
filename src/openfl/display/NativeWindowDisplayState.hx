@@ -1,6 +1,6 @@
 package openfl.display;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The NativeWindowDisplayState class defines constants for the names of the
 	window display states.

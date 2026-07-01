@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.OpenGLRenderer;
 import openfl.media.Video;
 #if gl_stats
@@ -135,4 +134,3 @@ class Context3DVideo
 		#end
 	}
 }
-#end

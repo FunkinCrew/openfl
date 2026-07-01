@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.Bitmap;
 import openfl.display.OpenGLRenderer;
 #if gl_stats
@@ -112,4 +111,3 @@ class Context3DBitmap
 		}
 	}
 }
-#end

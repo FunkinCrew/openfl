@@ -1,6 +1,5 @@
 package openfl.filters;
 
-#if !flash
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObjectRenderer;
@@ -70,6 +69,3 @@ class BitmapFilter
 		return null;
 	}
 }
-#else
-typedef BitmapFilter = flash.filters.BitmapFilter;
-#end

@@ -1,6 +1,5 @@
 package openfl.desktop;
 
-#if !flash
 /**
 	The ClipboardFormats class defines constants for the names of the standard
 	data formats used with the Clipboard class. Flash Player 10 only supports
@@ -49,6 +48,3 @@ enum abstract ClipboardFormats(Null<Int>)
 		}
 	}
 }
-#else
-typedef ClipboardFormats = flash.desktop.ClipboardFormats;
-#end

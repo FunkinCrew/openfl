@@ -17,9 +17,7 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-#if !flash
 @:access(openfl.geom.Rectangle)
-#end
 class Tileset
 {
 	/**
@@ -97,7 +95,7 @@ class Tileset
 	public function clone():Tileset
 	{
 		var tileset = new Tileset(__bitmapData, null);
-		var rect = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
+		var rect = Rectangle.__pool.get();
 
 		for (tileData in __data)
 		{
@@ -105,9 +103,7 @@ class Tileset
 			tileset.addRect(rect);
 		}
 
-		#if !flash
 		Rectangle.__pool.release(rect);
-		#end
 
 		return tileset;
 	}
@@ -240,7 +236,7 @@ class TileData
 			var bitmapWidth = bitmapData.width;
 			var bitmapHeight = bitmapData.height;
 
-			#if (openfl_power_of_two && !flash)
+			#if openfl_power_of_two
 			var newWidth = 1;
 			var newHeight = 1;
 
@@ -262,11 +258,6 @@ class TileData
 			__uvY = y / bitmapHeight;
 			__uvWidth = (x + width) / bitmapWidth;
 			__uvHeight = (y + height) / bitmapHeight;
-
-			#if flash
-			__bitmapData = new BitmapData(width, height);
-			__bitmapData.copyPixels(bitmapData, new Rectangle(x, y, width, height), new Point());
-			#end
 		}
 	}
 }

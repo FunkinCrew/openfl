@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 import haxe.Timer;
 import openfl.text._internal.HTMLParser;
 import openfl.text._internal.TextEngine;
@@ -3777,6 +3776,3 @@ class TextField extends InteractiveObject
 		#end
 	}
 }
-#else
-typedef TextField = flash.text.TextField;
-#end

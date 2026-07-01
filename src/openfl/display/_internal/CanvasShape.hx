@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
@@ -198,4 +197,3 @@ class CanvasShape
 	}
 	#end
 }
-#end

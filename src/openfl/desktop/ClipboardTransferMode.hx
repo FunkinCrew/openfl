@@ -1,6 +1,5 @@
 package openfl.desktop;
 
-#if !flash
 /**
 	The ClipboardTransferMode class defines constants for the modes used as
 	values of the `transferMode` parameter of the `Clipboard.getData()`
@@ -54,6 +53,3 @@ enum abstract ClipboardTransferMode(Null<Int>)
 		}
 	}
 }
-#else
-typedef ClipboardTransferMode = flash.desktop.ClipboardTransferMode;
-#end

@@ -3,7 +3,6 @@ package openfl.display;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
-#if !flash
 import openfl.display._internal.ShaderBuffer;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
@@ -1269,6 +1268,3 @@ class Shader
 		return __fieldList.indexOf(name) != -1;
 	}
 }
-#else
-typedef Shader = flash.display.Shader;
-#end

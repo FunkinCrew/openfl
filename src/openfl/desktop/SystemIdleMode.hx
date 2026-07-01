@@ -1,6 +1,6 @@
 package openfl.desktop;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The SystemIdleMode class provides constant values for system idle behaviors.
 	These constants are used in the `systemIdleMode` property of the

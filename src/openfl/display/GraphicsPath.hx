@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.GraphicsDataType;
 import openfl.Vector;
 
@@ -242,6 +241,3 @@ import openfl.Vector;
 		lineTo(xe, ye - ellipseHeight);
 	}
 }
-#else
-typedef GraphicsPath = flash.display.GraphicsPath;
-#end

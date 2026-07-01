@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The SpreadMethod class provides values for the `spreadMethod`
 	parameter in the `beginGradientFill()` and
@@ -58,6 +57,3 @@ enum abstract SpreadMethod(Null<Int>)
 		}
 	}
 }
-#else
-typedef SpreadMethod = flash.display.SpreadMethod;
-#end

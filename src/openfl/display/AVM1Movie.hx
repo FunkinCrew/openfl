@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 #if (!openfl_doc_gen || flash_doc_gen)
 import haxe.Constraints.Function;
 import openfl.errors.ArgumentError;
@@ -60,7 +59,4 @@ class AVM1Movie extends DisplayObject
 		return null;
 	}
 }
-#end
-#else
-typedef AVM1Movie = flash.display.AVM1Movie;
 #end

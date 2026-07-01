@@ -1,6 +1,5 @@
 package openfl.errors;
 
-#if !flash
 import haxe.CallStack;
 
 /**
@@ -111,6 +110,3 @@ class Error extends haxe.Exception
 		}
 	}
 }
-#else
-typedef Error = flash.errors.Error;
-#end

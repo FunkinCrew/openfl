@@ -1,6 +1,5 @@
 package openfl.text._internal;
 
-#if !flash
 import openfl.utils._internal.Log;
 import openfl.text.StyleSheet;
 import openfl.text.TextFormat;
@@ -318,4 +317,3 @@ class HTMLParser
 		return StringTools.htmlUnescape(s);
 	}
 }
-#end

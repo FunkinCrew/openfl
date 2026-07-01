@@ -1,6 +1,5 @@
 package openfl.globalization;
 
-#if !flash
 /**
 	Enumerates constants that determine a locale-specific date and time
 	formatting pattern. These constants are used when constructing a
@@ -76,6 +75,3 @@ enum abstract DateTimeStyle(Null<Int>)
 		}
 	}
 }
-#else
-typedef DateTimeStyle = flash.globalization.DateTimeStyle;
-#end

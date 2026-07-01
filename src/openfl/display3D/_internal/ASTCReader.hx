@@ -1,6 +1,5 @@
 package openfl.display3D._internal;
 
-#if !flash
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.utils._internal.UInt8Array;
@@ -91,4 +90,3 @@ class ASTCReader
 		data = null;
 	}
 }
-#end

@@ -1,6 +1,6 @@
 package openfl.display;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 import openfl.events.EventDispatcher;
 import lime.system.System;
 import openfl.geom.Rectangle;

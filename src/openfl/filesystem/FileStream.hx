@@ -1,6 +1,6 @@
 package openfl.filesystem;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Timer;

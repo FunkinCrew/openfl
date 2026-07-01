@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 /**
 	The URLRequestMethod class provides values that specify whether the
 	URLRequest object should use the `POST` method or the
@@ -47,6 +46,3 @@ enum abstract URLRequestMethod(String) from String to String
 	**/
 	public var PUT = "PUT";
 }
-#else
-typedef URLRequestMethod = flash.net.URLRequestMethod;
-#end

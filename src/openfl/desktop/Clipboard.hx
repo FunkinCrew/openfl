@@ -1,6 +1,5 @@
 package openfl.desktop;
 
-#if !flash
 import openfl.utils.Object;
 #if lime
 import lime.system.Clipboard as LimeClipboard;
@@ -522,6 +521,3 @@ class Clipboard
 		return __generalClipboard;
 	}
 }
-#else
-typedef Clipboard = flash.desktop.Clipboard;
-#end

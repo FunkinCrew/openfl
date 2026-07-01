@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 /**
 	The SharedObjectFlushStatus class provides values for the code returned
 	from a call to the `SharedObject.flush()` method.
@@ -38,6 +37,3 @@ enum abstract SharedObjectFlushStatus(Null<Int>)
 		}
 	}
 }
-#else
-typedef SharedObjectFlushStatus = flash.net.SharedObjectFlushStatus;
-#end

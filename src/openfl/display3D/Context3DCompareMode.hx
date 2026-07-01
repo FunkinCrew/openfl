@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying 3D buffer comparisons in the
 	`setDepthTest()` and `setStencilAction()` methods of a Context3D instance.
@@ -79,6 +78,3 @@ enum abstract Context3DCompareMode(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DCompareMode = flash.display3D.Context3DCompareMode;
-#end

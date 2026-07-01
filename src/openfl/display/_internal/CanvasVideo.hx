@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.CanvasRenderer;
 import openfl.media.Video;
 
@@ -63,4 +62,3 @@ class CanvasVideo
 
 	public static function renderDrawableMask(video:Video, renderer:CanvasRenderer):Void {}
 }
-#end

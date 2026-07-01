@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.GraphicsDataType;
 
 /**
@@ -227,6 +226,3 @@ import openfl.display._internal.GraphicsDataType;
 		this.__graphicsDataType = STROKE;
 	}
 }
-#else
-typedef GraphicsStroke = flash.display.GraphicsStroke;
-#end

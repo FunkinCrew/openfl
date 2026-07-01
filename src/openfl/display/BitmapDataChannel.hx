@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The BitmapDataChannel class is an enumeration of constant values that
 	indicate which channel to use: red, blue, green, or alpha transparency.
@@ -47,6 +46,3 @@ enum abstract BitmapDataChannel(Int) from Int to Int from UInt to UInt
 	**/
 	public var RED = 1;
 }
-#else
-typedef BitmapDataChannel = flash.display.BitmapDataChannel;
-#end

@@ -22,7 +22,6 @@ import sys.ssl.Certificate;
 import sys.ssl.Socket as SysSecureSocket;
 #end
 
-#if !flash
 /**
 	The SecureSocket class enables code to make socket connections using the
 	Secure Sockets Layer (SSL) and Transport Layer Security (TLS) protocols.
@@ -419,6 +418,3 @@ class SecureSocket extends Socket
 		super.this_onEnterFrame(event);
 	}
 }
-#else
-typedef SecureSocket = flash.net.SecureSocket;
-#end

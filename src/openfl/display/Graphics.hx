@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.CairoGraphics;
 import openfl.display._internal.CanvasGraphics;
 import openfl.display._internal.Context3DBuffer;
@@ -2095,6 +2094,3 @@ import js.html.CanvasRenderingContext2D;
 		return __dirty = value;
 	}
 }
-#else
-typedef Graphics = flash.display.Graphics;
-#end

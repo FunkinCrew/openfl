@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 /**
 	An IOErrorEvent object is dispatched when an error causes input or output
@@ -119,6 +118,3 @@ class IOErrorEvent extends ErrorEvent
 		return __formatToString("IOErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
 	}
 }
-#else
-typedef IOErrorEvent = flash.events.IOErrorEvent;
-#end

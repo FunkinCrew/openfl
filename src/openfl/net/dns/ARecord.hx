@@ -1,6 +1,6 @@
 package openfl.net.dns;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The ARecord class represents a Domain Name System (DNS) A resource record
 	containing an IPv4 address.

@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 import haxe.Timer;
 import openfl.events.EventDispatcher;
 import openfl.events.NetStatusEvent;
@@ -2238,6 +2237,3 @@ class NetStream extends EventDispatcher
 		#end
 	}
 }
-#else
-typedef NetStream = flash.net.NetStream;
-#end

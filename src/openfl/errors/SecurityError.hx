@@ -1,6 +1,5 @@
 package openfl.errors;
 
-#if !flash
 /**
 	The SecurityError exception is thrown when some type of security violation
 	takes place.
@@ -26,6 +25,3 @@ class SecurityError extends Error
 		name = "SecurityError";
 	}
 }
-#else
-typedef SecurityError = flash.errors.SecurityError;
-#end

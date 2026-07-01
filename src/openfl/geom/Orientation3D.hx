@@ -1,6 +1,5 @@
 package openfl.geom;
 
-#if !flash
 /**
 	The Orientation3D class is an enumeration of constant
 	values for representing the orientation style of a Matrix3D object.
@@ -78,6 +77,3 @@ enum abstract Orientation3D(Null<Int>)
 		}
 	}
 }
-#else
-typedef Orientation3D = flash.geom.Orientation3D;
-#end

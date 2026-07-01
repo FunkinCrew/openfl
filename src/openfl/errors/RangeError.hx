@@ -1,6 +1,5 @@
 package openfl.errors;
 
-#if !flash
 /**
 	A RangeError exception is thrown when a numeric value is outside the
 	acceptable range.
@@ -25,6 +24,3 @@ class RangeError extends Error
 		name = "RangeError";
 	}
 }
-#else
-typedef RangeError = flash.errors.RangeError;
-#end

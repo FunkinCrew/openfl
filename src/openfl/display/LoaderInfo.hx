@@ -1,7 +1,6 @@
 package openfl.display;
 
 import openfl.utils.AssetLibrary;
-#if !flash
 import openfl.events.EventDispatcher;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
@@ -469,6 +468,3 @@ class LoaderInfo extends EventDispatcher
 		#end
 	}
 }
-#else
-typedef LoaderInfo = flash.display.LoaderInfo;
-#end

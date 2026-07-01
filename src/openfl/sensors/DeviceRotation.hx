@@ -1,6 +1,5 @@
 package openfl.sensors;
 
-#if !flash
 import haxe.Timer;
 import openfl.errors.ArgumentError;
 import openfl.events.DeviceRotationEvent;
@@ -184,4 +183,3 @@ class DeviceRotation extends EventDispatcher
 		return value;
 	}
 }
-#end

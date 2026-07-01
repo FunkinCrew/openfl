@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	This class defines the constants that represent the possible values for
 	the Shader class's `precisionHint` property. Each constant represents one
@@ -68,6 +67,3 @@ enum abstract ShaderPrecision(Null<Int>)
 		}
 	}
 }
-#else
-typedef ShaderPrecision = flash.display.ShaderPrecision;
-#end

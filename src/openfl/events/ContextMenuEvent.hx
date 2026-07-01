@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 
@@ -146,6 +145,3 @@ class ContextMenuEvent extends Event
 		contextMenuOwner = null;
 	}
 }
-#else
-typedef ContextMenuEvent = flash.events.ContextMenuEvent;
-#end

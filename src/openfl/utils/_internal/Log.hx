@@ -66,8 +66,6 @@ class Log
 	{
 		#if sys
 		Sys.print(Std.string(message));
-		#elseif flash
-		untyped __global__["trace"](Std.string(message));
 		#elseif js
 		untyped js.Syntax.code("console").log(message);
 		#else
@@ -79,8 +77,6 @@ class Log
 	{
 		#if sys
 		Sys.println(Std.string(message));
-		#elseif flash
-		untyped __global__["trace"](Std.string(message));
 		#elseif js
 		untyped js.Syntax.code("console").log(message);
 		#else

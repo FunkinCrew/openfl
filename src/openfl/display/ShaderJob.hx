@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.events.EventDispatcher;
 
 /**
@@ -196,6 +195,3 @@ class ShaderJob extends EventDispatcher
 	**/
 	public function start(waitForCompletion:Bool = false):Void {}
 }
-#else
-typedef ShaderJob = flash.display.ShaderJob;
-#end

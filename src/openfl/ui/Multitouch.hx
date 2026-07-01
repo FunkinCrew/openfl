@@ -1,6 +1,5 @@
 package openfl.ui;
 
-#if !flash
 import openfl.Vector;
 
 /**
@@ -133,6 +132,3 @@ import openfl.Vector;
 		#end
 	}
 }
-#else
-typedef Multitouch = flash.ui.Multitouch;
-#end

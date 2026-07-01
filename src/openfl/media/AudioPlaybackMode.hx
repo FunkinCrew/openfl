@@ -1,6 +1,6 @@
 package openfl.media;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The AudioPlaybackMode class defines constants for the `audioPlaybackMode`
 	property of the SoundMixer class.

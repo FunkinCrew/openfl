@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The PixelSnapping class is an enumeration of constant values for setting
 	the pixel snapping options by using the `pixelSnapping` property
@@ -54,6 +53,3 @@ enum abstract PixelSnapping(Null<Int>)
 		}
 	}
 }
-#else
-typedef PixelSnapping = flash.display.PixelSnapping;
-#end

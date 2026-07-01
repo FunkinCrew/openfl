@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 
 /**
@@ -66,6 +65,3 @@ class VideoTextureEvent extends Event
 		colorSpace = null;
 	}
 }
-#else
-typedef VideoTextureEvent = flash.events.VideoTextureEvent;
-#end

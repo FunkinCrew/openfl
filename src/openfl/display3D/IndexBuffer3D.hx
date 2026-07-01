@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 import openfl.display3D._internal.GLBuffer;
 import openfl.utils._internal.ArrayBufferView;
 import openfl.utils._internal.UInt16Array;
@@ -193,6 +192,3 @@ import openfl.Vector;
 		#end
 	}
 }
-#else
-typedef IndexBuffer3D = flash.display3D.IndexBuffer3D;
-#end

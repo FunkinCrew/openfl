@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 /**
 	The FileFilter class is used to indicate what files on the user's system
 	are shown in the file-browsing dialog box that is displayed when the
@@ -105,6 +104,3 @@ package openfl.net;
 		this.macType = macType;
 	}
 }
-#else
-typedef FileFilter = flash.net.FileFilter;
-#end

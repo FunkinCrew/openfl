@@ -1,6 +1,5 @@
 package openfl.media;
 
-#if !flash
 /**
 	The SoundTransform class contains properties for volume and panning.
 
@@ -112,6 +111,3 @@ package openfl.media;
 		return new SoundTransform(volume, pan);
 	}
 }
-#else
-typedef SoundTransform = flash.media.SoundTransform;
-#end

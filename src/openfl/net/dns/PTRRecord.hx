@@ -1,6 +1,6 @@
 package openfl.net.dns;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The PTRRecord class represents a Domain Name System (DNS) PTR resource
 	record containing a canonical domain name.

@@ -8,9 +8,6 @@ import openfl.text.TextFormat;
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
 #end
-#if flash
-import openfl.Lib;
-#end
 
 /**
 	The FPS class provides an easy-to-use monitor to display
@@ -48,19 +45,12 @@ class FPS extends TextField
 		cacheCount = 0;
 		currentTime = 0;
 		times = [];
-
-		#if flash
-		addEventListener(Event.ENTER_FRAME, function(e)
-		{
-			var time = Lib.getTimer();
-			__enterFrame(time - currentTime);
-		});
-		#end
 	}
 
 	// Event Handlers
+
 	@:noCompletion
-	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
+	private override function __enterFrame(deltaTime:Float):Void
 	{
 		currentTime += deltaTime;
 		times.push(currentTime);
@@ -73,20 +63,22 @@ class FPS extends TextField
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
 
-		if (currentCount != cacheCount /*&& visible*/) {
-		var newText = "FPS: " + currentFPS;
+		if (currentCount != cacheCount /*&& visible*/)
+		{
+			var newText = "FPS: " + currentFPS;
 
-		#if (gl_stats && !disable_cffi && (!html5 || !canvas))
-		newText += "\ntotalDC: " + Context3DStats.totalDrawCalls();
-		newText += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);
-		newText += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
-		#end
+			#if (gl_stats && !disable_cffi && (!html5 || !canvas))
+			newText += "\ntotalDC: " + Context3DStats.totalDrawCalls();
+			newText += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);
+			newText += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
+			#end
 
-		if (newText != lastText) {
-			text = newText;
-			lastText = newText;
+			if (newText != lastText)
+			{
+				text = newText;
+				lastText = newText;
+			}
 		}
-	}
 
 		cacheCount = currentCount;
 	}

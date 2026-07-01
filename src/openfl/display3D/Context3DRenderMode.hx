@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying the Context3D render mode.
 **/
@@ -43,6 +42,3 @@ enum abstract Context3DRenderMode(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DRenderMode = flash.display3D.Context3DRenderMode;
-#end

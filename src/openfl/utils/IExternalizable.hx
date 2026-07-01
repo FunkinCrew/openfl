@@ -1,6 +1,5 @@
 package openfl.utils;
 
-#if !flash
 /**
 	The IExternalizable interface provides control over serialization of a class as it is
 	encoded into a data stream. The `writeExternal()` and `readExternal()` methods of the
@@ -158,6 +157,3 @@ interface IExternalizable
 	**/
 	public function writeExternal(output:IDataOutput):Void;
 }
-#else
-typedef IExternalizable = flash.utils.IExternalizable;
-#end

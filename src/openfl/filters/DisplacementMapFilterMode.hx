@@ -1,6 +1,5 @@
 package openfl.filters;
 
-#if !flash
 /**
 	The DisplacementMapFilterMode class provides
 	values for the mode property of the DisplacementMapFilter class.
@@ -29,6 +28,3 @@ enum abstract DisplacementMapFilterMode(String) from String to String
 	**/
 	public var WRAP = "wrap";
 }
-#else
-typedef DisplacementMapFilterMode = flash.filters.DisplacementMapFilterMode;
-#end

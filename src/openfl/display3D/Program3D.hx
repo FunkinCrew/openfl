@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 import openfl.display3D._internal.GLProgram;
 import openfl.display3D._internal.GLShader;
 import openfl.display3D._internal.GLUniformLocation;
@@ -1126,6 +1125,3 @@ import lime.utils.BytePointer;
 		}
 	}
 }
-#else
-typedef Program3D = flash.display3D.Program3D;
-#end

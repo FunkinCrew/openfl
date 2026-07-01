@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 
@@ -51,4 +50,3 @@ class Context3DAlphaMaskShader extends Shader
 		super();
 	}
 }
-#end

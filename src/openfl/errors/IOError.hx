@@ -1,6 +1,5 @@
 package openfl.errors;
 
-#if !flash
 /**
 	The IOError exception is thrown when some type of input or output failure
 	occurs. For example, an IOError exception is thrown if a read/write
@@ -25,6 +24,3 @@ class IOError extends Error
 		name = "IOError";
 	}
 }
-#else
-typedef IOError = flash.errors.IOError;
-#end

@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.GraphicsDataType;
 import openfl.Vector;
 
@@ -88,6 +87,3 @@ import openfl.Vector;
 		__graphicsDataType = TRIANGLE_PATH;
 	}
 }
-#else
-typedef GraphicsTrianglePath = flash.display.GraphicsTrianglePath;
-#end

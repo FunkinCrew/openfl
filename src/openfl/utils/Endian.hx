@@ -1,6 +1,5 @@
 package openfl.utils;
 
-#if !flash
 #if lime
 import lime.system.Endian as LimeEndian;
 #end
@@ -102,6 +101,3 @@ enum abstract Endian(Null<Int>)
 		}
 	}
 }
-#else
-typedef Endian = flash.utils.Endian;
-#end

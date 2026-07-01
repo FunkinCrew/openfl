@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.utils._internal.Float32Array;
 import openfl.display3D.Context3D;
 
@@ -593,6 +592,3 @@ import openfl.display3D.Context3D;
 		return this.name = value;
 	}
 }
-#else
-typedef ShaderParameter<T> = flash.display.ShaderParameter<T>;
-#end

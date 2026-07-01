@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The StageDisplayState class provides values for the
 	`Stage.displayState` property.
@@ -44,6 +43,3 @@ enum abstract StageDisplayState(Null<Int>)
 		}
 	}
 }
-#else
-typedef StageDisplayState = flash.display.StageDisplayState;
-#end

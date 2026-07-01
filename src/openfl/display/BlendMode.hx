@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	A class that provides constant values for visual blend mode effects. These
 	constants are used in the following:
@@ -297,6 +296,3 @@ enum abstract BlendMode(Null<Int>)
 		}
 	}
 }
-#else
-typedef BlendMode = flash.display.BlendMode;
-#end

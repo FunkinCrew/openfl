@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying a Program3D source format.
 **/
@@ -36,4 +35,3 @@ enum abstract Context3DProgramFormat(Null<Int>)
 		}
 	}
 }
-#end

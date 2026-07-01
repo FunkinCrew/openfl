@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The CapsStyle class is an enumeration of constant values that specify the
 	caps style to use in drawing lines. The constants are provided for use as
@@ -62,6 +61,3 @@ enum abstract CapsStyle(Null<Int>)
 		}
 	}
 }
-#else
-typedef CapsStyle = flash.display.CapsStyle;
-#end

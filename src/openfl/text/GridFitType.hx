@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 /**
 	The GridFitType class defines values for grid fitting in the TextField
 	class.
@@ -59,6 +58,3 @@ enum abstract GridFitType(Null<Int>)
 		}
 	}
 }
-#else
-typedef GridFitType = flash.text.GridFitType;
-#end

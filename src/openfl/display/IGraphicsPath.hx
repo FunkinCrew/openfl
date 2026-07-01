@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	This interface is used to define objects that can be used as path parameters
 	in the `openfl.display.Graphics` methods and drawing classes. Use the
@@ -11,6 +10,3 @@ package openfl.display;
 	@see `openfl.display.Graphics.drawPath()`
 **/
 interface IGraphicsPath {}
-#else
-typedef IGraphicsPath = flash.display.IGraphicsPath;
-#end

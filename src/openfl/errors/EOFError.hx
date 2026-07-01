@@ -1,6 +1,5 @@
 package openfl.errors;
 
-#if !flash
 /**
 	An EOFError exception is thrown when you attempt to read past the end of
 	the available data. For example, an EOFError is thrown when one of the read
@@ -26,6 +25,3 @@ class EOFError extends IOError
 		errorID = 2030;
 	}
 }
-#else
-typedef EOFError = flash.errors.EOFError;
-#end

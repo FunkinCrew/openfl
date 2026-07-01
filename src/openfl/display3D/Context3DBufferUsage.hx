@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying the buffer usage type.
 **/
@@ -38,6 +37,3 @@ enum abstract Context3DBufferUsage(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DBufferUsage = flash.display3D.Context3DBufferUsage;
-#end

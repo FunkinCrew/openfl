@@ -1,6 +1,5 @@
 package openfl.ui;
 
-#if !flash
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventType;
@@ -284,6 +283,3 @@ import lime.ui.GamepadButton;
 	}
 	#end
 }
-#else
-typedef GameInput = flash.ui.GameInput;
-#end

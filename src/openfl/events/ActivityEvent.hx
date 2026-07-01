@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 /**
 	A Camera or Microphone object dispatches an ActivityEvent object whenever
@@ -85,6 +84,3 @@ class ActivityEvent extends Event
 		activating = false;
 	}
 }
-#else
-typedef ActivityEvent = flash.events.ActivityEvent;
-#end

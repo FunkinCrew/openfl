@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying a texture format.
 **/
@@ -64,6 +63,3 @@ enum abstract Context3DTextureFormat(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DTextureFormat = flash.display3D.Context3DTextureFormat;
-#end

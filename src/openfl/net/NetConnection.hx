@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 import openfl.events.EventDispatcher;
 import openfl.events.NetStatusEvent;
 
@@ -518,6 +517,3 @@ class NetConnection extends EventDispatcher
 		this.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, true, {code: NetConnection.CONNECT_SUCCESS}));
 	}
 }
-#else
-typedef NetConnection = flash.net.NetConnection;
-#end

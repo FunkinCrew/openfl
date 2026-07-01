@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 enum abstract DrawCommandType(Int)
 {
 	var BEGIN_BITMAP_FILL;
@@ -28,4 +27,3 @@ enum abstract DrawCommandType(Int)
 	var WINDING_NON_ZERO;
 	var UNKNOWN;
 }
-#end

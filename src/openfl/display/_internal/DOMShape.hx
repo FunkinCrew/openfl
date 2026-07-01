@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display._internal.CanvasGraphics;
 import openfl.display.DisplayObject;
 import openfl.display.DOMRenderer;
@@ -84,4 +83,3 @@ class DOMShape
 		#end
 	}
 }
-#end

@@ -1,6 +1,5 @@
 package openfl.display3D.textures;
 
-#if !flash
 import openfl.display3D.Context3D;
 import openfl.display3D._internal.ASTCReader;
 import openfl.errors.IllegalOperationError;
@@ -108,4 +107,3 @@ using StringTools;
 		return false;
 	}
 }
-#end

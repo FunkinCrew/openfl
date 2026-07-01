@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
 import openfl.display.BitmapData;
@@ -2600,4 +2599,3 @@ private class Scale9GridBounds
 		}
 	}
 }
-#end

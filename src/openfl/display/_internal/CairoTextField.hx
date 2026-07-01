@@ -1,7 +1,6 @@
 package openfl.display._internal;
 
 import openfl.text.Font;
-#if !flash
 import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
@@ -545,4 +544,3 @@ class CairoTextField
 		CairoDisplayObject.renderDrawableMask(textField, renderer);
 	}
 }
-#end

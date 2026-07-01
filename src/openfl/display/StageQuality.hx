@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The StageQuality class provides values for the `Stage.quality`
 	property.
@@ -56,6 +55,3 @@ enum abstract StageQuality(Null<Int>)
 		}
 	}
 }
-#else
-typedef StageQuality = flash.display.StageQuality;
-#end

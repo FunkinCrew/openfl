@@ -1,6 +1,6 @@
 package openfl.display;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The NativeWindowType class defines constants for the `type` property of the
 	NativeWindowInitOptions object used to create a native window.

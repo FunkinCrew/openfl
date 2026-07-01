@@ -1,6 +1,5 @@
 package openfl.display3D._internal;
 
-#if !flash
 enum abstract ATFFormat(Int)
 {
 	public var RGB888 = 0;
@@ -10,4 +9,3 @@ enum abstract ATFFormat(Int)
 	public var COMPRESSED_ALPHA = 4; // JPEG-XR+LZMA & Block compression with Alpha
 	public var RAW_COMPRESSED_ALPHA = 5; // Block compression with Alpha
 }
-#end

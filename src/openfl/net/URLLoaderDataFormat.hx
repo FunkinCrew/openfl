@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 /**
 	The URLLoaderDataFormat class provides values that specify how downloaded
 	data is received.
@@ -44,6 +43,3 @@ enum abstract URLLoaderDataFormat(Null<Int>)
 		}
 	}
 }
-#else
-typedef URLLoaderDataFormat = flash.net.URLLoaderDataFormat;
-#end

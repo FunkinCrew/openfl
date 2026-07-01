@@ -1,6 +1,6 @@
 package openfl.system;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The ImageDecodingPolicy class provides values for `imageDecodingPolicy` in
 	the LoaderContext class.

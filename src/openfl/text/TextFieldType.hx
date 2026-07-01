@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 /**
 	The TextFieldType class is an enumeration of constant values used in
 	setting the `type` property of the TextField class.
@@ -39,6 +38,3 @@ enum abstract TextFieldType(Null<Int>)
 		}
 	}
 }
-#else
-typedef TextFieldType = flash.text.TextFieldType;
-#end

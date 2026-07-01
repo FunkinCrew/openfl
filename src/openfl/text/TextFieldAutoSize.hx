@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 /**
 	The TextFieldAutoSize class is an enumeration of constant values used in
 	setting the `autoSize` property of the TextField class.
@@ -57,6 +56,3 @@ enum abstract TextFieldAutoSize(Null<Int>)
 		}
 	}
 }
-#else
-typedef TextFieldAutoSize = flash.text.TextFieldAutoSize;
-#end

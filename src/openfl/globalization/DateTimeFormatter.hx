@@ -6,7 +6,6 @@ import openfl.Vector;
 import js.lib.intl.DateTimeFormat;
 #end
 
-#if !flash
 #if !(js && html5)
 @:final class DateTimeFormatter
 {
@@ -994,6 +993,3 @@ private enum DateTimeFormatToken
 	TimeZoneDST(length:Int);
 	TimeZoneOffset(length:Int);
 }
-#else
-typedef DateTimeFormatter = flash.globalization.DateTimeFormatter;
-#end

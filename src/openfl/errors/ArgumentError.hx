@@ -1,6 +1,5 @@
 package openfl.errors;
 
-#if !flash
 /**
 	The ArgumentError class represents an error that occurs when the arguments
 	supplied in a function do not match the arguments defined for that function.
@@ -24,6 +23,3 @@ class ArgumentError extends Error
 		name = "ArgumentError";
 	}
 }
-#else
-typedef ArgumentError = flash.errors.ArgumentError;
-#end

@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 /**
 	The TextFormatAlign class provides values for text alignment in the
 	TextFormat class.
@@ -75,6 +74,3 @@ enum abstract TextFormatAlign(Null<Int>)
 		}
 	}
 }
-#else
-typedef TextFormatAlign = flash.text.TextFormatAlign;
-#end

@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.geom.Matrix;
 import openfl.display._internal.CanvasDisplayObject;
 import openfl.display._internal.CanvasTilemap;
@@ -93,4 +92,3 @@ class DOMTilemap
 		DOMTilemap.clear(tilemap, renderer);
 	}
 }
-#end

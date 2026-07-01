@@ -1,6 +1,5 @@
 package openfl.system;
 
-#if !flash
 #if lime
 import lime.system.Clipboard;
 import lime.system.System as LimeSystem;
@@ -281,6 +280,3 @@ import hl.Gc;
 		return "1.0.0";
 	}
 }
-#else
-typedef System = flash.system.System;
-#end

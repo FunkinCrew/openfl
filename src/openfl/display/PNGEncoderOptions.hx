@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The PNGEncoderOptions class defines a compression algorithm for the
 	`openfl.display.BitmapData.encode()` method.
@@ -27,6 +26,3 @@ package openfl.display;
 		this.fastCompression = fastCompression;
 	}
 }
-#else
-typedef PNGEncoderOptions = flash.display.PNGEncoderOptions;
-#end

@@ -1,6 +1,5 @@
 package openfl.media;
 
-#if !flash
 import haxe.Int64;
 import openfl.errors.IOError;
 import openfl.events.Event;
@@ -967,6 +966,3 @@ class Sound extends EventDispatcher
 	}
 	#end
 }
-#else
-typedef Sound = flash.media.Sound;
-#end

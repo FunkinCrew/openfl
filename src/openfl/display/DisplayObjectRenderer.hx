@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.Context3DGraphics;
 import openfl.display.Bitmap;
 import openfl.display.DisplayObject;
@@ -958,6 +957,3 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private inline function __isShaderFilter(f:Dynamic):Bool
 		return Std.isOfType(f, ShaderFilter);
 }
-#else
-typedef DisplayObjectRenderer = Dynamic;
-#end

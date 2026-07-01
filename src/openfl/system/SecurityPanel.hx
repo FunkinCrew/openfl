@@ -1,6 +1,5 @@
 package openfl.system;
 
-#if !flash
 /**
 	The SecurityPanel class provides values for specifying which Security
 	Settings panel you want to display.
@@ -99,6 +98,3 @@ enum abstract SecurityPanel(Null<Int>)
 		}
 	}
 }
-#else
-typedef SecurityPanel = flash.system.SecurityPanel;
-#end

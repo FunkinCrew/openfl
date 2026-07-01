@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 import openfl.events.EventDispatcher;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -667,6 +666,3 @@ class URLStream extends EventDispatcher implements IDataInput
 		return __data.endian = value;
 	}
 }
-#else
-typedef URLStream = flash.net.URLStream;
-#end

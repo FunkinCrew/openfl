@@ -1,6 +1,5 @@
 package openfl.security;
 
-#if !flash
 /**
 	The `CertificateStatus` class defines constants used to report the results of
 	certificate validation processing by a `SecureSocket` object.
@@ -95,6 +94,3 @@ enum abstract CertificateStatus(String) from String to String
 	**/
 	public var UNTRUSTED_SIGNERS = "untrustedSigners";
 }
-#else
-typedef CertificateStatus = flash.security.CertificateStatus;
-#end

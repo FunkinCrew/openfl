@@ -2,7 +2,6 @@ package openfl.events;
 
 import openfl.display.StageOrientation;
 
-#if !flash
 /**
 	A Stage object dispatches a StageOrientationEvent object when the
 	orientation of the stage changes. This can occur when the device is rotated,
@@ -130,6 +129,3 @@ class StageOrientationEvent extends Event
 		return __formatToString("StageOrientationEvent", ["type", "bubbles", "cancelable", "beforeOrientation", "afterOrientation"]);
 	}
 }
-#else
-typedef StageOrientationEvent = flash.events.StageOrientationEvent;
-#end

@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.Serializer;
@@ -1013,6 +1012,3 @@ class SharedObject extends EventDispatcher
 		}
 	}
 }
-#else
-typedef SharedObject = flash.net.SharedObject;
-#end

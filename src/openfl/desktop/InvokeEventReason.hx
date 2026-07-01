@@ -1,6 +1,6 @@
 package openfl.desktop;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The InvokeEventReason class enumerates values returned by the `reason`
 	property of an InvokeEvent object.

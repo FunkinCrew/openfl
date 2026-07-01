@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for sampler wrap mode
 **/
@@ -54,6 +53,3 @@ enum abstract Context3DWrapMode(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DWrapMode = flash.display3D.Context3DWrapMode;
-#end

@@ -1,6 +1,5 @@
 package openfl.filters;
 
-#if !flash
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
@@ -532,6 +531,3 @@ private class HideShader extends BitmapFilterShader
 		#end
 	}
 }
-#else
-typedef DropShadowFilter = flash.filters.DropShadowFilter;
-#end

@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CairoRenderer;
@@ -191,4 +190,3 @@ class CairoTilemap
 
 	public static inline function renderDrawableMask(tilemap:Tilemap, renderer:CairoRenderer):Void {}
 }
-#end

@@ -1,6 +1,5 @@
 package openfl.geom;
 
-#if !flash
 import openfl.utils.ObjectPool;
 #if lime
 import openfl.utils._internal.Float32Array;
@@ -873,6 +872,3 @@ class Matrix
 		// __cleanValues ();
 	}
 }
-#else
-typedef Matrix = flash.geom.Matrix;
-#end

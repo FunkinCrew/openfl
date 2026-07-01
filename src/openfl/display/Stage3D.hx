@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import haxe.Timer;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
@@ -502,6 +501,3 @@ class Stage3D extends EventDispatcher
 		return value;
 	}
 }
-#else
-typedef Stage3D = flash.display.Stage3D;
-#end

@@ -1,6 +1,5 @@
 package openfl.globalization;
 
-#if !flash
 /**
 	The DateTimeNameContext class enumerates constant values representing the
 	formatting context in which a month name or weekday name is used. These
@@ -55,6 +54,3 @@ enum abstract DateTimeNameContext(Null<Int>)
 		}
 	}
 }
-#else
-typedef DateTimeNameContext = flash.globalization.DateTimeNameContext;
-#end

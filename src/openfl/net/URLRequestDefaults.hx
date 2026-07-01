@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 /**
 	The URLRequestDefaults class includes static properties that you can set to define
 	default values for the properties of the URLRequest class. It also includes a static
@@ -104,6 +103,3 @@ class URLRequestDefaults
 	// 	return null;
 	// }
 }
-#else
-typedef URLRequestDefaults = flash.net.URLRequestDefaults;
-#end

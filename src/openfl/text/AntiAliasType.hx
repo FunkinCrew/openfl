@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 /**
 	The AntiAliasType class provides values for anti-aliasing in the
 	openfl.text.TextField class.
@@ -47,6 +46,3 @@ enum abstract AntiAliasType(Null<Int>)
 		}
 	}
 }
-#else
-typedef AntiAliasType = flash.text.AntiAliasType;
-#end

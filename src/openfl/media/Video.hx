@@ -1,6 +1,5 @@
 package openfl.media;
 
-#if !flash
 import openfl.display3D._internal.GLBuffer;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
@@ -488,6 +487,3 @@ class Video extends DisplayObject
 		return __width = value;
 	}
 }
-#else
-typedef Video = flash.media.Video;
-#end

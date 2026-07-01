@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 /**
 	A URLRequestHeader object encapsulates a single HTTP request header and
 	consists of a name/value pair. URLRequestHeader objects are used in the
@@ -111,6 +110,3 @@ package openfl.net;
 		this.value = value;
 	}
 }
-#else
-typedef URLRequestHeader = flash.net.URLRequestHeader;
-#end

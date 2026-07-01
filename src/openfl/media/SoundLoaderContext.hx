@@ -1,6 +1,5 @@
 package openfl.media;
 
-#if !flash
 /**
 	The SoundLoaderContext class provides security checks for files that load
 	sound. SoundLoaderContext objects are passed as an argument to the
@@ -148,6 +147,3 @@ class SoundLoaderContext
 		this.checkPolicyFile = checkPolicyFile;
 	}
 }
-#else
-typedef SoundLoaderContext = flash.media.SoundLoaderContext;
-#end

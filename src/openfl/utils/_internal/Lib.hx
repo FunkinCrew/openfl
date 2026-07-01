@@ -15,7 +15,7 @@ import openfl.display.MovieClip;
 class Lib
 {
 	public static var application:#if !openfl_unit_testing Application #else Dynamic #end;
-	public static var current:MovieClip #if flash = flash.Lib.current #end;
+	public static var current:MovieClip;
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 
 	@SuppressWarnings("checkstyle:NullableParameter")

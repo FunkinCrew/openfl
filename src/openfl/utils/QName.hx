@@ -1,6 +1,5 @@
 package openfl.utils;
 
-#if !flash
 /**
 	QName objects represent qualified names of XML elements and attributes. Each
 	QName object has a local name and a namespace Uniform Resource Identifier
@@ -116,6 +115,3 @@ class QName
 		return __localName;
 	}
 }
-#else
-typedef QName = flash.utils.QName;
-#end

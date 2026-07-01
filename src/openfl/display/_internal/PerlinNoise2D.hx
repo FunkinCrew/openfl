@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 /**
 
 	Inspired by Stefan Gustavson, Linköping University, Sweden
@@ -236,4 +235,3 @@ class PerlinNoise2D extends AbstractNoise
 		return nxyz;
 	}
 }
-#end

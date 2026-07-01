@@ -1,7 +1,6 @@
 package openfl.utils;
 
-#if (!flash || display)
-#if (!js)
+#if !js
 import haxe.ds.StringMap;
 import haxe.ds.IntMap;
 import haxe.ds.ObjectMap;
@@ -601,64 +600,6 @@ abstract Dictionary<K, V>(Dynamic)
 		}
 
 		return values.iterator();
-	}
-}
-#end
-#else
-@SuppressWarnings("checkstyle:FieldDocComment")
-abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to flash.utils.Dictionary
-{
-	public function new(weakKeys:Bool = false)
-	{
-		this = new flash.utils.Dictionary(weakKeys);
-	}
-
-	public inline function exists(key:K):Bool
-	{
-		return (untyped this[key] != untyped __global__["undefined"]);
-	}
-
-	@:arrayAccess public inline function get(key:K):V
-	{
-		return untyped this[key];
-	}
-
-	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
-	{
-		return new haxe.iterators.MapKeyValueIterator(untyped this);
-	}
-
-	public inline function remove(key:K):Bool
-	{
-		var exists = (this : Dictionary<K, V>).exists(key);
-		untyped __delete__(this, key);
-		return exists;
-	}
-
-	@:arrayAccess public inline function set(key:K, value:V):V
-	{
-		return untyped this[key] = value;
-	}
-
-	public inline function iterator():Iterator<K>
-	{
-		return untyped __keys__(this).iterator();
-	}
-
-	@:analyzer(ignore) public function each():Iterator<V>
-	{
-		return untyped {
-			ref: this,
-			it: iterator(),
-			hasNext: function()
-			{
-				return __this__.it.hasNext();
-			},
-			next: function()
-			{
-				return get(__this__.it.next());
-			}
-		}
 	}
 }
 #end

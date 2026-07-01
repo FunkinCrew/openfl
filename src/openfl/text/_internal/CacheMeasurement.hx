@@ -1,6 +1,5 @@
 package openfl.text._internal;
 
-#if !flash
 import haxe.ds.IntMap;
 
 #if !openfl_debug
@@ -57,4 +56,3 @@ class CacheMeasurement
 		return __collisions.indexOf(wordKey) > -1;
 	}
 }
-#end

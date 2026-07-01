@@ -1,6 +1,5 @@
 package openfl.media;
 
-#if !flash
 /**
 	The SoundMixer class contains static properties and methods for global
 	sound control in the application. The SoundMixer class controls embedded
@@ -204,6 +203,3 @@ package openfl.media;
 		return value;
 	}
 }
-#else
-typedef SoundMixer = flash.media.SoundMixer;
-#end

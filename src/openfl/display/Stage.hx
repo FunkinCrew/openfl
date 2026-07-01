@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
 import openfl.utils._internal.Log;
@@ -913,7 +912,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var window(default, null):Window;
 
-	#if (sys && (!flash_doc_gen || air_doc_gen))
+	#if sys
 	/**
 
 	**/
@@ -4181,6 +4180,3 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		return 0;
 	}
 }
-#else
-typedef Stage = flash.display.Stage;
-#end

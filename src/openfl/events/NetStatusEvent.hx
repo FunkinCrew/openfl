@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 /**
 	A NetConnection, NetStream, or SharedObject object dispatches
@@ -172,6 +171,3 @@ class NetStatusEvent extends Event
 		info = null;
 	}
 }
-#else
-typedef NetStatusEvent = flash.events.NetStatusEvent;
-#end

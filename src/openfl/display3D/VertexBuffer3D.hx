@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 import openfl.display3D._internal.GLBuffer;
 import openfl.utils._internal.ArrayBufferView;
 import openfl.utils._internal.Float32Array;
@@ -235,6 +234,3 @@ class VertexBuffer3D
 		#end
 	}
 }
-#else
-typedef VertexBuffer3D = flash.display3D.VertexBuffer3D;
-#end

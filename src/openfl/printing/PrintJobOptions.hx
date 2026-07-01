@@ -1,6 +1,5 @@
 package openfl.printing;
 
-#if !flash
 /**
 	The PrintJobOptions class contains properties to use with the `options`
 	parameter of the `PrintJob.addPage()` method. For more information about
@@ -55,6 +54,3 @@ class PrintJobOptions
 		this.printAsBitmap = printAsBitmap;
 	}
 }
-#else
-typedef PrintJobOptions = flash.printing.PrintJobOptions;
-#end

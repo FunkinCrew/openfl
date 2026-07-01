@@ -1,6 +1,5 @@
 package openfl.utils;
 
-#if !flash
 /**
 	The CompressionAlgorithm class defines string constants for the names of
 	compress and uncompress options. These constants are used as values of the
@@ -44,6 +43,3 @@ enum abstract CompressionAlgorithm(Null<Int>)
 		}
 	}
 }
-#else
-typedef CompressionAlgorithm = flash.utils.CompressionAlgorithm;
-#end

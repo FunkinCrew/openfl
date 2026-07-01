@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 /**
 	The Accelerometer class dispatches AccelerometerEvent objects when
@@ -130,6 +129,3 @@ class AccelerometerEvent extends Event
 		accelerationZ = 0;
 	}
 }
-#else
-typedef AccelerometerEvent = flash.events.AccelerometerEvent;
-#end

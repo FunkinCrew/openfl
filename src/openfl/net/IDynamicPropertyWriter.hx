@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 /**
 	This interface is used with the `IDynamicPropertyOutput` interface to
 	control the serialization of dynamic properties of dynamic objects. To use
@@ -22,6 +21,3 @@ interface IDynamicPropertyWriter
 	**/
 	function writeDynamicProperties(obj:Dynamic, output:IDynamicPropertyOutput):Void;
 }
-#else
-typedef IDynamicPropertyWriter = flash.net.IDynamicPropertyWriter;
-#end

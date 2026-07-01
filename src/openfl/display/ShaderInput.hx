@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
@@ -178,6 +177,3 @@ import openfl.display3D.Context3D;
 		}
 	}
 }
-#else
-typedef ShaderInput<T> = flash.display.ShaderInput<T>;
-#end

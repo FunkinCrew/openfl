@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	This interface is used to define objects that can be used as strok
 	parameters in the `openfl.display.Graphics` methods and drawing classes. Use
@@ -10,6 +9,3 @@ package openfl.display;
 	@see `openfl.display.Graphics.drawGraphicsData()`
 **/
 interface IGraphicsStroke {}
-#else
-typedef IGraphicsStroke = flash.display.IGraphicsStroke;
-#end

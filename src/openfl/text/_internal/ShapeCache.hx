@@ -1,6 +1,5 @@
 package openfl.text._internal;
 
-#if !flash
 import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 
@@ -127,4 +126,3 @@ class ShapeCache
 				return #if (js && html5) getPositions() #else getPositions.positions #end;
 			}
 	}
-#end

@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 import openfl.events.TextEvent;
 
@@ -98,6 +97,3 @@ class ErrorEvent extends TextEvent
 		errorID = 0;
 	}
 }
-#else
-typedef ErrorEvent = flash.events.ErrorEvent;
-#end

@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 /**
 	An object dispatches an AsyncErrorEvent when an exception is thrown from
@@ -89,6 +88,3 @@ class AsyncErrorEvent extends ErrorEvent
 		error = null;
 	}
 }
-#else
-typedef AsyncErrorEvent = flash.events.AsyncErrorEvent;
-#end

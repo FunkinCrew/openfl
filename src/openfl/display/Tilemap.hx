@@ -1,12 +1,8 @@
 package openfl.display;
 
-import openfl.display._internal.FlashRenderer;
-import openfl.display._internal.FlashTilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if !flash
 import openfl.display._internal.Context3DBuffer;
-#end
 
 /**
 	The Tilemap class represents a "quad batch", or series of objects that are
@@ -37,7 +33,7 @@ import openfl.display._internal.Context3DBuffer;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
-class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end implements ITileContainer
+class Tilemap extends DisplayObject implements ITileContainer
 {
 	/**
 		Returns the number of tiles of this object.
@@ -71,23 +67,19 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public var tileset(get, set):Tileset;
 
-	#if !flash
 	/**
 		Controls whether or not the tilemap is smoothed when scaled. If
 		`true`, the bitmap is smoothed when scaled. If `false`, the tilemap is not
 		smoothed when scaled.
 	**/
 	public var smoothing:Bool;
-	#end
 
 	@:noCompletion private var __group:TileContainer;
 	@:noCompletion private var __tileset:Tileset;
-	#if !flash
 	@:noCompletion private var __buffer:Context3DBuffer;
 	@:noCompletion private var __bufferDirty:Bool;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __width:Int;
-	#end
 
 	/**
 		Creates a new Tilemap object.
@@ -104,9 +96,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	{
 		super();
 
-		#if !flash
 		__drawableType = TILEMAP;
-		#end
 		__tileset = tileset;
 		this.smoothing = smoothing;
 
@@ -116,14 +106,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 
 		__group = new TileContainer();
 		__group.tileset = tileset;
-		#if !flash
 		__width = width;
 		__height = height;
-		#else
-		bitmapData = new BitmapData(width, height, true, 0);
-		this.smoothing = smoothing;
-		FlashRenderer.register(this);
-		#end
 	}
 
 	/**
@@ -362,7 +346,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__group.swapTilesAt(index1, index2);
 	}
 
-	#if !flash
 	@:noCompletion private override function __enterFrame(deltaTime:Float):Void
 	{
 		if (__group.__dirty)
@@ -370,9 +353,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			__setRenderDirty();
 		}
 	}
-	#end
 
-	#if !flash
 	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
 		var bounds = Rectangle.__pool.get();
@@ -383,9 +364,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 
 		Rectangle.__pool.release(bounds);
 	}
-	#end
 
-	#if !flash
 	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
 			hitObject:DisplayObject):Bool
 	{
@@ -409,41 +388,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 
 		return false;
 	}
-	#end
-
-	@:noCompletion private function __renderFlash():Void
-	{
-		FlashTilemap.render(this);
-	}
 
 	// Get & Set Methods
-	#if !flash
 	@:noCompletion private override function get_height():Float
 	{
 		return __height * Math.abs(scaleY);
 	}
-	#end
 
-	#if !flash
 	@:noCompletion private override function set_height(value:Float):Float
 	{
 		__height = Std.int(value);
 		return __height * Math.abs(scaleY);
 	}
-	#else
-	#if (haxe_ver >= 4.3) override #else @:setter(height) #end private function set_height(value:Float):#if (haxe_ver >= 4.3) Float #else Void #end
-	{
-		if (value != bitmapData.height)
-		{
-			var cacheSmoothing = smoothing;
-			bitmapData = new BitmapData(bitmapData.width, Std.int(value), true, 0);
-			smoothing = cacheSmoothing;
-		}
-		#if (haxe_ver >= 4.3)
-		return bitmapData.height;
-		#end
-	}
-	#end
 
 	@:noCompletion private function get_numTiles():Int
 	{
@@ -462,40 +418,20 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 			__tileset = value;
 			__group.tileset = value;
 			__group.__dirty = true;
-
-			#if !flash
 			__setRenderDirty();
-			#end
 		}
 
 		return value;
 	}
 
-	#if !flash
 	@:noCompletion private override function get_width():Float
 	{
 		return __width * Math.abs(__scaleX);
 	}
-	#end
 
-	#if !flash
 	@:noCompletion private override function set_width(value:Float):Float
 	{
 		__width = Std.int(value);
 		return __width * Math.abs(__scaleX);
 	}
-	#else
-	#if (haxe_ver >= 4.3) override #else @:setter(width) #end private function set_width(value:Float):#if (haxe_ver >= 4.3) Float #else Void #end
-	{
-		if (value != bitmapData.width)
-		{
-			var cacheSmoothing = smoothing;
-			bitmapData = new BitmapData(Std.int(value), bitmapData.height, true, 0);
-			smoothing = cacheSmoothing;
-		}
-		#if (haxe_ver >= 4.3)
-		return bitmapData.width;
-		#end
-	}
-	#end
 }

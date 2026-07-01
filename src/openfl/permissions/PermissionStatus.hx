@@ -1,6 +1,5 @@
 package openfl.permissions;
 
-#if !flash
 /**
 	The PermissionStatus class is an enumeration of constant values that specify
 	the authorization status of a permission.
@@ -54,4 +53,3 @@ enum abstract PermissionStatus(Null<Int>)
 		}
 	}
 }
-#end

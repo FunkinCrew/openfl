@@ -1,6 +1,5 @@
 package openfl.media;
 
-#if !flash
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 #if lime
@@ -475,6 +474,3 @@ import lime.utils.Int16Array;
 	}
 	#end
 }
-#else
-typedef SoundChannel = flash.media.SoundChannel;
-#end

@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
@@ -259,4 +258,3 @@ class CairoShape
 		CairoDisplayObject.renderDrawableMask(shape, renderer);
 	}
 }
-#end

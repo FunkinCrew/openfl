@@ -1,6 +1,5 @@
 package openfl.filters;
 
-#if !flash
 /**
 	The BitmapFilterType class contains values to set the type of a
 	BitmapFilter.
@@ -44,6 +43,3 @@ enum abstract BitmapFilterType(Null<Int>)
 		}
 	}
 }
-#else
-typedef BitmapFilterType = flash.filters.BitmapFilterType;
-#end

@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display._internal.CairoGraphics;
 import openfl.display._internal.CanvasGraphics;
 import openfl.display._internal.DrawCommandReader;
@@ -1423,4 +1422,3 @@ class Context3DGraphics
 		}
 	}
 }
-#end

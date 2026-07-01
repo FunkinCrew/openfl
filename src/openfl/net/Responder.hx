@@ -2,7 +2,6 @@ package openfl.net;
 
 import haxe.Constraints.Function;
 
-#if !flash
 /**
 	The Responder class provides an object that is used in
 	`NetConnection.call()` to handle return values from the server related to
@@ -34,6 +33,3 @@ class Responder
 		__status = status;
 	}
 }
-#else
-typedef Responder = flash.net.Responder;
-#end

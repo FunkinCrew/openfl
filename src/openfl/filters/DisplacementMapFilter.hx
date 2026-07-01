@@ -1,6 +1,5 @@
 package openfl.filters;
 
-#if !flash
 import openfl.display.BitmapDataChannel;
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
@@ -445,6 +444,3 @@ private class DisplacementMapShader extends BitmapFilterShader
 		super();
 	}
 }
-#else
-typedef DisplacementMapFilter = flash.filters.DisplacementMapFilter;
-#end

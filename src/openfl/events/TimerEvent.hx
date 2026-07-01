@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 /**
 	A Timer object dispatches a TimerEvent objects whenever the Timer object
@@ -88,6 +87,3 @@ class TimerEvent extends Event
 		__updateAfterEventFlag = true;
 	}
 }
-#else
-typedef TimerEvent = flash.events.TimerEvent;
-#end

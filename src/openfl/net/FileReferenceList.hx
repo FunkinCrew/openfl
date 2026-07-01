@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 #if (cpp || hl)
 import haxe.io.Path;
 import openfl.events.Event;
@@ -326,7 +325,4 @@ class FileReferenceList extends EventDispatcher
 		}
 	}
 }
-#end
-#else
-typedef FileReferenceList = flash.net.FileReferenceList;
 #end

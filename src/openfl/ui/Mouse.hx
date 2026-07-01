@@ -1,6 +1,5 @@
 package openfl.ui;
 
-#if !flash
 #if lime
 import lime.app.Application;
 import lime.ui.MouseCursor as LimeMouseCursor;
@@ -179,6 +178,3 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		return __cursor = value;
 	}
 }
-#else
-typedef Mouse = flash.ui.Mouse;
-#end

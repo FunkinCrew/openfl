@@ -1,6 +1,5 @@
 package openfl.text._internal;
 
-#if !flash
 #if lime
 import lime.math.Vector2;
 import lime.text.Glyph;
@@ -32,4 +31,3 @@ class GlyphPosition
 		}
 	}
 }
-#end

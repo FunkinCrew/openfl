@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying whether a shader program is a fragment
 	or a vertex program.
@@ -37,6 +36,3 @@ enum abstract Context3DProgramType(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DProgramType = flash.display3D.Context3DProgramType;
-#end

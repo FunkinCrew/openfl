@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying the Context3D profile.
 **/
@@ -99,6 +98,3 @@ enum abstract Context3DProfile(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DProfile = flash.display3D.Context3DProfile;
-#end

@@ -1,6 +1,5 @@
 package openfl;
 
-#if (!flash || display)
 #if !js
 import haxe.Constraints.Function;
 
@@ -81,9 +80,7 @@ import haxe.Constraints.Function;
 	* Reliability: runtime range checking (or fixed-length checking) increases
 	reliability significantly over Arrays.
 **/
-#if !flash
 @:multiType(T)
-#end
 abstract Vector<T>(IVector<T>)
 {
 	/**
@@ -161,14 +158,7 @@ abstract Vector<T>(IVector<T>)
 		@param	fixed	Whether the Vector's length is fixed (`true`) or can be changed
 		(`false`). This value can also be set using the fixed property.
 	**/
-	#if !flash
 	public function new(length:Null<Int> = 0, fixed:Null<Bool> = false, array:Array<T> = null):Void;
-	#else
-	public function new(length:Null<Int> = 0, fixed:Null<Bool> = false, array:Array<T> = null):Void
-	{
-		this = null;
-	}
-	#end
 
 	/**
 		Concatenates the Vectors specified in the parameters list with the elements in
@@ -697,35 +687,33 @@ abstract Vector<T>(IVector<T>)
 		return cast vec;
 	}
 
-	#if !flash
-	@:to #if (!js && !flash) inline #end private static function toBoolVector<T:Bool>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):BoolVector
+	@:to #if !js inline #end private static function toBoolVector<T:Bool>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):BoolVector
 	{
 		return new BoolVector(length, fixed, cast array);
 	}
 
-	@:to #if (!js && !flash) inline #end private static function toIntVector<T:Int>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):IntVector
+	@:to #if !js inline #end private static function toIntVector<T:Int>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):IntVector
 	{
 		return new IntVector(length, fixed, cast array);
 	}
 
-	@:to #if (!js && !flash) inline #end private static function toFloatVector<T:Float>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FloatVector
+	@:to #if !js inline #end private static function toFloatVector<T:Float>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FloatVector
 	{
 		return new FloatVector(length, fixed, cast array, true);
 	}
 
-	@:to #if (!js && !flash) inline #end private static function toFunctionVector<T:Function>(t:IVector<T>, length:Int, fixed:Bool,
-			array:Array<T>):FunctionVector
+	@:to #if !js inline #end private static function toFunctionVector<T:Function>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FunctionVector
 	{
 		return new FunctionVector(length, fixed, cast array);
 	}
 
-	@:to #if (!js && !flash) inline #end private static function toObjectVector<T:{}>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
+	@:to #if !js inline #end private static function toObjectVector<T:{}>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
 	{
 		return new ObjectVector<T>(length, fixed, cast array, true);
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic") @:to #if (!js && !flash) inline #end private static function toNullVector<T:Null<Dynamic>>(t:IVector<T>,
-			length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
+	@SuppressWarnings("checkstyle:Dynamic") @:to #if !js inline #end private static function toNullVector<T:Null<Dynamic>>(t:IVector<T>, length:Int,
+			fixed:Bool, array:Array<T>):ObjectVector<T>
 	{
 		return new ObjectVector<T>(length, fixed, cast array, true);
 	}
@@ -754,7 +742,6 @@ abstract Vector<T>(IVector<T>)
 	{
 		return cast vector;
 	}
-	#end
 
 	// Getters & Setters
 	@:noCompletion private inline function get_fixed():Bool
@@ -778,7 +765,6 @@ abstract Vector<T>(IVector<T>)
 	}
 }
 
-#if !flash
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -2030,7 +2016,6 @@ abstract Vector<T>(IVector<T>)
 		return __array.length;
 	}
 }
-#end
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:noCompletion @:dox(hide) private interface IVector<T>
@@ -2537,67 +2522,11 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		if (!fixed)
 		{
 			untyped js.Syntax.code("this").length = value;
-
-			// var current = untyped js.Syntax.code("this").length;
-
-			// if (value < current) {
-
-			// 	untyped js.Syntax.code("this.length = value");
-
-			// } else {
-
-			// 	for (i in current...value) {
-
-			// 		untyped js.Syntax.code("this")[i] = untyped js.Syntax.code("null");
-
-			// 	}
-
-			// }
 		}
 
 		return value;
 	}
 }
-
-// @:native("Array")
-// extern class VectorData<T> implements ArrayAccess<T> {
-// 	@:native("length") private var __length:Int;
-// 	public function new ();
-// 	// private static function __from (arrayLike:Dynamic, ?mapFn:Dynamic, ?thisArg:Dynamic):VectorData<Dynamic>;
-// 	// private static function __isArray (obj:Dynamic):Bool;
-// 	// private static function __of (?element0:Dynamic, ?element1:Dynamic, ?element2:Dynamic, ?element3:Dynamic):VectorData<Dynamic>;
-// 	@:native("concat") private function __concat (?value0:Dynamic, ?value1:Dynamic, ?value2:Dynamic, ?value3:Dynamic):VectorData<Dynamic>;
-// 	// private function __copyWithin (target:Int, ?start:Int, ?end:Int):VectorData<Dynamic>;
-// 	// private function __entries ():Iterator<Dynamic>;
-// 	// private function __every (callback:Dynamic, ?thisArg:Dynamic):Bool;
-// 	// private function __fill (value:T, ?start:Int, ?end:Int):VectorData<Dynamic>;
-// 	// private function __filter (callback:Dynamic, ?thisArg:Dynamic):VectorData<Dynamic>;
-// 	// private function __find (callback:Dynamic, ?thisArg:Dynamic):Null<T>;
-// 	// private function __findIndex (callback:Dynamic, ?thisArg:Dynamic):Int;
-// 	// private function __forEach (callback:Dynamic, ?thisArg:Dynamic):Void;
-// 	// private function __includes (searchElement:T, ?fromIndex:Int):Bool;
-// 	public function indexOf (searchElement:T, ?fromIndex:Int):Int;
-// 	public function join (?seperator:String):String;
-// 	// @:native("keys") private function __keys ():Iterator<Dynamic>;
-// 	public function lastIndexOf (searchElement:T, ?fromIndex:Int):Int;
-// 	// private function __map (callback:Dynamic, ?thisArg:Dynamic):VectorData<Dynamic>;
-// 	public function pop ():Null<T>;
-// 	//@:native("push") private function __push (element0:T, ?element1:T, ?element2:T, ?element3:T):Int;
-// 	public function push (x:T):Int;
-// 	// private function __reduce (callback:Dynamic, ?initialValue:Dynamic):Dynamic;
-// 	// private function __reduceRight (callback:Dynamic, ?initialValue:Dynamic):Dynamic;
-// 	// @:native("reverse") private function __reverse ():VectorData<Dynamic>;
-// 	public function shift ():Null<T>;
-// 	// @:native("slice") private function __slice (?begin:Int, ?end:Int):VectorData<Dynamic>;
-// 	// private function __some (callback:Dynamic, ?thisArg:Dynamic):Bool;
-// 	// @:native("sort") private function __sort (compareFunction:Dynamic):VectorData<Dynamic>;
-// 	@:native("splice") private function __splice (start:Int, ?deleteCount:Int, ?item0:T, ?item1:T, ?item2:T, ?item3:T):VectorData<Dynamic>;
-// 	// private function __toLocaleString (?locales:String, ?options:Dynamic):String;
-// 	public function toString ():String;
-// 	// @:native("unshift") private function __unshift (element0:T, ?element1:T, ?element2:T, ?element3:T):Int;
-// 	public function unshift (x:T):Void;
-// 	@:native("values") private function __values ():Iterator<T>;
-// }
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class VectorIterator<T>
@@ -2625,264 +2554,4 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return vector[index];
 	}
 }
-#end
-#else
-@SuppressWarnings("checkstyle:FieldDocComment")
-abstract Vector<T>(VectorData<T>)
-{
-	public var fixed(get, set):Bool;
-	public var length(get, set):Int;
-
-	public inline function new(?length:Int, ?fixed:Bool, ?array:Array<T>):Void
-	{
-		if (array != null)
-		{
-			this = ofArray(array);
-		}
-		else
-		{
-			if (length == null)
-			{
-				length = 0;
-			}
-			if (fixed == null)
-			{
-				fixed = false;
-			}
-			this = new VectorData<T>(length, fixed);
-		}
-	}
-
-	public inline function concat(?a:VectorData<T>):Vector<T>
-	{
-		if (a == null)
-		{
-			return this.concat();
-		}
-		else
-		{
-			return this.concat(a);
-		}
-	}
-
-	public inline function copy():Vector<T>
-	{
-		var vec = new VectorData<T>(this.length, this.fixed);
-
-		for (i in 0...this.length)
-		{
-			vec[i] = this[i];
-		}
-
-		return vec;
-	}
-
-	public inline function filter(callback:T->Bool):Vector<T>
-	{
-		var vec = new VectorData<T>();
-
-		for (i in 0...this.length)
-		{
-			if (callback(this[i]))
-			{
-				vec.push(this[i]);
-			}
-		}
-
-		return vec;
-	}
-
-	public inline function indexOf(x:T, from:Int = 0):Int
-	{
-		return this.indexOf(x, from);
-	}
-
-	public function insertAt(index:Int, element:T):Void
-	{
-		#if flash19
-		this.insertAt(index, element);
-		#else
-		Reflect.callMethod(this.splice, this.splice, [index, 0, element]);
-		#end
-	}
-
-	public inline function iterator():Iterator<T>
-	{
-		return new VectorDataIterator<T>(this);
-	}
-
-	public inline function join(sep:String = ","):String
-	{
-		return this.join(sep);
-	}
-
-	public inline function lastIndexOf(x:T, from:Int = 0x7fffffff):Int
-	{
-		return this.lastIndexOf(x, from);
-	}
-
-	public inline function pop():Null<T>
-	{
-		return this.pop();
-	}
-
-	public inline function push(x:T):Int
-	{
-		return this.push(x);
-	}
-
-	public function removeAt(index:Int):T
-	{
-		#if flash19
-		return this.removeAt(index);
-		#else
-		return Reflect.callMethod(this.splice, this.splice, [index, 1])[0];
-		#end
-	}
-
-	public inline function reverse():Vector<T>
-	{
-		return this.reverse();
-	}
-
-	public inline function shift():Null<T>
-	{
-		return this.shift();
-	}
-
-	public inline function slice(pos:Int = 0, end:Null<Int> = 16777215):Vector<T>
-	{
-		return this.slice(pos, end);
-	}
-
-	public inline function sort(f:T->T->Int):Void
-	{
-		this.sort(f);
-	}
-
-	public inline function splice(pos:Int, len:Int):Vector<T>
-	{
-		return this.splice(pos, len);
-	}
-
-	public inline function toString():String
-	{
-		return this != null ? "[" + this.toString() + "]" : null;
-	}
-
-	public inline function unshift(x:T):Void
-	{
-		this.unshift(x);
-	}
-
-	public inline static function ofArray<T>(a:Array<T>):Vector<T>
-	{
-		if (a == null) return null;
-
-		var vec = new VectorData<T>();
-		for (i in 0...a.length)
-		{
-			vec[i] = a[i];
-		}
-		return vec;
-	}
-
-	public inline static function ofValues<T>(...values:T):Vector<T>
-	{
-		var vec = new VectorData<T>();
-		for (i in 0...values.length)
-		{
-			vec[i] = values[i];
-		}
-		return vec;
-	}
-
-	public inline static function convert<T, U>(v:Vector<T>):Vector<U>
-	{
-		return cast VectorData.convert(v);
-	}
-
-	@:noCompletion @:dox(hide) @:arrayAccess public inline function get(index:Int):Null<T>
-	{
-		return this[index];
-	}
-
-	@:noCompletion @:dox(hide) @:arrayAccess public inline function set(index:Int, value:T):T
-	{
-		return this[index] = value;
-	}
-
-	@:noCompletion @:dox(hide) @:from public static inline function fromHaxeVector<T>(value:haxe.ds.Vector<T>):Vector<T>
-	{
-		return cast value;
-	}
-
-	@:noCompletion @:dox(hide) @:to public inline function toHaxeVector<T>():haxe.ds.Vector<T>
-	{
-		return cast this;
-	}
-
-	@:noCompletion @:dox(hide) @:from public static inline function fromVectorData<T>(value:VectorData<T>):Vector<T>
-	{
-		return cast value;
-	}
-
-	@:noCompletion @:dox(hide) @:to public inline function toVectorData<T>():VectorData<T>
-	{
-		return cast this;
-	}
-
-	// Getters & Setters
-	@:noCompletion private inline function get_fixed():Bool
-	{
-		return this.fixed;
-	}
-
-	@:noCompletion private inline function set_fixed(value:Bool):Bool
-	{
-		return this.fixed = value;
-	}
-
-	@:noCompletion private inline function get_length():Int
-	{
-		return this.length;
-	}
-
-	@:noCompletion private inline function set_length(value:Int):Int
-	{
-		return this.length = value;
-	}
-}
-
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-@:dox(hide) private class VectorDataIterator<T>
-{
-	@:noCompletion private var index:Int;
-	@:noCompletion private var vectorData:VectorData<T>;
-
-	#if !hl inline #end
-	public function new(data:VectorData<T>)
-	{
-		index = 0;
-		vectorData = data;
-	}
-
-	#if !hl inline #end
-	public function hasNext():Bool
-	{
-		return index < vectorData.length;
-	}
-
-	#if !hl inline #end
-	public function next():T
-	{
-		return vectorData[index++];
-	}
-}
-
-private typedef VectorData<T> = flash.Vector<T>;
 #end

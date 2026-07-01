@@ -1,6 +1,6 @@
 package openfl.events;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 import openfl.display.NativeWindowDisplayState;
 
 /**

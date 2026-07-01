@@ -1,6 +1,5 @@
 package openfl.text._internal;
 
-#if !flash
 import haxe.Json;
 import haxe.ds.StringMap;
 
@@ -620,37 +619,3 @@ class CSSParser
 		return matches;
 	}
 }
-
-/*class Position
-	{
-	public var start:Dynamic;
-	public var end:StringMap<Dynamic>;
-	public var source:Dynamic;
-
-	/**
-	* Non-enumerable source string
-	*
-	public var content:String;
-
-	public function new(start:Dynamic, css:Parser)
-	{
-		this.end = new StringMap<Dynamic>();
-		this.start = start;
-		this.end.set("line", css.lineno);
-		this.end.set("column", css.column);
-		this.source = css.options.get("source");
-		this.content = css.css;
-	}
-
-	public function toMap():StringMap<Dynamic>
-	{
-		var map:StringMap<Dynamic> = new StringMap<Dynamic>();
-		map.set("source", this.source);
-		map.set("start", this.start);
-		map.set("end", this.end);
-		//map.set("content", this.content.trim());
-
-		return map;
-	}
-}*/
-#end

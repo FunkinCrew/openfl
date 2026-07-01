@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.DOMRenderer;
 import openfl.media.Video;
 
@@ -62,4 +61,3 @@ class DOMVideo
 		DOMDisplayObject.renderDrawableClear(video, renderer);
 	}
 }
-#end

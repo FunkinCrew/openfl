@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The GradientType class provides values for the `type` parameter
 	in the `beginGradientFill()` and
@@ -51,6 +50,3 @@ enum abstract GradientType(Null<Int>)
 		}
 	}
 }
-#else
-typedef GradientType = flash.display.GradientType;
-#end

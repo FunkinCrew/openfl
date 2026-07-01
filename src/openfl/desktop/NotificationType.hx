@@ -1,6 +1,6 @@
 package openfl.desktop;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The NotificationType class defines constants for use in the priority
 	parameter of the DockIcon `bounce()` method and the type parameter of the

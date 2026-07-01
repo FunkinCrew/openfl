@@ -1,6 +1,6 @@
 package openfl.text;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 import openfl.display.BitmapData;
 import openfl.display.Stage;
 import openfl.events.Event;

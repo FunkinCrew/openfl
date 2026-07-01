@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 #if lime
@@ -80,4 +79,3 @@ class CairoDisplayObject
 		#end
 	}
 }
-#end

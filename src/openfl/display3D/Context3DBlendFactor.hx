@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying the source and destination blend factors.
 
@@ -144,6 +143,3 @@ enum abstract Context3DBlendFactor(Null<Int>)
 		}
 	}
 }
-#else
-typedef Context3DBlendFactor = flash.display3D.Context3DBlendFactor;
-#end

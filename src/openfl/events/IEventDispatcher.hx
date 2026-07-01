@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 /**
 	The IEventDispatcher interface defines methods for adding or removing event listeners,
 	checks whether specific types of event listeners are registered, and dispatches events.
@@ -164,6 +163,3 @@ interface IEventDispatcher
 	**/
 	public function willTrigger(type:String):Bool;
 }
-#else
-typedef IEventDispatcher = flash.events.IEventDispatcher;
-#end

@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.DOMBitmap;
 // import openfl.display._internal.DOMBitmapData;
 import openfl.display._internal.DOMDisplayObject;
@@ -492,6 +491,3 @@ class DOMRenderer extends DisplayObjectRenderer
 		}
 	}
 }
-#else
-typedef DOMRenderer = Dynamic;
-#end

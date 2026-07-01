@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 /**
 	The StageAlign class provides constant values to use for the
 	`Stage.align` property.
@@ -79,6 +78,3 @@ enum abstract StageAlign(Null<Int>)
 		}
 	}
 }
-#else
-typedef StageAlign = flash.display.StageAlign;
-#end

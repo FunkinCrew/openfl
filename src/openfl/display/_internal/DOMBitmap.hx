@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 import openfl.display.Bitmap;
 import openfl.display.DOMRenderer;
 #if lime
@@ -161,4 +160,3 @@ class DOMBitmap
 		#end
 	}
 }
-#end

@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 import haxe.io.Eof;
@@ -154,7 +153,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public var connected(get, never):Bool;
 
-	#if (sys && (!flash_doc_gen || air_doc_gen))
+	#if sys
 	/**
 	 * The IP address this socket is bound to on the local machine.
 	**/
@@ -180,7 +179,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public var objectEncoding:ObjectEncoding;
 
-	#if (sys && (!flash_doc_gen || air_doc_gen))
+	#if sys
 	/**
 		The IP address of the remote machine to which this socket is connected.
 
@@ -1381,6 +1380,3 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 	#end
 }
-#else
-typedef Socket = flash.net.Socket;
-#end

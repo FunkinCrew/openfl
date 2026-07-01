@@ -4,7 +4,6 @@ package openfl.events;
 import openfl.utils.ObjectPool;
 #end
 
-#if !flash
 // import openfl.utils.ObjectPool;
 /**
 	A ProgressEvent object is dispatched when a load operation has begun or a
@@ -153,6 +152,3 @@ class ProgressEvent extends Event
 		bytesTotal = 0;
 	}
 }
-#else
-typedef ProgressEvent = flash.events.ProgressEvent;
-#end

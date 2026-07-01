@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 /**
 	The FontType class contains the enumerated constants
 	`"embedded"` and `"device"` for the
@@ -86,6 +85,3 @@ enum abstract FontType(Null<Int>)
 		}
 	}
 }
-#else
-typedef FontType = flash.text.FontType;
-#end

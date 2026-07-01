@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 #if openfl_pool_events
@@ -774,6 +773,3 @@ class MouseEvent extends Event
 		return Std.int(deltaY);
 	}
 }
-#else
-typedef MouseEvent = flash.events.MouseEvent;
-#end

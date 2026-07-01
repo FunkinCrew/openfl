@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 /**
 	An object dispatches a SecurityErrorEvent object to report the occurrence
@@ -82,6 +81,3 @@ class SecurityErrorEvent extends ErrorEvent
 		return __formatToString("SecurityErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
 	}
 }
-#else
-typedef SecurityErrorEvent = flash.events.SecurityErrorEvent;
-#end

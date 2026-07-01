@@ -1,6 +1,5 @@
 package openfl.display3D._internal;
 
-#if !flash
 enum abstract ATFGPUFormat(Int) from Int to Int
 {
 	public var DXT = 0; // DXT1/DXT5 depending on alpha
@@ -8,4 +7,3 @@ enum abstract ATFGPUFormat(Int) from Int to Int
 	public var ETC1 = 2;
 	public var ETC2 = 3;
 }
-#end

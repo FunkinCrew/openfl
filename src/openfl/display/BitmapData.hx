@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if !flash
 import openfl.display._internal.IBitmapDrawableType;
 import openfl.display._internal.PerlinNoise;
 import openfl.display3D._internal.GLFramebuffer;
@@ -3489,6 +3488,3 @@ class BitmapData implements IBitmapDrawable
 		__renderTransform.copyFrom(__worldTransform);
 	}
 }
-#else
-typedef BitmapData = flash.display.BitmapData;
-#end

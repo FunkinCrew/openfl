@@ -1,6 +1,5 @@
 package openfl.text;
 
-#if !flash
 /**
 	The FontStyle class provides values for the TextRenderer class.
 **/
@@ -58,6 +57,3 @@ enum abstract FontStyle(Null<Int>)
 		}
 	}
 }
-#else
-typedef FontStyle = flash.text.FontStyle;
-#end

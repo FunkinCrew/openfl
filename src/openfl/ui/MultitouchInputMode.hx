@@ -1,6 +1,5 @@
 package openfl.ui;
 
-#if !flash
 /**
 	The MultitouchInputMode class provides values for the
 	`inputMode` property in the openfl.ui.Multitouch class. These
@@ -51,6 +50,3 @@ enum abstract MultitouchInputMode(Null<Int>)
 		}
 	}
 }
-#else
-typedef MultitouchInputMode = flash.ui.MultitouchInputMode;
-#end

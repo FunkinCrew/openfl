@@ -1,6 +1,6 @@
 package openfl.display;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 /**
 	The FocusDirection class enumerates values to be used for the `direction`
 	parameter of the `assignFocus()` method of a Stage object and for the

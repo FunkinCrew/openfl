@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if !flash
 /**
 	The ObjectEncoding class is used in defining serialization settings in
 	classes that serialize objects (such as FileStream, NetStream,
@@ -114,8 +113,5 @@ enum abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
 		format, this may change. You can use this constant only if you're
 		not concerned about interoperability with previous versions.
 	**/
-	public var DEFAULT = #if flash 3 #else 10 #end;
+	public var DEFAULT = 10;
 }
-#else
-typedef ObjectEncoding = flash.net.ObjectEncoding;
-#end

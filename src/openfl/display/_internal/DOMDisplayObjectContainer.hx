@@ -1,6 +1,5 @@
 package openfl.display._internal;
 
-#if !flash
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.DisplayObjectContainer)
 class DOMDisplayObjectContainer
@@ -74,4 +73,3 @@ class DOMDisplayObjectContainer
 		DOMDisplayObject.clear(displayObjectContainer, renderer);
 	}
 }
-#end

@@ -1,6 +1,5 @@
 package openfl.errors;
 
-#if !flash
 /**
 	The IllegalOperationError exception is thrown when a method is not
 	implemented or the implementation doesn't cover the current usage.
@@ -39,6 +38,3 @@ class IllegalOperationError extends Error
 		name = "IllegalOperationError";
 	}
 }
-#else
-typedef IllegalOperationError = flash.errors.IllegalOperationError;
-#end

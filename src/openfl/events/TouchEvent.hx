@@ -1,6 +1,5 @@
 package openfl.events;
 
-#if !flash
 // import openfl.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
@@ -554,6 +553,3 @@ class TouchEvent extends Event
 		__updateAfterEventFlag = false;
 	}
 }
-#else
-typedef TouchEvent = flash.events.TouchEvent;
-#end

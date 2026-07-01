@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if !flash
 /**
 	Defines the values to use for specifying vertex buffers.
 **/
@@ -38,6 +37,3 @@ package openfl.display3D;
 		}
 	}
 }
-#else
-typedef Context3DVertexBufferFormat = flash.display3D.Context3DVertexBufferFormat;
-#end

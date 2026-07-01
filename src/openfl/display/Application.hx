@@ -7,10 +7,10 @@ import lime.app.Application as LimeApplication;
 import lime.ui.Window as LimeWindow;
 import lime.ui.WindowAttributes;
 #end
-#if (sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 import openfl.desktop.NativeApplication;
 #end
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 import openfl.display.NativeWindow;
 import openfl.display.NativeWindowInitOptions;
 import openfl.events.InvokeEvent;
@@ -27,7 +27,7 @@ import openfl.events.InvokeEvent;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Window)
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+#if sys
 @:access(openfl.display.NativeWindowInitOptions)
 #end
 @:access(openfl.events.Event)
@@ -53,7 +53,7 @@ class Application #if lime extends LimeApplication #end
 		{
 			Lib.application = this;
 		}
-		#if (!flash && !macro)
+		#if !macro
 		if (Lib.current == null) Lib.current = new MovieClip();
 		Lib.current.__loaderInfo = LoaderInfo.create(null);
 		Lib.current.__loaderInfo.content = Lib.current;
@@ -68,7 +68,7 @@ class Application #if lime extends LimeApplication #end
 
 	@:noCompletion override public function exec():Int
 	{
-		#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+		#if sys
 		// wait for the first update to dispatch invoke event
 		// to ensure that the document class constructor has completed
 		onUpdate.add(function(_):Void
@@ -91,7 +91,7 @@ class Application #if lime extends LimeApplication #end
 		var window = new Window(this, attributes);
 		if (window.id == -1) return null;
 
-		#if (!flash && !macro)
+		#if !macro
 		if (Lib.current.__loaderInfo.width == -1)
 		{
 			Lib.current.__loaderInfo.width = window.width;
@@ -149,7 +149,7 @@ class Application #if lime extends LimeApplication #end
 
 			onWindowCreate();
 
-			#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
+			#if sys
 			var initOptions = new NativeWindowInitOptions();
 			initOptions.__window = cast __window;
 			new NativeWindow(initOptions);
@@ -167,14 +167,14 @@ class Application #if lime extends LimeApplication #end
 		{
 			return;
 		}
-		#if (sys && (!flash_doc_gen || air_doc_gen))
+		#if sys
 		if (!NativeApplication.nativeApplication.autoExit)
 		{
 			return;
 		}
 		#end
-		#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-		#if (openfl_pool_events && !flash)
+		#if sys
+		#if openfl_pool_events
 		var exitingEvent = Event.__pool.get();
 		exitingEvent.type = Event.EXITING;
 		exitingEvent.cancelable = true;
@@ -184,7 +184,7 @@ class Application #if lime extends LimeApplication #end
 
 		var result = NativeApplication.nativeApplication.dispatchEvent(exitingEvent);
 
-		#if (openfl_pool_events && !flash)
+		#if openfl_pool_events
 		Event.__pool.release(exitingEvent);
 		#end
 
