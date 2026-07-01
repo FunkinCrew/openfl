@@ -1644,7 +1644,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			Log.println(CallStack.toString(CallStack.exceptionStack()));
 			Log.println(Std.string(e));
 
-			#if (cpp && !cppia)
+			#if cpp
 			untyped __cpp__("throw e");
 			#elseif js
 			try
