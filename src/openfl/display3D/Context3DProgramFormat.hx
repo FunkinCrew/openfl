@@ -1,10 +1,6 @@
 package openfl.display3D;
 
 #if !flash
-#if cs
-import openfl.utils._internal.NullUtils;
-#end
-
 /**
 	Defines the values to use for specifying a Program3D source format.
 **/
@@ -39,19 +35,5 @@ import openfl.utils._internal.NullUtils;
 			default: null;
 		}
 	}
-
-	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DProgramFormat, b:Context3DProgramFormat):Bool
-	{
-		return NullUtils.valueEquals(a, b, Int);
-	}
-	#end
-
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DProgramFormat, b:Context3DProgramFormat):Bool
-	{
-		return !equals(a, b);
-	}
-	#end
 }
 #end

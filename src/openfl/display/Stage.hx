@@ -1667,9 +1667,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 			catch (e2:Dynamic) {}
 			untyped #if haxe4 js.Syntax.code #else __js__ #end ("throw e");
-			#elseif cs
-			throw e;
-			// cs.Lib.rethrow (e);
 			#elseif hl
 			hl.Api.rethrow(e);
 			#else

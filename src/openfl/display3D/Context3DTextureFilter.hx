@@ -1,10 +1,6 @@
 package openfl.display3D;
 
 #if !flash
-#if cs
-import openfl.utils._internal.NullUtils;
-#end
-
 /**
 	Defines the values to use for sampler filter mode.
 **/
@@ -68,20 +64,6 @@ import openfl.utils._internal.NullUtils;
 			default: null;
 		}
 	}
-
-	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DTextureFilter, b:Context3DTextureFilter):Bool
-	{
-		return NullUtils.valueEquals(a, b, Int);
-	}
-	#end
-
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DTextureFilter, b:Context3DTextureFilter):Bool
-	{
-		return !equals(a, b);
-	}
-	#end
 }
 #else
 typedef Context3DTextureFilter = flash.display3D.Context3DTextureFilter;

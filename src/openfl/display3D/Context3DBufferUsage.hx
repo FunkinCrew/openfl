@@ -1,10 +1,6 @@
 package openfl.display3D;
 
 #if !flash
-#if cs
-import openfl.utils._internal.NullUtils;
-#end
-
 /**
 	Defines the values to use for specifying the buffer usage type.
 **/
@@ -41,20 +37,6 @@ import openfl.utils._internal.NullUtils;
 			default: null;
 		}
 	}
-
-	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DBufferUsage, b:Context3DBufferUsage):Bool
-	{
-		return NullUtils.valueEquals(a, b, Int);
-	}
-	#end
-
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DBufferUsage, b:Context3DBufferUsage):Bool
-	{
-		return !equals(a, b);
-	}
-	#end
 }
 #else
 typedef Context3DBufferUsage = flash.display3D.Context3DBufferUsage;

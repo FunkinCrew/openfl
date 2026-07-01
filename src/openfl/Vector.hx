@@ -736,13 +736,11 @@ abstract Vector<T>(IVector<T>)
 		return new FloatVector(length, fixed, cast array, true);
 	}
 
-	#if !cs
 	@:to #if (!js && !flash) inline #end private static function toFunctionVector<T:Function>(t:IVector<T>, length:Int, fixed:Bool,
 			array:Array<T>):FunctionVector
 	{
 		return new FunctionVector(length, fixed, cast array);
 	}
-	#end
 
 	@:to #if (!js && !flash) inline #end private static function toObjectVector<T:{}>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
 	{
@@ -770,12 +768,10 @@ abstract Vector<T>(IVector<T>)
 		return cast vector;
 	}
 
-	#if !cs
 	@:from private static inline function fromFunctionVector<T:Function>(vector:FunctionVector):Vector<T>
 	{
 		return cast vector;
 	}
-	#end
 
 	@:from private static inline function fromObjectVector<T>(vector:ObjectVector<T>):Vector<T>
 	{
@@ -1314,7 +1310,6 @@ abstract Vector<T>(IVector<T>)
 	}
 }
 
-#if !cs
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -1563,7 +1558,6 @@ abstract Vector<T>(IVector<T>)
 		return __array.length;
 	}
 }
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

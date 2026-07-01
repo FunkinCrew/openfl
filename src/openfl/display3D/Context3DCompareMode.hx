@@ -1,10 +1,6 @@
 package openfl.display3D;
 
 #if !flash
-#if cs
-import openfl.utils._internal.NullUtils;
-#end
-
 /**
 	Defines the values to use for specifying 3D buffer comparisons in the
 	`setDepthTest()` and `setStencilAction()` methods of a Context3D instance.
@@ -82,20 +78,6 @@ import openfl.utils._internal.NullUtils;
 			default: null;
 		}
 	}
-
-	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DCompareMode, b:Context3DCompareMode):Bool
-	{
-		return NullUtils.valueEquals(a, b, Int);
-	}
-	#end
-
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DCompareMode, b:Context3DCompareMode):Bool
-	{
-		return !equals(a, b);
-	}
-	#end
 }
 #else
 typedef Context3DCompareMode = flash.display3D.Context3DCompareMode;

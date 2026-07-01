@@ -1,10 +1,6 @@
 package openfl.display3D;
 
 #if !flash
-#if cs
-import openfl.utils._internal.NullUtils;
-#end
-
 /**
 	Constants to specify the orientation of a triangle relative to the view point.
 **/
@@ -38,20 +34,6 @@ import openfl.utils._internal.NullUtils;
 			default: null;
 		}
 	}
-
-	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DTriangleFace, b:Context3DTriangleFace):Bool
-	{
-		return NullUtils.valueEquals(a, b, Int);
-	}
-	#end
-
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DTriangleFace, b:Context3DTriangleFace):Bool
-	{
-		return !equals(a, b);
-	}
-	#end
 }
 #else
 typedef Context3DTriangleFace = flash.display3D.Context3DTriangleFace;
