@@ -1,8 +1,5 @@
 package openfl.profiler;
 
-#if (cpp && hxtelemetry && !macro)
-import hxtelemetry.HxTelemetry;
-#end
 import openfl.utils._internal.Lib;
 
 /**
@@ -25,10 +22,6 @@ import openfl.utils._internal.Lib;
 		Returns a marker for use with `Telemetry.sendSpanMetric`
 	**/
 	public static var spanMarker(default, null) = 0.0;
-
-	#if (cpp && hxtelemetry && !macro)
-	@:noCompletion private static var telemetry:HxTelemetry;
-	#end
 
 	/**
 		Register a function that can be called by issuing a command over a socket
@@ -107,69 +100,10 @@ import openfl.utils._internal.Lib;
 		return false;
 	}
 
-	@:noCompletion private static inline function __advanceFrame():Void
-	{
-		#if (cpp && hxtelemetry && !macro)
-		telemetry.advance_frame();
-		#end
-	}
-
-	@:noCompletion private static inline function __endTiming(name:String):Void
-	{
-		#if (cpp && hxtelemetry && !macro)
-		telemetry.end_timing(name);
-		#end
-	}
-
-	@:noCompletion private static inline function __initialize():Void
-	{
-		#if (cpp && hxtelemetry && !macro)
-		var meta = Lib.application.meta;
-
-		var config = new hxtelemetry.HxTelemetry.Config();
-		config.allocations = (!meta.exists("hxtelemetry-allocations") || meta.get("hxtelemetry-allocations") == "true");
-		config.host = (!meta.exists("hxtelemetry-host") ? "localhost" : meta.get("hxtelemetry-host"));
-		config.app_name = meta.get("name");
-
-		config.activity_descriptors = [
-			{name: TelemetryCommandName.EVENT, description: "Event Handler", color: 0x2288cc},
-			{name: TelemetryCommandName.RENDER, description: "Rendering", color: 0x66aa66}
-		];
-		telemetry = new HxTelemetry(config);
-		#end
-	}
-
-	@:noCompletion private static inline function __rewindStack(stack:String):Void
-	{
-		#if (cpp && hxtelemetry && !macro)
-		telemetry.rewind_stack(stack);
-		#end
-	}
-
-	@:noCompletion private static inline function __startTiming(name:String):Void
-	{
-		#if (cpp && hxtelemetry && !macro)
-		telemetry.start_timing(name);
-		#end
-	}
-
-	@:noCompletion private static inline function __unwindStack():String
-	{
-		#if (cpp && hxtelemetry && !macro)
-		return telemetry.unwind_stack();
-		#else
-		return "";
-		#end
-	}
-
 	// Get & Set Methods
 	@:noCompletion private static function get_connected():Bool
 	{
-		#if (cpp && hxtelemetry && !macro)
-		return true;
-		#else
 		return false;
-		#end
 	}
 }
 

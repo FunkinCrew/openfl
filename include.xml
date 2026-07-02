@@ -41,16 +41,6 @@
 		<haxedef name="openfl-native" />
 		<haxeflag name="--remap" value="flash:openfl" />
 
-		<section if="telemetry || advanced-telemetry || openfl-telemetry">
-
-			<haxelib name="hxtelemetry" />
-			<config:hxtelemetry allocations="true" host="localhost" />
-
-		</section>
-
-		<haxedef name="openfl-debug" if="openfl-telemetry" />
-		<haxedef name="lime-debug" if="openfl-telemetry" />
-
 	</section>
 
 	<section if="html5">

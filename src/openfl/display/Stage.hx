@@ -46,9 +46,6 @@ import lime.ui.Window;
 import lime.system.Orientation;
 #end
 #end
-#if hxtelemetry
-import openfl.profiler.Telemetry;
-#end
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 #end
@@ -1036,10 +1033,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	public function new(#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null,
 		windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end)
 	{
-		#if hxtelemetry
-		Telemetry.__initialize();
-		#end
-
 		super();
 
 		__drawableType = STAGE;
@@ -2304,11 +2297,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			#end
 		}
 
-		#if hxtelemetry
-		var stack = Telemetry.__unwindStack();
-		Telemetry.__startTiming(TelemetryCommandName.RENDER);
-		#end
-
 		#if (openfl_enable_experimental_update_queue && !dom)
 		__updateQueue(false, true);
 		#else
@@ -2373,11 +2361,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 		#end
 
-		#if hxtelemetry
-		Telemetry.__endTiming(TelemetryCommandName.RENDER);
-		Telemetry.__rewindStack(stack);
-		#end
-
 		#if HXCPP_TRACY
 		cpp.vm.tracy.TracyProfiler.frameMark();
 		#end
@@ -2388,11 +2371,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __onLimeRender(context:RenderContext):Void
 	{
 		if (__rendering) return;
-		__rendering = true;
 
-		#if hxtelemetry
-		Telemetry.__advanceFrame();
-		#end
+		__rendering = true;
 
 		#if gl_stats
 		Context3DStats.resetDrawCalls();

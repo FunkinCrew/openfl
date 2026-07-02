@@ -38,11 +38,6 @@ class ApplicationMain
 		appMeta.set("packageName", "::meta.packageName::");
 		appMeta.set("version", "::meta.version::");
 
-		::if (config.hxtelemetry != null)::#if hxtelemetry
-		appMeta.set("hxtelemetry-allocations", "::config.hxtelemetry.allocations::");
-		appMeta.set("hxtelemetry-host", "::config.hxtelemetry.host::");
-		#end::end::
-
 		var app = new openfl.display.Application(appMeta);
 
 		#if !disable_preloader_assets
