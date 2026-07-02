@@ -8,10 +8,6 @@ import openfl.geom.Rectangle;
 import lime.math.ARGB;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)

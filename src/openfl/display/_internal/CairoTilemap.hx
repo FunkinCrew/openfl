@@ -16,10 +16,6 @@ import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tile)

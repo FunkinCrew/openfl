@@ -13,10 +13,6 @@ import lime.utils.Assets as LimeAssets;
 	of the application unless removed explicitly, or using Assets
 	`unloadLibrary`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class AssetCache implements IAssetCache
 {
 	/**

@@ -1,6 +1,7 @@
 package openfl.events;
 
 // import openfl.utils.ObjectPool;
+
 /**
 	An object dispatches an AsyncErrorEvent when an exception is thrown from
 	native asynchronous code, which could be from, for example,
@@ -8,10 +9,6 @@ package openfl.events;
 	one type of asynchronous error event: `AsyncErrorEvent.ASYNC_ERROR`.
 
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class AsyncErrorEvent extends ErrorEvent
 {
 	/**

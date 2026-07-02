@@ -60,10 +60,6 @@ import sys.net.Socket;
 	@event close    Dispatched when the operating system closes this socket.
 	@event connect  Dispatched when a remote socket seeks to connect to this server socket.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 @:access(openfl.net.Socket)
 class ServerSocket extends EventDispatcher

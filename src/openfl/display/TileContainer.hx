@@ -9,10 +9,6 @@ import openfl.geom.Rectangle;
 	Tile and TileContainer objects can be rendered by adding them to
 	a Tilemap instance.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 class TileContainer extends Tile implements ITileContainer

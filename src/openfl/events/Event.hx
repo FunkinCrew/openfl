@@ -51,10 +51,6 @@ import openfl.utils.ObjectPool;
 	@see [Event listeners](https://books.openfl.org/openfl-developers-guide/handling-events/event-listeners.html)
 	@see [Handling events for display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/handling-events-for-display-objects.html)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Event
 {
 	/**

@@ -3,10 +3,6 @@ package openfl.utils._internal;
 #if !lime
 import haxe.PosInfos;
 
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings([
 	"checkstyle:FieldDocComment",
 	"checkstyle:Dynamic",

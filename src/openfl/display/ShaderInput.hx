@@ -49,9 +49,6 @@ import openfl.display3D.Context3D;
 	Shader instance is created.
 **/
 @:access(openfl.display3D.Context3D)
-#if !openfl_debug
-@:fileXml('tags="haxe,release"') @:noDebug
-#end
 #if (!js && !display)
 @:generic
 #end

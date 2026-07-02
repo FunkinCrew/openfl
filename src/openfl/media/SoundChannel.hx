@@ -33,10 +33,6 @@ import lime.utils.Int16Array;
 	@see [Playing sounds](https://books.openfl.org/openfl-developers-guide/working-with-sound/playing-sounds.html)
 	@see `openfl.media.Sound`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 @:access(openfl.events.SampleDataEvent)
 @:access(openfl.media.Sound)

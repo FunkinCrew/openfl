@@ -35,10 +35,6 @@ import lime.utils.Assets as LimeAssets;
 	@see [Working with font assets](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/working-with-font-assets.html)
 	@see [Working with sound assets](https://books.openfl.org/openfl-developers-guide/working-with-sound/working-with-sound-assets.html)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Sprite)
 @:access(openfl.events.Event)

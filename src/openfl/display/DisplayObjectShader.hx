@@ -2,10 +2,6 @@ package openfl.display;
 
 import openfl.utils.ByteArray;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class DisplayObjectShader extends Shader
 {
 	@:glVertexHeader("attribute float openfl_Alpha;

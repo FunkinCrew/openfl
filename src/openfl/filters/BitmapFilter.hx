@@ -17,10 +17,6 @@ import openfl.geom.Rectangle;
 
 	You can neither directly instantiate nor extend BitmapFilter.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class BitmapFilter
 {
 	@:noCompletion private var __bottomExtension:Int;

@@ -6,10 +6,6 @@ import openfl.utils._internal.Lib;
 	The Telemetry class lets an application profile Haxe code and register handlers
 	for commands
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:allow(openfl.display.Stage)
 @:final class Telemetry
 {

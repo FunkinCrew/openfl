@@ -10,10 +10,6 @@ import openfl.display.GraphicsShader;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Shader)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class ShaderBuffer

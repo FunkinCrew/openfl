@@ -20,10 +20,6 @@ import openfl.utils.ObjectPool;
 
 	@see [Capturing mouse input](https://books.openfl.org/openfl-developers-guide/mouse-input/capturing-mouse-input.html)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class MouseEvent extends Event
 {
 	/**

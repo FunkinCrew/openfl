@@ -5,6 +5,7 @@ import openfl.utils.ObjectPool;
 #end
 
 // import openfl.utils.ObjectPool;
+
 /**
 	A ProgressEvent object is dispatched when a load operation has begun or a
 	socket has received data. These events are usually generated when SWF
@@ -14,10 +15,6 @@ import openfl.utils.ObjectPool;
 	objects are dispatched when a data is sent to or from a child process using
 	the NativeProcess class.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class ProgressEvent extends Event
 {
 	/**

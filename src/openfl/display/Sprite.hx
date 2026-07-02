@@ -27,10 +27,6 @@ import openfl.utils.AssetLibrary;
 	@see [Working with display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/)
 	@see [Choosing a display object subclass](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/choosing-a-displayobject-subclass.html)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.geom.Matrix)

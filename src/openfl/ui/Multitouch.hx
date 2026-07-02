@@ -40,10 +40,6 @@ import openfl.Vector;
 	**Note:** The Multitouch feature is not supported for SWF files
 	embedded in HTML running on Mac OS.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class Multitouch
 {
 	/**

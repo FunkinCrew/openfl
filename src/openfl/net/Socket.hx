@@ -118,10 +118,6 @@ import sys.net.Socket as SysSocket;
 						 Events of type `socketData` do not use the
 						 `ProgressEvent.bytesTotal` property.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 class Socket extends EventDispatcher implements IDataInput implements IDataOutput
 {

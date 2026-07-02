@@ -70,10 +70,6 @@ import openfl.text.engine.FontWeight;
 	display object use `stage.focus`.
 	- To assign focus to StageText, use `stageText.assignFocus()`.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 class StageText extends EventDispatcher
 {

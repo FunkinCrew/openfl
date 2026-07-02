@@ -23,10 +23,6 @@ import openfl.net.NetStream;
 	the same texture is used several times, some of the instances may be from different
 	timestamps.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
 @:access(openfl.net.NetStream)

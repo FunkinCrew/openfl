@@ -6,10 +6,6 @@ package openfl.system;
 	`Loader.load()`, you can request that loaded media be placed in a
 	particular sandbox.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:UnnecessaryConstructor")
 class SecurityDomain
 {

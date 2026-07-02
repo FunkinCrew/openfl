@@ -1,16 +1,13 @@
 package openfl.events;
 
 // import openfl.utils.ObjectPool;
+
 /**
 	A NetConnection, NetStream, or SharedObject object dispatches
 	NetStatusEvent objects when a it reports its status. There is only one
 	type of status event: `NetStatusEvent.NET_STATUS`.
 
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class NetStatusEvent extends Event
 {
 	/**

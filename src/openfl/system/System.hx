@@ -22,10 +22,6 @@ import hl.Gc;
 	This class contains only static methods and properties. You cannot
 	create new instances of the System class.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class System
 {
 	#if false

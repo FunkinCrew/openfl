@@ -172,10 +172,6 @@ typedef Element = Dynamic;
 	@event stageVideoAvailability Dispatched by the Stage object when the state
 								  of the stageVideos property changes.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.LoaderInfo)

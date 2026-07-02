@@ -1,6 +1,7 @@
 package openfl.events;
 
 // import openfl.utils.ObjectPool;
+
 /**
 	An UncaughtErrorEvent object is dispatched by an instance of the
 	UncaughtErrorEvents class when an uncaught error occurs. An uncaught error
@@ -70,10 +71,6 @@ package openfl.events;
 	result in an `uncaughtError` event.
 
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class UncaughtErrorEvent extends ErrorEvent
 {
 	/**

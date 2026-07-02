@@ -42,10 +42,6 @@ import lime.utils.BytePointer;
 	You cannot create a Program3D object directly; use the Context3D `createProgram()`
 	method instead.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
@@ -923,10 +919,6 @@ import lime.utils.BytePointer;
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) @:noCompletion class Uniform
@@ -1021,10 +1013,6 @@ import lime.utils.BytePointer;
 	#end
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) @:noCompletion class UniformMap
 {

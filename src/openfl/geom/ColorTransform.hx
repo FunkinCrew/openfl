@@ -50,10 +50,6 @@ import lime.math.ColorMatrix;
 	@see `openfl.geom.Transform.colorTransform`
 	@see `openfl.display.DisplayObject.transform`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class ColorTransform
 {
 	#if lime

@@ -21,10 +21,6 @@ import openfl.events.TextEvent;
 	event to appear when content is running in the debugger version of Flash
 	Player or the AIR Debug Launcher (ADL) application.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class ErrorEvent extends TextEvent
 {
 	/**

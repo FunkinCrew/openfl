@@ -90,10 +90,6 @@ import lime.media.AudioSource;
 	@see [Controlling sound volume and panning](https://books.openfl.org/openfl-developers-guide/working-with-sound/controlling-sound-volume-and-panning.html)
 	@see [Working with dynamically generated audio](https://books.openfl.org/openfl-developers-guide/working-with-sound/working-with-dynamically-generated-audio.html)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(lime.media.AudioBuffer)
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.events.Event)

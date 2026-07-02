@@ -87,10 +87,6 @@ import sys.io.Process;
 
 	All properties of the Capabilities class are read-only.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class Capabilities
 {
 	/**

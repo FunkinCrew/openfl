@@ -1,15 +1,12 @@
 package openfl.events;
 
 // import openfl.utils.ObjectPool;
+
 /**
 	The Accelerometer class dispatches AccelerometerEvent objects when
 	acceleration updates are obtained from the Accelerometer sensor installed
 	on the device.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class AccelerometerEvent extends Event
 {
 	/**

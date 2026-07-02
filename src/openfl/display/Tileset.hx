@@ -13,10 +13,6 @@ import openfl.Vector;
 	Tileset object, use the `addRect()` method to specify rectangles to be used
 	for tile rendering.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.geom.Rectangle)
 class Tileset
 {
@@ -198,10 +194,6 @@ class Tileset
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:allow(openfl.display.Tileset)
 @:dox(hide)

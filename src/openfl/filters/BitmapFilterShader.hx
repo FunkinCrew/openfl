@@ -3,10 +3,6 @@ package openfl.filters;
 import openfl.display.Shader;
 import openfl.utils.ByteArray;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class BitmapFilterShader extends Shader
 {
 	@:glVertexHeader("attribute vec4 openfl_Position;

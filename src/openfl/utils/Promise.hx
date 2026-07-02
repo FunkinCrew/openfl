@@ -40,10 +40,6 @@ package openfl.utils;
 	future.onProgress (function (loaded, total) { trace ("Progress: " + loaded + ", " + total); });
 	```
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:allow(lime.app.Future)
 #if (!hl && !js)
 @:generic

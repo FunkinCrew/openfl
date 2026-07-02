@@ -16,10 +16,6 @@ package openfl.display;
 	@see `openfl.display.MovieClip.gotoAndPlay()`
 	@see `openfl.display.MovieClip.gotoAndStop()`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class Scene
 {
 	/**

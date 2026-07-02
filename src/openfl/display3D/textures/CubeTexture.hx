@@ -21,10 +21,6 @@ import openfl.utils.ByteArray;
 	You cannot create a CubeTexture object directly; use the Context3D
 	`createCubeTexture()` instead.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
 @:access(openfl.events.Event)

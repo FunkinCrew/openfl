@@ -4,10 +4,6 @@ package openfl.system;
 	The Security class lets you specify how content in different domains can
 	communicate with each other.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Security
 {
 	/**

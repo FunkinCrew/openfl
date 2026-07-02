@@ -78,9 +78,6 @@ import lime.system.BackgroundWorker;
 @:access(openfl.utils.ByteArray)
 @:access(openfl.utils.ByteArrayData)
 @:access(openfl.filesystem.File)
-#if !openfl_debug
-@:fileXml('tags="haxe,release"') @:noDebug
-#end
 class FileStream extends EventDispatcher implements IDataInput implements IDataOutput
 {
 	/**

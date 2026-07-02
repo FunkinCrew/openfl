@@ -5,10 +5,6 @@ import haxe.io.Bytes;
 import lime.utils.AssetManifest as LimeAssetManifest;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class AssetManifest #if lime extends LimeAssetManifest #end
 {
 	#if !lime

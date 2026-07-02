@@ -507,9 +507,6 @@ import js.Browser;
 							`"DRM.encryptedFLV"`.
 **/
 @:access(openfl.media.SoundMixer)
-#if !openfl_debug
-@:fileXml('tags="haxe,release"') @:noDebug
-#end
 class NetStream extends EventDispatcher
 {
 	#if false

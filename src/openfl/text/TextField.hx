@@ -113,10 +113,6 @@ import js.html.DivElement;
 	@see [Formatting text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html)
 	@see [Advanced text rendering](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/advanced-text-rendering.html)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Graphics)
 @:access(openfl.errors.Error)
 @:access(openfl.events.Event)

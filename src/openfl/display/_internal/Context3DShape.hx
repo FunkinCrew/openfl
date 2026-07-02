@@ -8,10 +8,6 @@ import openfl.display._internal.stats.DrawCallContext;
 #end
 import openfl.geom.Matrix;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)

@@ -1,9 +1,5 @@
 package openfl.display;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class FrameScript
 {
 	public var frame(default, null):Int;

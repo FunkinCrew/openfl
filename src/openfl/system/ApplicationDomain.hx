@@ -30,10 +30,6 @@ package openfl.system;
 	The `ApplicationDomain()` constructor function allows you to create an
 	ApplicationDomain object.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class ApplicationDomain
 {
 	#if false

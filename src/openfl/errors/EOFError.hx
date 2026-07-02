@@ -6,10 +6,6 @@ package openfl.errors;
 	methods in the IDataInput interface is called and there is insufficient
 	data to satisfy the read request.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class EOFError extends IOError
 {
 	/**

@@ -13,10 +13,6 @@ import openfl.filesystem.File;
 	applications installed with native installers (applications in the
 	"extendedDesktop" profile).
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class NativeProcessStartupInfo
 {
 	/**

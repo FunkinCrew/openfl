@@ -47,10 +47,6 @@ package openfl.net;
 	Macintosh, if you supply a list of Macintosh file types, that list is used
 	to filter the files. If not, the list of file extensions is used.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class FileFilter
 {
 	/**

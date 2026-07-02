@@ -10,10 +10,6 @@ import lime.utils.AssetManifest;
 import lime.utils.Bytes;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class AssetLibrary #if lime extends LimeAssetLibrary #end
 {
 	#if lime

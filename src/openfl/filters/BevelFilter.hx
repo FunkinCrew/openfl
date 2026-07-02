@@ -16,10 +16,6 @@ import lime._internal.graphics.ImageDataUtil;
 	@see `openfl.display.DisplayObject.filters`
 	@see `openfl.display.BitmapData.applyFilter`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.filters.BlurFilter)
@@ -395,10 +391,6 @@ import lime._internal.graphics.ImageDataUtil;
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 private class BevelShader extends BitmapFilterShader
 {
 	@:glFragmentSource("uniform sampler2D openfl_Texture;

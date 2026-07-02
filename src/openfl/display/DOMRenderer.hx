@@ -23,10 +23,6 @@ import js.html.Element;
 	The DOMRenderer API exposes support for HTML5 DOM render instructions within the
 	`RenderEvent.RENDER_DOM` event
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.IBitmapDrawable)
 @:access(openfl.display.Stage3D)

@@ -15,10 +15,6 @@ import openfl.display.InteractiveObject;
 
 	@see `InteractiveObject.contextMenu`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class ContextMenuEvent extends Event
 {
 	/**

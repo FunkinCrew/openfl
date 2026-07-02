@@ -76,10 +76,6 @@ package openfl.net;
 	@see `openfl.net.URLRequest`
 	@see `openfl.net.URLLoader`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class URLRequestHeader
 {
 	/**

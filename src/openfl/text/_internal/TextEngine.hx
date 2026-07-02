@@ -27,10 +27,6 @@ import js.html.Element;
 import js.Browser;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.text.Font)
 @:access(openfl.text.TextField)
 @:access(openfl.text.TextFormat)

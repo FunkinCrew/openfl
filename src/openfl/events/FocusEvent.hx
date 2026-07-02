@@ -13,10 +13,6 @@ import openfl.display.InteractiveObject;
 	* `FocusEvent.KEY_FOCUS_CHANGE`
 	* `FocusEvent.MOUSE_FOCUS_CHANGE`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class FocusEvent extends Event
 {
 	/**

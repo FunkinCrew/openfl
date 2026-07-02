@@ -6,10 +6,6 @@ package openfl.media;
 	class; for example, `mySound.id3.TIME`. For more information, see the entry for
 	`Sound.id3` and the ID3 tag definitions at http://www.id3.org.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class ID3Info
 {
 	/**

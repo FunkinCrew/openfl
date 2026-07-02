@@ -1,9 +1,5 @@
 package openfl.display._internal;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.SimpleButton)
 class CairoSimpleButton
 {

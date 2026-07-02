@@ -10,6 +10,7 @@ import openfl.geom.Rectangle;
 import lime._internal.graphics.ImageDataUtil; // TODO
 
 #end
+
 /**
 	The DropShadowFilter class lets you add a drop shadow to display objects.
 	The shadow algorithm is based on the same box filter that the blur filter
@@ -56,10 +57,6 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	@see `openfl.display.DisplayObject.filters`
 	@see `openfl.display.BitmapData.applyFilter`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.filters.GlowFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Point)
@@ -500,10 +497,6 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 private class HideShader extends BitmapFilterShader
 {
 	@:glFragmentSource("#pragma header

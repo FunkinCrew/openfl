@@ -57,10 +57,6 @@ import lime.math.Vector4;
 	@see `openfl.display.DisplayObject.filters`
 	@see `openfl.display.BitmapData.applyFilter`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 @:final class DisplacementMapFilter extends BitmapFilter
@@ -388,10 +384,6 @@ import lime.math.Vector4;
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 private class DisplacementMapShader extends BitmapFilterShader
 {
 	@:glFragmentSource("#pragma header

@@ -18,10 +18,6 @@ package openfl.utils;
 	properties and methods by passing the namespace to other classes, methods or
 	functions.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Namespace
 {
 	/**

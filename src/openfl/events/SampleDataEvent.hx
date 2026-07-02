@@ -84,10 +84,6 @@ import haxe.io.Bytes;
 	}
 	```
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class SampleDataEvent extends Event
 {
 	/**

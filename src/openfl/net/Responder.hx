@@ -11,10 +11,6 @@ import haxe.Constraints.Function;
 	status. Operation errors target the Responder object instead of the
 	NetConnection object for easier error handling.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Responder
 {
 	// the result and status functions are not exposed publicly by the flash

@@ -84,10 +84,6 @@ import openfl.display3D.Context3D;
 	directly. A ShaderParameter instance is created for each of a shader's
 	parameters when the Shader instance is created.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 #if (!js && !display)
 @:generic

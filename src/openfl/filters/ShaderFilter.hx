@@ -52,10 +52,6 @@ import openfl.display.Shader;
 	@see `openfl.display.DisplayObject.filters`
 	@see `openfl.display.BitmapData.applyFilter`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class ShaderFilter extends BitmapFilter
 {
 	@:dox(hide) @:noCompletion @:beta @SuppressWarnings("checkstyle:FieldDocComment")

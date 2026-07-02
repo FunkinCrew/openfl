@@ -70,10 +70,6 @@ import lime.system.Clipboard as LimeClipboard;
 
 	@see [Copy and paste](https://books.openfl.org/openfl-developers-guide/copy-and-paste/)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Clipboard
 {
 	/**

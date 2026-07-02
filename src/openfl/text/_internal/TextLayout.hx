@@ -18,10 +18,6 @@ import lime.text.Glyph;
 import openfl.text.Font;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 class TextLayout
 {

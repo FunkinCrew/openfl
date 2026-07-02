@@ -9,10 +9,6 @@ package openfl.events;
 
 	@see `openfl.sensors.Geolocation`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class GeolocationEvent extends Event
 {
 	/**

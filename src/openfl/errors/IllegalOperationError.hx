@@ -20,10 +20,6 @@ package openfl.errors;
 	* An attempt is made to set the name of a Timeline-placed
 	object
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class IllegalOperationError extends Error
 {
 	/**

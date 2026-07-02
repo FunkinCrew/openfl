@@ -23,10 +23,6 @@ import openfl.Vector;
 
 	The SimpleButton class inherits from the InteractiveObject class.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)

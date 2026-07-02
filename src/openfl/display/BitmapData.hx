@@ -111,10 +111,6 @@ import openfl.display._internal.stats.DrawCallContext;
 	@see `openfl.display.Graphics.beginBitmapFill()`
 	@see `openfl.display.Graphics.lineBitmapStyle()`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(lime.graphics.opengl.GL)
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)

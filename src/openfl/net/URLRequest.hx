@@ -43,10 +43,6 @@ import haxe.macro.Compiler;
 	@see `openfl.net.URLStream`
 	@see `openfl.net.FileReference`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class URLRequest
 {
 	/**

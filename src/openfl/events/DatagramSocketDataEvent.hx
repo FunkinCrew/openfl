@@ -5,10 +5,6 @@ import openfl.utils.ByteArray;
 /**
 	A DatagramSocketDataEvent object is dispatched when Datagram socket has received data.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class DatagramSocketDataEvent extends Event
 {
 	/**

@@ -29,10 +29,6 @@ import lime.math.Matrix4;
 	The OpenGLRenderer API exposes support for OpenGL render instructions within the
 	`RenderEvent.RENDER_OPENGL` event.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(lime.graphics.GLRenderContext)
 @:access(openfl.display._internal.ShaderBuffer)
 @:access(openfl.display3D.Context3D)
@@ -555,19 +551,24 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__matrix[14] = 0;
 		__matrix[15] = 1;
 
-		if (pixelSnapping == ALWAYS ||
-			(pixelSnapping == AUTO && (__stage == null || __stage.quality == LOW || __stage.quality == MEDIUM)
-				&& __matrix[1] == 0 && __matrix[4] == 0
-				&& __matrix[0] < 1.001 && __matrix[0] > 0.999
-			)	&& __matrix[5] < 1.001 && __matrix[5] > 0.999
-		) {
+		if (pixelSnapping == ALWAYS
+			|| (pixelSnapping == AUTO
+				&& (__stage == null || __stage.quality == LOW || __stage.quality == MEDIUM)
+				&& __matrix[1] == 0
+				&& __matrix[4] == 0
+				&& __matrix[0] < 1.001
+				&& __matrix[0] > 0.999)
+			&& __matrix[5] < 1.001
+			&& __matrix[5] > 0.999)
+		{
 			__matrix[12] = Math.round(__matrix[12]);
 			__matrix[13] = Math.round(__matrix[13]);
 		}
 
 		__matrix.append(__flipped ? __projectionFlipped : __projection);
 
-		for (i in 0...16) __values[i] = __matrix[i];
+		for (i in 0...16)
+			__values[i] = __matrix[i];
 		return __values;
 	}
 
@@ -1094,25 +1095,38 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			}
 
 			__context3D.__usingComplexBlend = true;
-			switch (value) {
-				case DARKEN: __context3D.__setGLBlendEquation(0x9297); // DARKEN_KHR
-				case DIFFERENCE: __context3D.__setGLBlendEquation(0x929E); // DIFFERENCE_KHR
-				case HARDLIGHT: __context3D.__setGLBlendEquation(0x929B); // HARDLIGHT_KHR
+			switch (value)
+			{
+				case DARKEN:
+					__context3D.__setGLBlendEquation(0x9297); // DARKEN_KHR
+				case DIFFERENCE:
+					__context3D.__setGLBlendEquation(0x929E); // DIFFERENCE_KHR
+				case HARDLIGHT:
+					__context3D.__setGLBlendEquation(0x929B); // HARDLIGHT_KHR
 				case LIGHTEN:
-					if (__context3D.__usingComplexBlend = !__blendMinMaxSupported)
-						__context3D.__setGLBlendEquation(0x9298); // LIGHTEN_KHR
-				//case MULTIPLY: __context3D.__setGLBlendEquation(0x9294); // MULTIPLY_KHR
-				case OVERLAY: __context3D.__setGLBlendEquation(0x9296); // OVERLAY_KHR
-				//case SCREEN: __context3D.__setGLBlendEquation(0x9295); // SCREEN_KHR
-				case COLORDODGE: __context3D.__setGLBlendEquation(0x929A); // COLORDODGE_KHR
-				case COLORBURN: __context3D.__setGLBlendEquation(0x9299); // COLORBURN_KHR
-				case SOFTLIGHT: __context3D.__setGLBlendEquation(0x929C); // SOFTLIGHT_KHR
-				case EXCLUSION: __context3D.__setGLBlendEquation(0x92A0); // EXCLUSION_KHR
-				case HUE: __context3D.__setGLBlendEquation(0x92AD); // HSL_HUE_KHR
-				case SATURATION: __context3D.__setGLBlendEquation(0x92AE); // HSL_SATURATION_KHR
-				case COLOR: __context3D.__setGLBlendEquation(0x92AF); // HSL_COLOR_KHR
-				case LUMINOSITY: __context3D.__setGLBlendEquation(0x92B0); // HSL_LUMINOSITY_KHR
-				default: __context3D.__usingComplexBlend = false;
+					if (__context3D.__usingComplexBlend = !__blendMinMaxSupported) __context3D.__setGLBlendEquation(0x9298); // LIGHTEN_KHR
+				// case MULTIPLY: __context3D.__setGLBlendEquation(0x9294); // MULTIPLY_KHR
+				case OVERLAY:
+					__context3D.__setGLBlendEquation(0x9296); // OVERLAY_KHR
+				// case SCREEN: __context3D.__setGLBlendEquation(0x9295); // SCREEN_KHR
+				case COLORDODGE:
+					__context3D.__setGLBlendEquation(0x929A); // COLORDODGE_KHR
+				case COLORBURN:
+					__context3D.__setGLBlendEquation(0x9299); // COLORBURN_KHR
+				case SOFTLIGHT:
+					__context3D.__setGLBlendEquation(0x929C); // SOFTLIGHT_KHR
+				case EXCLUSION:
+					__context3D.__setGLBlendEquation(0x92A0); // EXCLUSION_KHR
+				case HUE:
+					__context3D.__setGLBlendEquation(0x92AD); // HSL_HUE_KHR
+				case SATURATION:
+					__context3D.__setGLBlendEquation(0x92AE); // HSL_SATURATION_KHR
+				case COLOR:
+					__context3D.__setGLBlendEquation(0x92AF); // HSL_COLOR_KHR
+				case LUMINOSITY:
+					__context3D.__setGLBlendEquation(0x92B0); // HSL_LUMINOSITY_KHR
+				default:
+					__context3D.__usingComplexBlend = false;
 			}
 
 			if (__context3D.__usingComplexBlend) return;
@@ -1120,8 +1134,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		switch (value)
 		{
-			case ADD: __context3D.setBlendFactors(ONE, ONE);
-			case ALPHA: __context3D.setBlendFactors(SOURCE_ALPHA, ONE_MINUS_SOURCE_ALPHA);
+			case ADD:
+				__context3D.setBlendFactors(ONE, ONE);
+			case ALPHA:
+				__context3D.setBlendFactors(SOURCE_ALPHA, ONE_MINUS_SOURCE_ALPHA);
 			case DARKEN:
 				if (__blendMinMaxSupported)
 				{
@@ -1134,8 +1150,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 					// Alternative innacurate implementation if unsupported
 					__context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
 				}
-			case ERASE: __context3D.setBlendFactors(ZERO, ONE_MINUS_SOURCE_ALPHA);
-			case INVERT: __context3D.setBlendFactorsSeparate(ONE_MINUS_DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA, ZERO, ONE);
+			case ERASE:
+				__context3D.setBlendFactors(ZERO, ONE_MINUS_SOURCE_ALPHA);
+			case INVERT:
+				__context3D.setBlendFactorsSeparate(ONE_MINUS_DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA, ZERO, ONE);
 			case LIGHTEN:
 				if (__blendMinMaxSupported)
 				{
@@ -1147,12 +1165,15 @@ class OpenGLRenderer extends DisplayObjectRenderer
 					// Alternative innacurate implementation if unsupported
 					__context3D.setBlendFactors(ONE, ONE);
 				}
-			case MULTIPLY: __context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
-			case SCREEN: __context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_COLOR);
+			case MULTIPLY:
+				__context3D.setBlendFactors(DESTINATION_COLOR, ONE_MINUS_SOURCE_ALPHA);
+			case SCREEN:
+				__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_COLOR);
 			case SUBTRACT:
 				__context3D.setBlendFactors(ONE, ONE);
 				__context3D.__setGLBlendEquation(0x800B); // GL_FUNC_REVERSE_SUBTRACT
-			default: __context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
+			default:
+				__context3D.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
 		}
 	}
 

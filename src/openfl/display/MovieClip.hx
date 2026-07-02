@@ -45,10 +45,6 @@ import openfl.events.MouseEvent;
 	@see [Basics of display programming](https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html)
 	@see [Core display classes](https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Timeline)
 @:access(openfl.geom.ColorTransform)
 class MovieClip extends Sprite

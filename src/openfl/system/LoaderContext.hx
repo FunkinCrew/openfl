@@ -27,10 +27,6 @@ package openfl.system;
 
 	@see `openfl.display.Loader`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class LoaderContext
 {
 	/**

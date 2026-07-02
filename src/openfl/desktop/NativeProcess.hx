@@ -48,9 +48,6 @@ import sys.thread.Thread;
 	communication is supported.
 **/
 @:access(openfl.utils.ByteArrayData)
-#if !openfl_debug
-@:fileXml('tags="haxe,release"') @:noDebug
-#end
 class NativeProcess extends EventDispatcher
 {
 	/**

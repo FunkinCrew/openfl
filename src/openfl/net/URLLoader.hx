@@ -89,10 +89,6 @@ import lime.net.HTTPRequestHeader;
 	@see `openfl.net.URLRequest`
 	@see `openfl.net.URLStream`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 class URLLoader extends EventDispatcher
 {

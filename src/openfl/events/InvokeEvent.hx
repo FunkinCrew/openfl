@@ -29,10 +29,6 @@ import openfl.filesystem.File;
 	necessarily before a new `invoke` event that might be might be dispatched
 	after registration. Thus, you should not rely on dispatch order.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class InvokeEvent extends Event
 {
 	/**

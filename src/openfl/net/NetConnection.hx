@@ -43,10 +43,6 @@ import openfl.events.NetStatusEvent;
 						 to connect to a server outside the caller's security
 						 sandbox.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class NetConnection extends EventDispatcher
 {
 	@SuppressWarnings("checkstyle:FieldDocComment")

@@ -25,10 +25,6 @@ import openfl.display._internal.Context3DBuffer;
 	`addEventListener()` method of the display object container that
 	contains the Tilemap object.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Tile)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)

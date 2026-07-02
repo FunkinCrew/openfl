@@ -42,10 +42,6 @@ import openfl.display.Shader;
 	@see `openfl.display.DisplayObject.filters`
 	@see `openfl.display.BitmapData.applyFilter`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class ConvolutionFilter extends BitmapFilter
 {
 	@:noCompletion private static var __convolutionShader:ConvolutionShader = new ConvolutionShader();
@@ -260,10 +256,6 @@ class ConvolutionFilter extends BitmapFilter
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 private class ConvolutionShader extends BitmapFilterShader
 {
 	@:glFragmentSource("#pragma header

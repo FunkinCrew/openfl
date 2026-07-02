@@ -20,10 +20,6 @@ import lime.graphics.Canvas2DRenderContext;
 	The CanvasRenderer API exposes support for HTML5 canvas render instructions within the
 	`RenderEvent.RENDER_CANVAS` event
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.IBitmapDrawable)
 @:access(openfl.display.Stage)

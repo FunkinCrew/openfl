@@ -27,10 +27,6 @@ package openfl.geom;
 
 	![Vector3D elements](/images/Vector3Delements.jpg)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Vector3D
 {
 	/**

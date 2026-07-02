@@ -11,6 +11,7 @@ import lime.ui.FileDialog;
 #if sys
 import sys.FileSystem;
 #end
+
 /**
 	The FileReferenceList class provides a means to let users select one or
 	more files for uploading. A FileReferenceList object represents a group of
@@ -51,10 +52,6 @@ import sys.FileSystem;
 	@see [Using the FileReferenceList class](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-filereference-class.html#filereferencelist-class)
 	@see `openfl.net.FileReference`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 @:access(openfl.net.FileReference)
 class FileReferenceList extends EventDispatcher
@@ -221,10 +218,6 @@ import openfl.events.EventDispatcher;
 import openfl.events.Event;
 import js.lib.DataView;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 @:access(openfl.net.FileReference)
 class FileReferenceList extends EventDispatcher

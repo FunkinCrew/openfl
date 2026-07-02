@@ -5,10 +5,6 @@ import openfl.utils.ByteArray;
 import lime.ui.Gamepad;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.ui.GameInputControl)
 @:final class GameInputDevice
 {

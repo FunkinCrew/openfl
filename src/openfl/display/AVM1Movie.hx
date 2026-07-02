@@ -32,10 +32,6 @@ import openfl.errors.ArgumentError;
 
 	_OpenFL target support:_ Not supported, except when targeting AIR.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:Dynamic")
 class AVM1Movie extends DisplayObject
 {

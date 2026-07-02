@@ -174,10 +174,6 @@ import js.html.CSSStyleDeclaration;
 	@see [Animating objects](https://books.openfl.org/openfl-developers-guide/display-programming/animating-objects.html)
 	@see [Loading display content dynamically](https://books.openfl.org/openfl-developers-guide/display-programming/loading-display-content-dynamically/)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display3D._internal.Context3DState)

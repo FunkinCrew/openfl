@@ -156,10 +156,6 @@ import sys.FileSystem;
 	@event sync       Dispatched when a remote shared object has been updated
 					  by the server.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class SharedObject extends EventDispatcher
 {
 	/**

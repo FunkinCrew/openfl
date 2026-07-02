@@ -9,10 +9,6 @@ package openfl.utils;
 	with a `uri` from a `Namespace` object and a `localName` from a QName
 	object.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class QName
 {
 	/**

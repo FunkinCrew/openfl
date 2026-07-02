@@ -12,10 +12,6 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	constructor. The pointer is visible by default,
 	but you can hide it and implement a custom pointer.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Stage)
 @:final class Mouse
 {

@@ -7,10 +7,6 @@ package openfl.errors;
 	number of arguments, an argument of the incorrect type, or an invalid
 	argument.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class ArgumentError extends Error
 {
 	/**

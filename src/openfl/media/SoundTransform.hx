@@ -7,10 +7,6 @@ package openfl.media;
 	@see `openfl.media.Sound`
 	@see `openfl.media.SoundChannel.soundTransform`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class SoundTransform
 {
 	/**

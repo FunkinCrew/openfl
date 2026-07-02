@@ -14,10 +14,6 @@ package openfl.display;
 	However, a Sprite object supports user input events, while a Shape object
 	does not.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Graphics)
 class Shape extends DisplayObject
 {

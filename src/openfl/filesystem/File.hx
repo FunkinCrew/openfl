@@ -92,10 +92,6 @@ import lime.system.BackgroundWorker;
 	@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	@see `openfl.filesystem.FileStream`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 class File extends FileReference
 {

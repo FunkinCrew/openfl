@@ -2,10 +2,6 @@ package openfl.ui;
 
 import openfl.events.EventDispatcher;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class GameInputControl extends EventDispatcher
 {
 	/**

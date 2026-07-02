@@ -1,6 +1,7 @@
 package openfl.events;
 
 // import openfl.utils.ObjectPool;
+
 /**
 	An object dispatches a SecurityErrorEvent object to report the occurrence
 	of a security error. Security errors reported through this class are
@@ -18,10 +19,6 @@ package openfl.events;
 	are not dispatched for a target object that experiences a security
 	error.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class SecurityErrorEvent extends ErrorEvent
 {
 	/**

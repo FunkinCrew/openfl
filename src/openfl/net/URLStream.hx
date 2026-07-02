@@ -64,10 +64,6 @@ import openfl.utils.Endian;
 	@see `openfl.net.URLRequest`
 	@see `openfl.net.URLStream`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 class URLStream extends EventDispatcher implements IDataInput
 {

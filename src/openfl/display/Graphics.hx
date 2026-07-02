@@ -45,10 +45,6 @@ import js.html.CanvasRenderingContext2D;
 	@see [Understanding the Graphics class](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/understanding-the-graphics-class.html)
 	@see [Advanced use of the drawing API](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.GraphicsPath)
 @:access(openfl.display.IGraphicsData)

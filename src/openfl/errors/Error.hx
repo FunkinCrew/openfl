@@ -12,10 +12,6 @@ import haxe.CallStack;
 
 	You can also create a subclass of the Error class and throw instances of that subclass.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Error extends haxe.Exception
 {
 	@:noCompletion private static inline var DEFAULT_TO_STRING:String = "Error";

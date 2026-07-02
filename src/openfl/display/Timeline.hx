@@ -22,10 +22,6 @@ import openfl.errors.ArgumentError;
 	   enterFrame();
 	   initializeSprite();
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Timeline
 {
 	/**

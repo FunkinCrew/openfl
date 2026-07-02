@@ -3,10 +3,6 @@ package openfl.text._internal;
 import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.text.TextFormat)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class ShapeCache

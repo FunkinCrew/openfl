@@ -13,10 +13,6 @@ import openfl.utils.Endian;
 import lime.graphics.opengl.GL;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 class AGALConverter
 {
@@ -600,10 +596,6 @@ class AGALConverter
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 private class DestRegister
 {
@@ -662,10 +654,6 @@ private enum ProgramType
 	FRAGMENT;
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 class RegisterMap
 {
@@ -877,10 +865,6 @@ class RegisterMap
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 private class RegisterMapEntry
 {
 	public var name:String;
@@ -913,10 +897,6 @@ private enum RegisterUsage
 	VECTOR_4_ARRAY;
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 private class SamplerRegister
 {
@@ -1014,10 +994,6 @@ private class SamplerRegister
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 private class SourceRegister
 {

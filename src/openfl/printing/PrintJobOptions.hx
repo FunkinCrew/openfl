@@ -5,10 +5,6 @@ package openfl.printing;
 	parameter of the `PrintJob.addPage()` method. For more information about
 	`addPage()`, see the PrintJob class.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class PrintJobOptions
 {
 	/**

@@ -9,10 +9,6 @@ package openfl.display._internal;
 import openfl.display.BitmapDataChannel;
 import openfl.display.BitmapData;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 class PerlinNoise2D extends AbstractNoise
 {

@@ -63,10 +63,6 @@ import lime.system.SensorType;
 
 	@see [Accelerometer input](https://books.openfl.org/openfl-developers-guide/accelerometer-input/)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Accelerometer extends EventDispatcher
 {
 	/**

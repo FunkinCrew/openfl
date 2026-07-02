@@ -59,10 +59,6 @@ import js.Browser;
 	`PrintJob.addPage()` on the PrintJob instance causes the Flash Player or
 	Adobe AIR to throw a runtime exception.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(lime.graphics.ImageBuffer)
 class PrintJob
 {

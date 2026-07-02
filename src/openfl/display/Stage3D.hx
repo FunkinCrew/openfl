@@ -55,10 +55,6 @@ import js.Browser;
 	@see `openfl.display.Stage`
 	@see `openfl.display3D.Context3D`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(lime.graphics.opengl.GL)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)

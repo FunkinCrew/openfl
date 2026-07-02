@@ -15,10 +15,6 @@ using StringTools;
 	ASTCTexture cannot be instantiated directly. Create instances by using Context3D
 	`createASTCTexture()` method.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @:final class ASTCTexture extends TextureBase
 {

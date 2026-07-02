@@ -50,10 +50,6 @@ package openfl.text;
 	@see [Formatting text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html)
 	@see `openfl.text.TextField`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class TextFormat
 {
 	/**

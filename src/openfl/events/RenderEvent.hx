@@ -21,10 +21,6 @@ import openfl.geom.Matrix;
 	whether an off-screen render (such as DisplayObject `cacheAsBitmap` or BitmapData
 	`draw`) is being used.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.geom.ColorTransform)
 @:beta class RenderEvent extends Event
 {

@@ -14,10 +14,6 @@ package openfl.text;
 
 	![An image illustrating text metrics](/images/text-metrics.jpg)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class TextLineMetrics
 {
 	/**

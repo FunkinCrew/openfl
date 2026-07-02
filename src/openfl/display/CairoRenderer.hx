@@ -24,10 +24,6 @@ import lime.math.Matrix3;
 	The CairoRenderer API exposes support for native Cairo render instructions within the
 	`RenderEvent.RENDER_CAIRO` event
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.IBitmapDrawable)

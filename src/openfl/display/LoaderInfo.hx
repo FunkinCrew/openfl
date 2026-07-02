@@ -107,10 +107,6 @@ import js.Browser;
 
 	@see `openfl.display.Loader`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 class LoaderInfo extends EventDispatcher
 {

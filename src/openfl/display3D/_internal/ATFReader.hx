@@ -7,11 +7,6 @@ import openfl.utils.ByteArray;
 
 typedef UploadCallback = UInt->Int->ATFGPUFormat->Int->Int->Int->Bytes->Void;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-
 /**
 	This class can read textures from Adobe Texture Format containers.
 	Currently only ATF block compressed textures without JPEG-XR+LZMA are supported. You can create such files via:

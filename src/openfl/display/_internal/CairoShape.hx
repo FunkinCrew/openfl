@@ -9,10 +9,6 @@ import lime.graphics.cairo.CairoPattern;
 import lime.math.Matrix3;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)

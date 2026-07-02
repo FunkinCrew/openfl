@@ -29,10 +29,6 @@ package openfl.media;
 	For more information related to security, see the Flash Player Developer
 	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class SoundLoaderContext
 {
 	/**

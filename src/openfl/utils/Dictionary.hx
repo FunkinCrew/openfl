@@ -199,10 +199,6 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements IMap<K, V>
 {
@@ -281,10 +277,6 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class FloatMap<K:Float, V> implements IMap<K, V>
 {
@@ -467,10 +459,6 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class UtilsObjectMap<K:Object, V> implements IMap<K, V>
 {

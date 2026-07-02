@@ -69,10 +69,6 @@ import openfl.utils._internal.Lib;
 	in the HTMLLoader control and ActionScript in SWF content embedded in that
 	HTML page.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Stage)
 @:access(lime.ui.Window)
 @:final class ExternalInterface

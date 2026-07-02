@@ -47,10 +47,6 @@ package openfl.events;
 	@see [Event listeners](https://books.openfl.org/openfl-developers-guide/handling-events/event-listeners.html)
 	@see [Handling events for display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/handling-events-for-display-objects.html)
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Stage)
 @:access(openfl.events.Event)
 @:access(openfl.events.UncaughtErrorEvents)
@@ -517,10 +513,6 @@ class EventDispatcher implements IEventDispatcher
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class DispatchIterator
 {
@@ -599,10 +591,6 @@ class EventDispatcher implements IEventDispatcher
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 private class Listener
 {

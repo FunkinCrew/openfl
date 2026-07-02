@@ -19,10 +19,6 @@ import openfl.Vector;
 	IndexBuffer3D cannot be instantiated directly. Create instances by using
 	`context3D.createIndexBuffer()`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
 @:final class IndexBuffer3D
@@ -95,8 +91,7 @@ import openfl.Vector;
 		if (data == null) return;
 		var gl = __context.gl;
 		__context.__bindGLElementArrayBuffer(__id);
-		if (__memoryUsage == data.byteLength)
-			gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, data);
+		if (__memoryUsage == data.byteLength) gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, data);
 		else
 			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, __usage);
 		__memoryUsage = data.byteLength;

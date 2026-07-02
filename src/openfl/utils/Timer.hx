@@ -29,10 +29,6 @@ import js.Browser;
 	@event timerComplete Dispatched whenever it has completed the number of
 						 requests set by `Timer.repeatCount`.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Stage)
 @:access(openfl.events.TimerEvent)
 class Timer extends EventDispatcher

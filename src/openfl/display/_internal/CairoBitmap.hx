@@ -7,10 +7,6 @@ import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)

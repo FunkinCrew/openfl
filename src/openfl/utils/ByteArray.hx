@@ -1098,10 +1098,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:autoBuild(lime._internal.macros.AssetsMacro.embedByteArray())
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput

@@ -21,10 +21,6 @@ import lime.graphics.RenderContext;
 	**Note:** You cannot create your own texture classes using TextureBase. To add
 	functionality to a texture class, extend either Texture or CubeTexture instead.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display._internal.SamplerState)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)

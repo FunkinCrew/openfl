@@ -7,10 +7,6 @@ package openfl.media;
 	created sounds (that is, sounds generated in response to a Sound object
 	dispatching a `sampleData` event).
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.media.SoundChannel)
 @:final class SoundMixer
 {

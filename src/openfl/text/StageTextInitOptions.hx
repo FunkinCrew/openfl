@@ -6,10 +6,6 @@ package openfl.text;
 
 	@see openfl.text.StageText
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class StageTextInitOptions
 {
 	/**

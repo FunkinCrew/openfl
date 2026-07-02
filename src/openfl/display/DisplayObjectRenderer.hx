@@ -19,10 +19,6 @@ import lime.graphics.RenderContext;
 import lime.graphics.RenderContextType;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display._internal.Context3DGraphics)
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.Bitmap)

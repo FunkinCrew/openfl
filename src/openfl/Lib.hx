@@ -19,10 +19,6 @@ import lime.system.System;
 import js.Browser;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
 class Lib

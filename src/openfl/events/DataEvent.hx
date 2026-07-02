@@ -1,6 +1,7 @@
 package openfl.events;
 
 // import openfl.utils.ObjectPool;
+
 /**
 	An object dispatches a DataEvent object when raw data has completed
 	loading. There are two types of data event:
@@ -9,10 +10,6 @@ package openfl.events;
 	server has responded.
 
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class DataEvent extends TextEvent
 {
 	/**

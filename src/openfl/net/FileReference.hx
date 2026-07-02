@@ -307,10 +307,6 @@ import js.Browser;
 	@see `openfl.net.FileReferenceList`
 	@see `openfl.filesystem.File`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 class FileReference extends EventDispatcher
 {

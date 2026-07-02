@@ -21,10 +21,6 @@ import openfl.geom.Rectangle;
 	Tile objects cannot be rendered on their own. In order to display a Tile object,
 	it should be contained within a Tilemap instance.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)

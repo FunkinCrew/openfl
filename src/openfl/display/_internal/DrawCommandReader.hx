@@ -12,10 +12,6 @@ import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:allow(openfl.display._internal)
 @:access(openfl.display._internal)
 @SuppressWarnings("checkstyle:FieldDocComment")

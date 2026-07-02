@@ -20,10 +20,6 @@ import openfl.events.InvokeEvent;
 	The Application class is a Lime Application instance that uses
 	OpenFL Window by default when a new window is created.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Window)

@@ -4,10 +4,6 @@ package openfl.display;
 	The PNGEncoderOptions class defines a compression algorithm for the
 	`openfl.display.BitmapData.encode()` method.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class PNGEncoderOptions
 {
 	/**

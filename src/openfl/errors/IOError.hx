@@ -6,10 +6,6 @@ package openfl.errors;
 	operation is attempted on a socket that has not connected or that has
 	become disconnected.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class IOError extends Error
 {
 	/**

@@ -57,10 +57,6 @@ import lime.ui.GamepadButton;
 	3. Remove all of the event listeners from the remaining undetected input devices.
 	4. Repeat steps 1-3 as required to identify the rest of the undetected input devices.
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:access(openfl.events.Event)
 @:access(openfl.ui.GameInputControl)
 @:access(openfl.ui.GameInputDevice)

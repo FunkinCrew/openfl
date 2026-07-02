@@ -53,10 +53,6 @@ import lime.math.RGBA;
 	@see `openfl.display.DisplayObject.filters`
 	@see `openfl.display.BitmapData.applyFilter`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class ColorMatrixFilter extends BitmapFilter
 {
 	@:noCompletion private static var __colorMatrixShader:ColorMatrixShader = new ColorMatrixShader();
@@ -234,10 +230,6 @@ import lime.math.RGBA;
 	}
 }
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 private class ColorMatrixShader extends BitmapFilterShader
 {

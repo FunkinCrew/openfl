@@ -14,10 +14,6 @@ import lime.ui.KeyCode;
 	@see [Capturing keyboard input](https://books.openfl.org/openfl-developers-guide/keyboard-input/capturing-keyboard-input.html)
 	@see `openfl.events.KeyboardEvent`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:final class Keyboard
 {
 	/**

@@ -25,10 +25,6 @@ import openfl.display.StageOrientation;
 	@see `openfl.display.Stage.deviceOrientation`
 	@see `openfl.display.Stage.autoOrients`
 **/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class StageOrientationEvent extends Event
 {
 	/**
