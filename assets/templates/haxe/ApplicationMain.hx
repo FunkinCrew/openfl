@@ -108,10 +108,6 @@ class ApplicationMain
 
 		app.createWindow(attributes);
 		::end::
-		#else
-		app.window.context.attributes.background = ::WIN_BACKGROUND::;
-		app.window.frameRate = ::WIN_FPS::;
-		#end
 
 		var preloader = getPreloader();
 		app.preloader.onProgress.add (function(loaded, total)
