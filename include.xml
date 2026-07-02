@@ -33,9 +33,6 @@
 
 	<template path="assets/templates" />
 
-	<dependency path="dist/openfl.min.js" if="html5 openfl-html5-extern" unless="debug" embed="true" />
-	<dependency path="dist/openfl.js" if="html5 openfl-html5-extern debug" embed="true" />
-
 	<define name="openfl-disable-handle-error" if="debug" />
 
 	<section if="native">
