@@ -1,4 +1,4 @@
-package openfl.display._internal;
+﻿package openfl.display._internal;
 
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
@@ -14,7 +14,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(openfl.display3D.Context3D)
 class Context3DBitmapData
 {
-	public static function renderDrawable(bitmapData:BitmapData, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(bitmapData:BitmapData, renderer:Context3DRenderer):Void
 	{
 		var context = renderer.__context3D;
 		var gl = context.gl;
@@ -44,7 +44,7 @@ class Context3DBitmapData
 		renderer.__clearShader();
 	}
 
-	public static function renderDrawableMask(bitmapData:BitmapData, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(bitmapData:BitmapData, renderer:Context3DRenderer):Void
 	{
 		var context = renderer.__context3D;
 		var gl = context.gl;

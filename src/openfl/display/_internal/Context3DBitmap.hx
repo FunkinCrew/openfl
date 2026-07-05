@@ -1,7 +1,7 @@
 package openfl.display._internal;
 
 import openfl.display.Bitmap;
-import openfl.display.OpenGLRenderer;
+import openfl.display.Context3DRenderer;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
@@ -21,7 +21,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DBitmap
 {
-	public static function render(bitmap:Bitmap, renderer:OpenGLRenderer):Void
+	public static function render(bitmap:Bitmap, renderer:Context3DRenderer):Void
 	{
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
 
@@ -58,7 +58,7 @@ class Context3DBitmap
 		}
 	}
 
-	public static function renderDrawable(bitmap:Bitmap, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(bitmap:Bitmap, renderer:Context3DRenderer):Void
 	{
 		renderer.__updateCacheBitmap(bitmap, false);
 
@@ -84,12 +84,12 @@ class Context3DBitmap
 		renderer.__renderEvent(bitmap);
 	}
 
-	public static function renderDrawableMask(bitmap:Bitmap, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(bitmap:Bitmap, renderer:Context3DRenderer):Void
 	{
 		Context3DBitmap.renderMask(bitmap, renderer);
 	}
 
-	public static function renderMask(bitmap:Bitmap, renderer:OpenGLRenderer):Void
+	public static function renderMask(bitmap:Bitmap, renderer:Context3DRenderer):Void
 	{
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
 		{

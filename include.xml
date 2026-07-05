@@ -24,7 +24,6 @@
 	</section>
 
 	<define name="openfl-funkin" />
-
 	<section unless="lime-funkin || setup || create || disable-version-check || display">
 
 		<log error="Lime has to be FunkinCrew's Fork to be compiling with OpenFL FunkinCrew's Fork, (got Lime ${lime})"/>

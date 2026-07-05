@@ -2,6 +2,7 @@ package openfl.display._internal;
 
 import openfl.display.Bitmap;
 import openfl.display.BlendMode;
+import openfl.display.Context3DRenderer;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Shader;
@@ -16,7 +17,7 @@ import openfl.utils.ByteArray;
 @:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
-@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.display.Context3DRenderer)
 @:access(openfl.display.Shader)
 @:access(openfl.display._internal.Context3DGraphics)
 @:access(openfl.filters.BitmapFilter)
@@ -25,7 +26,7 @@ class Context3DDisplayObjectContainer
 {
 	@:noCompletion private static var __colorMatrixDisplayObjectShader:ColorMatrixDisplayObjectShader;
 
-	public static function renderDrawable(displayObjectContainer:DisplayObjectContainer, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(displayObjectContainer:DisplayObjectContainer, renderer:Context3DRenderer):Void
 	{
 		displayObjectContainer.__cleanupRemovedChildren();
 
@@ -72,7 +73,7 @@ class Context3DDisplayObjectContainer
 		}
 	}
 
-	@:noCompletion private static function __renderSingleBitmapColorMatrixFilter(displayObjectContainer:DisplayObjectContainer, renderer:OpenGLRenderer):Bool
+	@:noCompletion private static function __renderSingleBitmapColorMatrixFilter(displayObjectContainer:DisplayObjectContainer, renderer:Context3DRenderer):Bool
 	{
 		#if openfl_disable_filters
 		return false;
@@ -144,7 +145,7 @@ class Context3DDisplayObjectContainer
 	}
 
 	@:noCompletion private static function __renderIdentityColorMatrixContainer(displayObjectContainer:DisplayObjectContainer, filter:ColorMatrixFilter,
-			renderer:OpenGLRenderer):Void
+			renderer:Context3DRenderer):Void
 	{
 		var filters = displayObjectContainer.__filters;
 		displayObjectContainer.__filters = null;
@@ -324,7 +325,7 @@ class Context3DDisplayObjectContainer
 		return false;
 	}
 
-	@:noCompletion private static function __renderColorMatrixLeaf(displayObject:DisplayObject, filter:ColorMatrixFilter, renderer:OpenGLRenderer):Void
+	@:noCompletion private static function __renderColorMatrixLeaf(displayObject:DisplayObject, filter:ColorMatrixFilter, renderer:Context3DRenderer):Void
 	{
 		if (__colorMatrixDisplayObjectShader == null) __colorMatrixDisplayObjectShader = new ColorMatrixDisplayObjectShader();
 		renderer.__initDisplayShader(__colorMatrixDisplayObjectShader);
@@ -420,7 +421,7 @@ class Context3DDisplayObjectContainer
 		return false;
 	}
 
-	public static function renderDrawableMask(displayObjectContainer:DisplayObjectContainer, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(displayObjectContainer:DisplayObjectContainer, renderer:Context3DRenderer):Void
 	{
 		displayObjectContainer.__cleanupRemovedChildren();
 

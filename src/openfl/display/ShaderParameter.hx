@@ -2,6 +2,8 @@ package openfl.display;
 
 import lime.utils.Float32Array;
 import openfl.display3D.Context3D;
+import lime.graphics.bgfx.BGFXUniformType;
+import openfl.display3D.Program3D.UniformData;
 
 /**
 	TODO: Document GLSL Shaders
@@ -157,6 +159,8 @@ import openfl.display3D.Context3D;
 	@:noCompletion private var __length:Int;
 	@:noCompletion private var __uniformMatrix:Float32Array;
 	@:noCompletion private var __useArray:Bool;
+	@:noCompletion private var __bgfxUniform:UniformData;
+	@:noCompletion private var __bgfxData:Float32Array;
 
 	public function new()
 	{
@@ -165,205 +169,185 @@ import openfl.display3D.Context3D;
 
 	@:noCompletion private function __disableGL(context:Context3D):Void
 	{
-		if (index < 0) return;
-
-		var gl = context.gl;
-
-		if (!__isUniform)
+		if (context.isOpenGL)
 		{
-			for (i in 0...__arrayLength)
+			if (index < 0) return;
+
+			var gl = context.gl;
+
+			if (!__isUniform)
 			{
-				gl.disableVertexAttribArray(index + i);
+				for (i in 0...__arrayLength)
+				{
+					gl.disableVertexAttribArray(index + i);
+				}
 			}
 		}
 	}
 
 	@:noCompletion private function __updateGL(context:Context3D, overrideValue:Array<T> = null):Void
 	{
-		if (index < 0) return;
-
-		var gl = context.gl;
-
-		var value = overrideValue != null ? overrideValue : this.value;
-
-		var boolValue:Array<Bool> = __isBool ? cast value : null;
-		var floatValue:Array<Float> = __isFloat ? cast value : null;
-		var intValue:Array<Int> = __isInt ? cast value : null;
-
-		if (__isUniform)
+		if (context.isBGFX)
 		{
+			if (__bgfxUniform == null) return;
+
+			#if lime
+			var value = overrideValue != null ? overrideValue : this.value;
+			var u = __bgfxUniform;
+
+			var floats = switch (u.info.type)
+			{
+				case MAT4: 16;
+				case MAT3: 12;
+				default: 4;
+			};
+			if (__bgfxData == null || __bgfxData.length != floats) __bgfxData = new Float32Array(floats);
+
+			var data = __bgfxData;
+			for (i in 0...data.length)
+				data[i] = 0.0;
+
 			if (value != null && value.length >= __length)
 			{
+				var boolValue:Array<Bool> = __isBool ? cast value : null;
+				var floatValue:Array<Float> = __isFloat ? cast value : null;
+				var intValue:Array<Int> = __isInt ? cast value : null;
+
 				switch (type)
 				{
 					case BOOL:
-						gl.uniform1i(index, boolValue[0] ? 1 : 0);
+						data[0] = boolValue[0] ? 1.0 : 0.0;
 					case BOOL2:
-						gl.uniform2i(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0);
+						data[0] = boolValue[0] ? 1.0 : 0.0;
+						data[1] = boolValue[1] ? 1.0 : 0.0;
 					case BOOL3:
-						gl.uniform3i(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0);
+						data[0] = boolValue[0] ? 1.0 : 0.0;
+						data[1] = boolValue[1] ? 1.0 : 0.0;
+						data[2] = boolValue[2] ? 1.0 : 0.0;
 					case BOOL4:
-						gl.uniform4i(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0, boolValue[3] ? 1 : 0);
-					case FLOAT:
-						gl.uniform1f(index, floatValue[0]);
-					case FLOAT2:
-						gl.uniform2f(index, floatValue[0], floatValue[1]);
-					case FLOAT3:
-						gl.uniform3f(index, floatValue[0], floatValue[1], floatValue[2]);
-					case FLOAT4:
-						gl.uniform4f(index, floatValue[0], floatValue[1], floatValue[2], floatValue[3]);
-
-					case MATRIX2X2:
-						for (i in 0...4)
-						{
-							__uniformMatrix[i] = floatValue[i];
-						}
-						gl.uniformMatrix2fv(index, false, __uniformMatrix);
-
-					// case MATRIX2X3:
-					// case MATRIX2X4:
-					// case MATRIX3X2:
-
-					case MATRIX3X3:
-						for (i in 0...9)
-						{
-							__uniformMatrix[i] = floatValue[i];
-						}
-						gl.uniformMatrix3fv(index, false, __uniformMatrix);
-
-					// case MATRIX3X4:
-					// case MATRIX4X2:
-					// case MATRIX4X3:
-
-					case MATRIX4X4:
-						for (i in 0...16)
-						{
-							__uniformMatrix[i] = floatValue[i];
-						}
-						gl.uniformMatrix4fv(index, false, __uniformMatrix);
-
+						data[0] = boolValue[0] ? 1.0 : 0.0;
+						data[1] = boolValue[1] ? 1.0 : 0.0;
+						data[2] = boolValue[2] ? 1.0 : 0.0;
+						data[3] = boolValue[3] ? 1.0 : 0.0;
 					case INT:
-						gl.uniform1i(index, intValue[0]);
+						data[0] = intValue[0];
 					case INT2:
-						gl.uniform2i(index, intValue[0], intValue[1]);
+						data[0] = intValue[0];
+						data[1] = intValue[1];
 					case INT3:
-						gl.uniform3i(index, intValue[0], intValue[1], intValue[2]);
+						data[0] = intValue[0];
+						data[1] = intValue[1];
+						data[2] = intValue[2];
 					case INT4:
-						gl.uniform4i(index, intValue[0], intValue[1], intValue[2], intValue[3]);
-
-					default:
-				}
-			}
-			else
-			{
-				switch (type)
-				{
-					case BOOL, INT:
-						gl.uniform1i(index, 0);
-					case BOOL2, INT2:
-						gl.uniform2i(index, 0, 0);
-					case BOOL3, INT3:
-						gl.uniform3i(index, 0, 0, 0);
-					case BOOL4, INT4:
-						gl.uniform4i(index, 0, 0, 0, 0);
+						data[0] = intValue[0];
+						data[1] = intValue[1];
+						data[2] = intValue[2];
+						data[3] = intValue[3];
 					case FLOAT:
-						gl.uniform1f(index, 0);
+						data[0] = floatValue[0];
 					case FLOAT2:
-						gl.uniform2f(index, 0, 0);
+						data[0] = floatValue[0];
+						data[1] = floatValue[1];
 					case FLOAT3:
-						gl.uniform3f(index, 0, 0, 0);
+						data[0] = floatValue[0];
+						data[1] = floatValue[1];
+						data[2] = floatValue[2];
 					case FLOAT4:
-						gl.uniform4f(index, 0, 0, 0, 0);
-
+						data[0] = floatValue[0];
+						data[1] = floatValue[1];
+						data[2] = floatValue[2];
+						data[3] = floatValue[3];
 					case MATRIX2X2:
 						for (i in 0...4)
-						{
-							__uniformMatrix[i] = 0;
-						}
-						gl.uniformMatrix2fv(index, false, __uniformMatrix);
-
-					// case MATRIX2X3:
-					// case MATRIX2X4:
-					// case MATRIX3X2:
-
+							data[i] = floatValue[i];
 					case MATRIX3X3:
-						for (i in 0...9)
-						{
-							__uniformMatrix[i] = 0;
-						}
-						gl.uniformMatrix3fv(index, false, __uniformMatrix);
-
-					// case MATRIX3X4:
-					// case MATRIX4X2:
-					// case MATRIX4X3:
-
+						for (row in 0...3)
+							for (col in 0...3)
+								data[row * 4 + col] = floatValue[row * 3 + col];
 					case MATRIX4X4:
 						for (i in 0...16)
-						{
-							__uniformMatrix[i] = 0;
-						}
-						gl.uniformMatrix4fv(index, false, __uniformMatrix);
-
+							data[i] = floatValue[i];
 					default:
 				}
 			}
-		}
-		else
-		{
-			if (!__useArray && (value == null || value.length == __length))
-			{
-				for (i in 0...__arrayLength)
-				{
-					gl.disableVertexAttribArray(index + i);
-				}
 
-				if (value != null)
+			context.bgfx.setUniform(u.uniform, data, u.info.num);
+			#end
+		}
+		else if (context.isOpenGL)
+		{
+			if (index < 0) return;
+
+			#if lime
+			var gl = context.gl;
+
+			var value = overrideValue != null ? overrideValue : this.value;
+
+			var boolValue:Array<Bool> = __isBool ? cast value : null;
+			var floatValue:Array<Float> = __isFloat ? cast value : null;
+			var intValue:Array<Int> = __isInt ? cast value : null;
+
+			if (__isUniform)
+			{
+				if (value != null && value.length >= __length)
 				{
 					switch (type)
 					{
 						case BOOL:
-							gl.vertexAttrib1f(index, boolValue[0] ? 1 : 0);
+							gl.uniform1i(index, boolValue[0] ? 1 : 0);
 						case BOOL2:
-							gl.vertexAttrib2f(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0);
+							gl.uniform2i(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0);
 						case BOOL3:
-							gl.vertexAttrib3f(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0);
+							gl.uniform3i(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0);
 						case BOOL4:
-							gl.vertexAttrib4f(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0, boolValue[3] ? 1 : 0);
+							gl.uniform4i(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0, boolValue[3] ? 1 : 0);
 						case FLOAT:
-							gl.vertexAttrib1f(index, floatValue[0]);
+							gl.uniform1f(index, floatValue[0]);
 						case FLOAT2:
-							gl.vertexAttrib2f(index, floatValue[0], floatValue[1]);
+							gl.uniform2f(index, floatValue[0], floatValue[1]);
 						case FLOAT3:
-							gl.vertexAttrib3f(index, floatValue[0], floatValue[1], floatValue[2]);
+							gl.uniform3f(index, floatValue[0], floatValue[1], floatValue[2]);
 						case FLOAT4:
-							gl.vertexAttrib4f(index, floatValue[0], floatValue[1], floatValue[2], floatValue[3]);
+							gl.uniform4f(index, floatValue[0], floatValue[1], floatValue[2], floatValue[3]);
 
 						case MATRIX2X2:
-							for (i in 0...2)
-							{
-								gl.vertexAttrib2f(index + i, floatValue[i * 2], floatValue[i * 2 + 1]);
-							}
-
-						case MATRIX3X3:
-							for (i in 0...3)
-							{
-								gl.vertexAttrib3f(index + i, floatValue[i * 3], floatValue[i * 3 + 1], floatValue[i * 3 + 2]);
-							}
-
-						case MATRIX4X4:
 							for (i in 0...4)
 							{
-								gl.vertexAttrib4f(index + i, floatValue[i * 4], floatValue[i * 4 + 1], floatValue[i * 4 + 2], floatValue[i * 4 + 3]);
+								__uniformMatrix[i] = floatValue[i];
 							}
+							gl.uniformMatrix2fv(index, false, __uniformMatrix);
+
+						// case MATRIX2X3:
+						// case MATRIX2X4:
+						// case MATRIX3X2:
+
+						case MATRIX3X3:
+							for (i in 0...9)
+							{
+								__uniformMatrix[i] = floatValue[i];
+							}
+							gl.uniformMatrix3fv(index, false, __uniformMatrix);
+
+						// case MATRIX3X4:
+						// case MATRIX4X2:
+						// case MATRIX4X3:
+
+						case MATRIX4X4:
+							for (i in 0...16)
+							{
+								__uniformMatrix[i] = floatValue[i];
+							}
+							gl.uniformMatrix4fv(index, false, __uniformMatrix);
 
 						case INT:
-							gl.vertexAttrib1f(index, intValue[0]);
+							gl.uniform1i(index, intValue[0]);
 						case INT2:
-							gl.vertexAttrib2f(index, intValue[0], intValue[1]);
+							gl.uniform2i(index, intValue[0], intValue[1]);
 						case INT3:
-							gl.vertexAttrib3f(index, intValue[0], intValue[1], intValue[2]);
+							gl.uniform3i(index, intValue[0], intValue[1], intValue[2]);
 						case INT4:
-							gl.vertexAttrib4f(index, intValue[0], intValue[1], intValue[2], intValue[3]);
+							gl.uniform4i(index, intValue[0], intValue[1], intValue[2], intValue[3]);
+
 						default:
 					}
 				}
@@ -371,32 +355,51 @@ import openfl.display3D.Context3D;
 				{
 					switch (type)
 					{
-						case BOOL, FLOAT, INT:
-							gl.vertexAttrib1f(index, 0);
-						case BOOL2, FLOAT2, INT2:
-							gl.vertexAttrib2f(index, 0, 0);
-						case BOOL3, FLOAT3, INT3:
-							gl.vertexAttrib3f(index, 0, 0, 0);
-						case BOOL4, FLOAT4, INT4:
-							gl.vertexAttrib4f(index, 0, 0, 0, 0);
+						case BOOL, INT:
+							gl.uniform1i(index, 0);
+						case BOOL2, INT2:
+							gl.uniform2i(index, 0, 0);
+						case BOOL3, INT3:
+							gl.uniform3i(index, 0, 0, 0);
+						case BOOL4, INT4:
+							gl.uniform4i(index, 0, 0, 0, 0);
+						case FLOAT:
+							gl.uniform1f(index, 0);
+						case FLOAT2:
+							gl.uniform2f(index, 0, 0);
+						case FLOAT3:
+							gl.uniform3f(index, 0, 0, 0);
+						case FLOAT4:
+							gl.uniform4f(index, 0, 0, 0, 0);
 
 						case MATRIX2X2:
-							for (i in 0...2)
-							{
-								gl.vertexAttrib2f(index + i, 0, 0);
-							}
-
-						case MATRIX3X3:
-							for (i in 0...3)
-							{
-								gl.vertexAttrib3f(index + i, 0, 0, 0);
-							}
-
-						case MATRIX4X4:
 							for (i in 0...4)
 							{
-								gl.vertexAttrib4f(index + i, 0, 0, 0, 0);
+								__uniformMatrix[i] = 0;
 							}
+							gl.uniformMatrix2fv(index, false, __uniformMatrix);
+
+						// case MATRIX2X3:
+						// case MATRIX2X4:
+						// case MATRIX3X2:
+
+						case MATRIX3X3:
+							for (i in 0...9)
+							{
+								__uniformMatrix[i] = 0;
+							}
+							gl.uniformMatrix3fv(index, false, __uniformMatrix);
+
+						// case MATRIX3X4:
+						// case MATRIX4X2:
+						// case MATRIX4X3:
+
+						case MATRIX4X4:
+							for (i in 0...16)
+							{
+								__uniformMatrix[i] = 0;
+							}
+							gl.uniformMatrix4fv(index, false, __uniformMatrix);
 
 						default:
 					}
@@ -404,151 +407,221 @@ import openfl.display3D.Context3D;
 			}
 			else
 			{
-				for (i in 0...__arrayLength)
+				if (!__useArray && (value == null || value.length == __length))
 				{
-					gl.enableVertexAttribArray(index + i);
+					for (i in 0...__arrayLength)
+					{
+						gl.disableVertexAttribArray(index + i);
+					}
+
+					if (value != null)
+					{
+						switch (type)
+						{
+							case BOOL:
+								gl.vertexAttrib1f(index, boolValue[0] ? 1 : 0);
+							case BOOL2:
+								gl.vertexAttrib2f(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0);
+							case BOOL3:
+								gl.vertexAttrib3f(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0);
+							case BOOL4:
+								gl.vertexAttrib4f(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0, boolValue[3] ? 1 : 0);
+							case FLOAT:
+								gl.vertexAttrib1f(index, floatValue[0]);
+							case FLOAT2:
+								gl.vertexAttrib2f(index, floatValue[0], floatValue[1]);
+							case FLOAT3:
+								gl.vertexAttrib3f(index, floatValue[0], floatValue[1], floatValue[2]);
+							case FLOAT4:
+								gl.vertexAttrib4f(index, floatValue[0], floatValue[1], floatValue[2], floatValue[3]);
+
+							case MATRIX2X2:
+								for (i in 0...2)
+								{
+									gl.vertexAttrib2f(index + i, floatValue[i * 2], floatValue[i * 2 + 1]);
+								}
+
+							case MATRIX3X3:
+								for (i in 0...3)
+								{
+									gl.vertexAttrib3f(index + i, floatValue[i * 3], floatValue[i * 3 + 1], floatValue[i * 3 + 2]);
+								}
+
+							case MATRIX4X4:
+								for (i in 0...4)
+								{
+									gl.vertexAttrib4f(index + i, floatValue[i * 4], floatValue[i * 4 + 1], floatValue[i * 4 + 2], floatValue[i * 4 + 3]);
+								}
+
+							case INT:
+								gl.vertexAttrib1f(index, intValue[0]);
+							case INT2:
+								gl.vertexAttrib2f(index, intValue[0], intValue[1]);
+							case INT3:
+								gl.vertexAttrib3f(index, intValue[0], intValue[1], intValue[2]);
+							case INT4:
+								gl.vertexAttrib4f(index, intValue[0], intValue[1], intValue[2], intValue[3]);
+							default:
+						}
+					}
+					else
+					{
+						switch (type)
+						{
+							case BOOL, FLOAT, INT:
+								gl.vertexAttrib1f(index, 0);
+							case BOOL2, FLOAT2, INT2:
+								gl.vertexAttrib2f(index, 0, 0);
+							case BOOL3, FLOAT3, INT3:
+								gl.vertexAttrib3f(index, 0, 0, 0);
+							case BOOL4, FLOAT4, INT4:
+								gl.vertexAttrib4f(index, 0, 0, 0, 0);
+
+							case MATRIX2X2:
+								for (i in 0...2)
+								{
+									gl.vertexAttrib2f(index + i, 0, 0);
+								}
+
+							case MATRIX3X3:
+								for (i in 0...3)
+								{
+									gl.vertexAttrib3f(index + i, 0, 0, 0);
+								}
+
+							case MATRIX4X4:
+								for (i in 0...4)
+								{
+									gl.vertexAttrib4f(index + i, 0, 0, 0, 0);
+								}
+
+							default:
+						}
+					}
+				}
+				else
+				{
+					for (i in 0...__arrayLength)
+					{
+						gl.enableVertexAttribArray(index + i);
+					}
 				}
 			}
+			#end
 		}
 	}
 
 	@:noCompletion private function __updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
 	{
-		if (index < 0) return;
-
-		var gl = context.gl;
-
-		if (__isUniform)
+		if (context.isBGFX)
 		{
-			if (length >= __length)
+			if (__bgfxUniform == null || length < __length) return;
+
+			#if lime
+			var u = __bgfxUniform;
+			var floats = switch (u.info.type)
 			{
-				switch (type)
-				{
-					case BOOL, INT:
-						gl.uniform1i(index, Std.int(buffer[position]));
-					case BOOL2, INT2:
-						gl.uniform2i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]));
-					case BOOL3, INT3:
-						gl.uniform3i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]), Std.int(buffer[position + 2]));
-					case BOOL4, INT4:
-						gl.uniform4i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]), Std.int(buffer[position + 2]),
-							Std.int(buffer[position + 3]));
-					case FLOAT:
-						gl.uniform1f(index, buffer[position]);
-					case FLOAT2:
-						gl.uniform2f(index, buffer[position], buffer[position + 1]);
-					case FLOAT3:
-						gl.uniform3f(index, buffer[position], buffer[position + 1], buffer[position + 2]);
-					case FLOAT4:
-						gl.uniform4f(index, buffer[position], buffer[position + 1], buffer[position + 2], buffer[position + 3]);
-
-					case MATRIX2X2:
-						for (i in 0...4)
-						{
-							__uniformMatrix[i] = buffer[position + i];
-						}
-						gl.uniformMatrix2fv(index, false, __uniformMatrix);
-
-					// case MATRIX2X3:
-					// case MATRIX2X4:
-					// case MATRIX3X2:
-
-					case MATRIX3X3:
-						for (i in 0...9)
-						{
-							__uniformMatrix[i] = buffer[position + i];
-						}
-						gl.uniformMatrix3fv(index, false, __uniformMatrix);
-
-					// case MATRIX3X4:
-					// case MATRIX4X2:
-					// case MATRIX4X3:
-
-					case MATRIX4X4:
-						for (i in 0...16)
-						{
-							__uniformMatrix[i] = buffer[position + i];
-						}
-						gl.uniformMatrix4fv(index, false, __uniformMatrix);
-
-					default:
-				}
+				case MAT4: 16;
+				case MAT3: 12;
+				default: 4;
 			}
-		}
-		else
-		{
-			if (!__internal && (length == 0 || length == __length))
+			if (__bgfxData == null || __bgfxData.length != floats) __bgfxData = new Float32Array(floats);
+
+			var data = __bgfxData;
+			for (i in 0...data.length)
+				data[i] = 0.0;
+
+			switch (type)
 			{
-				for (i in 0...__arrayLength)
-				{
-					gl.disableVertexAttribArray(index + i);
-				}
+				case BOOL, INT, FLOAT:
+					data[0] = buffer[position];
+				case BOOL2, INT2, FLOAT2:
+					data[0] = buffer[position];
+					data[1] = buffer[position + 1];
+				case BOOL3, INT3, FLOAT3:
+					data[0] = buffer[position];
+					data[1] = buffer[position + 1];
+					data[2] = buffer[position + 2];
+				case BOOL4, INT4, FLOAT4:
+					data[0] = buffer[position];
+					data[1] = buffer[position + 1];
+					data[2] = buffer[position + 2];
+					data[3] = buffer[position + 3];
+				case MATRIX2X2:
+					for (i in 0...4)
+						data[i] = buffer[position + i];
+				case MATRIX3X3:
+					for (row in 0...3)
+						for (col in 0...3)
+							data[row * 4 + col] = buffer[position + row * 3 + col];
+				case MATRIX4X4:
+					for (i in 0...16)
+						data[i] = buffer[position + i];
+				default:
+			}
 
-				if (length > 0)
+			context.bgfx.setUniform(u.uniform, data, u.info.num);
+			#end
+		}
+		else if (context.isOpenGL)
+		{
+			if (index < 0) return;
+
+			#if lime
+			var gl = context.gl;
+
+			if (__isUniform)
+			{
+				if (length >= __length)
 				{
 					switch (type)
 					{
-						case BOOL, FLOAT, INT:
-							gl.vertexAttrib1f(index, buffer[position]);
-						case BOOL2, FLOAT2, INT2:
-							gl.vertexAttrib2f(index, buffer[position], buffer[position + 1]);
-						case BOOL3, FLOAT3, INT3:
-							gl.vertexAttrib3f(index, buffer[position], buffer[position + 1], buffer[position + 2]);
-						case BOOL4, FLOAT4, INT4:
-							gl.vertexAttrib4f(index, buffer[position], buffer[position + 1], buffer[position + 2], buffer[position + 3]);
+						case BOOL, INT:
+							gl.uniform1i(index, Std.int(buffer[position]));
+						case BOOL2, INT2:
+							gl.uniform2i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]));
+						case BOOL3, INT3:
+							gl.uniform3i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]), Std.int(buffer[position + 2]));
+						case BOOL4, INT4:
+							gl.uniform4i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]), Std.int(buffer[position + 2]),
+								Std.int(buffer[position + 3]));
+						case FLOAT:
+							gl.uniform1f(index, buffer[position]);
+						case FLOAT2:
+							gl.uniform2f(index, buffer[position], buffer[position + 1]);
+						case FLOAT3:
+							gl.uniform3f(index, buffer[position], buffer[position + 1], buffer[position + 2]);
+						case FLOAT4:
+							gl.uniform4f(index, buffer[position], buffer[position + 1], buffer[position + 2], buffer[position + 3]);
 
 						case MATRIX2X2:
-							for (i in 0...2)
-							{
-								gl.vertexAttrib2f(index + i, buffer[position + i * 2], buffer[position + i * 2 + 1]);
-							}
-
-						case MATRIX3X3:
-							for (i in 0...3)
-							{
-								gl.vertexAttrib3f(index + i, buffer[position + i * 3], buffer[position + i * 3 + 1], buffer[position + i * 3 + 2]);
-							}
-
-						case MATRIX4X4:
 							for (i in 0...4)
 							{
-								gl.vertexAttrib4f(index + i, buffer[position + i * 4], buffer[position + i * 4 + 1], buffer[position + i * 4 + 2],
-									buffer[position + i * 4 + 3]);
+								__uniformMatrix[i] = buffer[position + i];
 							}
+							gl.uniformMatrix2fv(index, false, __uniformMatrix);
 
-						default:
-					}
-				}
-				else
-				{
-					switch (type)
-					{
-						case BOOL, FLOAT, INT:
-							gl.vertexAttrib1f(index, 0);
-						case BOOL2, FLOAT2, INT2:
-							gl.vertexAttrib2f(index, 0, 0);
-						case BOOL3, FLOAT3, INT3:
-							gl.vertexAttrib3f(index, 0, 0, 0);
-						case BOOL4, FLOAT4, INT4:
-							gl.vertexAttrib4f(index, 0, 0, 0, 0);
-
-						case MATRIX2X2:
-							for (i in 0...2)
-							{
-								gl.vertexAttrib2f(index + i, 0, 0);
-							}
+						// case MATRIX2X3:
+						// case MATRIX2X4:
+						// case MATRIX3X2:
 
 						case MATRIX3X3:
-							for (i in 0...3)
+							for (i in 0...9)
 							{
-								gl.vertexAttrib3f(index + i, 0, 0, 0);
+								__uniformMatrix[i] = buffer[position + i];
 							}
+							gl.uniformMatrix3fv(index, false, __uniformMatrix);
+
+						// case MATRIX3X4:
+						// case MATRIX4X2:
+						// case MATRIX4X3:
 
 						case MATRIX4X4:
-							for (i in 0...4)
+							for (i in 0...16)
 							{
-								gl.vertexAttrib4f(index + i, 0, 0, 0, 0);
+								__uniformMatrix[i] = buffer[position + i];
 							}
+							gl.uniformMatrix4fv(index, false, __uniformMatrix);
 
 						default:
 					}
@@ -556,24 +629,105 @@ import openfl.display3D.Context3D;
 			}
 			else
 			{
-				var type = gl.FLOAT;
-				if (__isBool) type = gl.INT; // gl.BOOL;
-				else if (__isInt) type = gl.INT;
-
-				for (i in 0...__arrayLength)
-				{
-					gl.enableVertexAttribArray(index + i);
-				}
-
-				if (length > 0)
+				if (!__internal && (length == 0 || length == __length))
 				{
 					for (i in 0...__arrayLength)
 					{
-						gl.vertexAttribPointer(index + i, __length, type, false, __length * Float32Array.BYTES_PER_ELEMENT,
-							(position + (bufferOffset * __length) + (i * __arrayLength)) * Float32Array.BYTES_PER_ELEMENT);
+						gl.disableVertexAttribArray(index + i);
+					}
+
+					if (length > 0)
+					{
+						switch (type)
+						{
+							case BOOL, FLOAT, INT:
+								gl.vertexAttrib1f(index, buffer[position]);
+							case BOOL2, FLOAT2, INT2:
+								gl.vertexAttrib2f(index, buffer[position], buffer[position + 1]);
+							case BOOL3, FLOAT3, INT3:
+								gl.vertexAttrib3f(index, buffer[position], buffer[position + 1], buffer[position + 2]);
+							case BOOL4, FLOAT4, INT4:
+								gl.vertexAttrib4f(index, buffer[position], buffer[position + 1], buffer[position + 2], buffer[position + 3]);
+
+							case MATRIX2X2:
+								for (i in 0...2)
+								{
+									gl.vertexAttrib2f(index + i, buffer[position + i * 2], buffer[position + i * 2 + 1]);
+								}
+
+							case MATRIX3X3:
+								for (i in 0...3)
+								{
+									gl.vertexAttrib3f(index + i, buffer[position + i * 3], buffer[position + i * 3 + 1], buffer[position + i * 3 + 2]);
+								}
+
+							case MATRIX4X4:
+								for (i in 0...4)
+								{
+									gl.vertexAttrib4f(index + i, buffer[position + i * 4], buffer[position + i * 4 + 1], buffer[position + i * 4 + 2],
+										buffer[position + i * 4 + 3]);
+								}
+
+							default:
+						}
+					}
+					else
+					{
+						switch (type)
+						{
+							case BOOL, FLOAT, INT:
+								gl.vertexAttrib1f(index, 0);
+							case BOOL2, FLOAT2, INT2:
+								gl.vertexAttrib2f(index, 0, 0);
+							case BOOL3, FLOAT3, INT3:
+								gl.vertexAttrib3f(index, 0, 0, 0);
+							case BOOL4, FLOAT4, INT4:
+								gl.vertexAttrib4f(index, 0, 0, 0, 0);
+
+							case MATRIX2X2:
+								for (i in 0...2)
+								{
+									gl.vertexAttrib2f(index + i, 0, 0);
+								}
+
+							case MATRIX3X3:
+								for (i in 0...3)
+								{
+									gl.vertexAttrib3f(index + i, 0, 0, 0);
+								}
+
+							case MATRIX4X4:
+								for (i in 0...4)
+								{
+									gl.vertexAttrib4f(index + i, 0, 0, 0, 0);
+								}
+
+							default:
+						}
+					}
+				}
+				else
+				{
+					var type = gl.FLOAT;
+					if (__isBool) type = gl.INT; // gl.BOOL;
+					else if (__isInt) type = gl.INT;
+
+					for (i in 0...__arrayLength)
+					{
+						gl.enableVertexAttribArray(index + i);
+					}
+
+					if (length > 0)
+					{
+						for (i in 0...__arrayLength)
+						{
+							gl.vertexAttribPointer(index + i, __length, type, false, __length * Float32Array.BYTES_PER_ELEMENT,
+								(position + (bufferOffset * __length) + (i * __arrayLength)) * Float32Array.BYTES_PER_ELEMENT);
+						}
 					}
 				}
 			}
+			#end
 		}
 	}
 
