@@ -168,6 +168,12 @@ class BitmapData implements IBitmapDrawable
 	@:beta public var readable(default, null):Bool;
 
 	/**
+	 * Defines wether the GPU texture of this Bitmap will be a render target.
+	 * Enabling this will make the texture get owned by a frame buffer.
+	 */
+	@:beta public var isRenderTarget:Bool;
+
+	/**
 		The rectangle that defines the size and location of the bitmap image. The
 		top and left of the rectangle are 0; the width and height are equal to the
 		width and height in pixels of the BitmapData object.
@@ -227,7 +233,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
 	@:noCompletion private var __asset:Bool;
-	@:noCompletion private var __renderer:OpenGLRenderer;
+	@:noCompletion private var __renderer:Context3DRenderer;
 
 	/**
 		Creates a BitmapData object with a specified width and height. If you specify a value for
@@ -316,6 +322,7 @@ class BitmapData implements IBitmapDrawable
 
 			__isValid = true;
 			readable = true;
+			isRenderTarget = false;
 		}
 
 		__renderTransform = new Matrix();
@@ -963,7 +970,7 @@ class BitmapData implements IBitmapDrawable
 
 			if (__renderer == null)
 			{
-				__renderer = new OpenGLRenderer(Lib.current.stage.context3D, this);
+				__renderer = new Context3DRenderer(Lib.current.stage.context3D, this);
 			}
 			else
 			{
@@ -2268,7 +2275,7 @@ class BitmapData implements IBitmapDrawable
 		if (__texture == null || __textureContext != context.__context)
 		{
 			__textureContext = context.__context;
-			__texture = context.createRectangleTexture(width, height, BGRA, false);
+			__texture = context.createRectangleTexture(width, height, BGRA, isRenderTarget);
 
 			// context.__bindGLTexture2D (__texture);
 			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -2283,7 +2290,7 @@ class BitmapData implements IBitmapDrawable
 		ImageCanvasUtil.sync(image, false);
 		#end
 
-		if (image != null && image.version > __textureVersion)
+		if (image != null && image.version > __textureVersion && __texture.__framebuffer == null)
 		{
 			if (__surface != null)
 			{
@@ -3187,7 +3194,7 @@ class BitmapData implements IBitmapDrawable
 		image.version++;
 	}
 
-	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
+	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:Context3DRenderer):Void
 	{
 		var context = renderer.__context3D;
 
@@ -3220,12 +3227,9 @@ class BitmapData implements IBitmapDrawable
 			color = 0;
 		}
 
-		if (allowFramebuffer
-			&& __texture != null
-			&& __texture.__glFramebuffer != null
-			&& Lib.current.stage.__renderer.__type == OPENGL)
+		if (allowFramebuffer && __texture != null && __texture.__framebuffer != null && Lib.current.stage.__renderer.__isHardware())
 		{
-			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
+			var renderer:Context3DRenderer = cast Lib.current.stage.__renderer;
 			var context = renderer.__context3D;
 			var color:ARGB = (color : ARGB);
 			var useScissor = !this.rect.equals(rect);

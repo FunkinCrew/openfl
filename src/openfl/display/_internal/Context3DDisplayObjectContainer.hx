@@ -1,4 +1,4 @@
-package openfl.display._internal;
+﻿package openfl.display._internal;
 
 #if !openfl_debug
 @:fileXml(' tags="haxe,release" ')
@@ -8,7 +8,7 @@ package openfl.display._internal;
 @:access(openfl.display.DisplayObjectContainer)
 class Context3DDisplayObjectContainer
 {
-	public static function renderDrawable(displayObjectContainer:DisplayObjectContainer, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(displayObjectContainer:DisplayObjectContainer, renderer:Context3DRenderer):Void
 	{
 		displayObjectContainer.__cleanupRemovedChildren();
 
@@ -49,7 +49,7 @@ class Context3DDisplayObjectContainer
 		}
 	}
 
-	public static function renderDrawableMask(displayObjectContainer:DisplayObjectContainer, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(displayObjectContainer:DisplayObjectContainer, renderer:Context3DRenderer):Void
 	{
 		displayObjectContainer.__cleanupRemovedChildren();
 

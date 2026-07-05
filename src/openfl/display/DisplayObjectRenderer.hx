@@ -65,6 +65,20 @@ class DisplayObjectRenderer extends EventDispatcher
 		__blendMode = NORMAL;
 	}
 
+	@:noCompletion private static inline function __isHardwareType(type:#if lime RenderContextType #else Dynamic #end):Bool
+	{
+		#if lime
+		return type == OPENGL || type == BGFX;
+		#else
+		return false;
+		#end
+	}
+
+	@:noCompletion private inline function __isHardware():Bool
+	{
+		return __isHardwareType(__type);
+	}
+
 	@:noCompletion private function __clear():Void {}
 
 	@:noCompletion private function __getAlpha(value:Float):Float
@@ -113,14 +127,14 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			switch (renderer.__type)
 			{
-				case OPENGL:
+				case OPENGL, BGFX:
 					if (!renderer.__cleared) renderer.__clear();
 
-					var renderer:OpenGLRenderer = cast renderer;
+					var renderer:Context3DRenderer = cast renderer;
 					renderer.setShader(displayObject.__worldShader);
-					renderer.__context3D.__flushGL();
+					renderer.__context3D.__flush();
 
-					displayObject.__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
+					displayObject.__customRenderEvent.type = renderer.__type == OPENGL ? RenderEvent.RENDER_OPENGL : RenderEvent.RENDER_BGFX;
 
 				case CAIRO:
 					displayObject.__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
@@ -149,9 +163,9 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			renderer.__popMaskObject(displayObject);
 
-			if (renderer.__type == OPENGL)
+			if (renderer.__isHardware())
 			{
-				var renderer:OpenGLRenderer = cast renderer;
+				var renderer:Context3DRenderer = cast renderer;
 				renderer.setViewport();
 			}
 		}
@@ -218,19 +232,19 @@ class DisplayObjectRenderer extends EventDispatcher
 				var bitmap:Bitmap = cast displayObject;
 				// TODO: Handle filters without an intermediate draw
 				if (bitmap.__bitmapData == null
-					|| (bitmap.__filters == null #if lime && renderer.__type == OPENGL #end && bitmap.__cacheBitmap == null)) return false;
+					|| (bitmap.__filters == null #if lime && (renderer.__isHardware()) #end && bitmap.__cacheBitmap == null)) return false;
 				force = (bitmap.__bitmapData.image != null && bitmap.__bitmapData.image.version != bitmap.__imageVersion);
 
 			case TEXT_FIELD:
 				var textField:TextField = cast displayObject;
-				if (textField.__filters == null #if lime && renderer.__type == OPENGL #end && textField.__cacheBitmap == null
+				if (textField.__filters == null #if lime && (renderer.__isHardware()) #end && textField.__cacheBitmap == null
 					&& !textField.__domRender) return false;
 				if (force) textField.__renderDirty = true;
 				force = force || textField.__dirty;
 
 			case TILEMAP:
 				var tilemap:Tilemap = cast displayObject;
-				if (tilemap.__filters == null #if lime && renderer.__type == OPENGL #end && tilemap.__cacheBitmap == null) return false;
+				if (tilemap.__filters == null #if lime && (renderer.__isHardware()) #end && tilemap.__cacheBitmap == null) return false;
 
 			default:
 		}
@@ -247,9 +261,9 @@ class DisplayObjectRenderer extends EventDispatcher
 		var updated = false;
 
 		if (displayObject.cacheAsBitmap
-			|| (renderer.__type != OPENGL
+			|| (!renderer.__isHardware()
 				&& !colorTransform.__isDefault(true) #if (openfl_legacy_scale9grid && openfl_force_gl_cacheasbitmap_for_scale9grid)
-					|| (renderer.__type == OPENGL && displayObject.scale9Grid != null) #end))
+					|| (renderer.__isHardware() && displayObject.scale9Grid != null) #end))
 		{
 			var rect:Rectangle = null;
 
@@ -266,7 +280,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			if (softwareDirty || hardwareDirty)
 			{
 				#if !openfl_force_gl_cacheasbitmap
-				if (renderType == OPENGL)
+				if (renderer.__isHardware())
 				{
 					if (#if !openfl_disable_gl_cacheasbitmap __shouldCacheHardware(displayObject, null) == false #else true #end)
 					{
@@ -280,7 +294,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				#end
 
 				if (softwareDirty && (renderType == CANVAS || renderType == CAIRO)) needRender = true;
-				if (hardwareDirty && renderType == OPENGL) needRender = true;
+				if (hardwareDirty && (renderer.__isHardware())) needRender = true;
 			}
 
 			var updateTransform = (needRender || !displayObject.__cacheBitmap.__worldTransform.equals(displayObject.__worldTransform));
@@ -331,7 +345,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			}
 
 			if (!needRender
-				&& renderer.__type != OPENGL
+				&& !renderer.__isHardware()
 				&& displayObject.__cacheBitmapData != null
 				&& displayObject.__cacheBitmapData.image != null
 				&& displayObject.__cacheBitmapData.image.version < displayObject.__cacheBitmapData.__textureVersion)
@@ -415,12 +429,13 @@ class DisplayObjectRenderer extends EventDispatcher
 						&& (bitmapWidth != filterWidth || bitmapHeight != filterHeight));
 					var fillColor = displayObject.opaqueBackground != null ? (0xFF << 24) | displayObject.opaqueBackground : 0;
 					var bitmapColor = needsFill ? 0 : fillColor;
-					var allowFramebuffer = (renderer.__type == OPENGL);
+					var allowFramebuffer = (renderer.__isHardware());
 
 					if (displayObject.__cacheBitmapData == null
 						|| bitmapWidth > displayObject.__cacheBitmapData.width
 						|| bitmapHeight > displayObject.__cacheBitmapData.height)
 					{
+						if (displayObject.__cacheBitmapData != null) displayObject.__cacheBitmapData.dispose();
 						displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
 
 						if (displayObject.__cacheBitmap == null) displayObject.__cacheBitmap = new Bitmap();
@@ -432,7 +447,9 @@ class DisplayObjectRenderer extends EventDispatcher
 						displayObject.__cacheBitmapData.__fillRect(displayObject.__cacheBitmapData.rect, bitmapColor, allowFramebuffer);
 					}
 
-					if (renderer.__type == OPENGL
+					displayObject.__cacheBitmapData.isRenderTarget = true;
+
+					if ((renderer.__isHardware())
 						&& displayObject.__cacheBitmapData.__texture != null
 						&& __hasMaskedDescendant(displayObject)
 						&& __isOnMouseOverPath(displayObject))
@@ -531,15 +548,17 @@ class DisplayObjectRenderer extends EventDispatcher
 				#if lime
 				if (displayObject.__cacheBitmapRenderer == null || renderType != displayObject.__cacheBitmapRenderer.__type)
 				{
-					if (renderType == OPENGL)
+					if (__isHardwareType(renderType))
 					{
-						displayObject.__cacheBitmapRenderer = new OpenGLRenderer(cast(renderer, OpenGLRenderer).__context3D, displayObject.__cacheBitmapData);
+						displayObject.__cacheBitmapRenderer = new Context3DRenderer(cast(renderer, Context3DRenderer).__context3D,
+							displayObject.__cacheBitmapData);
 					}
 					else
 					{
 						if (displayObject.__cacheBitmapData.image == null)
 						{
 							var color = displayObject.opaqueBackground != null ? (0xFF << 24) | displayObject.opaqueBackground : 0;
+							if (displayObject.__cacheBitmapData != null) displayObject.__cacheBitmapData.dispose();
 							displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, color);
 							displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
 						}
@@ -581,10 +600,10 @@ class DisplayObjectRenderer extends EventDispatcher
 
 				displayObject.__isCacheBitmapRender = true;
 
-				if (displayObject.__cacheBitmapRenderer.__type == OPENGL)
+				if (displayObject.__cacheBitmapRenderer.__isHardware())
 				{
-					var parentRenderer:OpenGLRenderer = cast renderer;
-					var childRenderer:OpenGLRenderer = cast displayObject.__cacheBitmapRenderer;
+					var parentRenderer:Context3DRenderer = cast renderer;
+					var childRenderer:Context3DRenderer = cast displayObject.__cacheBitmapRenderer;
 
 					var context = childRenderer.__context3D;
 
@@ -633,6 +652,7 @@ class DisplayObjectRenderer extends EventDispatcher
 							|| bitmapWidth > displayObject.__cacheBitmapData2.width
 							|| bitmapHeight > displayObject.__cacheBitmapData2.height)
 						{
+							if (displayObject.__cacheBitmapData2 != null) displayObject.__cacheBitmapData2.dispose();
 							displayObject.__cacheBitmapData2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 						}
 						else
@@ -645,6 +665,7 @@ class DisplayObjectRenderer extends EventDispatcher
 						}
 						displayObject.__cacheBitmapData2.__setUVRect(context, 0, 0, filterWidth, filterHeight);
 						bitmap2 = displayObject.__cacheBitmapData2;
+						bitmap2.isRenderTarget = true;
 						// } else {
 						// 	bitmap2 = bitmapData;
 						// }
@@ -655,6 +676,7 @@ class DisplayObjectRenderer extends EventDispatcher
 								|| bitmapWidth > displayObject.__cacheBitmapData3.width
 								|| bitmapHeight > displayObject.__cacheBitmapData3.height)
 							{
+								if (displayObject.__cacheBitmapData3 != null) displayObject.__cacheBitmapData3.dispose();
 								displayObject.__cacheBitmapData3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 							}
 							else
@@ -667,6 +689,7 @@ class DisplayObjectRenderer extends EventDispatcher
 							}
 							displayObject.__cacheBitmapData3.__setUVRect(context, 0, 0, filterWidth, filterHeight);
 							bitmap3 = displayObject.__cacheBitmapData3;
+							bitmap3.isRenderTarget = true;
 						}
 
 						childRenderer.__setBlendMode(NORMAL);

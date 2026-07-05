@@ -56,7 +56,7 @@ import openfl.net.NetStream;
 	{
 		super(context);
 
-		__textureTarget = __context.gl.TEXTURE_2D;
+		if (context.isOpenGL) __textureTarget = __context.gl.TEXTURE_2D;
 	}
 
 	#if false
@@ -141,7 +141,7 @@ import openfl.net.NetStream;
 	}
 	#end
 
-	@:noCompletion private override function __getTexture():GLTexture
+	@:noCompletion private override function __getTexture():Dynamic
 	{
 		#if (js && html5)
 		if (__netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)

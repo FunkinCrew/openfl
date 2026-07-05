@@ -38,7 +38,8 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
-		__textureTarget = __context.gl.TEXTURE_CUBE_MAP;
+		if (!__context.isBGFX) __textureTarget = __context.gl.TEXTURE_CUBE_MAP;
+
 		__uploadedSides = 0;
 
 		// if (optimizeForRenderToTexture) __getFramebuffer (true, 0, 0);
@@ -122,7 +123,7 @@ import openfl.utils.ByteArray;
 		// TODO: Improve handling of miplevels with canvas src
 
 		#if (js && html5)
-		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
+		if (!__context.isBGFX && miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;
 
@@ -173,7 +174,7 @@ import openfl.utils.ByteArray;
 	{
 		#if lime
 		#if (js && !display)
-		if (byteArrayOffset == 0)
+		if (!__context.isBGFX && byteArrayOffset == 0)
 		{
 			uploadFromTypedArray(@:privateAccess (data : ByteArrayData).b, side, miplevel);
 			return;
@@ -207,80 +208,107 @@ import openfl.utils.ByteArray;
 	{
 		if (data == null) return;
 
-		var gl = __context.gl;
-
 		var size = __size >> miplevel;
 		if (size == 0) return;
 
-		var target = __sideToTarget(side);
-
-		__context.__bindGLTextureCubeMap(__textureID);
-		gl.texImage2D(target, miplevel, __internalFormat, size, size, 0, __format, gl.UNSIGNED_BYTE, data);
-		__context.__bindGLTextureCubeMap(null);
+		if (__context.isBGFX)
+		{
+			var bgfx = __context.bgfx;
+			__textureID = bgfx.createTextureCube(size, miplevel > 0, 0, __internalFormat, 0, data == null ? null : bgfx.copy(data));
+		}
+		else
+		{
+			var gl = __context.gl;
+			var target = __sideToTarget(side);
+			__context.__bindGLTextureCubeMap(__textureID);
+			gl.texImage2D(target, miplevel, __internalFormat, size, size, 0, __format, gl.UNSIGNED_BYTE, data);
+			__context.__bindGLTextureCubeMap(null);
+		}
 
 		__uploadedSides |= 1 << side;
 	}
 
-	@:noCompletion private override function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
+	@:noCompletion private override function __getFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
-		var gl = __context.gl;
-
-		if (__glFramebuffer == null)
+		// TODO: cube texture FB for bgfx?
+		if (!__context.isBGFX)
 		{
-			__glFramebuffer = gl.createFramebuffer();
-			__framebufferSurface = -1;
-		}
+			var gl = __context.gl;
 
-		if (__framebufferSurface != surfaceSelector)
-		{
-			__framebufferSurface = surfaceSelector;
-
-			__context.__bindGLFramebuffer(__glFramebuffer);
-			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, __textureID, 0);
-
-			if (__context.__enableErrorChecking)
+			if (__framebuffer == null)
 			{
-				var code = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+				__framebuffer = gl.createFramebuffer();
+				__framebufferSurface = -1;
+			}
 
-				if (code != gl.FRAMEBUFFER_COMPLETE)
+			if (__framebufferSurface != surfaceSelector)
+			{
+				__framebufferSurface = surfaceSelector;
+
+				__context.__bindGLFramebuffer(__framebuffer);
+				gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, __textureID, 0);
+
+				if (__context.enableErrorChecking)
 				{
-					Log.error('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
+					var code = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+
+					if (code != gl.FRAMEBUFFER_COMPLETE)
+					{
+						Log.error('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
+					}
 				}
 			}
 		}
 
-		return super.__getGLFramebuffer(enableDepthAndStencil, antiAlias, surfaceSelector);
+		return super.__getFramebuffer(enableDepthAndStencil, antiAlias, surfaceSelector);
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
 		if (super.__setSamplerState(state))
 		{
-			var gl = __context.gl;
-
-			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
+			if (__context.isBGFX)
 			{
-				gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-				__samplerState.mipmapGenerated = true;
+				// TODO: mip generation?
+				var bgfx = __context.bgfx;
+				// bgfx has no per-texture anisotropic filtering
+				// it's defined globally by the reset flags
+				switch (state.filter)
+				{
+					case ANISOTROPIC2X, ANISOTROPIC4X, ANISOTROPIC8X, ANISOTROPIC16X:
+						__samplerStateFlags |= bgfx.SAMPLER_MAG_ANISOTROPIC;
+						__samplerStateFlags |= bgfx.SAMPLER_MIN_ANISOTROPIC;
+					default: // nothing
+				}
 			}
-
-			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
+			else
 			{
-				var aniso = switch (state.filter)
+				var gl = __context.gl;
+
+				if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
 				{
-					case ANISOTROPIC2X: 2;
-					case ANISOTROPIC4X: 4;
-					case ANISOTROPIC8X: 8;
-					case ANISOTROPIC16X: 16;
-					default: 1;
+					gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+					__samplerState.mipmapGenerated = true;
 				}
 
-				if (aniso > Context3D.__glMaxTextureMaxAnisotropy)
+				if (__context.__maxTextureMaxAnisotropy != 0)
 				{
-					aniso = Context3D.__glMaxTextureMaxAnisotropy;
-				}
+					var aniso = switch (state.filter)
+					{
+						case ANISOTROPIC2X: 2;
+						case ANISOTROPIC4X: 4;
+						case ANISOTROPIC8X: 8;
+						case ANISOTROPIC16X: 16;
+						default: 1;
+					}
 
-				gl.texParameterf(gl.TEXTURE_CUBE_MAP, Context3D.__glTextureMaxAnisotropy, aniso);
+					if (aniso > __context.__maxTextureMaxAnisotropy)
+					{
+						aniso = __context.__maxTextureMaxAnisotropy;
+					}
+
+					gl.texParameterf(gl.TEXTURE_CUBE_MAP, __context.__textureMaxAnisotropy, aniso);
+				}
 			}
 
 			return true;
@@ -291,17 +319,22 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __sideToTarget(side:UInt):Int
 	{
-		var gl = __context.gl;
-
-		return switch (side)
+		if (!__context.isBGFX)
 		{
-			case 0: gl.TEXTURE_CUBE_MAP_POSITIVE_X;
-			case 1: gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
-			case 2: gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
-			case 3: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
-			case 4: gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
-			case 5: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
-			default: throw new IllegalOperationError();
+			var gl = __context.gl;
+
+			return switch (side)
+			{
+				case 0: gl.TEXTURE_CUBE_MAP_POSITIVE_X;
+				case 1: gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
+				case 2: gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
+				case 3: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
+				case 4: gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
+				case 5: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
+				default: throw new IllegalOperationError();
+			}
 		}
+
+		return side;
 	}
 }

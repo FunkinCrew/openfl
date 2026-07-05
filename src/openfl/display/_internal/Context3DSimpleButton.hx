@@ -1,4 +1,4 @@
-package openfl.display._internal;
+﻿package openfl.display._internal;
 
 #if !openfl_debug
 @:fileXml(' tags="haxe,release" ')
@@ -7,7 +7,7 @@ package openfl.display._internal;
 @:access(openfl.display.SimpleButton)
 class Context3DSimpleButton
 {
-	public static function renderDrawable(simpleButton:SimpleButton, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(simpleButton:SimpleButton, renderer:Context3DRenderer):Void
 	{
 		if (!simpleButton.__renderable || simpleButton.__worldAlpha <= 0 || simpleButton.__currentState == null) return;
 
@@ -18,7 +18,7 @@ class Context3DSimpleButton
 		renderer.__renderEvent(simpleButton);
 	}
 
-	public static function renderDrawableMask(simpleButton:SimpleButton, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(simpleButton:SimpleButton, renderer:Context3DRenderer):Void
 	{
 		if (simpleButton.__currentState == null) return;
 

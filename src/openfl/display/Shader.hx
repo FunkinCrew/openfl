@@ -3,6 +3,12 @@ package openfl.display;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
+import lime.graphics.bgfx.BGFXUniform;
+import lime.graphics.bgfx.BGFXUniformInfo;
+import lime.graphics.bgfx.BGFXShader;
+import lime.graphics.bgfx.BGFXProgram;
+import lime.graphics.bgfx.BGFXUniform;
+import lime.graphics.bgfx.BGFXUniformType;
 import openfl.display._internal.ShaderBuffer;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
@@ -186,11 +192,11 @@ class Shader
 	public var glFragmentSource(get, set):String;
 
 	/**
-		The compiled GLProgram if available.
+		The compiled shader program if available.
 
 		This property is not available on the Flash target.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
+	@SuppressWarnings("checkstyle:Dynamic") public var shaderProgram(get, never):Dynamic;
 
 	/**
 		The default GLSL vertex header, before being applied to the vertex source.
@@ -438,39 +444,6 @@ class Shader
 			Log.debug('Info compiling $typeName shader $message');
 	}
 
-	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
-	{
-		var gl = __context.gl;
-
-		var vertexShader = __createGLShader(vertexSource, gl.VERTEX_SHADER);
-		var fragmentShader = __createGLShader(fragmentSource, gl.FRAGMENT_SHADER);
-
-		var program = gl.createProgram();
-
-		// Fix support for drivers that don't draw if attribute 0 is disabled
-		for (param in __paramFloat)
-		{
-			if (param.name.indexOf("Position") > -1 && StringTools.startsWith(param.name, "openfl_"))
-			{
-				gl.bindAttribLocation(program, 0, param.name);
-				break;
-			}
-		}
-
-		gl.attachShader(program, vertexShader);
-		gl.attachShader(program, fragmentShader);
-		gl.linkProgram(program);
-
-		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0)
-		{
-			var message = "Unable to initialize the shader program";
-			message += "\n" + gl.getProgramInfoLog(program);
-			Log.error(message);
-		}
-
-		return program;
-	}
-
 	@:noCompletion private function __disable():Void
 	{
 		if (program != null)
@@ -481,40 +454,43 @@ class Shader
 
 	@:noCompletion private function __disableGL():Void
 	{
-		var gl = __context.gl;
-
-		var textureCount = 0;
-
-		for (input in __inputBitmapData)
+		if (__context.isOpenGL)
 		{
-			input.__disableGL(__context, textureCount);
-			textureCount++;
-			if (textureCount == gl.MAX_TEXTURE_IMAGE_UNITS) break;
-		}
+			var gl = __context.gl;
 
-		for (parameter in __paramBool)
-		{
-			parameter.__disableGL(__context);
-		}
+			var textureCount = 0;
 
-		for (parameter in __paramFloat)
-		{
-			parameter.__disableGL(__context);
-		}
+			for (input in __inputBitmapData)
+			{
+				input.__disableGL(__context, textureCount);
+				textureCount++;
+				if (textureCount == gl.MAX_TEXTURE_IMAGE_UNITS) break;
+			}
 
-		for (parameter in __paramInt)
-		{
-			parameter.__disableGL(__context);
-		}
+			for (parameter in __paramBool)
+			{
+				parameter.__disableGL(__context);
+			}
 
-		__context.__bindGLArrayBuffer(null);
+			for (parameter in __paramFloat)
+			{
+				parameter.__disableGL(__context);
+			}
 
-		#if lime
-		if (__context.__context.type == OPENGL)
-		{
-			gl.disable(gl.TEXTURE_2D);
+			for (parameter in __paramInt)
+			{
+				parameter.__disableGL(__context);
+			}
+
+			__context.__bindGLArrayBuffer(null);
+
+			#if lime
+			if (__context.__context.type == OPENGL)
+			{
+				gl.disable(gl.TEXTURE_2D);
+			}
+			#end
 		}
-		#end
 	}
 
 	@:noCompletion private function __enable():Void
@@ -529,22 +505,25 @@ class Shader
 
 	@:noCompletion private function __enableGL():Void
 	{
-		var textureCount = 0;
-
-		var gl = __context.gl;
-
-		for (input in __inputBitmapData)
+		if (__context.isOpenGL)
 		{
-			gl.uniform1i(input.index, textureCount);
-			textureCount++;
-		}
+			var textureCount = 0;
 
-		#if lime
-		if (__context.__context.type == OPENGL && textureCount > 0)
-		{
-			gl.enable(gl.TEXTURE_2D);
+			var gl = __context.gl;
+
+			for (input in __inputBitmapData)
+			{
+				gl.uniform1i(input.index, textureCount);
+				textureCount++;
+			}
+
+			#if lime
+			if (__context.__context.type == OPENGL && textureCount > 0)
+			{
+				gl.enable(gl.TEXTURE_2D);
+			}
+			#end
 		}
-		#end
 	}
 
 	@:noCompletion private function __init():Void
@@ -571,8 +550,8 @@ class Shader
 			extensions += "#extension " + ext.name + " : " + ext.behavior + "\n";
 		}
 
-		var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment;
-		var standardDerivativesSupported = OpenGLRenderer.__standardDerivativesSupported && isFragment;
+		var complexBlendsSupported = Context3DRenderer.__complexBlendsSupported && isFragment;
+		var standardDerivativesSupported = Context3DRenderer.__standardDerivativesSupported && isFragment;
 
 		#if lime
 		if (__context.__context.type == OPENGL)
@@ -652,10 +631,14 @@ class Shader
 
 		if (__context != null && program == null)
 		{
-			var gl = __context.gl;
+			var vertex = glVertexSource;
+			var fragment = glFragmentSource;
 
-			var vertex = __buildSourcePrefix(false) + glVertexSource;
-			var fragment = __buildSourcePrefix(true) + glFragmentSource;
+			if (!__context.isBGFX)
+			{
+				vertex = __buildSourcePrefix(false) + glVertexSource;
+				fragment = __buildSourcePrefix(true) + glFragmentSource;
+			}
 
 			var id = vertex + fragment;
 
@@ -667,81 +650,110 @@ class Shader
 			{
 				program = __context.createProgram(GLSL);
 
-				// TODO
-				// program.uploadSources (vertex, fragment);
-
 				if (Lib.current.stage.__uncaughtErrorEvents.__enabled)
 				{
 					try
 					{
-						program.__glProgram = __createGLProgram(vertex, fragment);
+						program.uploadSources(vertex, fragment);
 					}
 					catch (e:Dynamic)
 					{
 						Lib.current.stage.__handleError(e);
-
-						program.__glProgram = null;
 					}
 				}
 				else
-					program.__glProgram = __createGLProgram(vertex, fragment);
+					program.uploadSources(vertex, fragment);
 
 				__context.__programs.set(id, program);
 			}
 
 			if (program != null)
 			{
-				glProgram = program.__glProgram;
-
-				for (input in __inputBitmapData)
+				if (__context.isOpenGL)
 				{
-					if (input.__isUniform)
+					var gl = __context.gl;
+
+					for (input in __inputBitmapData)
 					{
-						input.index = gl.getUniformLocation(glProgram, input.name);
+						if (input.__isUniform)
+						{
+							input.index = gl.getUniformLocation(shaderProgram, input.name);
+						}
+						else
+						{
+							input.index = gl.getAttribLocation(shaderProgram, input.name);
+						}
 					}
-					else
+
+					for (parameter in __paramBool)
 					{
-						input.index = gl.getAttribLocation(glProgram, input.name);
+						if (parameter.__isUniform)
+						{
+							parameter.index = gl.getUniformLocation(shaderProgram, parameter.name);
+						}
+						else
+						{
+							parameter.index = gl.getAttribLocation(shaderProgram, parameter.name);
+						}
+					}
+
+					for (parameter in __paramFloat)
+					{
+						if (parameter.__isUniform)
+						{
+							parameter.index = gl.getUniformLocation(shaderProgram, parameter.name);
+						}
+						else
+						{
+							parameter.index = gl.getAttribLocation(shaderProgram, parameter.name);
+						}
+					}
+
+					for (parameter in __paramInt)
+					{
+						if (parameter.__isUniform)
+						{
+							parameter.index = gl.getUniformLocation(shaderProgram, parameter.name);
+						}
+						else
+						{
+							parameter.index = gl.getAttribLocation(shaderProgram, parameter.name);
+						}
 					}
 				}
-
-				for (parameter in __paramBool)
+				else if (__context.isBGFX)
 				{
-					if (parameter.__isUniform)
+					for (parameter in __paramBool)
 					{
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
+						var uniform = program.__bgfxUniforms.get(parameter.name);
+						if (uniform == null) uniform = program.__bgfxUniforms.get(parameter.name + "_internal");
+						parameter.__bgfxUniform = uniform;
 					}
-					else
-					{
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-					}
-				}
 
-				for (parameter in __paramFloat)
-				{
-					if (parameter.__isUniform)
+					for (parameter in __paramFloat)
 					{
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-					}
-					else
-					{
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-					}
-				}
+						var uniform = program.__bgfxUniforms.get(parameter.name);
+						if (uniform == null) uniform = program.__bgfxUniforms.get(parameter.name + "_internal");
+						parameter.__bgfxUniform = uniform;
 
-				for (parameter in __paramInt)
-				{
-					if (parameter.__isUniform)
-					{
-						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
+						var attribIndex = openfl.display3D._internal.ShaderCConverter.getAttribIndex(parameter.name);
+						if (attribIndex >= 0) parameter.index = attribIndex;
 					}
-					else
+
+					for (parameter in __paramInt)
 					{
-						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
+						var uniform = program.__bgfxUniforms.get(parameter.name);
+						if (uniform == null) uniform = program.__bgfxUniforms.get(parameter.name + "_internal");
+						parameter.__bgfxUniform = uniform;
 					}
 				}
 			}
 		}
+	}
+
+	@:noCompletion private function get_shaderProgram():Dynamic
+	{
+		return program != null ? program.__shaderProgram : null;
 	}
 
 	@:noCompletion private function __processGLData(source:String, storageType:String):Void
@@ -1012,25 +1024,28 @@ class Shader
 			}
 		}
 
-		var gl = __context.gl;
-
-		if (shaderBuffer.paramDataLength > 0)
+		if (__context.isOpenGL)
 		{
-			if (shaderBuffer.paramDataBuffer == null)
+			var gl = __context.gl;
+
+			if (shaderBuffer.paramDataLength > 0)
 			{
-				shaderBuffer.paramDataBuffer = gl.createBuffer();
+				if (shaderBuffer.paramDataBuffer == null)
+				{
+					shaderBuffer.paramDataBuffer = gl.createBuffer();
+				}
+
+				// Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ") (" + shaderBuffer.paramCount + ")");
+
+				__context.__bindGLArrayBuffer(shaderBuffer.paramDataBuffer);
+				gl.bufferData(gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
 			}
+			else
+			{
+				// Log.verbose ("bind buffer null");
 
-			// Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ") (" + shaderBuffer.paramCount + ")");
-
-			__context.__bindGLArrayBuffer(shaderBuffer.paramDataBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
-		}
-		else
-		{
-			// Log.verbose ("bind buffer null");
-
-			__context.__bindGLArrayBuffer(null);
+				__context.__bindGLArrayBuffer(null);
+			}
 		}
 
 		var boolIndex = 0;

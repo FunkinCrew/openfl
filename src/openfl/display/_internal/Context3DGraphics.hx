@@ -1,4 +1,4 @@
-package openfl.display._internal;
+﻿package openfl.display._internal;
 
 import openfl.display._internal.CairoGraphics;
 import openfl.display._internal.CanvasGraphics;
@@ -7,7 +7,7 @@ import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
-import openfl.display.OpenGLRenderer;
+import openfl.display.Context3DRenderer;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -39,7 +39,7 @@ class Context3DGraphics
 	private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
 	private static var buildBufferReader:DrawCommandReader = new DrawCommandReader(null);
 
-	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
+	private static function buildBuffer(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
@@ -612,7 +612,7 @@ class Context3DGraphics
 		return true;
 	}
 
-	public static function render(graphics:Graphics, renderer:OpenGLRenderer):Void
+	public static function render(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 
@@ -1121,7 +1121,7 @@ class Context3DGraphics
 		graphics.__hardwareDirty = false;
 	}
 
-	public static function renderMask(graphics:Graphics, renderer:OpenGLRenderer):Void
+	public static function renderMask(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		// TODO: Support invisible shapes
 
