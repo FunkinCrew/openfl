@@ -245,7 +245,7 @@ private class ColorMatrixShader extends BitmapFilterShader
 			} else {
 
 				color = vec4 (color.rgb / color.a, color.a);
-				color = uOffsets + color * uMultipliers;
+				color = uOffsets + mul(color, uMultipliers);
 
 				gl_FragColor = vec4 (color.rgb * color.a, color.a);
 
