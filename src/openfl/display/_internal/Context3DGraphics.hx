@@ -6,7 +6,7 @@ import lime.utils.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.MovieClip;
-import openfl.display.OpenGLRenderer;
+import openfl.display.Context3DRenderer;
 import openfl.display._internal.CairoGraphics;
 import openfl.display._internal.CanvasGraphics;
 import openfl.display._internal.DrawCommandReader;
@@ -21,7 +21,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
-@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.display.Context3DRenderer)
 @:access(openfl.display.Shader)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
@@ -47,7 +47,7 @@ class Context3DGraphics
 	@:noCompletion private static var tempLinePathVertices:Vector<Float> = new Vector<Float>();
 	@:noCompletion private static var tempLinePathReducedVertices:Vector<Float> = new Vector<Float>();
 
-	@:noCompletion private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
+	@:noCompletion private static function buildBuffer(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
@@ -848,7 +848,7 @@ class Context3DGraphics
 		return cacheCompatibility(true);
 	}
 
-	public static function render(graphics:Graphics, renderer:OpenGLRenderer):Void
+	public static function render(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 
@@ -1429,7 +1429,7 @@ class Context3DGraphics
 		graphics.__hardwareDirty = false;
 	}
 
-	public static function renderMask(graphics:Graphics, renderer:OpenGLRenderer):Void
+	public static function renderMask(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		// TODO: Support invisible shapes
 

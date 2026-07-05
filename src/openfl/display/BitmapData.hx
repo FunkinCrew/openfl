@@ -161,6 +161,12 @@ class BitmapData implements IBitmapDrawable
 	@:beta public var readable(default, null):Bool;
 
 	/**
+	 * Defines wether the GPU texture of this Bitmap will be a render target.
+	 * Enabling this will make the texture get owned by a frame buffer.
+	 */
+	@:beta public var isRenderTarget:Bool;
+
+	/**
 		The rectangle that defines the size and location of the bitmap image. The
 		top and left of the rectangle are 0; the width and height are equal to the
 		width and height in pixels of the BitmapData object.
@@ -219,7 +225,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
 	@:noCompletion private var __asset:Bool;
-	@:noCompletion private var __renderer:OpenGLRenderer;
+	@:noCompletion private var __renderer:Context3DRenderer;
 
 	/**
 		Creates a BitmapData object with a specified width and height. If you specify a value for
@@ -292,6 +298,7 @@ class BitmapData implements IBitmapDrawable
 
 			__isValid = true;
 			readable = true;
+			isRenderTarget = false;
 		}
 
 		__renderTransform = new Matrix();
@@ -379,13 +386,20 @@ class BitmapData implements IBitmapDrawable
 		Returns a new BitmapData object that is a clone of the original instance with an exact copy of the contained bitmap.
 		@return		A new BitmapData object that is identical to the original.
 	**/
-	public function clone():BitmapData
+	public function clone(shareTexture:Bool = true):BitmapData
 	{
 		var bitmapData:BitmapData;
+
+		var __gpuClone:TextureBase = (!shareTexture && __isValid && __texture != null && __texture.__framebuffer != null) ? __cloneGPU() : null;
 
 		if (!__isValid)
 		{
 			bitmapData = new BitmapData(width, height, transparent, 0);
+		}
+		else if (__gpuClone != null)
+		{
+			bitmapData = BitmapData.fromTexture(__gpuClone, false);
+			__gpuClone = null;
 		}
 		else if (!readable && image == null)
 		{
@@ -922,7 +936,7 @@ class BitmapData implements IBitmapDrawable
 
 			if (__renderer == null)
 			{
-				__renderer = new OpenGLRenderer(Lib.current.stage.context3D, this);
+				__renderer = new Context3DRenderer(Lib.current.stage.context3D, this);
 			}
 			else
 			{
@@ -2153,7 +2167,7 @@ class BitmapData implements IBitmapDrawable
 			}
 			else
 			{
-				__texture = context.createRectangleTexture(width, height, (image != null && image.format == RGBA32) ? RGBA : BGRA, false);
+				__texture = context.createRectangleTexture(width, height, (image != null && image.format == RGBA32) ? RGBA : BGRA, isRenderTarget);
 			}
 
 			// context.__bindGLTexture2D (__texture);
@@ -2168,7 +2182,7 @@ class BitmapData implements IBitmapDrawable
 		ImageCanvasUtil.sync(image, false);
 		#end
 
-		if (image != null && image.version > __textureVersion)
+		if (image != null && image.version > __textureVersion && __texture.__framebuffer == null)
 		{
 			if (__surface != null)
 			{
@@ -3042,7 +3056,7 @@ class BitmapData implements IBitmapDrawable
 		image.version++;
 	}
 
-	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer, enableDepthAndStencil:Bool = true):Void
+	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:Context3DRenderer, enableDepthAndStencil:Bool = true):Void
 	{
 		var context = renderer.__context3D;
 
@@ -3065,6 +3079,25 @@ class BitmapData implements IBitmapDrawable
 		}
 	}
 
+	@:noCompletion private function __cloneGPU():TextureBase
+	{
+		if (__texture == null || width <= 0 || height <= 0) return null;
+
+		var context = __texture.__context;
+		if (context == null || !context.isBGFX) return null;
+
+		var copy = context.createRectangleTexture(__textureWidth, __textureHeight, (image != null && image.format == RGBA32) ? RGBA : BGRA, true);
+		copy.__getFramebuffer(false, 0, 0);
+
+		if (!context.__blitTexture(copy, __texture, __textureWidth, __textureHeight))
+		{
+			copy.dispose();
+			return null;
+		}
+
+		return copy;
+	}
+
 	@:noCompletion private function __fillRect(rect:Rectangle, color:Int, allowFramebuffer:Bool):Void
 	{
 		if (rect == null) return;
@@ -3074,12 +3107,9 @@ class BitmapData implements IBitmapDrawable
 			color = 0;
 		}
 
-		if (allowFramebuffer
-			&& __texture != null
-			&& __texture.__glFramebuffer != null
-			&& Lib.current.stage.__renderer.__type == OPENGL)
+		if (allowFramebuffer && __texture != null && __texture.__framebuffer != null && Lib.current.stage.__renderer.__isHardware())
 		{
-			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
+			var renderer:Context3DRenderer = cast Lib.current.stage.__renderer;
 			var context = renderer.__context3D;
 			var color:ARGB = (color : ARGB);
 			var useScissor = !this.rect.equals(rect);
