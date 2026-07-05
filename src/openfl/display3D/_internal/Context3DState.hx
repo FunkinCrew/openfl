@@ -1,5 +1,6 @@
 package openfl.display3D._internal;
 
+import lime.graphics.bgfx.BGFXFrameBuffer;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
@@ -49,8 +50,14 @@ class Context3DState
 	public var stencilTriangleFace:Context3DTriangleFace;
 	public var stencilWriteMask:UInt;
 	public var textures:Array<TextureBase>;
+
+	private var __enableGLBlend:Bool;
+
 	// vertex buffer at?
 	public var shader:Shader; // TODO: Merge shader/program3d
+
+	private var __primaryBGFXFramebuffer:BGFXFrameBuffer;
+	private var __rttBGFXFramebuffer:BGFXFrameBuffer;
 
 	@:noCompletion private var __currentGLArrayBuffer:GLBuffer;
 	@:noCompletion private var __currentGLElementArrayBuffer:GLBuffer;
@@ -63,7 +70,6 @@ class Context3DState
 	@:noCompletion private var __currentGLViewportY:Int;
 	@:noCompletion private var __currentGLViewportWidth:Int;
 	@:noCompletion private var __currentGLViewportHeight:Int;
-	@:noCompletion private var __enableGLBlend:Bool;
 	@:noCompletion private var __enableGLCullFace:Bool;
 	@:noCompletion private var __enableGLDepthTest:Bool;
 	@:noCompletion private var __enableGLScissorTest:Bool;
