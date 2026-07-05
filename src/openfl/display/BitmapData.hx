@@ -120,8 +120,16 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
-@:access(openfl.display3D.textures.TextureBase)
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.textures.TextureBase)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.textures.TextureBase)
+#end
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.DisplayObjectShader)
 @:access(openfl.display.Graphics)
@@ -232,7 +240,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
 	@:noCompletion private var __asset:Bool;
-	@:noCompletion private var __renderer:OpenGLRenderer;
+	@:noCompletion private var __renderer:BGFXRenderer;
 
 	/**
 		Creates a BitmapData object with a specified width and height. If you specify a value for
@@ -968,7 +976,7 @@ class BitmapData implements IBitmapDrawable
 
 			if (__renderer == null)
 			{
-				__renderer = new OpenGLRenderer(Lib.current.stage.context3D, this);
+				__renderer = new BGFXRenderer(Lib.current.stage.context3D, this);
 			}
 			else
 			{
@@ -3192,7 +3200,7 @@ class BitmapData implements IBitmapDrawable
 		image.version++;
 	}
 
-	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
+	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:BGFXRenderer):Void
 	{
 		var context = renderer.__context3D;
 
@@ -3227,7 +3235,7 @@ class BitmapData implements IBitmapDrawable
 
 		if (allowFramebuffer
 			&& __texture != null
-			&& __texture.__glFramebuffer != null
+			&& __texture.__framebuffer != null
 			&& Lib.current.stage.__renderer.__type == OPENGL)
 		{
 			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;

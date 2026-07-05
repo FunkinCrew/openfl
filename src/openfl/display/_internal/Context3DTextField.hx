@@ -15,7 +15,7 @@ import openfl.text.TextField;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DTextField
 {
-	public static function render(textField:TextField, renderer:OpenGLRenderer):Void
+	public static function render(textField:TextField, renderer:openfl.display.BGFXRenderer):Void
 	{
 		renderer.__softwareRenderer.__pixelRatio = renderer.__pixelRatio;
 
@@ -27,7 +27,7 @@ class Context3DTextField
 		textField.__graphics.__hardwareDirty = false;
 	}
 
-	public static function renderDrawable(textField:TextField, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(textField:TextField, renderer:openfl.display.BGFXRenderer):Void
 	{
 		renderer.__updateCacheBitmap(textField, false);
 
@@ -44,13 +44,13 @@ class Context3DTextField
 		renderer.__renderEvent(textField);
 	}
 
-	public static function renderDrawableMask(textField:TextField, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(textField:TextField, renderer:openfl.display.BGFXRenderer):Void
 	{
 		Context3DTextField.renderMask(textField, renderer);
 		Context3DDisplayObject.renderDrawableMask(textField, renderer);
 	}
 
-	public static function renderMask(textField:TextField, renderer:OpenGLRenderer):Void
+	public static function renderMask(textField:TextField, renderer:openfl.display.BGFXRenderer):Void
 	{
 		#if (js && html5)
 		CanvasTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);

@@ -1,6 +1,7 @@
 package openfl.display3D.textures;
 
 #if !flash
+import haxe.Int64;
 import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.utils._internal.ArrayBufferView;
@@ -20,7 +21,11 @@ import openfl.utils.ByteArray;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Stage)
 @:final class RectangleTexture extends TextureBase
 {
@@ -33,10 +38,13 @@ import openfl.utils.ByteArray;
 		// __format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 
+		#if opengl
 		__textureTarget = __context.gl.TEXTURE_2D;
+		#end
+
 		uploadFromTypedArray(null);
 
-		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
+		if (optimizeForRenderToTexture) __getFramebuffer(true, 0, 0);
 	}
 
 	/**
@@ -57,7 +65,7 @@ import openfl.utils.ByteArray;
 		var image = __getImage(source);
 		if (image == null) return;
 
-		#if (js && html5)
+		#if (js && html5 && opengl)
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;
@@ -113,20 +121,25 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
+		#if opengl
 		var gl = __context.gl;
-
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
 		__context.__bindGLTexture2D(null);
+		#elseif bgfx
+		var bgfx = __context.bgfx;
+		var flags:Int64 = Int64.make(0, 0);
+		if (__optimizeForRenderToTexture) flags |= bgfx.TEXTURE_RT;
+		__textureID = bgfx.createTexture2D(__width, __height, false, 1, __internalFormat, flags, data == null ? null : bgfx.copy(data));
+		#end
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
 		if (super.__setSamplerState(state))
 		{
-			var gl = __context.gl;
-
-			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
+			#if opengl
+			if (Context3D.__maxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)
 				{
@@ -137,13 +150,26 @@ import openfl.utils.ByteArray;
 					default: 1;
 				}
 
-				if (aniso > Context3D.__glMaxTextureMaxAnisotropy)
+				if (aniso > Context3D.__maxTextureMaxAnisotropy)
 				{
-					aniso = Context3D.__glMaxTextureMaxAnisotropy;
+					aniso = Context3D.__maxTextureMaxAnisotropy;
 				}
 
-				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+				gl.texParameterf(gl.TEXTURE_2D, Context3D.__textureMaxAnisotropy, aniso);
 			}
+			#else
+			// TODO: mip generation?
+			var bgfx = __context.bgfx;
+			// bgfx has no per-texture anisotropic filtering
+			// it's defined globally by the reset flags
+			var aniso = switch (state.filter)
+			{
+				case ANISOTROPIC2X, ANISOTROPIC4X, ANISOTROPIC8X, ANISOTROPIC16X:
+					__samplerStateFlags |= bgfx.SAMPLER_MAG_ANISOTROPIC;
+					__samplerStateFlags |= bgfx.SAMPLER_MIN_ANISOTROPIC;
+				default: 0; // nothing
+			}
+			#end
 
 			return true;
 		}

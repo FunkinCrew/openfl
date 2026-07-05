@@ -432,7 +432,7 @@ private class DisplacementMapShader extends BitmapFilterShader
 
 		void main(void) {
 
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 
 			openfl_TextureCoordV = openfl_TextureCoord;
 			mapTextureCoords = openfl_TextureCoord - mapTextureCoordsOffset;

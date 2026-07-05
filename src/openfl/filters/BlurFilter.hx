@@ -315,7 +315,7 @@ private class BlurShader extends BitmapFilterShader
 
 		void main(void) {
 
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 
 			vec2 r = uRadius / uTextureSize;
 			vBlurCoords[0] = openfl_TextureCoord - r;

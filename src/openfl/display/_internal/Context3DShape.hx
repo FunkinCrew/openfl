@@ -13,7 +13,11 @@ import openfl.geom.Matrix;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
@@ -24,7 +28,7 @@ import openfl.geom.Matrix;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DShape
 {
-	public static function render(shape:DisplayObject, renderer:OpenGLRenderer):Void
+	public static function render(shape:DisplayObject, renderer:openfl.display.BGFXRenderer):Void
 	{
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 
@@ -77,7 +81,7 @@ class Context3DShape
 		}
 	}
 
-	public static function renderMask(shape:DisplayObject, renderer:OpenGLRenderer):Void
+	public static function renderMask(shape:DisplayObject, renderer:openfl.display.BGFXRenderer):Void
 	{
 		var graphics = shape.__graphics;
 

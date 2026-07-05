@@ -12,7 +12,11 @@ import openfl.display._internal.stats.DrawCallContext;
 @:fileXml(' tags="haxe,release" ')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Shader)
@@ -22,7 +26,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DBitmap
 {
-	public static function render(bitmap:Bitmap, renderer:OpenGLRenderer):Void
+	public static function render(bitmap:Bitmap, renderer:openfl.display.BGFXRenderer):Void
 	{
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
 
@@ -59,7 +63,7 @@ class Context3DBitmap
 		}
 	}
 
-	public static function renderDrawable(bitmap:Bitmap, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(bitmap:Bitmap, renderer:openfl.display.BGFXRenderer):Void
 	{
 		renderer.__updateCacheBitmap(bitmap, false);
 
@@ -81,12 +85,12 @@ class Context3DBitmap
 		renderer.__renderEvent(bitmap);
 	}
 
-	public static function renderDrawableMask(bitmap:Bitmap, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(bitmap:Bitmap, renderer:openfl.display.BGFXRenderer):Void
 	{
 		Context3DBitmap.renderMask(bitmap, renderer);
 	}
 
-	public static function renderMask(bitmap:Bitmap, renderer:OpenGLRenderer):Void
+	public static function renderMask(bitmap:Bitmap, renderer:openfl.display.BGFXRenderer):Void
 	{
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
 		{

@@ -3,6 +3,10 @@ package openfl.display;
 #if !flash
 import openfl.utils._internal.Float32Array;
 import openfl.display3D.Context3D;
+#if bgfx
+import lime.graphics.bgfx.BGFXUniformType;
+import openfl.display3D.Program3D.UniformData;
+#end
 
 /**
 	TODO: Document GLSL Shaders
@@ -89,7 +93,11 @@ import openfl.display3D.Context3D;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 #if (!js && !display)
 @:generic
 #end
@@ -162,6 +170,10 @@ import openfl.display3D.Context3D;
 	@:noCompletion private var __length:Int;
 	@:noCompletion private var __uniformMatrix:Float32Array;
 	@:noCompletion private var __useArray:Bool;
+	#if bgfx
+	@:noCompletion private var __bgfxUniform:UniformData;
+	@:noCompletion private var __bgfxData:Float32Array;
+	#end
 
 	public function new()
 	{
@@ -170,6 +182,7 @@ import openfl.display3D.Context3D;
 
 	@:noCompletion private function __disableGL(context:Context3D):Void
 	{
+		#if opengl
 		if (index < 0) return;
 
 		var gl = context.gl;
@@ -181,10 +194,95 @@ import openfl.display3D.Context3D;
 				gl.disableVertexAttribArray(index + i);
 			}
 		}
+		#end
 	}
 
 	@:noCompletion private function __updateGL(context:Context3D, overrideValue:Array<T> = null):Void
 	{
+		#if bgfx
+		if (__bgfxUniform == null) return;
+
+		var value = overrideValue != null ? overrideValue : this.value;
+		var u = __bgfxUniform;
+
+		var floats = switch (u.info.type)
+		{
+			case MAT4: 16;
+			case MAT3: 12;
+			default: 4;
+		};
+		if (__bgfxData == null || __bgfxData.length != floats) __bgfxData = new Float32Array(floats);
+
+		var data = __bgfxData;
+		for (i in 0...data.length)
+			data[i] = 0.0;
+
+		if (value != null && value.length >= __length)
+		{
+			var boolValue:Array<Bool> = __isBool ? cast value : null;
+			var floatValue:Array<Float> = __isFloat ? cast value : null;
+			var intValue:Array<Int> = __isInt ? cast value : null;
+
+			switch (type)
+			{
+				case BOOL:
+					data[0] = boolValue[0] ? 1.0 : 0.0;
+				case BOOL2:
+					data[0] = boolValue[0] ? 1.0 : 0.0;
+					data[1] = boolValue[1] ? 1.0 : 0.0;
+				case BOOL3:
+					data[0] = boolValue[0] ? 1.0 : 0.0;
+					data[1] = boolValue[1] ? 1.0 : 0.0;
+					data[2] = boolValue[2] ? 1.0 : 0.0;
+				case BOOL4:
+					data[0] = boolValue[0] ? 1.0 : 0.0;
+					data[1] = boolValue[1] ? 1.0 : 0.0;
+					data[2] = boolValue[2] ? 1.0 : 0.0;
+					data[3] = boolValue[3] ? 1.0 : 0.0;
+				case INT:
+					data[0] = intValue[0];
+				case INT2:
+					data[0] = intValue[0];
+					data[1] = intValue[1];
+				case INT3:
+					data[0] = intValue[0];
+					data[1] = intValue[1];
+					data[2] = intValue[2];
+				case INT4:
+					data[0] = intValue[0];
+					data[1] = intValue[1];
+					data[2] = intValue[2];
+					data[3] = intValue[3];
+				case FLOAT:
+					data[0] = floatValue[0];
+				case FLOAT2:
+					data[0] = floatValue[0];
+					data[1] = floatValue[1];
+				case FLOAT3:
+					data[0] = floatValue[0];
+					data[1] = floatValue[1];
+					data[2] = floatValue[2];
+				case FLOAT4:
+					data[0] = floatValue[0];
+					data[1] = floatValue[1];
+					data[2] = floatValue[2];
+					data[3] = floatValue[3];
+				case MATRIX2X2:
+					for (i in 0...4)
+						data[i] = floatValue[i];
+				case MATRIX3X3:
+					for (row in 0...3)
+						for (col in 0...3)
+							data[row * 4 + col] = floatValue[row * 3 + col];
+				case MATRIX4X4:
+					for (i in 0...16)
+						data[i] = floatValue[i];
+				default:
+			}
+		}
+
+		context.bgfx.setUniform(u.uniform, data, u.info.num);
+		#elseif opengl
 		if (index < 0) return;
 
 		#if lime
@@ -417,10 +515,59 @@ import openfl.display3D.Context3D;
 			}
 		}
 		#end
+		#end
 	}
 
 	@:noCompletion private function __updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
 	{
+		#if bgfx
+		if (__bgfxUniform == null || length < __length) return;
+
+		var u = __bgfxUniform;
+		var floats = switch (u.info.type)
+		{
+			case MAT4: 16;
+			case MAT3: 12;
+			default: 4;
+		}
+		if (__bgfxData == null || __bgfxData.length != floats) __bgfxData = new Float32Array(floats);
+
+		var data = __bgfxData;
+		for (i in 0...data.length)
+			data[i] = 0.0;
+
+		switch (type)
+		{
+			case BOOL, INT, FLOAT:
+				data[0] = buffer[position];
+			case BOOL2, INT2, FLOAT2:
+				data[0] = buffer[position];
+				data[1] = buffer[position + 1];
+			case BOOL3, INT3, FLOAT3:
+				data[0] = buffer[position];
+				data[1] = buffer[position + 1];
+				data[2] = buffer[position + 2];
+			case BOOL4, INT4, FLOAT4:
+				data[0] = buffer[position];
+				data[1] = buffer[position + 1];
+				data[2] = buffer[position + 2];
+				data[3] = buffer[position + 3];
+			case MATRIX2X2:
+				for (i in 0...4)
+					data[i] = buffer[position + i];
+			case MATRIX3X3:
+				for (row in 0...3)
+					for (col in 0...3)
+						data[row * 4 + col] = buffer[position + row * 3 + col];
+			case MATRIX4X4:
+				for (i in 0...16)
+					data[i] = buffer[position + i];
+			default:
+		}
+
+		context.bgfx.setUniform(u.uniform, data, u.info.num);
+		return;
+		#elseif opengl
 		if (index < 0) return;
 
 		#if lime
@@ -583,6 +730,7 @@ import openfl.display3D.Context3D;
 				}
 			}
 		}
+		#end
 		#end
 	}
 

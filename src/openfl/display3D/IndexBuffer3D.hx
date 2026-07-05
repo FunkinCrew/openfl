@@ -1,7 +1,12 @@
 package openfl.display3D;
 
 #if !flash
+#if opengl
 import openfl.display3D._internal.GLBuffer;
+#elseif bgfx
+import lime.graphics.bgfx.BGFXIndexBuffer;
+import lime.graphics.bgfx.BGFXDynamicIndexBuffer;
+#end
 import openfl.utils._internal.ArrayBufferView;
 import openfl.utils._internal.UInt16Array;
 import openfl.utils.ByteArray;
@@ -24,26 +29,36 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Stage)
 @:final class IndexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __id:GLBuffer;
 	@:noCompletion private var __memoryUsage:Int = -1;
 	@:noCompletion private var __numIndices:Int;
 	@:noCompletion private var __tempUInt16Array:UInt16Array;
-	@:noCompletion private var __usage:Int;
+	@:noCompletion private var __usage:Context3DBufferUsage;
+	#if opengl
+	@:noCompletion private var __id:GLBuffer;
+	#elseif bgfx
+	@:noCompletion private var __idbh:BGFXIndexBufferHandle;
+	#end
 
 	@:noCompletion private function new(context3D:Context3D, numIndices:Int, bufferUsage:Context3DBufferUsage)
 	{
 		__context = context3D;
 		__numIndices = numIndices;
 
+		#if opengl
 		var gl = __context.gl;
 		__id = gl.createBuffer();
+		#end
 
-		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+		__usage = bufferUsage;
 	}
 
 	/**
@@ -52,8 +67,19 @@ import openfl.Vector;
 	**/
 	public function dispose():Void
 	{
+		#if opengl
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
+		#elseif bgfx
+		var bgfx = __context.bgfx;
+		switch (__idbh)
+		{
+			case Static(idb):
+				bgfx.destroyIndexBuffer(idb);
+			case Dynamic(didb):
+				bgfx.destroyDynamicIndexBuffer(didb);
+		}
+		#end
 	}
 
 	/**
@@ -94,12 +120,38 @@ import openfl.Vector;
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
+		#if opengl
 		var gl = __context.gl;
+		var usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
 		__context.__bindGLElementArrayBuffer(__id);
-		if (__memoryUsage == data.byteLength)
-			gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, data);
+
+		if (__memoryUsage == data.byteLength) gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, data);
 		else
-			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, __usage);
+			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, usage);
+		#elseif bgfx
+		var bgfx = __context.bgfx;
+		var mem = bgfx.copy(data);
+
+		if (__memoryUsage == data.byteLength)
+		{
+			switch (__idbh)
+			{
+				case Static(idb):
+					bgfx.destroyIndexBuffer(idb);
+					__idbh = Static(bgfx.createIndexBuffer(mem));
+				case Dynamic(didb):
+					bgfx.updateDynamicIndexBuffer(didb, 0, mem);
+			}
+		}
+		else
+		{
+			__idbh = switch (__usage)
+			{
+				case STATIC_DRAW: Static(bgfx.createIndexBuffer(mem));
+				case DYNAMIC_DRAW: Dynamic(bgfx.createDynamicIndexBufferMem(mem));
+			};
+		}
+		#end
 		__memoryUsage = data.byteLength;
 	}
 
@@ -124,7 +176,6 @@ import openfl.Vector;
 		// TODO: Optimize more
 
 		if (data == null) return;
-		var gl = __context.gl;
 
 		var length = startOffset + count;
 		var existingUInt16Array = __tempUInt16Array;
@@ -169,7 +220,6 @@ import openfl.Vector;
 		// TODO: Optimize more
 
 		if (data == null) return;
-		var gl = __context.gl;
 
 		var length = startOffset + count;
 		var existingUInt16Array = __tempUInt16Array;
@@ -193,6 +243,15 @@ import openfl.Vector;
 		#end
 	}
 }
+
+#if bgfx
+// to hold either static or dynamic buffer in one field
+enum BGFXIndexBufferHandle
+{
+	Static(idb:BGFXIndexBuffer);
+	Dynamic(didb:BGFXDynamicIndexBuffer);
+}
+#end
 #else
 typedef IndexBuffer3D = flash.display3D.IndexBuffer3D;
 #end

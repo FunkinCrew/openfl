@@ -49,7 +49,11 @@ import openfl.display3D.Context3D;
 	A ShaderInput instance is created for each of a shader's inputs when the
 	Shader instance is created.
 **/
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 #if !openfl_debug
 @:fileXml('tags="haxe,release"') @:noDebug
 #end

@@ -12,10 +12,14 @@ import openfl.display._internal.stats.DrawCallContext;
 #end
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Shader)
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 class Context3DBitmapData
 {
-	public static function renderDrawable(bitmapData:BitmapData, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(bitmapData:BitmapData, renderer:openfl.display.BGFXRenderer):Void
 	{
 		var context = renderer.__context3D;
 		var gl = context.gl;
@@ -45,7 +49,7 @@ class Context3DBitmapData
 		renderer.__clearShader();
 	}
 
-	public static function renderDrawableMask(bitmapData:BitmapData, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(bitmapData:BitmapData, renderer:openfl.display.BGFXRenderer):Void
 	{
 		var context = renderer.__context3D;
 		var gl = context.gl;

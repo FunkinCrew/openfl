@@ -36,6 +36,10 @@
 	</section>
 
 	<define name="openfl-funkin" />
+	<define name="opengl" if="lime_opengl || lime_opengles" />
+	<define name="bgfx" if="lime_bgfx" />
+	<haxedef name="opengl" if="lime_opengl || lime_opengles" />
+	<haxedef name="bgfx" if="lime_bgfx" />
 
 	<section unless="lime-funkin || setup || create || disable-version-check || display">
 

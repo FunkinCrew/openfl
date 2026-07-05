@@ -1,15 +1,22 @@
-package openfl.display3D;
+package openfl.display3D.backends.bgfx;
 
-#if !flash
+#if bgfx
+import haxe.Int64;
+import lime.graphics.bgfx.BGFXProgram;
+import lime.graphics.BGFXRenderContext;
+import lime.graphics.bgfx.BGFXAttrib;
+import lime.graphics.bgfx.BGFXAttribType;
+import lime.graphics.bgfx.BGFXTexture;
+import lime.graphics.bgfx.BGFXTextureFormat;
+import lime.graphics.bgfx.BGFXFrameBuffer;
+import lime.graphics.bgfx.BGFXTextureFormat;
 import openfl.display3D._internal.Context3DState;
-import openfl.display3D._internal.GLBuffer;
-import openfl.display3D._internal.GLFramebuffer;
-import openfl.display3D._internal.GLTexture;
 import openfl.display._internal.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.Texture;
+import openfl.display3D.textures.ASTCTexture;
 import openfl.display3D.textures.VideoTexture;
 import openfl.display.BitmapData;
 import openfl.display.Stage;
@@ -25,8 +32,9 @@ import openfl.utils._internal.UInt16Array;
 import openfl.utils._internal.UInt8Array;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
+import openfl.display.OpenGLRenderer;
 #if lime
-import lime.graphics.opengl.GL;
+import lime.graphics.bgfx.BGFX;
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
@@ -129,13 +137,10 @@ import lime.math.Vector2;
 @:noDebug
 #end
 @:access(openfl.display3D._internal.Context3DState)
+@:access(openfl.display3D.textures.ASTCTexture)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
-#if bgfx
 @:access(openfl.display3D.backends.bgfx.textures.TextureBase)
-#elseif opengl
-@:access(openfl.display3D.backends.opengl.textures.TextureBase)
-#end
 @:access(openfl.display3D.textures.Texture)
 @:access(openfl.display3D.textures.VideoTexture)
 @:access(openfl.display3D.IndexBuffer3D)
@@ -195,7 +200,7 @@ import lime.math.Vector2;
 		requires a license when used with Stage3D hardware rendering. Visit
 		adobe.com/go/fpl.
 	**/
-	public var driverInfo(default, null):String = "OpenGL (Direct blitting)";
+	public var driverInfo(default, null):String = "BGFX (Direct blitting)";
 
 	/**
 		Specifies whether errors encountered by the renderer are reported to the
@@ -253,17 +258,20 @@ import lime.math.Vector2;
 
 		This API can be used when the SWF version is 32 or later.
 	**/
-	public var totalGPUMemory(get, never):Int;
+	public var totalGPUMemory(get, never):Float;
 
 	@:noCompletion private static var __driverInfo:String;
 	@:noCompletion private static var __depthStencil:Int = -1;
 	@:noCompletion private static var __maxTextureMaxAnisotropy:Int = -1;
 	@:noCompletion private static var __maxViewportDims:Int = -1;
-	@:noCompletion private static var __memoryCurrentAvailable:Int = -1;
-	@:noCompletion private static var __memoryTotalAvailable:Int = -1;
+	@:noCompletion private static var __memoryCurrentAvailable:Float = -1;
+	@:noCompletion private static var __memoryTotalAvailable:Float = -1;
 	@:noCompletion private static var __textureMaxAnisotropy:Int = -1;
 
+	@:noCompletion private var bgfx:#if lime BGFXRenderContext #else Dynamic #end;
 	@:noCompletion private var gl:#if lime WebGLRenderContext #else Dynamic #end;
+	@:noCompletion private var __activeVertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __currentViewId:Int;
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
@@ -285,6 +293,8 @@ import lime.math.Vector2;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
 	@:noCompletion private var __vertexConstants:Float32Array;
+	@:noCompletion private var __usingComplexBlend:Bool;
+	@:noCompletion private var __supportedDepth:Null<BGFXTextureFormat>;
 
 	@:noCompletion private function new(stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
 	{
@@ -295,11 +305,9 @@ import lime.math.Vector2;
 		__stage3D = stage3D;
 
 		__context = stage.window.context;
-		#if (js && html5 && dom)
-		gl = GL.context;
-		#else
-		gl = __context.webgl;
-		#end
+		bgfx = __context.bgfx;
+		// gotta keep the var i guess :/
+		gl = null;
 
 		if (__contextState == null) __contextState = new Context3DState();
 		__state = new Context3DState();
@@ -313,99 +321,48 @@ import lime.math.Vector2;
 
 		if (__maxViewportDims == -1)
 		{
-			#if (js && html5)
-			__maxViewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
-			#else
+			// dunno if this is correct...
+			// __maxViewportDims = bgfx.getCaps().limits.maxTextureSize;
 			__maxViewportDims = 16384;
-			#end
 		}
 
 		maxBackBufferWidth = __maxViewportDims;
 		maxBackBufferHeight = __maxViewportDims;
 
-		if (__maxTextureMaxAnisotropy == -1)
-		{
-			var extension:Dynamic = gl.getExtension("EXT_texture_filter_anisotropic");
-
-			#if (js && html5)
-			if (extension == null
-				|| !Reflect.hasField(extension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT")) extension = gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
-			if (extension == null
-				|| !Reflect.hasField(extension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT")) extension = gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
-			#end
-
-			if (extension != null)
-			{
-				__textureMaxAnisotropy = extension.TEXTURE_MAX_ANISOTROPY_EXT;
-				__maxTextureMaxAnisotropy = gl.getParameter(extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-			}
-			else
-			{
-				__textureMaxAnisotropy = 0;
-				__maxTextureMaxAnisotropy = 0;
-			}
-		}
-
-		#if lime
-		if (__depthStencil == -1)
-		{
-			#if (js && html5)
-			__depthStencil = gl.DEPTH_STENCIL;
-			#else
-			if (__context.type == OPENGLES && Std.parseFloat(__context.version) >= 3)
-			{
-				__depthStencil = __context.gles3.DEPTH24_STENCIL8;
-			}
-			else
-			{
-				var extension = gl.getExtension("OES_packed_depth_stencil");
-				if (extension != null)
-				{
-					__depthStencil = extension.DEPTH24_STENCIL8_OES;
-				}
-				else
-				{
-					extension = gl.getExtension("EXT_packed_depth_stencil");
-					if (extension != null)
-					{
-						__depthStencil = extension.DEPTH24_STENCIL8_EXT;
-					}
-					else
-					{
-						__depthStencil = 0;
-					}
-				}
-			}
-			#end
-		}
-
 		if (__memoryTotalAvailable == -1)
 		{
-			var extension = gl.getExtension("NVX_gpu_memory_info");
-			if (extension != null)
-			{
-				__memoryTotalAvailable = extension.GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX;
-				__memoryCurrentAvailable = extension.GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX;
-			}
+			var stats = bgfx.getStats();
+			__memoryTotalAvailable = stats.gpuMemoryMax;
+			__memoryCurrentAvailable = stats.gpuMemoryMax - stats.gpuMemoryUsed;
 		}
-		#end
 
 		if (__driverInfo == null)
 		{
-			var vendor = gl.getParameter(gl.VENDOR);
-			var version = gl.getParameter(gl.VERSION);
-			var renderer = gl.getParameter(gl.RENDERER);
-			var glslVersion = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
+			// Placeholder
+			var vendors = [
+				0x0000 => "None.",
+				0x0001 => "Software.",
+				0x1002 => "Advanced Micro Devices, Inc.",
+				0x106b => "Apple (R)",
+				0x8086 => "Intel (R).",
+				0x10de => "NVidia (R)",
+				0x1414 => "Microsoft (R)",
+				0x13b5 => "ARM (R)."
+			];
+			var caps = bgfx.getCaps();
+			var vendor = vendors[caps.vendorId];
+			var renderer = caps.rendererType;
 
-			__driverInfo = "OpenGL Vendor=" + vendor + " Version=" + version + " Renderer=" + renderer + " GLSL=" + glslVersion;
+			__driverInfo = "BGFX Renderer Vendor=" + vendor + " Backend Renderer=" + renderer;
 		}
 
 		driverInfo = __driverInfo;
 
+		VertexBuffer3D.__registerDefaultLayouts(this);
+
 		__quadIndexBufferElements = Math.floor(0xFFFF / 4);
 		__quadIndexBufferCount = __quadIndexBufferElements * 6;
 
-		#if lime
 		var data = new UInt16Array(__quadIndexBufferCount);
 
 		var index:UInt = 0;
@@ -426,7 +383,9 @@ import lime.math.Vector2;
 
 		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray(data);
-		#end
+
+		__setViewId(0);
+		bgfx.setViewMode(0, SEQUENTIAL);
 	}
 
 	/**
@@ -464,67 +423,31 @@ import lime.math.Vector2;
 	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0,
 			mask:UInt = Context3DClearMask.ALL):Void
 	{
-		__flushGLFramebuffer();
-		__flushViewport();
+		__clear(false, red, green, blue, alpha, depth, stencil, mask);
+	}
 
-		var clearMask = 0;
+	@:noCompletion private function __clear(useScissor:Bool, red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1,
+			stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL)
+	{
+		var flags = 0;
+		if (mask & Context3DClearMask.COLOR != 0) flags |= bgfx.CLEAR_COLOR;
+		if (mask & Context3DClearMask.DEPTH != 0) flags |= bgfx.CLEAR_DEPTH;
+		if (mask & Context3DClearMask.STENCIL != 0) flags |= bgfx.CLEAR_STENCIL;
 
-		if (mask & Context3DClearMask.COLOR != 0)
+		var rgba = (Std.int(red * 255) << 24) | (Std.int(green * 255) << 16) | (Std.int(blue * 255) << 8) | Std.int(alpha * 255);
+
+		bgfx.setViewClear(__currentViewId, flags, rgba, depth, stencil);
+
+		if (mask & Context3DClearMask.COLOR != 0 && __state.renderToTexture == null)
 		{
-			if (__state.renderToTexture == null)
-			{
-				if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
-				__cleared = true;
-			}
-
-			clearMask |= gl.COLOR_BUFFER_BIT;
-
-			if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != true
-				|| __contextState.colorMaskGreen != true
-				|| __contextState.colorMaskBlue != true
-				|| __contextState.colorMaskAlpha != true #end)
-			{
-				gl.colorMask(true, true, true, true);
-				__contextState.colorMaskRed = true;
-				__contextState.colorMaskGreen = true;
-				__contextState.colorMaskBlue = true;
-				__contextState.colorMaskAlpha = true;
-			}
-
-			gl.clearColor(red, green, blue, alpha);
+			if (__stage.context3D == this && __stage.__renderer != null && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
+			__cleared = true;
 		}
+	}
 
-		if (mask & Context3DClearMask.DEPTH != 0)
-		{
-			clearMask |= gl.DEPTH_BUFFER_BIT;
-
-			if (#if openfl_disable_context_cache true #else __contextState.depthMask != true #end)
-			{
-				gl.depthMask(true);
-				__contextState.depthMask = true;
-			}
-
-			gl.clearDepth(depth);
-		}
-
-		if (mask & Context3DClearMask.STENCIL != 0)
-		{
-			clearMask |= gl.STENCIL_BUFFER_BIT;
-
-			if (#if openfl_disable_context_cache true #else __contextState.stencilWriteMask != 0xFF #end)
-			{
-				gl.stencilMask(0xFF);
-				__contextState.stencilWriteMask = 0xFF;
-			}
-
-			gl.clearStencil(stencil);
-			__contextState.stencilWriteMask = 0xFF;
-		}
-
-		if (clearMask == 0) return;
-
-		__setGLScissorTest(false);
-		gl.clear(clearMask);
+	@:noCompletion private function __setViewId(id:Int = 0)
+	{
+		__currentViewId = id;
 	}
 
 	/**
@@ -591,15 +514,27 @@ import lime.math.Vector2;
 		}
 		#end
 
+		__backBufferAntiAlias = antiAlias;
+		__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
+		__backBufferWantsBestResolution = wantsBestResolution;
+		__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
+
 		if (__stage3D == null)
 		{
-			backBufferWidth = width;
-			backBufferHeight = height;
+			if (__backBufferTexture == null || backBufferWidth != width || backBufferHeight != height)
+			{
+				backBufferWidth = width;
+				backBufferHeight = height;
 
-			__backBufferAntiAlias = antiAlias;
-			__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
-			__backBufferWantsBestResolution = wantsBestResolution;
-			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
+				// if (__backBufferTexture != null) __backBufferTexture.dispose();
+
+				// __backBufferTexture = createRectangleTexture(width, height, BGRA, true);
+
+				// __state.__primaryBGFXFramebuffer = __backBufferTexture.__getFramebuffer(enableDepthAndStencil, antiAlias, 0);
+
+				// bgfx.setViewFrameBuffer(__currentViewId, __state.__primaryBGFXFramebuffer);
+				bgfx.setViewRect(__currentViewId, 0, 0, width, height);
+			}
 		}
 		else
 		{
@@ -623,38 +558,38 @@ import lime.math.Vector2;
 				var scaledWidth = wantsBestResolution ? width : Std.int(width * __stage.window.scale);
 				var scaledHeight = wantsBestResolution ? height : Std.int(height * __stage.window.scale);
 				#end
-				var vertexData = new Vector<Float>([
+				var vertexData:Array<Float> = [
 					scaledWidth,
 					scaledHeight,
-					0,
-					1,
-					1,
-					0,
+					0.0,
+					1.0,
+					1.0,
+					0.0,
 					scaledHeight,
-					0,
-					0,
-					1,
+					0.0,
+					0.0,
+					1.0,
 					scaledWidth,
-					0,
-					0,
-					1,
-					0,
-					0,
-					0,
-					0,
-					0,
+					0.0,
+					0.0,
+					1.0,
+					0.0,
+					0.0,
+					0.0,
+					0.0,
+					0.0,
 					0.0
-				]);
+				];
 
-				__stage3D.__vertexBuffer.uploadFromVector(vertexData, 0, 20);
+				__stage3D.__vertexBuffer.uploadFromArray(vertexData, 0, 20);
 
 				if (__stage3D.__indexBuffer == null)
 				{
 					__stage3D.__indexBuffer = createIndexBuffer(6);
 
-					var indexData = new Vector<UInt>([0, 1, 2, 2, 1, 3]);
+					var indexData:Array<UInt> = [0, 1, 2, 2, 1, 3];
 
-					__stage3D.__indexBuffer.uploadFromVector(indexData, 0, 6);
+					__stage3D.__indexBuffer.uploadFromArray(indexData, 0, 6);
 				}
 			}
 
@@ -665,9 +600,23 @@ import lime.math.Vector2;
 			__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
 			__backBufferWantsBestResolution = wantsBestResolution;
 			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
-			__state.__primaryGLFramebuffer = __backBufferTexture.__getFramebuffer(enableDepthAndStencil, antiAlias, 0);
+			__state.__primaryBGFXFramebuffer = __backBufferTexture.__getFramebuffer(enableDepthAndStencil, antiAlias, 0);
 			__frontBufferTexture.__getFramebuffer(enableDepthAndStencil, antiAlias, 0);
+
+			bgfx.setViewFrameBuffer(__currentViewId, __state.__primaryBGFXFramebuffer);
+			bgfx.setViewRect(__currentViewId, 0, 0, width, height);
 		}
+	}
+
+	@:noCompletion private function __getSupportedDepth():BGFXTextureFormat
+	{
+		if (__supportedDepth != null) return __supportedDepth;
+
+		var formats = [D24S8, D32F, D24, D16];
+		for (format in formats)
+			if (bgfx.isTextureValid(0, false, 1, format, bgfx.TEXTURE_RT_WRITE_ONLY)) return __supportedDepth = format;
+
+		return D24S8;
 	}
 
 	/**
@@ -936,6 +885,43 @@ import lime.math.Vector2;
 	}
 
 	/**
+		Checks whether ASTC (Adaptive Scalable Texture Compression) is supported on this Context3D instance.
+
+		@return `true` if ASTC textures can be used on this device, `false` otherwise.
+	**/
+	public function isASTCSupported():Bool
+	{
+		if (ASTCTexture.__astcCompressedTexturesSupported == null)
+		{
+			// Use 4x4 as an example since there's no general ASTC format
+			var astcFormat = bgfx.getCaps().formats[ASTC4x4];
+
+			// There's also CAPS_FORMAT_TEXTURE_2D_EMULATED but i don't know if it would still retain the benifits of ASTC
+			ASTCTexture.__astcCompressedTexturesSupported = (astcFormat & bgfx.CAPS_FORMAT_TEXTURE_2D) != 0;
+		}
+
+		return ASTCTexture.__astcCompressedTexturesSupported == true;
+	}
+
+	/**
+		Creates a new ASTCTexture instance from ASTC-compressed data.
+
+		You must check `isASTCSupported()` before calling this method.
+
+		@param data A ByteArray containing ASTC-compressed texture data.
+		@return An `ASTCTexture` ready for use in rendering.
+
+		@throws IllegalOperationError If ASTC is not supported on this device (missing extension).
+		@throws IllegalOperationError If the ASTC signature in `data` is invalid.
+		@throws IllegalOperationError If the ASTC block format (blockX × blockY) is not supported.
+		@throws IllegalOperationError If the ASTC file is too short for header + blocks.
+	**/
+	public function createASTCTexture(data:ByteArray):ASTCTexture
+	{
+		return new ASTCTexture(this, data);
+	}
+
+	/**
 		Creates a VertexBuffer3D object.
 
 		Use a VertexBuffer3D object to upload a set of vertex data to the rendering
@@ -1046,7 +1032,7 @@ import lime.math.Vector2;
 	{
 		// TODO: Dispose all related buffers
 
-		gl = null;
+		bgfx = null;
 		__dispose();
 	}
 
@@ -1092,46 +1078,52 @@ import lime.math.Vector2;
 	public function drawToBitmapData(destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void
 	{
 		#if lime
-		if (destination == null) return;
+		// TODO: doesn't seem to be used so it's low priority.
+		// if (destination == null) return;
 
-		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle() : new LimeRectangle(0, 0, backBufferWidth, backBufferHeight);
-		var destVector = destPoint != null ? destPoint.__toLimeVector2() : new Vector2();
+		// var sourceRect = srcRect != null ? srcRect.__toLimeRectangle() : new LimeRectangle(0, 0, backBufferWidth, backBufferHeight);
+		// var destVector = destPoint != null ? destPoint.__toLimeVector2() : new Vector2();
 
-		if (__stage.context3D == this)
-		{
-			if (__stage.window != null)
-			{
-				if (__stage3D != null)
-				{
-					destVector.setTo(Std.int(-__stage3D.x), Std.int(-__stage3D.y));
-				}
+		// if (__stage.context3D == this)
+		// {
+		// 	if (__stage.window != null)
+		// 	{
+		// 		if (__stage3D != null)
+		// 		{
+		// 			destVector.setTo(Std.int(-__stage3D.x), Std.int(-__stage3D.y));
+		// 		}
 
-				var image = __stage.window.readPixels();
-				destination.image.copyPixels(image, sourceRect, destVector);
-			}
-		}
-		else if (__backBufferTexture != null)
-		{
-			var cacheRenderToTexture = __state.renderToTexture;
-			setRenderToBackBuffer();
+		// 		var image = __stage.window.readPixels();
+		// 		destination.image.copyPixels(image, sourceRect, destVector);
+		// 	}
+		// }
+		// else if (__backBufferTexture != null)
+		// {
+		// 	#if openfl_bgfx_experimental_blitting
+		// 	// TODO blit the back buffer into a new texture instead of copying it to an image buffer
+		// 	// Instead of copying it to an image buffer
+		// 	#else
+		// 	#end
+		// 	var cacheRenderToTexture = __state.renderToTexture;
+		// 	setRenderToBackBuffer();
 
-			__flushGLFramebuffer();
-			__flushViewport();
+		// 	// __flushGLFramebuffer();
+		// 	// __flushViewport();
 
-			// TODO: Read less pixels if srcRect is smaller
+		// 	// TODO: Read less pixels if srcRect is smaller
 
-			var data = new UInt8Array(backBufferWidth * backBufferHeight * 4);
-			gl.readPixels(0, 0, backBufferWidth, backBufferHeight, __backBufferTexture.__format, gl.UNSIGNED_BYTE, data);
+		// 	var data = new UInt8Array(backBufferWidth * backBufferHeight * 4);
+		// 	gl.readPixels(0, 0, backBufferWidth, backBufferHeight, __backBufferTexture.__format, gl.UNSIGNED_BYTE, data);
 
-			var image = new Image(new ImageBuffer(data, backBufferWidth, backBufferHeight, 32, BGRA32));
-			destination.image.copyPixels(image, sourceRect, destVector);
+		// 	var image = new Image(new ImageBuffer(data, backBufferWidth, backBufferHeight, 32, BGRA32));
+		// 	destination.image.copyPixels(image, sourceRect, destVector);
 
-			if (cacheRenderToTexture != null)
-			{
-				setRenderToTexture(cacheRenderToTexture, __state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
-					__state.renderToTextureSurfaceSelector);
-			}
-		}
+		// 	if (cacheRenderToTexture != null)
+		// 	{
+		// 		setRenderToTexture(cacheRenderToTexture, __state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
+		// 			__state.renderToTextureSurfaceSelector);
+		// 	}
+		// }
 		#end
 	}
 
@@ -1212,35 +1204,125 @@ import lime.math.Vector2;
 		@throws	Error — Stream Read But Not Set: A vertex attribute used by the current
 		vertex program is not set (using `setVertexBufferAt()`).
 	**/
+	public var program:BGFXProgram;
+
 	public function drawTriangles(indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void
 	{
-		#if !openfl_disable_display_render
+		if (__state.program == null || __state.program.__glProgram == null || __activeVertexBuffer == null) return;
+
 		if (__state.renderToTexture == null)
 		{
-			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this && !__stage.__renderer.__cleared)
-			{
-				__stage.__renderer.__clear();
-			}
-			else if (!__cleared)
-			{
-				// TODO: Throw error if error reporting is enabled?
-				clear(0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
-			}
-		}
-
-		__flush();
-		#end
-
-		if (__state.program != null)
-		{
-			__state.program.__flush();
+			if (__stage.context3D == this && __stage.__renderer != null && !__stage.__renderer.__cleared) __stage.__renderer.__clear();
+			if (!__cleared) clear(0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
 		}
 
 		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
 
-		__bindGLElementArrayBuffer(indexBuffer.__id);
-		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
+		__activeVertexBuffer.__buildLayoutQueue();
+		__activeVertexBuffer.__updateLayout(null);
+
+		switch (indexBuffer.__idbh)
+		{
+			case Static(ib):
+				bgfx.setIndexBufferIndices(ib, firstIndex, count);
+			case Dynamic(ib):
+				bgfx.setDynamicIndexBufferIndices(ib, firstIndex, count);
+		}
+
+		__flush();
+
+		bgfx.setState(__buildState(), 0);
+
+		// DISCARD_INDEX_BUFFER so this draw's index buffer doesn't persist into a following
+		// non-indexed __drawTriangles (Context3DGraphics) and wrongly make it indexed.
+		bgfx.submit(__currentViewId, __state.program.__glProgram, 0, bgfx.DISCARD_STATE | bgfx.DISCARD_INDEX_BUFFER);
+		__activeVertexBuffer = null;
+	}
+
+	private function __buildState():Int64
+	{
+		var state:Int64 = Int64.make(0, 0);
+
+		if (__state.colorMaskRed) state |= bgfx.STATE_WRITE_R;
+		if (__state.colorMaskGreen) state |= bgfx.STATE_WRITE_G;
+		if (__state.colorMaskBlue) state |= bgfx.STATE_WRITE_B;
+		if (__state.colorMaskAlpha) state |= bgfx.STATE_WRITE_A;
+
+		if (__state.backBufferEnableDepthAndStencil)
+		{
+			if (__state.depthMask) state |= bgfx.STATE_WRITE_Z;
+
+			switch (__state.depthCompareMode)
+			{
+				case ALWAYS:
+					state |= bgfx.STATE_DEPTH_TEST_ALWAYS;
+				case EQUAL:
+					state |= bgfx.STATE_DEPTH_TEST_EQUAL;
+				case GREATER:
+					state |= bgfx.STATE_DEPTH_TEST_GREATER;
+				case GREATER_EQUAL:
+					state |= bgfx.STATE_DEPTH_TEST_GEQUAL;
+				case LESS:
+					state |= bgfx.STATE_DEPTH_TEST_LESS;
+				case LESS_EQUAL:
+					state |= bgfx.STATE_DEPTH_TEST_LEQUAL;
+				case NEVER:
+					state |= bgfx.STATE_DEPTH_TEST_NEVER;
+				case NOT_EQUAL:
+					state |= bgfx.STATE_DEPTH_TEST_NOTEQUAL;
+			}
+		}
+
+		if (__state.culling != NONE)
+		{
+			// bgfx has no glFrontFace equivalent, so the front-face winding must be baked into
+			// the cull constant. OpenFL renders the main backbuffer through a Y-flipped
+			// projection (GL uses __setGLFrontFace(false) = CW front there), which inverts
+			// window-space winding vs a render-target pass. Match GL: on the backbuffer, BACK
+			// culls CCW-wound triangles; on an RTT, BACK culls CW.
+			var flipped = __state.renderToTexture == null;
+			switch (__state.culling)
+			{
+				case BACK:
+					state |= flipped ? bgfx.STATE_CULL_CCW : bgfx.STATE_CULL_CW;
+				case FRONT:
+					state |= flipped ? bgfx.STATE_CULL_CW : bgfx.STATE_CULL_CCW;
+				case FRONT_AND_BACK, NONE:
+					state |= 0; // :(
+			}
+		}
+
+		inline function contextBlendToBGFX(blend:Context3DBlendFactor):Int64
+		{
+			return switch (blend)
+			{
+				case DESTINATION_ALPHA:
+					bgfx.STATE_BLEND_DST_ALPHA;
+				case DESTINATION_COLOR:
+					bgfx.STATE_BLEND_DST_COLOR;
+				case ONE:
+					bgfx.STATE_BLEND_ONE;
+				case ONE_MINUS_DESTINATION_ALPHA:
+					bgfx.STATE_BLEND_INV_DST_ALPHA;
+				case ONE_MINUS_DESTINATION_COLOR:
+					bgfx.STATE_BLEND_INV_DST_COLOR;
+				case ONE_MINUS_SOURCE_ALPHA:
+					bgfx.STATE_BLEND_INV_SRC_ALPHA;
+				case ONE_MINUS_SOURCE_COLOR:
+					bgfx.STATE_BLEND_INV_SRC_COLOR;
+				case SOURCE_ALPHA:
+					bgfx.STATE_BLEND_SRC_ALPHA;
+				case SOURCE_COLOR:
+					bgfx.STATE_BLEND_SRC_COLOR;
+				case ZERO:
+					bgfx.STATE_BLEND_ZERO;
+				default: 0;
+			}
+		}
+		state |= bgfx.blendFuncSeparate(contextBlendToBGFX(__state.blendSourceRGBFactor), contextBlendToBGFX(__state.blendDestinationRGBFactor),
+			contextBlendToBGFX(__state.blendSourceAlphaFactor), contextBlendToBGFX(__state.blendDestinationAlphaFactor));
+
+		return state;
 	}
 
 	/**
@@ -1263,7 +1345,7 @@ import lime.math.Vector2;
 	**/
 	public function present():Void
 	{
-		setRenderToBackBuffer();
+		// setRenderToBackBuffer();
 
 		if (__stage3D != null && __backBufferTexture != null)
 		{
@@ -1274,14 +1356,16 @@ import lime.math.Vector2;
 				clear(0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
 			}
 
-			var cacheBuffer = __backBufferTexture;
-			__backBufferTexture = __frontBufferTexture;
-			__frontBufferTexture = cacheBuffer;
+			// 	var cacheBuffer = __backBufferTexture;
+			// 	__backBufferTexture = __frontBufferTexture;
+			// 	__frontBufferTexture = cacheBuffer;
 
-			__state.__primaryGLFramebuffer = __backBufferTexture.__getFramebuffer(__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
+			// 	__state.__primaryBGFXFramebuffer = __backBufferTexture.__getFramebuffer(__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
 			__cleared = false;
 		}
 
+		bgfx.frame(0);
+		setTextures = [];
 		__present = true;
 	}
 
@@ -1330,9 +1414,6 @@ import lime.math.Vector2;
 		__state.blendDestinationRGBFactor = destinationRGBFactor;
 		__state.blendSourceAlphaFactor = sourceAlphaFactor;
 		__state.blendDestinationAlphaFactor = destinationAlphaFactor;
-
-		// TODO: Better way to handle this?
-		__setGLBlendEquation(gl.FUNC_ADD);
 	}
 
 	/**
@@ -1510,7 +1591,7 @@ import lime.math.Vector2;
 		#if lime
 		if (__state.program != null && __state.program.__format == GLSL)
 		{
-			__flushGLProgram();
+			__flushProgram();
 
 			// TODO: Cache value, prevent need to copy
 			var data = new Float32Array(16);
@@ -1605,6 +1686,63 @@ import lime.math.Vector2;
 		than `numRegisters*4`
 	**/
 	public function setProgramConstantsFromVector(programType:Context3DProgramType, firstRegister:Int, data:Vector<Float>, numRegisters:Int = -1):Void
+	{
+		if (numRegisters == 0) return;
+
+		if (__state.program != null && __state.program.__format == GLSL) {}
+		else
+		{
+			if (numRegisters == -1)
+			{
+				numRegisters = (data.length >> 2);
+			}
+
+			var isVertex = (programType == VERTEX);
+			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			var source = data;
+
+			var sourceIndex = 0;
+			var destIndex = firstRegister * 4;
+
+			for (i in 0...numRegisters)
+			{
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+				dest[destIndex++] = source[sourceIndex++];
+			}
+
+			if (__state.program != null)
+			{
+				__state.program.__markDirty(isVertex, firstRegister, numRegisters);
+			}
+		}
+	}
+
+	/**
+		Sets the constant inputs for the shader programs.
+
+		Sets an array of constants to be accessed by a vertex or fragment shader
+		program. Constants set in Program3D are accessed within the shader programs as
+		constant registers. Each constant register is comprised of 4 floating point
+		values (x, y, z, w). Therefore every register requires 4 entries in the data
+		Vector. The number of registers that you can set for vertex program and
+		fragment program depends on the Context3DProfile.
+
+		@param	programType	The type of shader program, either
+		`Context3DProgramType.VERTEX` or `Context3DProgramType.FRAGMENT`.
+		@param	firstRegister	the index of the first constant register to set.
+		@param	data	the floating point constant values. There must be at least
+		`numRegisters` 4 elements in data.
+		@param	numRegisters	the number of constants to set. Specify -1, the default
+		value, to set enough registers to use all of the available data.
+		@throws	TypeError	Null Pointer Error: when data is `null`.
+		@throws	RangeError	Constant Register Out Of Bounds: when attempting to set more
+		than the maximum number of shader constant registers.
+		@throws	RangeError	Bad Input Size: When the number of elements in data is less
+		than `numRegisters*4`
+	**/
+	public function setProgramConstantsFromArray(programType:Context3DProgramType, firstRegister:Int, data:Array<Float>, numRegisters:Int = -1):Void
 	{
 		if (numRegisters == 0) return;
 
@@ -1853,12 +1991,6 @@ import lime.math.Vector2;
 	**/
 	public function setTextureAt(sampler:Int, texture:TextureBase):Void
 	{
-		// if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
-
-		// 	throw new Error ("sampler out of range");
-
-		// }
-
 		__state.textures[sampler] = texture;
 	}
 
@@ -1912,93 +2044,87 @@ import lime.math.Vector2;
 		is outside the range from 0 through 7. (A maximum of eight vertex attribute
 		registers can be used by a shader.)
 	**/
-	public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
+	public function setVertexBufferAt(index:BGFXAttrib, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
 	{
-		if (index < 0) return;
+		if (buffer == null || (__activeVertexBuffer != null && __activeVertexBuffer != buffer)) return;
 
-		if (buffer == null)
-		{
-			gl.disableVertexAttribArray(index);
-			__bindGLArrayBuffer(null);
-			return;
-		}
-
-		__bindGLArrayBuffer(buffer.__id);
-		gl.enableVertexAttribArray(index);
-
-		var byteOffset = bufferOffset * 4;
+		__activeVertexBuffer = buffer;
 
 		switch (format)
 		{
 			case BYTES_4:
-				gl.vertexAttribPointer(index, 4, gl.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
+				buffer.__queueLayout(index, {
+					type: UINT8,
+					num: 4,
+					asInt: false,
+					normalized: true
+				}, bufferOffset);
 
 			case FLOAT_4:
-				gl.vertexAttribPointer(index, 4, gl.FLOAT, false, buffer.__stride, byteOffset);
+				buffer.__queueLayout(index, {
+					type: FLOAT,
+					num: 4,
+					asInt: false,
+					normalized: false
+				}, bufferOffset);
 
 			case FLOAT_3:
-				gl.vertexAttribPointer(index, 3, gl.FLOAT, false, buffer.__stride, byteOffset);
+				buffer.__queueLayout(index, {
+					type: FLOAT,
+					num: 3,
+					asInt: false,
+					normalized: false
+				}, bufferOffset);
 
 			case FLOAT_2:
-				gl.vertexAttribPointer(index, 2, gl.FLOAT, false, buffer.__stride, byteOffset);
+				buffer.__queueLayout(index, {
+					type: FLOAT,
+					num: 2,
+					asInt: false,
+					normalized: false
+				}, bufferOffset);
 
 			case FLOAT_1:
-				gl.vertexAttribPointer(index, 1, gl.FLOAT, false, buffer.__stride, byteOffset);
+				buffer.__queueLayout(index, {
+					type: FLOAT,
+					num: 1,
+					asInt: false,
+					normalized: false
+				}, bufferOffset);
 
 			default:
 				throw new IllegalOperationError();
 		}
 	}
 
-	@:noCompletion private function __bindGLArrayBuffer(buffer:GLBuffer):Void
+	@:noCompletion private function __bindGLArrayBuffer(buffer:Dynamic):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__currentGLArrayBuffer != buffer #end)
-		{
-			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-			__contextState.__currentGLArrayBuffer = buffer;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
-	@:noCompletion private function __bindGLElementArrayBuffer(buffer:GLBuffer):Void
+	@:noCompletion private function __bindGLElementArrayBuffer(buffer:Dynamic):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__currentGLElementArrayBuffer != buffer #end)
-		{
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-			__contextState.__currentGLElementArrayBuffer = buffer;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
-	@:noCompletion private function __bindGLFramebuffer(framebuffer:GLFramebuffer):Void
+	@:noCompletion private function __bindGLFramebuffer(framebuffer:Dynamic):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__currentGLFramebuffer != framebuffer #end)
-		{
-			gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-			__contextState.__currentGLFramebuffer = framebuffer;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
-	@:noCompletion private function __bindGLTexture2D(texture:GLTexture):Void
+	@:noCompletion private function __bindGLTexture2D(texture:Dynamic):Void
 	{
-		// TODO: Need to consider activeTexture ID
-
-		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTexture2D != texture #end) {
-
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		__contextState.__currentGLTexture2D = texture;
-
-		// }
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
-	@:noCompletion private function __bindGLTextureCubeMap(texture:GLTexture):Void
+	@:noCompletion private function __bindGLTextureCubeMap(texture:Dynamic):Void
 	{
-		// TODO: Need to consider activeTexture ID
-
-		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTextureCubeMap != texture #end) {
-
-		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-		__contextState.__currentGLTextureCubeMap = texture;
-
-		// }
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __dispose():Void
@@ -2027,42 +2153,28 @@ import lime.math.Vector2;
 
 	@:noCompletion private function __drawTriangles(firstIndex:Int = 0, count:Int):Void
 	{
-		#if !openfl_disable_display_render
+		if (__state.program == null || __state.program.__glProgram == null || __activeVertexBuffer == null) return;
+
 		if (__state.renderToTexture == null)
 		{
-			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this && !__stage.__renderer.__cleared)
-			{
-				__stage.__renderer.__clear();
-			}
-			else if (!__cleared)
-			{
-				// TODO: Throw error if error reporting is enabled?
-				clear(0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
-			}
+			if (__stage.context3D == this && __stage.__renderer != null && !__stage.__renderer.__cleared) __stage.__renderer.__clear();
+			if (!__cleared) clear(0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
 		}
+
+		__activeVertexBuffer.__buildLayoutQueue();
+		__activeVertexBuffer.__updateLayout(count);
 
 		__flush();
-		#end
 
-		if (__state.program != null)
-		{
-			__state.program.__flush();
-		}
+		bgfx.setState(__buildState(), 0);
 
-		gl.drawArrays(gl.TRIANGLES, firstIndex, count);
+		bgfx.submit(__currentViewId, __state.program.__glProgram, 0, bgfx.DISCARD_STATE | bgfx.DISCARD_INDEX_BUFFER);
+		__activeVertexBuffer = null;
 	}
 
 	@:noCompletion private function __flush():Void
 	{
-		__flushGLProgram();
-		__flushGLFramebuffer();
 		__flushViewport();
-
-		__flushGLBlend();
-		__flushGLColor();
-		__flushGLCulling();
-		__flushGLDepth();
 		__flushScissor();
 		__flushStencil();
 		__flushTextures();
@@ -2070,384 +2182,118 @@ import lime.math.Vector2;
 
 	@:noCompletion private function __flushGLBlend():Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.blendDestinationRGBFactor != __state.blendDestinationRGBFactor
-			|| __contextState.blendSourceRGBFactor != __state.blendSourceRGBFactor
-			|| __contextState.blendDestinationAlphaFactor != __state.blendDestinationAlphaFactor
-			|| __contextState.blendSourceAlphaFactor != __state.blendSourceAlphaFactor #end)
-		{
-			__setGLBlend(true);
-
-			if (__state.blendDestinationRGBFactor == __state.blendDestinationAlphaFactor
-				&& __state.blendSourceRGBFactor == __state.blendSourceAlphaFactor)
-			{
-				gl.blendFunc(__getGLBlend(__state.blendSourceRGBFactor), __getGLBlend(__state.blendDestinationRGBFactor));
-			}
-			else
-			{
-				gl.blendFuncSeparate(__getGLBlend(__state.blendSourceRGBFactor), __getGLBlend(__state.blendDestinationRGBFactor),
-					__getGLBlend(__state.blendSourceAlphaFactor), __getGLBlend(__state.blendDestinationAlphaFactor));
-			}
-
-			__contextState.blendDestinationRGBFactor = __state.blendDestinationRGBFactor;
-			__contextState.blendSourceRGBFactor = __state.blendSourceRGBFactor;
-			__contextState.blendDestinationAlphaFactor = __state.blendDestinationAlphaFactor;
-			__contextState.blendSourceAlphaFactor = __state.blendSourceAlphaFactor;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private inline function __flushGLColor():Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != __state.colorMaskRed
-			|| __contextState.colorMaskGreen != __state.colorMaskGreen
-			|| __contextState.colorMaskBlue != __state.colorMaskBlue
-			|| __contextState.colorMaskAlpha != __state.colorMaskAlpha #end)
-		{
-			gl.colorMask(__state.colorMaskRed, __state.colorMaskGreen, __state.colorMaskBlue, __state.colorMaskAlpha);
-			__contextState.colorMaskRed = __state.colorMaskRed;
-			__contextState.colorMaskGreen = __state.colorMaskGreen;
-			__contextState.colorMaskBlue = __state.colorMaskBlue;
-			__contextState.colorMaskAlpha = __state.colorMaskAlpha;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __flushGLCulling():Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.culling != __state.culling #end)
-		{
-			if (__state.culling == NONE)
-			{
-				__setGLCullFace(false);
-			}
-			else
-			{
-				__setGLCullFace(true);
-
-				switch (__state.culling)
-				{
-					case NONE: // skip
-					case BACK:
-						gl.cullFace(gl.BACK);
-					case FRONT:
-						gl.cullFace(gl.FRONT);
-					case FRONT_AND_BACK:
-						gl.cullFace(gl.FRONT_AND_BACK);
-					default:
-						throw new IllegalOperationError();
-				}
-			}
-
-			__contextState.culling = __state.culling;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __flushGLDepth():Void
 	{
-		var depthMask = (__state.depthMask
-			&& (__state.renderToTexture != null ? __state.renderToTextureDepthStencil : __state.backBufferEnableDepthAndStencil));
-
-		if (#if openfl_disable_context_cache true #else __contextState.depthMask != depthMask #end)
-		{
-			gl.depthMask(depthMask);
-			__contextState.depthMask = depthMask;
-		}
-
-		if (#if openfl_disable_context_cache true #else __contextState.depthCompareMode != __state.depthCompareMode #end)
-		{
-			switch (__state.depthCompareMode)
-			{
-				case ALWAYS:
-					gl.depthFunc(gl.ALWAYS);
-				case EQUAL:
-					gl.depthFunc(gl.EQUAL);
-				case GREATER:
-					gl.depthFunc(gl.GREATER);
-				case GREATER_EQUAL:
-					gl.depthFunc(gl.GEQUAL);
-				case LESS:
-					gl.depthFunc(gl.LESS);
-				case LESS_EQUAL:
-					gl.depthFunc(gl.LEQUAL);
-				case NEVER:
-					gl.depthFunc(gl.NEVER);
-				case NOT_EQUAL:
-					gl.depthFunc(gl.NOTEQUAL);
-				default:
-					throw new IllegalOperationError();
-			}
-
-			__contextState.depthCompareMode = __state.depthCompareMode;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __flushGLFramebuffer():Void
 	{
-		if (__state.renderToTexture != null)
-		{
-			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != __state.renderToTexture
-				|| __contextState.renderToTextureSurfaceSelector != __state.renderToTextureSurfaceSelector #end)
-			{
-				var framebuffer = __state.renderToTexture.__getFramebuffer(__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
-					__state.renderToTextureSurfaceSelector);
-				__bindGLFramebuffer(framebuffer);
-
-				__contextState.renderToTexture = __state.renderToTexture;
-				__contextState.renderToTextureAntiAlias = __state.renderToTextureAntiAlias;
-				__contextState.renderToTextureDepthStencil = __state.renderToTextureDepthStencil;
-				__contextState.renderToTextureSurfaceSelector = __state.renderToTextureSurfaceSelector;
-			}
-
-			__setGLDepthTest(__state.renderToTextureDepthStencil);
-			__setGLStencilTest(__state.renderToTextureDepthStencil);
-
-			__setGLFrontFace(true);
-		}
-		else
-		{
-			if (__stage == null && backBufferWidth == 0 && backBufferHeight == 0)
-			{
-				throw new Error("Context3D backbuffer has not been configured");
-			}
-
-			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != null
-				|| __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer
-				|| __contextState.backBufferEnableDepthAndStencil != __state.backBufferEnableDepthAndStencil #end
-			)
-			{
-				__bindGLFramebuffer(__state.__primaryGLFramebuffer);
-
-				__contextState.renderToTexture = null;
-				__contextState.backBufferEnableDepthAndStencil = __state.backBufferEnableDepthAndStencil;
-			}
-
-			__setGLDepthTest(__state.backBufferEnableDepthAndStencil);
-			__setGLStencilTest(__state.backBufferEnableDepthAndStencil);
-
-			__setGLFrontFace(__stage.context3D != this);
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
-	@:noCompletion private function __flushGLProgram():Void
+	@:noCompletion private function __flushProgram():Void
 	{
-		var shader = __state.shader;
-		var program = __state.program;
+		// var shader = __state.shader;
+		// var program = __state.program;
 
-		if (#if openfl_disable_context_cache true #else __contextState.shader != shader #end)
-		{
-			// TODO: Merge this logic
-
-			if (__contextState.shader != null)
-			{
-				__contextState.shader.__disable();
-			}
-
-			if (shader != null)
-			{
-				shader.__enable();
-			}
-
-			__contextState.shader = shader;
-		}
-
-		if (#if openfl_disable_context_cache true #else __contextState.program != program #end)
-		{
-			if (__contextState.program != null)
-			{
-				__contextState.program.__disable();
-			}
-
-			if (program != null)
-			{
-				program.__enable();
-			}
-
-			__contextState.program = program;
-		}
-
-		if (program != null && program.__format == AGAL)
-		{
-			__positionScale[1] = (__stage.context3D == this && __state.renderToTexture == null) ? 1.0 : -1.0;
-			program.__setPositionScale(__positionScale);
-		}
+		// if (program != null && program.__format == AGAL)
+		// {
+		// 	__positionScale[1] = (__stage.context3D == this && __state.renderToTexture == null) ? 1.0 : -1.0;
+		// 	program.__setPositionScale(__positionScale);
+		// }
 	}
 
 	@:noCompletion private function __flushScissor():Void
 	{
-		if (!__state.scissorEnabled)
+		if (!__state.scissorEnabled) return;
+
+		var scissorX = Std.int(__state.scissorRectangle.x);
+		var scissorY = Std.int(__state.scissorRectangle.y);
+		var scissorWidth = Std.int(__state.scissorRectangle.width);
+		var scissorHeight = Std.int(__state.scissorRectangle.height);
+
+		#if !openfl_dpi_aware
+		if (__backBufferWantsBestResolution)
 		{
-			if (#if openfl_disable_context_cache true #else __contextState.scissorEnabled != __state.scissorEnabled #end)
-			{
-				__setGLScissorTest(false);
-				__contextState.scissorEnabled = false;
-			}
+			scissorX = Std.int(__state.scissorRectangle.x * __stage.window.scale);
+			scissorY = Std.int(__state.scissorRectangle.y * __stage.window.scale);
+			scissorWidth = Std.int(__state.scissorRectangle.width * __stage.window.scale);
+			scissorHeight = Std.int(__state.scissorRectangle.height * __stage.window.scale);
 		}
-		else
-		{
-			__setGLScissorTest(true);
-			__contextState.scissorEnabled = true;
+		#end
 
-			var scissorX = Std.int(__state.scissorRectangle.x);
-			var scissorY = Std.int(__state.scissorRectangle.y);
-			var scissorWidth = Std.int(__state.scissorRectangle.width);
-			var scissorHeight = Std.int(__state.scissorRectangle.height);
-			#if !openfl_dpi_aware
-			if (__backBufferWantsBestResolution)
-			{
-				scissorX = Std.int(__state.scissorRectangle.x * __stage.window.scale);
-				scissorY = Std.int(__state.scissorRectangle.y * __stage.window.scale);
-				scissorWidth = Std.int(__state.scissorRectangle.width * __stage.window.scale);
-				scissorHeight = Std.int(__state.scissorRectangle.height * __stage.window.scale);
-			}
-			#end
-
-			if (__state.renderToTexture == null && __stage3D == null)
-			{
-				var contextHeight = Std.int(__stage.window.height * __stage.window.scale);
-				scissorY = contextHeight - scissorHeight - scissorY;
-			}
-
-			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX
-				|| __contextState.scissorRectangle.y != scissorY
-				|| __contextState.scissorRectangle.width != scissorWidth
-				|| __contextState.scissorRectangle.height != scissorHeight #end)
-			{
-				gl.scissor(scissorX, scissorY, scissorWidth, scissorHeight);
-				__contextState.scissorRectangle.setTo(scissorX, scissorY, scissorWidth, scissorHeight);
-			}
-		}
+		bgfx.setScissor(scissorX, scissorY, scissorWidth, scissorHeight);
 	}
 
 	@:noCompletion private function __flushStencil():Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.stencilTriangleFace != __state.stencilTriangleFace
-			|| __contextState.stencilPass != __state.stencilPass
-			|| __contextState.stencilDepthFail != __state.stencilDepthFail
-			|| __contextState.stencilFail != __state.stencilFail #end)
+		// NOTE: OpenFL used glStencilMask(0xFF/0) on GL
+		// BGFX does not expose any stencil mask functionality
+		// Must make sure this doesn't cause any trouble
+
+		if (__state.stencilCompareMode == NEVER)
 		{
-			gl.stencilOpSeparate(__getGLTriangleFace(__state.stencilTriangleFace), __getGLStencilAction(__state.stencilFail),
-				__getGLStencilAction(__state.stencilDepthFail), __getGLStencilAction(__state.stencilPass));
-			__contextState.stencilTriangleFace = __state.stencilTriangleFace;
-			__contextState.stencilPass = __state.stencilPass;
-			__contextState.stencilDepthFail = __state.stencilDepthFail;
-			__contextState.stencilFail = __state.stencilFail;
+			bgfx.setStencil(bgfx.STENCIL_NONE, bgfx.STENCIL_NONE);
+			return;
 		}
 
-		if (#if openfl_disable_context_cache true #else __contextState.stencilWriteMask != __state.stencilWriteMask #end)
-		{
-			gl.stencilMask(__state.stencilWriteMask);
-			__contextState.stencilWriteMask = __state.stencilWriteMask;
-		}
+		var stencil:Int = bgfx.STENCIL_NONE;
 
-		if (#if openfl_disable_context_cache true #else __contextState.stencilCompareMode != __state.stencilCompareMode
-			|| __contextState.stencilReferenceValue != __state.stencilReferenceValue
-			|| __contextState.stencilReadMask != __state.stencilReadMask #end
-		)
+		stencil |= __getStencilCompareMode(__state.stencilCompareMode);
+		stencil |= bgfx.stencilFuncRef(__state.stencilReferenceValue);
+		stencil |= bgfx.stencilFuncRmask(__state.stencilReadMask);
+
+		stencil |= __getBGFXStencilOpFailS(__state.stencilFail);
+		stencil |= __getBGFXStencilOpFailZ(__state.stencilDepthFail);
+		stencil |= __getBGFXStencilOpPassZ(__state.stencilPass);
+
+		switch (__state.stencilTriangleFace)
 		{
-			gl.stencilFunc(__getGLCompareMode(__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
-			__contextState.stencilCompareMode = __state.stencilCompareMode;
-			__contextState.stencilReferenceValue = __state.stencilReferenceValue;
-			__contextState.stencilReadMask = __state.stencilReadMask;
+			case BACK:
+				bgfx.setStencil(bgfx.STENCIL_NONE, stencil);
+			case FRONT:
+				bgfx.setStencil(stencil, bgfx.STENCIL_NONE);
+			case FRONT_AND_BACK:
+				bgfx.setStencil(stencil, stencil);
+			default:
+				bgfx.setStencil(bgfx.STENCIL_NONE, bgfx.STENCIL_NONE);
 		}
 	}
 
+	var setTextures = [];
+
 	@:noCompletion private function __flushTextures():Void
 	{
-		var sampler = 0;
-		var texture:TextureBase;
-		var samplerState:SamplerState;
-
-		for (i in 0...__state.textures.length)
+		for (u in __state.program.__bgfxUniforms)
 		{
-			texture = __state.textures[i];
-			samplerState = __state.samplerStates[i];
-			if (samplerState == null)
-			{
-				__state.samplerStates[i] = new SamplerState();
-				samplerState = __state.samplerStates[i];
-			}
+			if (u.info.type != SAMPLER || u.samplerID == null) continue;
 
-			gl.activeTexture(gl.TEXTURE0 + sampler);
+			var texture = __state.textures[u.samplerID];
+			if (texture == null) continue;
+			if (setTextures[u.samplerID] == texture) continue;
 
-			if (texture != null)
-			{
-				// if (#if openfl_disable_context_cache true #else texture != __contextState.textures[i] #end) {
-
-				// TODO: Cleaner approach?
-				if (texture.__textureTarget == gl.TEXTURE_2D)
-				{
-					__bindGLTexture2D(texture.__getTexture());
-				}
-				else
-				{
-					__bindGLTextureCubeMap(texture.__getTexture());
-				}
-
-				#if lime
-				if (__context.type == OPENGL)
-				{
-					// TODO: Cache?
-					gl.enable(gl.TEXTURE_2D);
-				}
-				#end
-
-				__contextState.textures[i] = texture;
-
-				// }
-
-				texture.__setSamplerState(samplerState);
-			}
-			else
-			{
-				__bindGLTexture2D(null);
-			}
-
-			// handles glsl uniforms but they must start with "u_tex" we need to change this or document it
-			if (__state.program != null && __state.program.__format == GLSL)
-			{
-				var uniformName = "u_tex" + sampler;
-
-				var location = gl.getUniformLocation(__state.program.__glProgram, uniformName);
-				if (location > -1)
-				{
-					gl.uniform1i(location, sampler);
-				}
-			}
-			else if (__state.program != null && __state.program.__format == AGAL && samplerState.textureAlpha)
-			{
-				gl.activeTexture(gl.TEXTURE0 + sampler + 4);
-
-				if (texture != null && texture.__alphaTexture != null)
-				{
-					if (texture.__alphaTexture.__textureTarget == gl.TEXTURE_2D)
-					{
-						__bindGLTexture2D(texture.__alphaTexture.__getTexture());
-					}
-					else
-					{
-						__bindGLTextureCubeMap(texture.__alphaTexture.__getTexture());
-					}
-
-					texture.__alphaTexture.__setSamplerState(samplerState);
-					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 1);
-
-					#if lime
-					if (__context.type == OPENGL)
-					{
-						// TODO: Cache?
-						gl.enable(gl.TEXTURE_2D);
-					}
-					#end
-				}
-				else
-				{
-					__bindGLTexture2D(null);
-					if (__state.program.__agalAlphaSamplerEnabled[sampler] != null)
-					{
-						gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
-					}
-				}
-			}
-
-			sampler++;
+			texture.__setSamplerState(__state.samplerStates[u.samplerID]);
+			bgfx.setTexture(u.samplerID, u.uniform, texture.__textureID, texture.__samplerStateFlags);
+			setTextures[u.samplerID] = texture;
 		}
 	}
 
@@ -2470,11 +2316,11 @@ import lime.math.Vector2;
 				#end
 				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
 				var y = Std.int((__stage.window.height * __stage.window.scale) - scaledBackBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
-				gl.viewport(x, y, scaledBackBufferWidth, scaledBackBufferHeight);
+				bgfx.setViewRect(__currentViewId, x, y, scaledBackBufferWidth, scaledBackBufferHeight);
 			}
 			else
 			{
-				gl.viewport(0, 0, backBufferWidth, backBufferHeight);
+				bgfx.setViewRect(__currentViewId, 0, 0, backBufferWidth, backBufferHeight);
 			}
 		}
 		else
@@ -2501,83 +2347,106 @@ import lime.math.Vector2;
 				height = cubeTexture.__size;
 			}
 
-			gl.viewport(0, 0, width, height);
+			bgfx.setViewRect(__currentViewId, 0, 0, width, height);
 		}
 	}
 
 	@:noCompletion private function __getGLBlend(blendFactor:Context3DBlendFactor):Int
 	{
-		switch (blendFactor)
-		{
-			case DESTINATION_ALPHA:
-				return gl.DST_ALPHA;
-			case DESTINATION_COLOR:
-				return gl.DST_COLOR;
-			case ONE:
-				return gl.ONE;
-			case ONE_MINUS_DESTINATION_ALPHA:
-				return gl.ONE_MINUS_DST_ALPHA;
-			case ONE_MINUS_DESTINATION_COLOR:
-				return gl.ONE_MINUS_DST_COLOR;
-			case ONE_MINUS_SOURCE_ALPHA:
-				return gl.ONE_MINUS_SRC_ALPHA;
-			case ONE_MINUS_SOURCE_COLOR:
-				return gl.ONE_MINUS_SRC_COLOR;
-			case SOURCE_ALPHA:
-				return gl.SRC_ALPHA;
-			case SOURCE_COLOR:
-				return gl.SRC_COLOR;
-			case ZERO:
-				return gl.ZERO;
-			default:
-				throw new IllegalOperationError();
-		}
+		// bgfx blends are int64 so can't have a global function for these stuff :/
 
 		return 0;
 	}
 
 	@:noCompletion private function __getGLCompareMode(mode:Context3DCompareMode):Int
 	{
-		return switch (mode)
-		{
-			case ALWAYS: gl.ALWAYS;
-			case EQUAL: gl.EQUAL;
-			case GREATER: gl.GREATER;
-			case GREATER_EQUAL: gl.GEQUAL;
-			case LESS: gl.LESS;
-			case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
-			case NEVER: gl.NEVER;
-			case NOT_EQUAL: gl.NOTEQUAL;
-			default: gl.EQUAL;
-		}
+		// bgfx depth tests are int64 so can't have a global function for these stuff :/
+
+		return 0;
 	}
 
 	@:noCompletion private function __getGLStencilAction(action:Context3DStencilAction):Int
 	{
+		// bgfx needs multiple methods for different types of stencil results
+
+		return 0;
+	}
+
+	@:noCompletion private function __getBGFXStencilOpFailS(action:Context3DStencilAction):Int
+	{
 		return switch (action)
 		{
-			case DECREMENT_SATURATE: gl.DECR;
-			case DECREMENT_WRAP: gl.DECR_WRAP;
-			case INCREMENT_SATURATE: gl.INCR;
-			case INCREMENT_WRAP: gl.INCR_WRAP;
-			case INVERT: gl.INVERT;
-			case KEEP: gl.KEEP;
-			case SET: gl.REPLACE;
-			case ZERO: gl.ZERO;
-			default: gl.KEEP;
+			case DECREMENT_SATURATE: bgfx.STENCIL_OP_FAIL_S_DECRSAT;
+			case DECREMENT_WRAP: bgfx.STENCIL_OP_FAIL_S_DECR;
+			case INCREMENT_SATURATE: bgfx.STENCIL_OP_FAIL_S_INCRSAT;
+			case INCREMENT_WRAP: bgfx.STENCIL_OP_FAIL_S_INCR;
+			case INVERT: bgfx.STENCIL_OP_FAIL_S_INVERT;
+			case KEEP: bgfx.STENCIL_OP_FAIL_S_KEEP;
+			case SET: bgfx.STENCIL_OP_FAIL_S_REPLACE;
+			case ZERO: bgfx.STENCIL_OP_FAIL_S_ZERO;
+			default: bgfx.STENCIL_OP_FAIL_S_KEEP;
+		}
+	}
+
+	@:noCompletion private function __getBGFXStencilOpFailZ(action:Context3DStencilAction):Int
+	{
+		return switch (action)
+		{
+			case DECREMENT_SATURATE: bgfx.STENCIL_OP_FAIL_Z_DECRSAT;
+			case DECREMENT_WRAP: bgfx.STENCIL_OP_FAIL_Z_DECR;
+			case INCREMENT_SATURATE: bgfx.STENCIL_OP_FAIL_Z_INCRSAT;
+			case INCREMENT_WRAP: bgfx.STENCIL_OP_FAIL_Z_INCR;
+			case INVERT: bgfx.STENCIL_OP_FAIL_Z_INVERT;
+			case KEEP: bgfx.STENCIL_OP_FAIL_Z_KEEP;
+			case SET: bgfx.STENCIL_OP_FAIL_Z_REPLACE;
+			case ZERO: bgfx.STENCIL_OP_FAIL_Z_ZERO;
+			default: bgfx.STENCIL_OP_FAIL_Z_KEEP;
+		}
+	}
+
+	@:noCompletion private function __getBGFXStencilOpPassZ(action:Context3DStencilAction):Int
+	{
+		return switch (action)
+		{
+			case DECREMENT_SATURATE: bgfx.STENCIL_OP_PASS_Z_DECRSAT;
+			case DECREMENT_WRAP: bgfx.STENCIL_OP_PASS_Z_DECR;
+			case INCREMENT_SATURATE: bgfx.STENCIL_OP_PASS_Z_INCRSAT;
+			case INCREMENT_WRAP: bgfx.STENCIL_OP_PASS_Z_INCR;
+			case INVERT: bgfx.STENCIL_OP_PASS_Z_INVERT;
+			case KEEP: bgfx.STENCIL_OP_PASS_Z_KEEP;
+			case SET: bgfx.STENCIL_OP_PASS_Z_REPLACE;
+			case ZERO: bgfx.STENCIL_OP_PASS_Z_ZERO;
+			default: bgfx.STENCIL_OP_PASS_Z_KEEP;
+		}
+	}
+
+	@:noCompletion private function __getStencilCompareMode(cmp:Context3DCompareMode):Int
+	{
+		return switch (cmp)
+		{
+			case ALWAYS:
+				bgfx.STENCIL_TEST_ALWAYS;
+			case EQUAL:
+				bgfx.STENCIL_TEST_EQUAL;
+			case GREATER:
+				bgfx.STENCIL_TEST_GREATER;
+			case GREATER_EQUAL:
+				bgfx.STENCIL_TEST_GEQUAL;
+			case LESS:
+				bgfx.STENCIL_TEST_LESS;
+			case LESS_EQUAL:
+				bgfx.STENCIL_TEST_LEQUAL;
+			case NEVER:
+				bgfx.STENCIL_TEST_NEVER;
+			case NOT_EQUAL:
+				bgfx.STENCIL_TEST_NOTEQUAL;
 		}
 	}
 
 	@:noCompletion private function __getGLTriangleFace(face:Context3DTriangleFace):Int
 	{
-		return switch (face)
-		{
-			case FRONT: gl.FRONT;
-			case BACK: gl.BACK;
-			case FRONT_AND_BACK: gl.FRONT_AND_BACK;
-			case NONE: gl.NONE;
-			default: gl.FRONT_AND_BACK;
-		}
+		// bgfx culling is int64 so can't have a global function for these stuff :/
+		return 0;
 	}
 
 	@:noCompletion private function __renderStage3D(stage3D:Stage3D):Void
@@ -2629,100 +2498,50 @@ import lime.math.Vector2;
 
 	@:noCompletion private function __setGLBlend(enable:Bool):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLBlend != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(gl.BLEND);
-			}
-			else
-			{
-				gl.disable(gl.BLEND);
-			}
-			__contextState.__enableGLBlend = enable;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __setGLBlendEquation(value:Int):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__glBlendEquation != value #end)
-		{
-			gl.blendEquation(value);
-			__contextState.__glBlendEquation = value;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __setGLCullFace(enable:Bool):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLCullFace != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(gl.CULL_FACE);
-			}
-			else
-			{
-				gl.disable(gl.CULL_FACE);
-			}
-			__contextState.__enableGLCullFace = enable;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __setGLDepthTest(enable:Bool):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLDepthTest != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(gl.DEPTH_TEST);
-			}
-			else
-			{
-				gl.disable(gl.DEPTH_TEST);
-			}
-			__contextState.__enableGLDepthTest = enable;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __setGLFrontFace(counterClockWise:Bool):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__frontFaceGLCCW != counterClockWise #end)
-		{
-			gl.frontFace(counterClockWise ? gl.CCW : gl.CW);
-			__contextState.__frontFaceGLCCW = counterClockWise;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __setGLScissorTest(enable:Bool):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLScissorTest != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(gl.SCISSOR_TEST);
-			}
-			else
-			{
-				gl.disable(gl.SCISSOR_TEST);
-			}
-			__contextState.__enableGLScissorTest = enable;
-		}
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	@:noCompletion private function __setGLStencilTest(enable:Bool):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLStencilTest != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(gl.STENCIL_TEST);
-			}
-			else
-			{
-				gl.disable(gl.STENCIL_TEST);
-			}
-			__contextState.__enableGLStencilTest = enable;
-		}
+		// stub
+		openfl.Lib.notImplemented();
+	}
+
+	@:noCompletion private inline function __glBlendBarrier():Void
+	{
+		// stub
+		openfl.Lib.notImplemented();
 	}
 
 	// Get & Set Methods
@@ -2736,22 +2555,17 @@ import lime.math.Vector2;
 		return __enableErrorChecking = value;
 	}
 
-	@:noCompletion private function get_totalGPUMemory():Int
+	@:noCompletion private function get_totalGPUMemory():Float
 	{
-		if (__memoryCurrentAvailable != -1)
-		{
-			// TODO: Return amount used by this application only
-			var current = gl.getParameter(__memoryCurrentAvailable);
-			var total = gl.getParameter(__memoryTotalAvailable);
+		var stats = bgfx.getStats();
 
-			if (total > 0)
-			{
-				return (total - current) * 1024;
-			}
+		if (stats.gpuMemoryUsed > 0)
+		{
+			__memoryCurrentAvailable = stats.gpuMemoryMax - stats.gpuMemoryUsed;
+
+			return stats.gpuMemoryUsed * 1024;
 		}
 		return 0;
 	}
 }
-#else
-typedef Context3D = flash.display3D.Context3D;
 #end

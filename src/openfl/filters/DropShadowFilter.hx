@@ -572,7 +572,7 @@ private class HideShader extends BitmapFilterShader
 		varying vec4 textureCoords;
 
 		void main(void) {
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")

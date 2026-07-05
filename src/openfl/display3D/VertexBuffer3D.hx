@@ -1,7 +1,20 @@
 package openfl.display3D;
 
 #if !flash
+#if bgfx
+import haxe.io.Bytes;
+import lime.graphics.bgfx.BGFXAttrib;
+import lime.graphics.bgfx.BGFXMemoryRef;
+import lime.graphics.bgfx.BGFXAttribType;
+import lime.graphics.bgfx.BGFXAttribInfo;
+import lime.graphics.bgfx.BGFXDynamicVertexBuffer;
+import lime.graphics.bgfx.BGFXVertexBuffer;
+import lime.graphics.bgfx.BGFXVertexLayout;
+import lime.graphics.bgfx.BGFXVertexLayoutHandle;
+import haxe.ds.Map;
+#elseif opengl
 import openfl.display3D._internal.GLBuffer;
+#end
 import openfl.utils._internal.ArrayBufferView;
 import openfl.utils._internal.Float32Array;
 import openfl.utils.ByteArray;
@@ -47,30 +60,209 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Stage)
 class VertexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __id:GLBuffer;
 	@:noCompletion private var __memoryUsage:Int = -1;
 	@:noCompletion private var __numVertices:Int;
 	@:noCompletion private var __stride:Int;
 	@:noCompletion private var __tempFloat32Array:Float32Array;
-	@:noCompletion private var __usage:Int;
+	@:noCompletion private var __usage:Context3DBufferUsage;
 	@:noCompletion private var __vertexSize:Int;
+	#if opengl
+	@:noCompletion private var __id:GLBuffer;
+	#elseif bgfx
+	@:noCompletion private var __layoutStartVertex:Int = 0;
+	@:noCompletion private var __layoutQueue:Array<{attrib:BGFXAttrib, info:BGFXAttribInfo, offset:Int}> = [];
+	@:noCompletion private var __vbh:BGFXVertexBufferHandle;
+	@:noCompletion private var __vbLayout:{layout:BGFXVertexLayout, handle:BGFXVertexLayoutHandle};
 
-	@:noCompletion private function new(context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:String)
+	@:noCompletion private static var __defaultMainLayoutKey:String = '';
+	@:noCompletion private static var __vlayouts:Map<String, {layout:BGFXVertexLayout, handle:BGFXVertexLayoutHandle}>;
+	#end
+
+	#if bgfx
+	// Basically on bgfx you have to build static VertexLayout and pass them onto the vbuffer
+	// OpenFL (and GL itself) is designed so you write the layout every time you use the buffer
+	// Best way to have the static BGFX layout work seamlessly with OpenFL is a hash based layout cache
+	@:noCompletion private static function __registerDefaultLayouts(context3D:Context3D)
+	{
+		if (__vlayouts != null) return;
+
+		var bgfx = context3D.bgfx;
+		__vlayouts = new Map();
+
+		// Create the most common and regular layout that would be used
+		// This layout defines a vertex with a 2 floats texture position and 2 floats texture coords
+		__defaultMainLayoutKey = __registerLayout(context3D, [
+			{
+				attrib: BGFXAttrib.POSITION,
+				offset: 0,
+				info: {
+					num: 2,
+					type: BGFXAttribType.FLOAT,
+					normalized: false,
+					asInt: false
+				}
+			},
+			{
+				attrib: BGFXAttrib.TEXCOORD0,
+				offset: 2,
+				info: {
+					num: 2,
+					type: BGFXAttribType.FLOAT,
+					normalized: false,
+					asInt: false
+				}
+			}
+		]);
+
+		// This layout defines a vertex with a 4 floats texture position and 2 floats texture coords
+		__registerLayout(context3D, [
+			{
+				attrib: BGFXAttrib.POSITION,
+				offset: 0,
+				info: {
+					num: 4,
+					type: BGFXAttribType.FLOAT,
+					normalized: false,
+					asInt: false
+				}
+			},
+			{
+				attrib: BGFXAttrib.TEXCOORD0,
+				offset: 4,
+				info: {
+					num: 2,
+					type: BGFXAttribType.FLOAT,
+					normalized: false,
+					asInt: false
+				}
+			}
+		]);
+	}
+
+	@:noCompletion private static inline function __attribTypeSize(type:BGFXAttribType):Int
+	{
+		return switch (type)
+		{
+			case INT8, UINT8: 1;
+			case INT16, UINT16, HALF: 2;
+			default: 4;
+		}
+	}
+
+	@:noCompletion private static function __registerLayout(context3D:Context3D, layout:Array<{attrib:BGFXAttrib, info:BGFXAttribInfo, offset:Int}>,
+			stride:Int = 0):String
+	{
+		var bgfx = context3D.bgfx;
+
+		layout.sort((a, b) -> a.offset - b.offset);
+
+		var key:Bytes = Bytes.alloc((layout.length * 6) + 2);
+		for (i => layoutData in layout)
+		{
+			var base = i * 6;
+			key.set(base + 0, layoutData.attrib);
+			key.set(base + 1, layoutData.info.num);
+			key.set(base + 2, layoutData.info.type);
+			key.set(base + 3, layoutData.info.normalized ? 1 : 0);
+			key.set(base + 4, layoutData.info.asInt ? 1 : 0);
+			key.set(base + 5, layoutData.offset);
+		}
+		key.set(layout.length * 6 + 0, stride & 0xFF);
+		key.set(layout.length * 6 + 1, (stride >> 8) & 0xFF);
+
+		var keyHex:String = key.toHex();
+		if (!__vlayouts.exists(keyHex))
+		{
+			var _layout = bgfx.createVertexLayout();
+			_layout.begin(bgfx.getRendererType());
+
+			var pos = 0;
+			for (layoutData in layout)
+			{
+				var byteOffset = layoutData.offset * 4;
+				if (byteOffset > pos) _layout.skip(byteOffset - pos);
+				_layout.add(layoutData.attrib, layoutData.info.num, layoutData.info.type, layoutData.info.normalized, layoutData.info.asInt);
+				pos = byteOffset + layoutData.info.num * __attribTypeSize(layoutData.info.type);
+			}
+			if (stride > pos) _layout.skip(stride - pos);
+
+			_layout.end();
+
+			var handle = bgfx.registerVertexLayout(_layout);
+			__vlayouts.set(keyHex, {layout: _layout, handle: handle});
+		}
+
+		return keyHex;
+	}
+
+	@:noCompletion private function __queueLayout(attrib:BGFXAttrib, info:BGFXAttribInfo, offset:Int = 0)
+	{
+		__layoutQueue.push({attrib: attrib, info: info, offset: offset});
+	}
+
+	@:noCompletion private function __buildLayoutQueue()
+	{
+		var batchStart = 0;
+		if (__layoutQueue.length > 0)
+		{
+			batchStart = __layoutQueue[0].offset;
+			for (q in __layoutQueue)
+				if (q.offset < batchStart) batchStart = q.offset;
+		}
+		__layoutStartVertex = (batchStart > 0 && __vertexSize > 0) ? Std.int(batchStart / __vertexSize) : 0;
+		if (batchStart > 0)
+		{
+			for (q in __layoutQueue)
+				q.offset -= batchStart;
+		}
+
+		var keyHex = __registerLayout(__context, __layoutQueue, __stride);
+		__vbLayout = __vlayouts[keyHex];
+		__layoutQueue = [];
+	}
+
+	@:noCompletion private function __updateLayout(vertices:Null<Int>)
+	{
+		var bgfx = __context.bgfx;
+
+		var vertexCount = vertices;
+		if (vertexCount == null)
+		{
+			vertexCount = (__memoryUsage > 0 && __stride > 0) ? Std.int(__memoryUsage / __stride) : __numVertices;
+		}
+
+		switch (__vbh)
+		{
+			case Static(vb):
+				bgfx.setVertexBufferLayout(0, vb, __layoutStartVertex, vertexCount, __vbLayout.handle);
+			case Dynamic(dvb):
+				bgfx.setDynamicVertexBufferLayout(0, dvb, __layoutStartVertex, vertexCount, __vbLayout.handle);
+		}
+	}
+	#end
+
+	@:noCompletion private function new(context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:Context3DBufferUsage)
 	{
 		__context = context3D;
 		__numVertices = numVertices;
 		__vertexSize = dataPerVertex;
 
+		#if opengl
 		var gl = __context.gl;
-
 		__id = gl.createBuffer();
+		#end
+
 		__stride = __vertexSize * 4;
-		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+		__usage = bufferUsage;
 	}
 
 	/**
@@ -79,8 +271,22 @@ class VertexBuffer3D
 	**/
 	public function dispose():Void
 	{
+		#if opengl
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
+		#elseif bgfx
+		if (__vbh != null)
+		{
+			var bgfx = __context.bgfx;
+			switch (__vbh)
+			{
+				case Static(vb):
+					bgfx.destroyVertexBuffer(vb);
+				case Dynamic(dvb):
+					bgfx.destroyDynamicVertexBuffer(dvb);
+			}
+		}
+		#end
 	}
 
 	/**
@@ -125,13 +331,40 @@ class VertexBuffer3D
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
+		#if opengl
 		var gl = __context.gl;
-
+		var usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
 		__context.__bindGLArrayBuffer(__id);
-		if (__memoryUsage == data.byteLength)
-			gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
+
+		if (__memoryUsage == data.byteLength) gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
 		else
-			gl.bufferData(gl.ARRAY_BUFFER, data, __usage);
+			gl.bufferData(gl.ARRAY_BUFFER, data, usage);
+		#elseif bgfx
+		var bgfx = __context.bgfx;
+		var mem = bgfx.copy(data);
+
+		if (__memoryUsage == data.byteLength)
+		{
+			switch (__vbh)
+			{
+				case Static(vb):
+					// you can't update a static buffer
+					// recreate it!!!
+					bgfx.destroyVertexBuffer(vb);
+					__vbh = Static(bgfx.createVertexBuffer(mem, __vbLayout != null ? __vbLayout.layout : __vlayouts[__defaultMainLayoutKey].layout));
+				case Dynamic(dvb):
+					bgfx.updateDynamicVertexBuffer(dvb, 0, mem);
+			}
+		}
+		else
+		{
+			__vbh = switch (__usage)
+			{
+				case STATIC_DRAW: Static(bgfx.createVertexBuffer(mem, __vlayouts[__defaultMainLayoutKey].layout));
+				case DYNAMIC_DRAW: Dynamic(bgfx.createDynamicVertexBufferMem(mem, __vlayouts[__defaultMainLayoutKey].layout, bgfx.BUFFER_ALLOW_RESIZE));
+			};
+		}
+		#end
 		__memoryUsage = data.byteLength;
 	}
 
@@ -156,7 +389,6 @@ class VertexBuffer3D
 	{
 		#if lime
 		if (data == null) return;
-		var gl = __context.gl;
 
 		// TODO: Optimize more
 
@@ -206,7 +438,6 @@ class VertexBuffer3D
 	{
 		#if lime
 		if (data == null) return;
-		var gl = __context.gl;
 
 		// TODO: Optimize more
 
@@ -235,6 +466,15 @@ class VertexBuffer3D
 		#end
 	}
 }
+
+#if bgfx
+// to hold either static or dynamic buffer in one field
+enum BGFXVertexBufferHandle
+{
+	Static(vb:BGFXVertexBuffer);
+	Dynamic(dvb:BGFXDynamicVertexBuffer);
+}
+#end
 #else
 typedef VertexBuffer3D = flash.display3D.VertexBuffer3D;
 #end

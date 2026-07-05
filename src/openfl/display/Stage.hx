@@ -180,7 +180,11 @@ typedef Element = Dynamic;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Sprite)
@@ -1375,6 +1379,17 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		switch (window.context.type)
 		{
+			case BGFX:
+				#if (!disable_cffi && bgfx)
+				context3D = new Context3D(this);
+				#if openfl_dpi_aware
+				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
+				#else
+				context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+				#end
+				context3D.present();
+				__renderer = new BGFXRenderer(context3D);
+				#end
 			case OPENGL, OPENGLES, WEBGL:
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D(this);
@@ -3357,7 +3372,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		targetPoint.setTo(x, y);
 		__displayMatrix.__transformInversePoint(targetPoint);
 
-		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, deltaX, deltaY);
+		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, deltaX,
+			deltaY);
 		event.cancelable = true;
 		__dispatchStack(event, stack);
 		if (event.isDefaultPrevented()) window.onMouseWheel.cancel();

@@ -28,7 +28,11 @@ import openfl.net.NetStream;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Stage)
 @:access(openfl.net.NetStream)
 @:access(openfl.events.Event)
@@ -61,7 +65,9 @@ import openfl.net.NetStream;
 	{
 		super(context);
 
+		#if opengl
 		__textureTarget = __context.gl.TEXTURE_2D;
+		#end
 	}
 
 	#if false
@@ -146,7 +152,7 @@ import openfl.net.NetStream;
 	}
 	#end
 
-	@:noCompletion private override function __getTexture():GLTexture
+	@:noCompletion private override function __getTexture():#if opengl GLTexture #elseif bgfx lime.graphics.bgfx.BGFXTexture #end
 	{
 		#if (js && html5)
 		if (__netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)

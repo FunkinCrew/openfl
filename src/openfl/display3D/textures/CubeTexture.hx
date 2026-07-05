@@ -26,7 +26,11 @@ import openfl.utils.ByteArray;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Stage)
 @:access(openfl.events.Event)
 @:final class CubeTexture extends TextureBase
@@ -45,7 +49,10 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
+		#if opengl
 		__textureTarget = __context.gl.TEXTURE_CUBE_MAP;
+		#end
+
 		__uploadedSides = 0;
 
 		// if (optimizeForRenderToTexture) __getFramebuffer (true, 0, 0);
@@ -153,7 +160,7 @@ import openfl.utils.ByteArray;
 
 		// TODO: Improve handling of miplevels with canvas src
 
-		#if (js && html5)
+		#if (js && html5 && opengl)
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;
@@ -204,7 +211,7 @@ import openfl.utils.ByteArray;
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void
 	{
 		#if lime
-		#if (js && !display)
+		#if (js && opengl && !display)
 		if (byteArrayOffset == 0)
 		{
 			uploadFromTypedArray(@:privateAccess (data : ByteArrayData).b, side, miplevel);
@@ -239,27 +246,32 @@ import openfl.utils.ByteArray;
 	{
 		if (data == null) return;
 
-		var gl = __context.gl;
-
 		var size = __size >> miplevel;
 		if (size == 0) return;
 
+		#if opengl
+		var gl = __context.gl;
 		var target = __sideToTarget(side);
-
 		__context.__bindGLTextureCubeMap(__textureID);
 		gl.texImage2D(target, miplevel, __internalFormat, size, size, 0, __format, gl.UNSIGNED_BYTE, data);
 		__context.__bindGLTextureCubeMap(null);
+		#elseif bgfx
+		var bgfx = __context.bgfx;
+		__textureID = bgfx.createTextureCube(size, miplevel > 0, 0, __internalFormat, 0, data == null ? null : bgfx.copy(data));
+		#end
 
 		__uploadedSides |= 1 << side;
 	}
 
-	@:noCompletion private override function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
+	@:noCompletion private override function __getFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
+		// TODO: cube texture FB for bgfx?
+		#if opengl
 		var gl = __context.gl;
 
-		if (__glFramebuffer == null)
+		if (__framebuffer == null)
 		{
-			__glFramebuffer = gl.createFramebuffer();
+			__framebuffer = gl.createFramebuffer();
 			__framebufferSurface = -1;
 		}
 
@@ -267,7 +279,7 @@ import openfl.utils.ByteArray;
 		{
 			__framebufferSurface = surfaceSelector;
 
-			__context.__bindGLFramebuffer(__glFramebuffer);
+			__context.__bindGLFramebuffer(__framebuffer);
 			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, __textureID, 0);
 
 			if (__context.__enableErrorChecking)
@@ -280,14 +292,16 @@ import openfl.utils.ByteArray;
 				}
 			}
 		}
+		#end
 
-		return super.__getGLFramebuffer(enableDepthAndStencil, antiAlias, surfaceSelector);
+		return super.__getFramebuffer(enableDepthAndStencil, antiAlias, surfaceSelector);
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
 		if (super.__setSamplerState(state))
 		{
+			#if opengl
 			var gl = __context.gl;
 
 			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
@@ -296,7 +310,7 @@ import openfl.utils.ByteArray;
 				__samplerState.mipmapGenerated = true;
 			}
 
-			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
+			if (Context3D.__maxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)
 				{
@@ -307,13 +321,26 @@ import openfl.utils.ByteArray;
 					default: 1;
 				}
 
-				if (aniso > Context3D.__glMaxTextureMaxAnisotropy)
+				if (aniso > Context3D.__maxTextureMaxAnisotropy)
 				{
-					aniso = Context3D.__glMaxTextureMaxAnisotropy;
+					aniso = Context3D.__maxTextureMaxAnisotropy;
 				}
 
-				gl.texParameterf(gl.TEXTURE_CUBE_MAP, Context3D.__glTextureMaxAnisotropy, aniso);
+				gl.texParameterf(gl.TEXTURE_CUBE_MAP, Context3D.__textureMaxAnisotropy, aniso);
 			}
+			#elseif bgfx
+			// TODO: mip generation?
+			var bgfx = __context.bgfx;
+			// bgfx has no per-texture anisotropic filtering
+			// it's defined globally by the reset flags
+			var aniso = switch (state.filter)
+			{
+				case ANISOTROPIC2X, ANISOTROPIC4X, ANISOTROPIC8X, ANISOTROPIC16X:
+					__samplerStateFlags |= bgfx.SAMPLER_MAG_ANISOTROPIC;
+					__samplerStateFlags |= bgfx.SAMPLER_MIN_ANISOTROPIC;
+				default: 0; // nothing
+			}
+			#end
 
 			return true;
 		}
@@ -323,6 +350,7 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __sideToTarget(side:UInt):Int
 	{
+		#if opengl
 		var gl = __context.gl;
 
 		return switch (side)
@@ -335,10 +363,14 @@ import openfl.utils.ByteArray;
 			case 5: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
 			default: throw new IllegalOperationError();
 		}
+		#end
+
+		return side;
 	}
 
 	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
+		#if opengl
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(__size, __size, true);
 
@@ -395,6 +427,7 @@ import openfl.utils.ByteArray;
 		#end
 
 		__context.__bindGLTextureCubeMap(null);
+		#end
 	}
 }
 #else

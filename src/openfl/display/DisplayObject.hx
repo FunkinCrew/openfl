@@ -184,7 +184,11 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.display3D._internal.Context3DState)
 @:access(openfl.display._internal.Context3DGraphics)
 @:access(openfl.events.Event)
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectContainer)

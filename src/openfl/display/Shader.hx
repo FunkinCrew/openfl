@@ -4,6 +4,14 @@ import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 #if !flash
+#if bgfx
+import lime.graphics.bgfx.BGFXUniform;
+import lime.graphics.bgfx.BGFXUniformInfo;
+import lime.graphics.bgfx.BGFXShader;
+import lime.graphics.bgfx.BGFXProgram;
+import lime.graphics.bgfx.BGFXUniform;
+import lime.graphics.bgfx.BGFXUniformType;
+#end
 import openfl.display._internal.ShaderBuffer;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
@@ -116,7 +124,11 @@ import openfl.Lib;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
@@ -195,7 +207,7 @@ class Shader
 
 		This property is not available on the Flash target.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
+	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(get, never):#if bgfx BGFXProgram #else GLProgram #end;
 
 	/**
 		The default GLSL vertex header, before being applied to the vertex source.
@@ -493,39 +505,6 @@ class Shader
 			Log.debug('Info compiling $typeName shader $message');
 	}
 
-	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
-	{
-		var gl = __context.gl;
-
-		var vertexShader = __createGLShader(vertexSource, gl.VERTEX_SHADER);
-		var fragmentShader = __createGLShader(fragmentSource, gl.FRAGMENT_SHADER);
-
-		var program = gl.createProgram();
-
-		// Fix support for drivers that don't draw if attribute 0 is disabled
-		for (param in __paramFloat)
-		{
-			if (param.name.indexOf("Position") > -1 && StringTools.startsWith(param.name, "openfl_"))
-			{
-				gl.bindAttribLocation(program, 0, param.name);
-				break;
-			}
-		}
-
-		gl.attachShader(program, vertexShader);
-		gl.attachShader(program, fragmentShader);
-		gl.linkProgram(program);
-
-		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0)
-		{
-			var message = "Unable to initialize the shader program";
-			message += "\n" + gl.getProgramInfoLog(program);
-			Log.error(message);
-		}
-
-		return program;
-	}
-
 	@:noCompletion private function __disable():Void
 	{
 		if (program != null)
@@ -536,6 +515,7 @@ class Shader
 
 	@:noCompletion private function __disableGL():Void
 	{
+		#if opengl
 		var gl = __context.gl;
 
 		var textureCount = 0;
@@ -570,6 +550,7 @@ class Shader
 			gl.disable(gl.TEXTURE_2D);
 		}
 		#end
+		#end
 	}
 
 	@:noCompletion private function __enable():Void
@@ -584,6 +565,7 @@ class Shader
 
 	@:noCompletion private function __enableGL():Void
 	{
+		#if opengl
 		var textureCount = 0;
 
 		var gl = __context.gl;
@@ -599,6 +581,7 @@ class Shader
 		{
 			gl.enable(gl.TEXTURE_2D);
 		}
+		#end
 		#end
 	}
 
@@ -707,10 +690,13 @@ class Shader
 
 		if (__context != null && program == null)
 		{
-			var gl = __context.gl;
-
+			#if bgfx
+			var vertex = glVertexSource;
+			var fragment = glFragmentSource;
+			#else
 			var vertex = __buildSourcePrefix(false) + glVertexSource;
 			var fragment = __buildSourcePrefix(true) + glFragmentSource;
+			#end
 
 			var id = vertex + fragment;
 
@@ -722,31 +708,27 @@ class Shader
 			{
 				program = __context.createProgram(GLSL);
 
-				// TODO
-				// program.uploadSources (vertex, fragment);
-
 				if (Lib.current.stage.__uncaughtErrorEvents.__enabled)
 				{
 					try
 					{
-						program.__glProgram = __createGLProgram(vertex, fragment);
+						program.uploadSources(vertex, fragment);
 					}
 					catch (e:Dynamic)
 					{
 						Lib.current.stage.__handleError(e);
-
-						program.__glProgram = null;
 					}
 				}
 				else
-					program.__glProgram = __createGLProgram(vertex, fragment);
+					program.uploadSources(vertex, fragment);
 
 				__context.__programs.set(id, program);
 			}
 
 			if (program != null)
 			{
-				glProgram = program.__glProgram;
+				#if opengl
+				var gl = __context.gl;
 
 				for (input in __inputBitmapData)
 				{
@@ -795,8 +777,36 @@ class Shader
 						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
 					}
 				}
+				#else
+				for (parameter in __paramBool)
+				{
+					var uniform = program.__bgfxUniforms.get(parameter.name);
+					if (uniform == null) uniform = program.__bgfxUniforms.get(parameter.name + "_internal");
+					parameter.__bgfxUniform = uniform;
+				}
+				for (parameter in __paramFloat)
+				{
+					var uniform = program.__bgfxUniforms.get(parameter.name);
+					if (uniform == null) uniform = program.__bgfxUniforms.get(parameter.name + "_internal");
+					parameter.__bgfxUniform = uniform;
+
+					var attribIndex = openfl.display3D._internal.ShaderCConverter.getAttribIndex(parameter.name);
+					if (attribIndex >= 0) parameter.index = attribIndex;
+				}
+				for (parameter in __paramInt)
+				{
+					var uniform = program.__bgfxUniforms.get(parameter.name);
+					if (uniform == null) uniform = program.__bgfxUniforms.get(parameter.name + "_internal");
+					parameter.__bgfxUniform = uniform;
+				}
+				#end
 			}
 		}
+	}
+
+	@:noCompletion private function get_glProgram():#if bgfx BGFXProgram #else GLProgram #end
+	{
+		return program != null ? program.__glProgram : null;
 	}
 
 	@:noCompletion private function __processGLData(source:String, storageType:String):Void
@@ -1067,6 +1077,7 @@ class Shader
 			}
 		}
 
+		#if opengl
 		var gl = __context.gl;
 
 		if (shaderBuffer.paramDataLength > 0)
@@ -1087,6 +1098,7 @@ class Shader
 
 			__context.__bindGLArrayBuffer(null);
 		}
+		#end
 
 		var boolIndex = 0;
 		var floatIndex = 0;

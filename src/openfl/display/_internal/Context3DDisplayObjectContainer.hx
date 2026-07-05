@@ -9,7 +9,7 @@ package openfl.display._internal;
 @:access(openfl.display.DisplayObjectContainer)
 class Context3DDisplayObjectContainer
 {
-	public static function renderDrawable(displayObjectContainer:DisplayObjectContainer, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(displayObjectContainer:DisplayObjectContainer, renderer:openfl.display.BGFXRenderer):Void
 	{
 		displayObjectContainer.__cleanupRemovedChildren();
 
@@ -50,7 +50,7 @@ class Context3DDisplayObjectContainer
 		}
 	}
 
-	public static function renderDrawableMask(displayObjectContainer:DisplayObjectContainer, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(displayObjectContainer:DisplayObjectContainer, renderer:openfl.display.BGFXRenderer):Void
 	{
 		displayObjectContainer.__cleanupRemovedChildren();
 

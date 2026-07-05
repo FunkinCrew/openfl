@@ -6,10 +6,21 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
 
+#if (lime_cffi && !macro)
+import lime._internal.backend.native.NativeCFFI;
+import haxe.Resource;
+#if hl
+import haxe.io.Bytes;
+#end
+#end
+
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
+#if (lime_cffi && !macro)
+@:access(lime._internal.backend.native.NativeCFFI)
+#end
 @:dox(hide)
 class ApplicationMain
 {
@@ -25,6 +36,30 @@ class ApplicationMain
 
 	public static function create(config):Void
 	{
+		#if (lime_cffi && !macro)
+		#if cpp
+		NativeCFFI.lime_haxe_resource_init(Resource.listNames, Resource.getBytes);
+		#elseif hl
+		NativeCFFI.lime_haxe_resource_init(function():hl.NativeArray<hl.Bytes>
+		{
+			var names = Resource.listNames();
+			var result = new hl.NativeArray<hl.Bytes>(names.length);
+			for (i in 0...names.length)
+			{
+				var name = Bytes.ofString(names[i]);
+				var terminated = Bytes.alloc(name.length + 1);
+				terminated.blit(0, name, 0, name.length);
+				result[i] = terminated.getData();
+			}
+			return result;
+		}, function(name:hl.Bytes):Bytes
+		{
+			@:privateAccess
+			return Resource.getBytes(String.fromUTF8(name));
+		});
+		#end
+		#end
+
 		::if (WIN_ORIENTATION != "auto")::
 		lime.system.System.setHint("ORIENTATIONS", ::if (WIN_ORIENTATION == "portrait")::"Portrait PortraitUpsideDown"::else::"LandscapeLeft LandscapeRight"::end::);
 		::end::

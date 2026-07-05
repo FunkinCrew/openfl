@@ -24,7 +24,11 @@ import openfl.display._internal.stats.DrawCallContext;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shader)
@@ -44,7 +48,7 @@ class Context3DGraphics
 	private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
 	private static var buildBufferReader:DrawCommandReader = new DrawCommandReader(null);
 
-	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
+	private static function buildBuffer(graphics:Graphics, renderer:openfl.display.BGFXRenderer):Void
 	{
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
@@ -617,7 +621,7 @@ class Context3DGraphics
 		return true;
 	}
 
-	public static function render(graphics:Graphics, renderer:OpenGLRenderer):Void
+	public static function render(graphics:Graphics, renderer:openfl.display.BGFXRenderer):Void
 	{
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 
@@ -1126,7 +1130,7 @@ class Context3DGraphics
 		graphics.__hardwareDirty = false;
 	}
 
-	public static function renderMask(graphics:Graphics, renderer:OpenGLRenderer):Void
+	public static function renderMask(graphics:Graphics, renderer:openfl.display.BGFXRenderer):Void
 	{
 		// TODO: Support invisible shapes
 

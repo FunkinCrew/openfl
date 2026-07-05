@@ -12,7 +12,11 @@ import openfl.display._internal.stats.DrawCallContext;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Shader)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.media.Video)
@@ -22,7 +26,7 @@ class Context3DVideo
 {
 	private static var __textureSizeValue:Array<Float> = [0, 0.];
 
-	public static function render(video:Video, renderer:OpenGLRenderer):Void
+	public static function render(video:Video, renderer:openfl.display.BGFXRenderer):Void
 	{
 		#if (js && html5)
 		if (!video.__renderable || video.__worldAlpha <= 0 || video.__stream == null) return;
@@ -61,7 +65,7 @@ class Context3DVideo
 			renderer.updateShader();
 
 			context.setTextureAt(0, video.__getTexture(context));
-			context.__flushGLTextures();
+			context.__flushTextures();
 			gl.uniform1i(shader.__texture.index, 0);
 
 			if (video.smoothing)
@@ -93,18 +97,18 @@ class Context3DVideo
 		#end
 	}
 
-	public static function renderDrawable(video:Video, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(video:Video, renderer:openfl.display.BGFXRenderer):Void
 	{
 		Context3DVideo.render(video, renderer);
 		renderer.__renderEvent(video);
 	}
 
-	public static function renderDrawableMask(video:Video, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(video:Video, renderer:openfl.display.BGFXRenderer):Void
 	{
 		Context3DVideo.renderMask(video, renderer);
 	}
 
-	public static function renderMask(video:Video, renderer:OpenGLRenderer):Void
+	public static function renderMask(video:Video, renderer:openfl.display.BGFXRenderer):Void
 	{
 		#if (js && html5)
 		if (video.__stream == null) return;

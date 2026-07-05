@@ -13,14 +13,18 @@ import lime.math.ARGB;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DDisplayObject
 {
-	public static inline function render(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static inline function render(displayObject:DisplayObject, renderer:openfl.display.BGFXRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
@@ -56,7 +60,7 @@ class Context3DDisplayObject
 		}
 	}
 
-	public static function renderDrawable(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(displayObject:DisplayObject, renderer:openfl.display.BGFXRenderer):Void
 	{
 		renderer.__updateCacheBitmap(displayObject, false);
 
@@ -72,7 +76,7 @@ class Context3DDisplayObject
 		renderer.__renderEvent(displayObject);
 	}
 
-	public static function renderDrawableMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(displayObject:DisplayObject, renderer:openfl.display.BGFXRenderer):Void
 	{
 		if (displayObject.__graphics != null)
 		{
@@ -81,7 +85,7 @@ class Context3DDisplayObject
 		}
 	}
 
-	public static inline function renderMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static inline function renderMask(displayObject:DisplayObject, renderer:openfl.display.BGFXRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 

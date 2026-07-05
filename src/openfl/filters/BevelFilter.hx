@@ -540,7 +540,7 @@ private class BevelShader extends BitmapFilterShader
 
 		void main(void)
 			{
-				gl_Position = openfl_Matrix * openfl_Position;
+				gl_Position = mul(openfl_Matrix, openfl_Position);
 				vTextureCoord = openfl_TextureCoord;
 				vTransform = vec2(uTransformX / uTextureSize.x, uTransformY / uTextureSize.y);
 		}")

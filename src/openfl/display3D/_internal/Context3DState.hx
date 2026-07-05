@@ -1,10 +1,14 @@
 package openfl.display3D._internal;
 
 #if !flash
+#if opengl
 import openfl.display3D._internal.GLBuffer;
 import openfl.display3D._internal.GLFramebuffer;
 import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D._internal.GLTexture;
+#elseif bgfx
+import lime.graphics.bgfx.BGFXFrameBuffer;
+#end
 import openfl.display._internal.SamplerState;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DBlendFactor;
@@ -14,7 +18,7 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.display.Shader;
 import openfl.geom.Rectangle;
-#if lime
+#if opengl
 import lime.graphics.opengl.GL;
 #end
 
@@ -52,15 +56,21 @@ class Context3DState
 	public var stencilTriangleFace:Context3DTriangleFace;
 	public var stencilWriteMask:UInt;
 	public var textures:Array<TextureBase>;
+
+	private var __enableGLBlend:Bool;
+
 	// vertex buffer at?
 	public var shader:Shader; // TODO: Merge shader/program3d
 
+	#if bgfx
+	private var __primaryBGFXFramebuffer:BGFXFrameBuffer;
+	private var __rttBGFXFramebuffer:BGFXFrameBuffer;
+	#elseif opengl
 	private var __currentGLArrayBuffer:GLBuffer;
 	private var __currentGLElementArrayBuffer:GLBuffer;
 	private var __currentGLFramebuffer:GLFramebuffer;
 	private var __currentGLTexture2D:GLTexture;
 	private var __currentGLTextureCubeMap:GLTexture;
-	private var __enableGLBlend:Bool;
 	private var __enableGLCullFace:Bool;
 	private var __enableGLDepthTest:Bool;
 	private var __enableGLScissorTest:Bool;
@@ -72,6 +82,7 @@ class Context3DState
 	private var __rttGLFramebuffer:GLFramebuffer;
 	private var __rttGLRenderbuffer:GLRenderbuffer;
 	private var __rttStencilGLRenderbuffer:GLRenderbuffer;
+	#end
 
 	public function new()
 	{
@@ -98,9 +109,9 @@ class Context3DState
 		stencilTriangleFace = FRONT_AND_BACK;
 		stencilWriteMask = 0xFF;
 		textures = new Array();
-		__frontFaceGLCCW = true;
 
-		#if lime
+		#if opengl
+		__frontFaceGLCCW = true;
 		__glBlendEquation = GL.FUNC_ADD;
 		#end
 	}

@@ -43,7 +43,7 @@ class Context3DAlphaMaskShader extends Shader
 
 			openfl_TextureCoordv = openfl_TextureCoord;
 
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 
 		}")
 	public function new()

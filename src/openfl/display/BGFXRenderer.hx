@@ -1,5 +1,6 @@
 package openfl.display;
 
+import lime.graphics.bgfx.BGFXAttribType;
 #if !flash
 import openfl.display._internal.Context3DBitmap;
 import openfl.display._internal.Context3DBitmapData;
@@ -15,11 +16,15 @@ import openfl.display._internal.ShaderBuffer;
 import openfl.utils.ObjectPool;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
+import openfl.display3D.Program3D;
+import openfl.utils._internal.Float32Array;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime
+#if gl_debug
 import lime.graphics.opengl.ext.KHR_debug;
+#end
 import lime.graphics.WebGLRenderContext;
 import lime.math.Matrix4;
 #end
@@ -27,7 +32,7 @@ import lime.math.Matrix4;
 /**
 	**BETA**
 
-	The OpenGLRenderer API exposes support for OpenGL render instructions within the
+	The BGFXRenderer API exposes support for OpenGL render instructions within the
 	`RenderEvent.RENDER_OPENGL` event.
 **/
 #if !openfl_debug
@@ -36,11 +41,8 @@ import lime.math.Matrix4;
 #end
 @:access(lime.graphics.GLRenderContext)
 @:access(openfl.display._internal.ShaderBuffer)
-#if bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
-@:access(openfl.display3D.backends.opengl.Context3D)
-#end
+@:access(openfl.display3D.Program3D)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -56,7 +58,7 @@ import lime.math.Matrix4;
 @:allow(openfl.display3D)
 @:allow(openfl.display)
 @:allow(openfl.text)
-class OpenGLRenderer extends DisplayObjectRenderer
+class BGFXRenderer extends DisplayObjectRenderer
 {
 	@:noCompletion private static var __blendMinMaxSupported:Null<Bool>;
 	@:noCompletion private static var __standardDerivativesSupported:Null<Bool>;
@@ -85,6 +87,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __staticMaskShader:Context3DMaskShader;
 
 	@:noCompletion private var __context3D:Context3D;
+	@:noCompletion private var __useArrayData:Float32Array;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
 	@:noCompletion private var __currentDisplayShader:Shader;
 	@:noCompletion private var __currentGraphicsShader:Shader;
@@ -120,19 +123,20 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
 	{
 		super();
-		#if opengl
+		#if bgfx
 		__context3D = context;
 		__context = context.__context;
 
-		gl = context.__context.webgl;
-		__gl = gl;
+		gl = null;
+		__gl = null;
 
 		this.__defaultRenderTarget = defaultRenderTarget;
 		this.__flipped = (__defaultRenderTarget == null);
 
 		if (Graphics.maxTextureWidth == null)
 		{
-			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getParameter(__gl.MAX_TEXTURE_SIZE);
+			// TODO: query bgfx caps instead of hardcoding
+			Graphics.maxTextureWidth = Graphics.maxTextureHeight = 4096;
 		}
 
 		#if lime
@@ -141,46 +145,11 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		__values = new Array();
 
-		#if gl_debug
-		var ext:KHR_debug = __gl.getExtension("KHR_debug");
-		if (ext != null)
-		{
-			gl.enable(ext.DEBUG_OUTPUT);
-			gl.enable(ext.DEBUG_OUTPUT_SYNCHRONOUS);
-		}
-		#end
-
-		final exts = __gl.getSupportedExtensions();
-
-		if (__context.type == OPENGLES)
-		{
-			if (__sRGBWriteControlSupported == null)
-			{
-				__sRGBWriteControlSupported = exts.contains("EXT_sRGB_write_control");
-			}
-
-			if (__sRGBWriteControlSupported)
-			{
-				gl.disable(0x8DB9); // GL_FRAMEBUFFER_SRGB_EXT
-			}
-		}
-
-		if (__blendMinMaxSupported == null)
-		{
-			__blendMinMaxSupported = exts.contains("EXT_blend_minmax");
-		}
-		if (__complexBlendsSupported == null)
-		{
-			__complexBlendsSupported = exts.contains("KHR_blend_equation_advanced");
-		}
-		if (__coherentBlendsSupported == null)
-		{
-			__coherentBlendsSupported = exts.contains("KHR_blend_equation_advanced_coherent");
-		}
-		if (__standardDerivativesSupported == null)
-		{
-			__standardDerivativesSupported = exts.contains("OES_standard_derivatives");
-		}
+		if (__sRGBWriteControlSupported == null) __sRGBWriteControlSupported = false;
+		if (__blendMinMaxSupported == null) __blendMinMaxSupported = false;
+		if (__complexBlendsSupported == null) __complexBlendsSupported = false;
+		if (__coherentBlendsSupported == null) __coherentBlendsSupported = false;
+		if (__standardDerivativesSupported == null) __standardDerivativesSupported = false;
 
 		#if (js && html5)
 		__softwareRenderer = new CanvasRenderer(null);
@@ -189,7 +158,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		#end
 
 		#if lime
-		__type = OPENGL;
+		__type = BGFX;
 		#end
 
 		__setBlendMode(NORMAL);
@@ -225,7 +194,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyAlpha(alpha:Float):Void
 	{
-		#if opengl
+		#if bgfx
 		__alphaValue[0] = alpha * __worldAlpha;
 
 		if (__currentShaderBuffer != null)
@@ -245,7 +214,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
 	{
-		#if opengl
+		#if bgfx
 		if (__currentShaderBuffer != null)
 		{
 			if (bitmapData != null)
@@ -296,7 +265,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyColorTransform(colorTransform:ColorTransform):Void
 	{
-		#if opengl
+		#if bgfx
 		var enabled = (colorTransform != null && !colorTransform.__isDefault(true));
 		applyHasColorTransform(enabled);
 
@@ -337,7 +306,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyHasColorTransform(enabled:Bool):Void
 	{
-		#if opengl
+		#if bgfx
 		__hasColorTransformValue[0] = enabled;
 
 		if (__currentShaderBuffer != null)
@@ -356,7 +325,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyMatrix(matrix:Array<Float>):Void
 	{
-		#if opengl
+		#if bgfx
 		if (__currentShaderBuffer != null)
 		{
 			__currentShaderBuffer.addFloatOverride("openfl_Matrix", matrix);
@@ -376,7 +345,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function getMatrix(transform:Matrix):#if lime Matrix4 #else Dynamic #end
 	{
-		#if opengl
+		#if bgfx
 		if (gl != null)
 		{
 			__getMatrix(transform, NEVER);
@@ -414,7 +383,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function setShader(shader:Shader):Void
 	{
-		#if opengl
+		#if bgfx
 		__currentShaderBuffer = null;
 
 		if (__currentShader == shader) return;
@@ -450,8 +419,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function setViewport():Void
 	{
-		#if opengl
-		__gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
+		#if bgfx
+		// __gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
 		#end
 	}
 
@@ -462,16 +431,36 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function updateShader():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__currentShader != null)
 		{
 			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
 			if (__currentShader.__textureCoord != null) __currentShader.__textureCoord.__useArray = true;
 			__context3D.setProgram(__currentShader.program);
 			__context3D.__flushProgram();
-			__context3D.__flushTextures();
 			__currentShader.__update();
+			__context3D.__flushTextures();
+			__flushUseArray();
 		}
+		#end
+	}
+
+	@:noCompletion private function __flushUseArray():Void
+	{
+		#if bgfx
+		var program = __currentShader.program;
+		if (program == null || program.__bgfxUniforms == null) return;
+
+		var u = program.__bgfxUniforms.get("openfl_UseArray");
+		if (u == null) return;
+
+		if (__useArrayData == null) __useArrayData = new Float32Array(4);
+		__useArrayData[0] = (__currentShader.__alpha != null && __currentShader.__alpha.__useArray) ? 1.0 : 0.0;
+		__useArrayData[1] = (__currentShader.__colorMultiplier != null && __currentShader.__colorMultiplier.__useArray) ? 1.0 : 0.0;
+		__useArrayData[2] = (__currentShader.__colorOffset != null && __currentShader.__colorOffset.__useArray) ? 1.0 : 0.0;
+		__useArrayData[3] = 0.0;
+
+		__context3D.bgfx.setUniform(u.uniform, __useArrayData, u.info.num);
 		#end
 	}
 
@@ -481,7 +470,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function useAlphaArray():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__currentShader != null)
 		{
 			if (__currentShader.__alpha != null) __currentShader.__alpha.__useArray = true;
@@ -495,7 +484,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function useColorTransformArray():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__currentShader != null)
 		{
 			if (__currentShader.__colorMultiplier != null) __currentShader.__colorMultiplier.__useArray = true;
@@ -506,7 +495,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __cleanup():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__stencilReference > 0)
 		{
 			__stencilReference = 0;
@@ -524,7 +513,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __clear():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__stage == null || __stage.__transparent)
 		{
 			__context3D.clear(0, 0, 0, 0, 0, 0, Context3DClearMask.COLOR);
@@ -540,7 +529,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __clearShader():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__currentShader != null)
 		{
 			if (__currentShaderBuffer == null)
@@ -562,9 +551,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		#end
 	}
 
-	@:noCompletion private function __copyShader(other:OpenGLRenderer):Void
+	@:noCompletion private function __copyShader(other:BGFXRenderer):Void
 	{
-		#if opengl
+		#if bgfx
 		__currentShader = other.__currentShader;
 		__currentShaderBuffer = other.__currentShaderBuffer;
 		__currentDisplayShader = other.__currentDisplayShader;
@@ -576,7 +565,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __getMatrix(transform:Matrix, pixelSnapping:PixelSnapping):Array<Float>
 	{
-		#if opengl
+		#if bgfx
 		__matrix[0] = transform.a * __worldTransform.a + transform.b * __worldTransform.c;
 		__matrix[1] = transform.a * __worldTransform.b + transform.b * __worldTransform.d;
 		__matrix[2] = 0;
@@ -620,7 +609,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initShader(shader:Shader):Shader
 	{
-		#if opengl
+		#if bgfx
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -643,7 +632,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initDisplayShader(shader:Shader):Shader
 	{
-		#if opengl
+		#if bgfx
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -666,7 +655,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initGraphicsShader(shader:Shader):Shader
 	{
-		#if opengl
+		#if bgfx
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -689,7 +678,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initShaderBuffer(shaderBuffer:ShaderBuffer):Shader
 	{
-		#if opengl
+		#if bgfx
 		if (shaderBuffer != null)
 		{
 			return __initGraphicsShader(shaderBuffer.shader);
@@ -703,7 +692,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMask():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__stencilReference == 0) return;
 
 		var mask = __maskObjects.pop();
@@ -732,7 +721,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
-		#if opengl
+		#if bgfx
 		if (object.__mask != null)
 		{
 			__popMask();
@@ -755,7 +744,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMaskRect():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__numClipRects > 0)
 		{
 			__numClipRects--;
@@ -774,7 +763,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMask(mask:DisplayObject):Void
 	{
-		#if opengl
+		#if bgfx
 		if (__stencilReference == 0)
 		{
 			__context3D.clear(0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
@@ -797,7 +786,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
-		#if opengl
+		#if bgfx
 		if (handleScrollRect && object.__scrollRect != null)
 		{
 			if (object.__renderTransform.b != 0 || object.__renderTransform.c != 0)
@@ -824,7 +813,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
 	{
-		#if opengl
+		#if bgfx
 		// TODO: Handle rotation?
 
 		if (__numClipRects == __clipRects.length)
@@ -864,7 +853,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __render(object:IBitmapDrawable):Void
 	{
-		#if opengl
+		#if bgfx
 		if (object.__drawableType == openfl.display._internal.IBitmapDrawableType.STAGE)
 		{
 			__context3D.setDepthTest(false, ALWAYS);
@@ -911,8 +900,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 					__context3D.setScissorRectangle(__scissorRectangle);
 
 					__context3D.__flush();
-					__gl.clearColor(0, 0, 0, 1);
-					__gl.clear(__gl.COLOR_BUFFER_BIT);
+					// __gl.clearColor(0, 0, 0, 1);
+					// __gl.clear(__gl.COLOR_BUFFER_BIT);
 					// __context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 
 					// __gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
@@ -920,8 +909,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 					__context3D.setScissorRectangle(__scissorRectangle);
 
 					__context3D.__flush();
-					__gl.clearColor(0, 0, 0, 1);
-					__gl.clear(__gl.COLOR_BUFFER_BIT);
+					// __gl.clearColor(0, 0, 0, 1);
+					// __gl.clear(__gl.COLOR_BUFFER_BIT);
 					// __context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 				}
 
@@ -932,8 +921,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 					__context3D.setScissorRectangle(__scissorRectangle);
 
 					__context3D.__flush();
-					__gl.clearColor(0, 0, 0, 1);
-					__gl.clear(__gl.COLOR_BUFFER_BIT);
+					// __gl.clearColor(0, 0, 0, 1);
+					// __gl.clear(__gl.COLOR_BUFFER_BIT);
 					// __context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 
 					// __gl.scissor (0, __offsetY + __displayHeight, __width, __height);
@@ -941,8 +930,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 					__context3D.setScissorRectangle(__scissorRectangle);
 
 					__context3D.__flush();
-					__gl.clearColor(0, 0, 0, 1);
-					__gl.clear(__gl.COLOR_BUFFER_BIT);
+					// __gl.clearColor(0, 0, 0, 1);
+					// __gl.clear(__gl.COLOR_BUFFER_BIT);
 					// __context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 				}
 
@@ -987,7 +976,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
 	{
-		#if opengl
+		#if bgfx
 		if (object == null) return;
 
 		switch (object.__drawableType)
@@ -1015,7 +1004,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderDrawableMask(object:IBitmapDrawable):Void
 	{
-		#if opengl
+		#if bgfx
 		if (object == null) return;
 
 		switch (object.__drawableType)
@@ -1043,7 +1032,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderFilterPass(source:BitmapData, shader:Shader, smooth:Bool, clear:Bool = true):Void
 	{
-		#if opengl
+		#if bgfx
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 
@@ -1088,7 +1077,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __resize(width:Int, height:Int):Void
 	{
-		#if opengl
+		#if bgfx
 		__width = width;
 		__height = height;
 
@@ -1105,9 +1094,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		#end
 	}
 
-	@:noCompletion private function __resumeClipAndMask(childRenderer:OpenGLRenderer):Void
+	@:noCompletion private function __resumeClipAndMask(childRenderer:BGFXRenderer):Void
 	{
-		#if opengl
+		#if bgfx
 		if (__stencilReference > 0)
 		{
 			__context3D.setStencilActions(FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
@@ -1132,7 +1121,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __scissorRect(clipRect:Rectangle = null):Void
 	{
-		#if opengl
+		#if bgfx
 		if (clipRect != null)
 		{
 			var x = Math.ffloor(clipRect.x);
@@ -1166,7 +1155,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __setBlendMode(value:BlendMode):Void
 	{
-		#if opengl
+		#if bgfx
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value && !__complexBlendsSupported) return;
 		__blendMode = value;
@@ -1178,7 +1167,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				// On AMD cards going back to the standard blend equations after using advanced blends resulted in
 				// invisible/black sprites so we need to reset the blend state as a workaround
 				@:privateAccess
-				var cacheBlendState = __context3D.__contextState.__enableGLBlend;
+				var cacheBlendState = __context3D.__state.__enableGLBlend;
 				__context3D.__setGLBlend(false);
 				__context3D.__setGLBlend(cacheBlendState);
 			}
@@ -1269,7 +1258,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __setRenderTarget(renderTarget:BitmapData):Void
 	{
-		#if opengl
+		#if bgfx
 		__defaultRenderTarget = renderTarget;
 		__flipped = (renderTarget == null);
 
@@ -1282,7 +1271,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __setShaderBuffer(shaderBuffer:ShaderBuffer):Void
 	{
-		#if opengl
+		#if bgfx
 		setShader(shaderBuffer.shader);
 		__currentShaderBuffer = shaderBuffer;
 		#end
@@ -1290,7 +1279,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __suspendClipAndMask():Void
 	{
-		#if opengl
+		#if bgfx
 		if (__stencilReference > 0)
 		{
 			__context3D.setStencilActions();
@@ -1306,14 +1295,15 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __updateShaderBuffer(bufferOffset:Int):Void
 	{
-		#if opengl
+		#if bgfx
 		if (__currentShader != null && __currentShaderBuffer != null)
 		{
 			__currentShader.__updateFromBuffer(__currentShaderBuffer, bufferOffset);
+			__flushUseArray();
 		}
 		#end
 	}
 }
 #else
-typedef OpenGLRenderer = Dynamic;
+typedef BGFXRenderer = Dynamic;
 #end

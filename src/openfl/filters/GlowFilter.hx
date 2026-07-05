@@ -489,7 +489,7 @@ private class InvertAlphaShader extends BitmapFilterShader
 		varying vec2 vTexCoord;
 
 		void main(void) {
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 			vTexCoord = openfl_TextureCoord;
 		}
 	")
@@ -541,7 +541,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 
 		void main(void) {
 
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 			vTexCoord = openfl_TextureCoord;
 
 			vec3 offset = vec3(0.5, 0.75, 1.0);
@@ -587,7 +587,7 @@ private class CombineShader extends BitmapFilterShader
 		varying vec4 textureCoords;
 
 		void main(void) {
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")
@@ -622,7 +622,7 @@ private class InnerCombineShader extends BitmapFilterShader
 		varying vec4 textureCoords;
 
 		void main(void) {
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")
@@ -657,7 +657,7 @@ private class CombineKnockoutShader extends BitmapFilterShader
 		varying vec4 textureCoords;
 
 		void main(void) {
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")
@@ -692,7 +692,7 @@ private class InnerCombineKnockoutShader extends BitmapFilterShader
 		varying vec4 textureCoords;
 
 		void main(void) {
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")

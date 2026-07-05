@@ -1,6 +1,7 @@
 package openfl.display3D.textures;
 
 #if !flash
+import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.Timer;
 import openfl.utils._internal.ArrayBufferView;
@@ -23,7 +24,11 @@ import openfl.utils.ByteArray;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.Stage)
 @:access(openfl.events.Event)
 @:final class Texture extends TextureBase
@@ -41,6 +46,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
+		#if opengl
 		var gl = __context.gl;
 
 		__textureTarget = gl.TEXTURE_2D;
@@ -48,8 +54,9 @@ import openfl.utils.ByteArray;
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, null);
 		__context.__bindGLTexture2D(null);
+		#end
 
-		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
+		if (optimizeForRenderToTexture) __getFramebuffer(true, 0, 0);
 	}
 
 	/**
@@ -167,7 +174,7 @@ import openfl.utils.ByteArray;
 
 		// TODO: Improve handling of miplevels with canvas src
 
-		#if (js && html5)
+		#if (js && html5 && opengl)
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;
@@ -219,7 +226,7 @@ import openfl.utils.ByteArray;
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void
 	{
 		#if lime
-		#if (js && !display)
+		#if (js && opengl && !display)
 		if (byteArrayOffset == 0)
 		{
 			uploadFromTypedArray(@:privateAccess (data : ByteArrayData).b, miplevel);
@@ -244,8 +251,6 @@ import openfl.utils.ByteArray;
 	{
 		if (data == null) return;
 
-		var gl = __context.gl;
-
 		var width = __width >> miplevel;
 		var height = __height >> miplevel;
 
@@ -254,15 +259,24 @@ import openfl.utils.ByteArray;
 		if (width == 0) width = 1;
 		if (height == 0) height = 1;
 
+		#if opengl
+		var gl = __context.gl;
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, miplevel, __internalFormat, width, height, 0, __format, gl.UNSIGNED_BYTE, data);
 		__context.__bindGLTexture2D(null);
+		#elseif bgfx
+		var bgfx = __context.bgfx;
+		var flags:Int64 = Int64.make(0, 0);
+		if (__optimizeForRenderToTexture) flags |= bgfx.TEXTURE_RT;
+		__textureID = bgfx.createTexture2D(width, height, miplevel > 0, 1, __internalFormat, flags, __optimizeForRenderToTexture ? null : bgfx.copy(data));
+		#end
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
 		if (super.__setSamplerState(state))
 		{
+			#if opengl
 			var gl = __context.gl;
 
 			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
@@ -271,7 +285,7 @@ import openfl.utils.ByteArray;
 				__samplerState.mipmapGenerated = true;
 			}
 
-			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
+			if (Context3D.__maxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)
 				{
@@ -282,13 +296,26 @@ import openfl.utils.ByteArray;
 					default: 1;
 				}
 
-				if (aniso > Context3D.__glMaxTextureMaxAnisotropy)
+				if (aniso > Context3D.__maxTextureMaxAnisotropy)
 				{
-					aniso = Context3D.__glMaxTextureMaxAnisotropy;
+					aniso = Context3D.__maxTextureMaxAnisotropy;
 				}
 
-				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+				gl.texParameterf(gl.TEXTURE_2D, Context3D.__textureMaxAnisotropy, aniso);
 			}
+			#else
+			// TODO: mip generation?
+			var bgfx = __context.bgfx;
+			// bgfx has no per-texture anisotropic filtering
+			// it's defined globally by the reset flags
+			var aniso = switch (state.filter)
+			{
+				case ANISOTROPIC2X, ANISOTROPIC4X, ANISOTROPIC8X, ANISOTROPIC16X:
+					__samplerStateFlags |= bgfx.SAMPLER_MAG_ANISOTROPIC;
+					__samplerStateFlags |= bgfx.SAMPLER_MIN_ANISOTROPIC;
+				default: 0; // nothing
+			}
+			#end
 
 			return true;
 		}
@@ -298,6 +325,8 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
+		// TODO: replace ATF stuff with the compressed texture formats from BGFX
+		#if opengl
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(__width, __height, false);
 
@@ -351,6 +380,7 @@ import openfl.utils.ByteArray;
 		#end
 
 		__context.__bindGLTexture2D(null);
+		#end
 	}
 }
 #else

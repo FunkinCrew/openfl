@@ -1,9 +1,18 @@
 package openfl.display3D;
 
 #if !flash
+#if bgfx
+import lime.graphics.bgfx.BGFXUniform;
+import lime.graphics.bgfx.BGFXUniformInfo;
+import lime.graphics.bgfx.BGFXShader;
+import lime.graphics.bgfx.BGFXProgram;
+import lime.graphics.bgfx.BGFXUniform;
+import lime.graphics.bgfx.BGFXUniformType;
+#end
 import openfl.display3D._internal.GLProgram;
 import openfl.display3D._internal.GLShader;
 import openfl.display3D._internal.GLUniformLocation;
+import openfl.display3D._internal.ShaderCConverter;
 import openfl.display3D._internal.AGALConverter;
 import openfl.display._internal.SamplerState;
 import openfl.utils._internal.Float32Array;
@@ -47,7 +56,11 @@ import lime.utils.BytePointer;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 @:access(openfl.display.Stage)
@@ -63,19 +76,23 @@ import lime.utils.BytePointer;
 	@:noCompletion private var __agalVertexUniformMap:UniformMap;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Context3DProgramFormat;
-	@:noCompletion private var __glFragmentShader:GLShader;
+	@:noCompletion private var __glFragmentShader:#if bgfx BGFXShader #else GLShader #end;
 	@:noCompletion private var __glFragmentSource:String;
-	@:noCompletion private var __glProgram:GLProgram;
+	@:noCompletion private var __glProgram:#if bgfx BGFXProgram #else GLProgram #end;
 	@:noCompletion private var __glslAttribNames:Array<String>;
 	@:noCompletion private var __glslAttribTypes:Array<ShaderParameterType>;
 	@:noCompletion private var __glslSamplerNames:Array<String>;
 	@:noCompletion private var __glslUniformLocations:Array<GLUniformLocation>;
 	@:noCompletion private var __glslUniformNames:Array<String>;
 	@:noCompletion private var __glslUniformTypes:Array<ShaderParameterType>;
-	@:noCompletion private var __glVertexShader:GLShader;
+	@:noCompletion private var __glVertexShader:#if bgfx BGFXShader #else GLShader #end;
 	@:noCompletion private var __glVertexSource:String;
 	// @:noCompletion private var __memUsage:Int;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
+	@:noCompletion private var __scc:ShaderCConverter;
+	#if bgfx
+	@:noCompletion private var __bgfxUniforms:Map<String, UniformData>;
+	#end
 
 	@:noCompletion private function new(context3D:Context3D, format:Context3DProgramFormat)
 	{
@@ -102,6 +119,8 @@ import lime.utils.BytePointer;
 		}
 
 		__samplerStates = new Array<SamplerState>();
+
+		__scc = new ShaderCConverter();
 	}
 
 	/**
@@ -110,6 +129,7 @@ import lime.utils.BytePointer;
 	**/
 	public function dispose():Void
 	{
+		__scc.dispose();
 		__deleteShaders();
 	}
 
@@ -123,6 +143,7 @@ import lime.utils.BytePointer;
 	**/
 	public function getAttributeIndex(name:String):Int
 	{
+		#if opengl
 		if (__format == AGAL)
 		{
 			// TODO: Validate that it exists in the current program
@@ -145,6 +166,9 @@ import lime.utils.BytePointer;
 
 			return -1;
 		}
+		#end
+
+		return -1;
 	}
 
 	/**
@@ -157,6 +181,7 @@ import lime.utils.BytePointer;
 	**/
 	public function getConstantIndex(name:String):Int
 	{
+		#if opengl
 		if (__format == AGAL)
 		{
 			// TODO: Validate that it exists in the current program
@@ -183,6 +208,9 @@ import lime.utils.BytePointer;
 
 			return -1;
 		}
+		#end
+
+		return -1;
 	}
 
 	/**
@@ -386,6 +414,9 @@ import lime.utils.BytePointer;
 	**/
 	public function upload(vertexProgram:ByteArray, fragmentProgram:ByteArray):Void
 	{
+		// TODO: AGAL on BGFX?
+		return;
+		#if opengl
 		if (__format != AGAL) return;
 
 		// var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
@@ -408,6 +439,7 @@ import lime.utils.BytePointer;
 		{
 			__samplerStates[i] = samplerStates[i];
 		}
+		#end
 	}
 
 	/**
@@ -419,28 +451,18 @@ import lime.utils.BytePointer;
 	{
 		if (__format != GLSL) return;
 
-		// TODO: Precision hint?
+		if (vertexSource == __glVertexSource && fragmentSource == __glFragmentSource) return;
 
-		var prefix = "#ifdef GL_ES
-			#ifdef GL_FRAGMENT_PRECISION_HIGH
-			precision highp float;
-			#else
-			precision mediump float;
-			#endif
-			#endif
-			";
-
-		var vertex = prefix + vertexSource;
-		var fragment = prefix + fragmentSource;
-
-		if (vertex == __glVertexSource && fragment == __glFragmentSource) return;
-
+		#if bgfx
+		__deleteShaders();
+		__uploadFromGLSL(vertexSource, fragmentSource);
+		#else
 		__processGLSLData(vertexSource, "attribute");
 		__processGLSLData(vertexSource, "uniform");
 		__processGLSLData(fragmentSource, "uniform");
 
 		__deleteShaders();
-		__uploadFromGLSL(vertex, fragment);
+		__uploadFromGLSL(vertexSource, fragmentSource);
 
 		// Sort by index
 
@@ -475,10 +497,12 @@ import lime.utils.BytePointer;
 			location = gl.getUniformLocation(__glProgram, uniformNames[i]);
 			__glslUniformLocations[i] = location;
 		}
+		#end
 	}
 
 	@:noCompletion private function __buildAGALUniformList():Void
 	{
+		#if opengl
 		if (__format == GLSL) return;
 
 		#if lime
@@ -581,10 +605,31 @@ import lime.utils.BytePointer;
 		__agalVertexUniformMap = new UniformMap(Lambda.array(vertexUniforms));
 		__agalFragmentUniformMap = new UniformMap(Lambda.array(fragmentUniforms));
 		#end
+		#end
 	}
 
 	@:noCompletion private function __deleteShaders():Void
 	{
+		#if bgfx
+		var bgfx = __context.bgfx;
+		if (__glProgram != null)
+		{
+			bgfx.destroyProgram(__glProgram);
+			__glProgram = null;
+		}
+
+		if (__glVertexShader != null)
+		{
+			bgfx.destroyShader(__glVertexShader);
+			__glVertexShader = null;
+		}
+
+		if (__glFragmentShader != null)
+		{
+			bgfx.destroyShader(__glFragmentShader);
+			__glFragmentShader = null;
+		}
+		#elseif opengl
 		var gl = __context.gl;
 
 		if (__glProgram != null)
@@ -603,10 +648,12 @@ import lime.utils.BytePointer;
 			gl.deleteShader(__glFragmentShader);
 			__glFragmentShader = null;
 		}
+		#end
 	}
 
 	@:noCompletion private function __disable():Void
 	{
+		#if opengl
 		if (__format == GLSL)
 		{
 			// var gl = __context.gl;
@@ -645,10 +692,12 @@ import lime.utils.BytePointer;
 
 			// }
 		}
+		#end
 	}
 
 	@:noCompletion private function __enable():Void
 	{
+		#if opengl
 		var gl = __context.gl;
 		gl.useProgram(__glProgram);
 
@@ -700,10 +749,12 @@ import lime.utils.BytePointer;
 
 			// }
 		}
+		#end
 	}
 
 	@:noCompletion private function __flush():Void
 	{
+		#if opengl
 		if (__format == AGAL)
 		{
 			__agalVertexUniformMap.flush();
@@ -741,6 +792,7 @@ import lime.utils.BytePointer;
 
 			// }
 		}
+		#end
 	}
 
 	@:noCompletion private function __getSamplerState(sampler:Int):SamplerState
@@ -750,6 +802,7 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __markDirty(isVertex:Bool, index:Int, count:Int):Void
 	{
+		#if opengl
 		if (__format == GLSL) return;
 
 		if (isVertex)
@@ -760,10 +813,12 @@ import lime.utils.BytePointer;
 		{
 			__agalFragmentUniformMap.markDirty(index, count);
 		}
+		#end
 	}
 
 	@:noCompletion private function __processGLSLData(source:String, storageType:String):Void
 	{
+		#if opengl
 		var lastMatch = 0, position, regex, name, type;
 
 		if (storageType == "uniform")
@@ -832,10 +887,12 @@ import lime.utils.BytePointer;
 			position = regex.matchedPos();
 			lastMatch = position.pos + position.len;
 		}
+		#end
 	}
 
 	@:noCompletion private function __setPositionScale(positionScale:Float32Array):Void
 	{
+		#if opengl
 		if (__format == GLSL) return;
 
 		if (__agalPositionScale != null)
@@ -843,6 +900,7 @@ import lime.utils.BytePointer;
 			var gl = __context.gl;
 			gl.uniform4fv(__agalPositionScale.location, positionScale);
 		}
+		#end
 	}
 
 	@:noCompletion private function __setSamplerState(sampler:Int, state:SamplerState):Void
@@ -850,8 +908,65 @@ import lime.utils.BytePointer;
 		__samplerStates[sampler] = state;
 	}
 
+	#if bgfx
+	@:noCompletion private function __readBGFXUniforms():Void
+	{
+		var bgfx = __context.bgfx;
+		__bgfxUniforms = new Map<String, UniformData>();
+
+		for (shader in [__glVertexShader, __glFragmentShader])
+		{
+			if (shader == null) continue;
+
+			var uniforms = bgfx.getShaderUniforms(shader);
+			if (uniforms == null) continue;
+
+			for (uniform in uniforms)
+			{
+				final info = bgfx.getUniformInfo(uniform);
+				__bgfxUniforms.set(info.name, {uniform: uniform, info: info, samplerID: __scc.samplersIDs.get(info.name)});
+			}
+		}
+	}
+	#end
+
 	@:noCompletion private function __uploadFromGLSL(vertexShaderSource:String, fragmentShaderSource:String):Void
 	{
+		#if bgfx
+		var bgfx = __context.bgfx;
+		__glVertexSource = vertexShaderSource;
+		__glFragmentSource = fragmentShaderSource;
+
+		// TODO: convert GLSL to SC
+		var varyingDef = __scc.generateVaryingDef(__glVertexSource, __glFragmentSource);
+		var shaderMem = bgfx.compileShaderString(VERTEX, __scc.convertShaderSource(__glVertexSource, true), varyingDef);
+		if (shaderMem == null)
+		{
+			// TODO: Get shader compile error!
+			var message = "Error compiling vertex shader";
+			message += "\n" + 'no_message';
+			message += "\n" + vertexShaderSource;
+			Log.error(message);
+			return;
+		}
+		__glVertexShader = bgfx.createShader(shaderMem);
+
+		shaderMem = bgfx.compileShaderString(FRAGMENT, __scc.convertShaderSource(__glFragmentSource, false), varyingDef);
+		if (shaderMem == null)
+		{
+			// TODO: Get shader compile error!
+			var message = "Error compiling fragment shader";
+			message += "\n" + 'no_message';
+			message += "\n" + fragmentShaderSource;
+			Log.error(message);
+			return;
+		}
+		__glFragmentShader = bgfx.createShader(shaderMem);
+
+		__glProgram = bgfx.createProgram(__glVertexShader, __glFragmentShader, false);
+
+		__readBGFXUniforms();
+		#elseif opengl
 		var gl = __context.gl;
 
 		__glVertexSource = vertexShaderSource;
@@ -921,6 +1036,7 @@ import lime.utils.BytePointer;
 			message += "\n" + gl.getProgramInfoLog(__glProgram);
 			Log.error(message);
 		}
+		#end
 	}
 }
 
@@ -928,7 +1044,11 @@ import lime.utils.BytePointer;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
+#if bgfx
+@:access(openfl.display3D.backends.bgfx.Context3D)
+#elseif opengl
+@:access(openfl.display3D.backends.opengl.Context3D)
+#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) @:noCompletion class Uniform
 {
@@ -1127,6 +1247,14 @@ import lime.utils.BytePointer;
 		}
 	}
 }
+
+typedef UniformData =
+{
+	uniform:BGFXUniform,
+	info:BGFXUniformInfo,
+	?samplerID:Int
+};
+
 #else
 typedef Program3D = flash.display3D.Program3D;
 #end

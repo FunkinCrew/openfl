@@ -341,7 +341,7 @@ private class ConvolutionShader extends BitmapFilterShader
 			vBlurCoords[7] = t + r * vec2 (0.0, 1.0);
 			vBlurCoords[8] = t + r * vec2 (1.0, 1.0);
 
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 
 		}")
 	public function new()
