@@ -396,8 +396,8 @@ private class DisplacementMapShader extends BitmapFilterShader
 
 			map_color_mod = map_color_mod * vec4(map_color.w, map_color.w, 1.0, 1.0);
 
-			vec4 displacements_multiplied = map_color_mod * uDisplacements;
-			vec4 result = vec4(openfl_TextureCoordV.x, openfl_TextureCoordV.y, 0.0, 1.0) + displacements_multiplied;
+			vec4 displacements_multiplied = mul(map_color_mod, uDisplacements);
+			vec4 result = vec4(openfl_TextureCoordv.x, openfl_TextureCoordv.y, 0.0, 1.0) + displacements_multiplied;
 
 			gl_FragColor = texture2D(openfl_Texture, vec2(result));
 
@@ -413,15 +413,15 @@ private class DisplacementMapShader extends BitmapFilterShader
 		attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 
-		varying vec2 openfl_TextureCoordV;
+		varying vec2 openfl_TextureCoordv;
 
 		varying vec2 mapTextureCoords;
 
 		void main(void) {
 
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 
-			openfl_TextureCoordV = openfl_TextureCoord;
+			openfl_TextureCoordv = openfl_TextureCoord;
 			mapTextureCoords = openfl_TextureCoord - mapTextureCoordsOffset;
 
 		}

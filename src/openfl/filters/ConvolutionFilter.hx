@@ -259,7 +259,11 @@ class ConvolutionFilter extends BitmapFilter
 private class ConvolutionShader extends BitmapFilterShader
 {
 	@:glFragmentSource("#pragma header
-		varying vec2 vBlurCoords[9];
+		varying vec4 vBlurCoords1;
+		varying vec4 vBlurCoords2;
+		varying vec4 vBlurCoords3;
+		varying vec4 vBlurCoords4;
+		varying vec4 vBlurCoords5;
 
 		uniform float uBias;
 		uniform mat3 uConvoMatrix;
@@ -268,20 +272,20 @@ private class ConvolutionShader extends BitmapFilterShader
 
 		void main(void) {
 
-			vec4 tc = texture2D (openfl_Texture, vBlurCoords[4]);
+			vec4 tc = texture2D (openfl_Texture, vBlurCoords3.xy);
 			vec4 c = vec4 (0.0);
 
-			c += texture2D (openfl_Texture, vBlurCoords[0]) * uConvoMatrix[0][0];
-			c += texture2D (openfl_Texture, vBlurCoords[1]) * uConvoMatrix[0][1];
-			c += texture2D (openfl_Texture, vBlurCoords[2]) * uConvoMatrix[0][2];
+			c += texture2D (openfl_Texture, vBlurCoords1.xy) * uConvoMatrix[0][0];
+			c += texture2D (openfl_Texture, vBlurCoords1.zw) * uConvoMatrix[0][1];
+			c += texture2D (openfl_Texture, vBlurCoords2.xy) * uConvoMatrix[0][2];
 
-			c += texture2D (openfl_Texture, vBlurCoords[3]) * uConvoMatrix[1][0];
+			c += texture2D (openfl_Texture, vBlurCoords2.zw) * uConvoMatrix[1][0];
 			c += tc * uConvoMatrix[1][1];
-			c += texture2D (openfl_Texture, vBlurCoords[5]) * uConvoMatrix[1][2];
+			c += texture2D (openfl_Texture, vBlurCoords3.zw) * uConvoMatrix[1][2];
 
-			c += texture2D (openfl_Texture, vBlurCoords[6]) * uConvoMatrix[2][0];
-			c += texture2D (openfl_Texture, vBlurCoords[7]) * uConvoMatrix[2][1];
-			c += texture2D (openfl_Texture, vBlurCoords[8]) * uConvoMatrix[2][2];
+			c += texture2D (openfl_Texture, vBlurCoords4.xy) * uConvoMatrix[2][0];
+			c += texture2D (openfl_Texture, vBlurCoords4.zw) * uConvoMatrix[2][1];
+			c += texture2D (openfl_Texture, vBlurCoords5.xy) * uConvoMatrix[2][2];
 
 			if (uDivisor > 0.0) {
 
@@ -301,26 +305,30 @@ private class ConvolutionShader extends BitmapFilterShader
 
 		}")
 	@:glVertexSource("#pragma header
-		varying vec2 vBlurCoords[9];
+		varying vec4 vBlurCoords1;
+		varying vec4 vBlurCoords2;
+		varying vec4 vBlurCoords3;
+		varying vec4 vBlurCoords4;
+		varying vec4 vBlurCoords5;
 
 		void main(void) {
 
 			vec2 r = vec2 (1.0, 1.0) / openfl_TextureSize;
 			vec2 t = openfl_TextureCoord;
 
-			vBlurCoords[0] = t + r * vec2 (-1.0, -1.0);
-			vBlurCoords[1] = t + r * vec2 (0.0, -1.0);
-			vBlurCoords[2] = t + r * vec2 (1.0, -1.0);
+			vBlurCoords1.xy = t + r * vec2 (-1.0, -1.0);
+			vBlurCoords1.zw = t + r * vec2 (0.0, -1.0);
+			vBlurCoords2.xy = t + r * vec2 (1.0, -1.0);
 
-			vBlurCoords[3] = t + r * vec2 (-1.0, 0.0);
-			vBlurCoords[4] = t;
-			vBlurCoords[5] = t + r * vec2 (1.0, 0.0);
+			vBlurCoords2.zw = t + r * vec2 (-1.0, 0.0);
+			vBlurCoords3.xy = t;
+			vBlurCoords3.zw = t + r * vec2 (1.0, 0.0);
 
-			vBlurCoords[6] = t + r * vec2 (-1.0, 1.0);
-			vBlurCoords[7] = t + r * vec2 (0.0, 1.0);
-			vBlurCoords[8] = t + r * vec2 (1.0, 1.0);
+			vBlurCoords4.xy = t + r * vec2 (-1.0, 1.0);
+			vBlurCoords4.zw = t + r * vec2 (0.0, 1.0);
+			vBlurCoords5.xy = t + r * vec2 (1.0, 1.0);
 
-			gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = mul(openfl_Matrix, openfl_Position);
 
 		}")
 	public function new()

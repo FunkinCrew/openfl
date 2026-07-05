@@ -488,10 +488,3 @@ class GLSL3Converter
 		return results.toString();
 	}
 }
-
-typedef SourceEdit =
-{
-	var start:Int;
-	var end:Int;
-	var text:String;
-}
