@@ -1,5 +1,8 @@
 package openfl.display3D;
 
+import lime.graphics.bgfx.BGFXDynamicIndexBuffer;
+import lime.graphics.bgfx.BGFXIndexBuffer;
+import lime.graphics.bgfx.BGFXTransientIndexBuffer;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt16Array;
@@ -24,21 +27,30 @@ import openfl.utils.ByteArray;
 @:final class IndexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __id:GLBuffer;
 	@:noCompletion private var __memoryUsage:Int = -1;
 	@:noCompletion private var __numIndices:Int;
 	@:noCompletion private var __tempUInt16Array:UInt16Array;
-	@:noCompletion private var __usage:Int;
+	@:noCompletion private var __usage:Context3DBufferUsage;
+	@:noCompletion private var __id:GLBuffer;
+	@:noCompletion private var __idbh:BGFXIndexBufferHandle;
+	@:noCompletion private var __lastFrameId:Int = -1;
+	@:noCompletion private var __transientData:ArrayBufferView;
+	@:noCompletion private var __transientDataLength:Int = -1;
+	@:noCompletion private var __skipTransient:Bool = false;
+	@:noCompletion private var __transientDynamic(get, never):Bool;
 
 	@:noCompletion private function new(context3D:Context3D, numIndices:Int, bufferUsage:Context3DBufferUsage)
 	{
 		__context = context3D;
 		__numIndices = numIndices;
 
-		var gl = __context.gl;
-		__id = gl.createBuffer();
+		if (!__context.isBGFX)
+		{
+			var gl = __context.gl;
+			__id = gl.createBuffer();
+		}
 
-		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+		__usage = bufferUsage;
 	}
 
 	/**
@@ -47,8 +59,24 @@ import openfl.utils.ByteArray;
 	**/
 	public function dispose():Void
 	{
-		var gl = __context.gl;
-		gl.deleteBuffer(__id);
+		if (__context.isBGFX)
+		{
+			var bgfx = __context.bgfx;
+			switch (__idbh)
+			{
+				case Static(idb):
+					bgfx.destroyIndexBuffer(idb);
+				case Dynamic(didb):
+					bgfx.destroyDynamicIndexBuffer(didb);
+				case Transient(_, _):
+					// bgfx clears those internally at the end of the frame
+			}
+		}
+		else
+		{
+			var gl = __context.gl;
+			gl.deleteBuffer(__id);
+		}
 	}
 
 	/**
@@ -87,11 +115,87 @@ import openfl.utils.ByteArray;
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
-		var gl = __context.gl;
-		__context.__bindGLElementArrayBuffer(__id);
-		if (__memoryUsage == data.byteLength) gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, data);
+
+		if (__context.isBGFX)
+		{
+			var bgfx = __context.bgfx;
+
+			if (__transientDynamic && !__skipTransient && __uploadTransient(data, byteLength))
+			{
+				__lastFrameId = __context.__frameId;
+				return;
+			}
+
+			var mem = bgfx.copy(data);
+			var reupload = __lastFrameId == __context.__frameId;
+
+			if (__idbh != null)
+			{
+				switch (__idbh)
+				{
+					case Transient(_, _):
+						__idbh = null;
+						__transientData = null;
+						__transientDataLength = -1;
+					default:
+				}
+			}
+
+			switch (__usage)
+			{
+				case STATIC_DRAW:
+					if (__idbh != null)
+					{
+						switch (__idbh)
+						{
+							case Static(idb): bgfx.destroyIndexBuffer(idb);
+							case Dynamic(didb): bgfx.destroyDynamicIndexBuffer(didb);
+							case Transient(_, _):
+								// bgfx clears those internally at the end of the frame
+						}
+
+						__idbh = null;
+					}
+
+					__idbh = Static(bgfx.createIndexBuffer(mem));
+
+				case DYNAMIC_DRAW:
+					if (__idbh != null)
+					{
+						switch (__idbh)
+						{
+							case Dynamic(didb):
+								if (!reupload)
+								{
+									bgfx.updateDynamicIndexBuffer(didb, 0, mem);
+								}
+								else
+								{
+									__context.__buffersReset.push(() -> __context.bgfx.destroyDynamicIndexBuffer(didb));
+									__idbh = Dynamic(bgfx.createDynamicIndexBufferMem(mem, bgfx.BUFFER_ALLOW_RESIZE));
+								}
+							default:
+						}
+					}
+					else
+					{
+						__idbh = Dynamic(bgfx.createDynamicIndexBufferMem(mem, bgfx.BUFFER_ALLOW_RESIZE));
+					}
+			}
+
+			__lastFrameId = __context.__frameId;
+		}
 		else
-			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, __usage);
+		{
+			var gl = __context.gl;
+			var usage = (__usage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+			__context.__bindGLElementArrayBuffer(__id);
+
+			if (__memoryUsage == data.byteLength) gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, data);
+			else
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, usage);
+		}
+
 		__memoryUsage = data.byteLength;
 	}
 
@@ -115,7 +219,6 @@ import openfl.utils.ByteArray;
 		// TODO: Optimize more
 
 		if (data == null) return;
-		var gl = __context.gl;
 
 		var length = startOffset + count;
 		var existingUInt16Array = __tempUInt16Array;
@@ -158,7 +261,6 @@ import openfl.utils.ByteArray;
 		// TODO: Optimize more
 
 		if (data == null) return;
-		var gl = __context.gl;
 
 		var length = startOffset + count;
 		var existingUInt16Array = __tempUInt16Array;
@@ -180,4 +282,64 @@ import openfl.utils.ByteArray;
 
 		uploadFromTypedArray(__tempUInt16Array);
 	}
+
+	@:noCompletion private function __uploadTransient(data:ArrayBufferView, byteLength:Int = -1):Bool
+	{
+		var bgfx = __context.bgfx;
+
+		var bytes = byteLength >= 0 ? byteLength : data.byteLength;
+		var indexCount = bytes >> 1;
+
+		if (indexCount <= 0) return false;
+		if (bgfx.getAvailTransientIndexBuffer(indexCount, false) < indexCount) return false;
+
+		var tib = bgfx.allocTransientIndexBuffer(indexCount, false);
+		tib.data = data;
+
+		__idbh = Transient(tib, __context.__frameId);
+		__transientData = data;
+		__transientDataLength = byteLength;
+		__numIndices = indexCount;
+		__memoryUsage = bytes;
+
+		return true;
+	}
+
+	@:noCompletion private function __prepareForDraw():Void
+	{
+		switch (__idbh)
+		{
+			case Transient(_, frameId) if (frameId != __context.__frameId):
+				__idbh = null;
+
+				if (__transientData == null) return;
+
+				var data = __transientData;
+				var length = __transientDataLength;
+				__transientData = null;
+				__transientDataLength = -1;
+
+				__skipTransient = true;
+				uploadFromTypedArray(data, length);
+				__skipTransient = false;
+			default:
+		}
+	}
+
+	@:noCompletion private inline function get___transientDynamic():Bool
+	{
+		#if openfl_bgfx_transient_dynamic
+		return __usage == Context3DBufferUsage.DYNAMIC_DRAW;
+		#else
+		return false;
+		#end
+	}
+}
+
+// to hold either transient, static or dynamic buffer in one field
+enum BGFXIndexBufferHandle
+{
+	Static(idb:BGFXIndexBuffer);
+	Dynamic(didb:BGFXDynamicIndexBuffer);
+	Transient(tib:BGFXTransientIndexBuffer, frameId:Int);
 }

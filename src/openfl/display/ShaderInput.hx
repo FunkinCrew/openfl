@@ -127,6 +127,8 @@ import openfl.display3D.Context3DWrapMode;
 
 	@:noCompletion private var __isUniform:Bool;
 
+	@:noCompletion private var __bgfxSamplerID:Int = -1;
+
 	/**
 		Creates a ShaderInput instance. Developer code does not call the
 		ShaderInput constructor directly. A ShaderInput instance is created

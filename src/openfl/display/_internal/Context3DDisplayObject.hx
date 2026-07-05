@@ -1,8 +1,8 @@
-package openfl.display._internal;
+﻿package openfl.display._internal;
 
 import lime.math.ARGB;
 import openfl.display.DisplayObject;
-import openfl.display.OpenGLRenderer;
+import openfl.display.Context3DRenderer;
 import openfl.display3D.Context3DClearMask;
 import openfl.geom.Rectangle;
 
@@ -13,7 +13,7 @@ import openfl.geom.Rectangle;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DDisplayObject
 {
-	public static inline function render(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static inline function render(displayObject:DisplayObject, renderer:Context3DRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
@@ -47,7 +47,7 @@ class Context3DDisplayObject
 		}
 	}
 
-	public static function renderDrawable(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static function renderDrawable(displayObject:DisplayObject, renderer:Context3DRenderer):Void
 	{
 		renderer.__updateCacheBitmap(displayObject, false);
 
@@ -63,7 +63,7 @@ class Context3DDisplayObject
 		renderer.__renderEvent(displayObject);
 	}
 
-	public static function renderDrawableMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static function renderDrawableMask(displayObject:DisplayObject, renderer:Context3DRenderer):Void
 	{
 		if (displayObject.__graphics != null)
 		{
@@ -72,7 +72,7 @@ class Context3DDisplayObject
 		}
 	}
 
-	public static inline function renderMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static inline function renderMask(displayObject:DisplayObject, renderer:Context3DRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 

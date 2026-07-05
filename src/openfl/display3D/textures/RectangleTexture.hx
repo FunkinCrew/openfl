@@ -1,5 +1,6 @@
 package openfl.display3D.textures;
 
+import haxe.Int64;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl.display.BitmapData;
@@ -26,11 +27,12 @@ import openfl.utils.ByteArray;
 		__width = width;
 		__height = height;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
-		__textureTarget = __context.gl.TEXTURE_2D;
+
+		if (!__context.isBGFX) __textureTarget = __context.gl.TEXTURE_2D;
 
 		uploadFromTypedArray(null);
 
-		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
+		if (optimizeForRenderToTexture) __getFramebuffer(true, 0, 0);
 	}
 
 	/**
@@ -52,7 +54,7 @@ import openfl.utils.ByteArray;
 		if (image == null) return;
 
 		#if (js && html5)
-		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null)
+		if (!__context.isBGFX && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;
 
@@ -104,36 +106,81 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
-		var gl = __context.gl;
+		if (__context.isBGFX)
+		{
+			var bgfx = __context.bgfx;
+			var flags:Int64 = Int64.make(0, 0);
+			if (__optimizeForRenderToTexture)
+			{
+				flags |= bgfx.TEXTURE_RT;
+			}
 
-		__context.__bindGLTexture2D(__textureID);
-		__uploadTexture2D(__textureTarget, __width, __height, __internalFormat, __format, data);
-		__context.__bindGLTexture2D(null);
+			if (__textureID != null && flags != __textureFlags)
+			{
+				bgfx.destroyTexture(__textureID);
+				__textureID = null;
+			}
+
+			__textureFlags = flags;
+			__uploadTexture2D(0, __width, __height, __format, __format, data);
+		}
+		else if (__context.isOpenGL)
+		{
+			var gl = __context.gl;
+			__context.__bindGLTexture2D(__textureID);
+			__uploadTexture2D(__textureTarget, __width, __height, __internalFormat, __format, data);
+			__context.__bindGLTexture2D(null);
+		}
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
 		if (super.__setSamplerState(state))
 		{
-			var gl = __context.gl;
-
-			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
+			if (__context.isBGFX)
 			{
-				var aniso = switch (state.filter)
+				// TODO: mip generation?
+				var bgfx = __context.bgfx;
+				// bgfx has no per-texture anisotropic filtering
+				// it's defined globally by the reset flags
+				switch (state.filter)
 				{
-					case ANISOTROPIC2X: 2;
-					case ANISOTROPIC4X: 4;
-					case ANISOTROPIC8X: 8;
-					case ANISOTROPIC16X: 16;
-					default: 1;
+					case ANISOTROPIC2X, ANISOTROPIC4X, ANISOTROPIC8X, ANISOTROPIC16X:
+						__samplerStateFlags |= bgfx.SAMPLER_MAG_ANISOTROPIC;
+						__samplerStateFlags |= bgfx.SAMPLER_MIN_ANISOTROPIC;
+					default: // nothing
 				}
 
-				if (aniso > Context3D.__glMaxTextureMaxAnisotropy)
+				return true;
+			}
+			else if (__context.isOpenGL)
+			{
+				var gl = __context.gl;
+
+				if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
 				{
-					aniso = Context3D.__glMaxTextureMaxAnisotropy;
+					gl.generateMipmap(gl.TEXTURE_2D);
+					__samplerState.mipmapGenerated = true;
 				}
 
-				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+				if (__context.__maxTextureMaxAnisotropy != 0)
+				{
+					var aniso = switch (state.filter)
+					{
+						case ANISOTROPIC2X: 2;
+						case ANISOTROPIC4X: 4;
+						case ANISOTROPIC8X: 8;
+						case ANISOTROPIC16X: 16;
+						default: 1;
+					}
+
+					if (aniso > __context.__maxTextureMaxAnisotropy)
+					{
+						aniso = __context.__maxTextureMaxAnisotropy;
+					}
+
+					gl.texParameterf(gl.TEXTURE_2D, __context.__textureMaxAnisotropy, aniso);
+				}
 			}
 
 			return true;
