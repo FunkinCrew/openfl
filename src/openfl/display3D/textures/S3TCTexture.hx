@@ -1,5 +1,6 @@
 package openfl.display3D.textures;
 
+import lime.graphics.bgfx.BGFXTextureFormat;
 import openfl.display3D.Context3D;
 import openfl.display3D._internal.S3TCReader;
 import openfl.errors.IllegalOperationError;
@@ -24,41 +25,50 @@ using StringTools;
 	{
 		super(context);
 
-		final extension:Null<Dynamic> = __context.gl.getExtension("EXT_texture_compression_s3tc");
-
-		if (extension == null)
-		{
-			throw new IllegalOperationError("S3TC texture compression is not supported on this device (missing GL extension: EXT_texture_compression_s3tc).");
-		}
+		if (!context.isS3TCSupported()) throw new IllegalOperationError("S3TC texture compression is not supported on this device");
 
 		var reader:S3TCReader = new S3TCReader(data);
 
+		var format:Int;
+
+		if (__context.isBGFX)
 		{
-			final format:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_S3TC_${reader.formatName}_EXT');
+			final bgfx = __context.bgfx;
+			final caps = bgfx.getCaps();
+			format = __getS3TCFormat(reader.fourCC);
 
-			if (format == null)
-			{
+			if ((caps.formats[format] & bgfx.CAPS_FORMAT_TEXTURE_2D) == 0)
 				throw new IllegalOperationError('S3TC format ${reader.formatName} is not supported on this device.');
-			}
+		}
+		else
+		{
+			var extension:Dynamic = __context.gl.getExtension("EXT_texture_compression_s3tc");
+			final glFormat:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_S3TC_${reader.formatName}_EXT');
 
-			__textureTarget = __context.gl.TEXTURE_2D;
-			__width = reader.width;
-			__height = reader.height;
-			__format = format;
-			__internalFormat = format;
-			__premultiplyAlpha = true;
-
-			{
-				__context.__bindGLTexture2D(__textureID);
-
-				__context.gl.compressedTexImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, reader.getCompressedData());
-
-				__context.__bindGLTexture2D(null);
-			}
-
-			reader.dispose();
+			if (glFormat == null) throw new IllegalOperationError('S3TC format ${reader.formatName} is not supported on this device.');
+			format = glFormat;
 		}
 
+		__width = reader.width;
+		__height = reader.height;
+		__format = format;
+		__internalFormat = format;
+		__premultiplyAlpha = true;
+
+		if (__context.isBGFX)
+		{
+			final bgfx = __context.bgfx;
+			__textureID = bgfx.createTexture2D(__width, __height, false, 1, format, 0, bgfx.copy(reader.getCompressedData()));
+		}
+		else
+		{
+			__textureTarget = __context.gl.TEXTURE_2D;
+			__context.__bindGLTexture2D(__textureID);
+			__context.gl.compressedTexImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, reader.getCompressedData());
+			__context.__bindGLTexture2D(null);
+		}
+
+		reader.dispose();
 		reader = null;
 	}
 
@@ -66,43 +76,63 @@ using StringTools;
 	{
 		if (super.__setSamplerState(state))
 		{
-			var gl = __context.gl;
-
-			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
+			if (__context.isBGFX)
 			{
-				gl.generateMipmap(__textureTarget);
-				__samplerState.mipmapGenerated = true;
-			}
-
-			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
-			{
-				var aniso:Int = -1;
-
-				if (state != null && state.filter != null)
+				var bgfx = __context.bgfx;
+				// bgfx has no per-texture anisotropic filtering
+				// it's defined globally by the reset flags
+				switch (state.filter)
 				{
-					switch (state.filter)
-					{
-						case ANISOTROPIC2X:
-							aniso = 2;
-						case ANISOTROPIC4X:
-							aniso = 4;
-						case ANISOTROPIC8X:
-							aniso = 8;
-						case ANISOTROPIC16X:
-							aniso = 16;
-						default:
-							aniso = 1;
-					}
+					case ANISOTROPIC2X, ANISOTROPIC4X, ANISOTROPIC8X, ANISOTROPIC16X:
+						__samplerStateFlags |= bgfx.SAMPLER_MAG_ANISOTROPIC;
+						__samplerStateFlags |= bgfx.SAMPLER_MIN_ANISOTROPIC;
+					default: // nothing
+				}
+			}
+			else
+			{
+				var gl = __context.gl;
+
+				if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
+				{
+					gl.generateMipmap(__textureTarget);
+					__samplerState.mipmapGenerated = true;
 				}
 
-				if (aniso > Context3D.__glMaxTextureMaxAnisotropy) aniso = Context3D.__glMaxTextureMaxAnisotropy;
+				if (__context.__maxTextureMaxAnisotropy != 0)
+				{
+					var aniso = switch (state.filter)
+					{
+						case ANISOTROPIC2X: 2;
+						case ANISOTROPIC4X: 4;
+						case ANISOTROPIC8X: 8;
+						case ANISOTROPIC16X: 16;
+						default: 1;
+					}
 
-				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+					if (aniso > __context.__maxTextureMaxAnisotropy)
+					{
+						aniso = __context.__maxTextureMaxAnisotropy;
+					}
+
+					gl.texParameterf(gl.TEXTURE_2D, __context.__textureMaxAnisotropy, aniso);
+				}
 			}
 
 			return true;
 		}
 
 		return false;
+	}
+
+	@:noCompletion private static function __getS3TCFormat(fourCC:Int):BGFXTextureFormat
+	{
+		return switch (fourCC)
+		{
+			case S3TCReader.FOURCC_DXT1: BGFXTextureFormat.BC1;
+			case S3TCReader.FOURCC_DXT3: BGFXTextureFormat.BC2;
+			case S3TCReader.FOURCC_DXT5: BGFXTextureFormat.BC3;
+			default: throw new IllegalOperationError('Unsupported S3TC FourCC: $fourCC');
+		}
 	}
 }

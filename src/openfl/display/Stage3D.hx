@@ -289,7 +289,7 @@ class Stage3D extends EventDispatcher
 			return;
 		}
 
-		if (renderer.__type == OPENGL)
+		if (renderer.__isHardware())
 		{
 			#if openfl_share_context
 			context3D = stage.context3D;

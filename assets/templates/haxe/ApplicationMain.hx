@@ -6,11 +6,19 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
 
+#if (lime_cffi && !macro)
+import lime._internal.backend.native.NativeCFFI;
+import haxe.Resource;
+#end
+
 @:dox(hide)
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
+#if (lime_cffi && !macro)
+@:access(lime._internal.backend.native.NativeCFFI)
+#end
 #if (static_link || ios)
 @:cppFileCode("\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
 #end
@@ -33,6 +41,10 @@ class ApplicationMain
 
 	public static function create(config):Void
 	{
+		#if (lime_cffi && !macro)
+		NativeCFFI.lime_haxe_resource_init(Resource.listNames, Resource.getBytes);
+		#end
+
 		::if (WIN_ORIENTATION != "auto")::
 		lime.system.System.setHint("ORIENTATIONS", ::if (WIN_ORIENTATION == "portrait")::"Portrait PortraitUpsideDown"::else::"LandscapeLeft LandscapeRight"::end::);
 		::end::
