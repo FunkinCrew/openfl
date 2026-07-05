@@ -1053,12 +1053,12 @@ class Stage extends DisplayObjectContainer implements IModule
 
 		switch (window.context.type)
 		{
-			case OPENGL, OPENGLES, WEBGL:
+			case OPENGL, OPENGLES, WEBGL, BGFX:
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D(this);
 				context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
 				context3D.present();
-				__renderer = new OpenGLRenderer(context3D);
+				__renderer = new Context3DRenderer(context3D);
 				#end
 
 			case CANVAS:
@@ -1986,7 +1986,8 @@ class Stage extends DisplayObjectContainer implements IModule
 
 		var event:Event = null;
 
-		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && __renderDirty #end) #else false #end;
+		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !(openfl_always_render || lime_bgfx)
+			&& __renderDirty #end) #else false #end;
 
 		if (__invalidated && shouldRender)
 		{
