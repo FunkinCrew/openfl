@@ -6,16 +6,25 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
 
+@:dox(hide)
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
-@:dox(hide)
+#if (static_link || ios || tvos)
+@:cppFileCode("\nextern \"C\" int zlib_register_prims ();\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
+#end
 class ApplicationMain
 {
 	#if !macro
 	public static function main()
 	{
+		#if (static_link || ios || tvos)
+		untyped __cpp__("zlib_register_prims ()");
+		untyped __cpp__("lime_register_prims ()");
+		::foreach ndlls::::if (registerStatics)::untyped __cpp__("::nameSafe::_register_prims ()");::end::::end::
+		#end
+
 		lime.system.System.__registerEntryPoint("::APP_FILE::", create);
 
 		#if !html5
