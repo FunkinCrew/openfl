@@ -11,17 +11,24 @@ import haxe.macro.Expr;
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
-#if (static_link || ios || tvos)
+#if (static_link || ios || tvos || emscripten)
+@:buildXml("<include name=\"Configuration.xml\" />")
+#if !emscripten
 @:cppFileCode("\nextern \"C\" int zlib_register_prims ();\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
+#else
+@:cppFileCode("\nextern \"C\" int zlib_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
+#end
 #end
 class ApplicationMain
 {
 	#if !macro
 	public static function main()
 	{
-		#if (static_link || ios || tvos)
+		#if (static_link || ios || tvos || emscripten)
 		untyped __cpp__("zlib_register_prims ()");
+		#if !emscripten
 		untyped __cpp__("lime_register_prims ()");
+		#end
 		::foreach ndlls::::if (registerStatics)::untyped __cpp__("::nameSafe::_register_prims ()");::end::::end::
 		#end
 
@@ -141,7 +148,7 @@ class ApplicationMain
 
 		var result = app.exec();
 
-		#if (sys && !ios && !nodejs)
+		#if (sys && !ios && !emscripten && !nodejs)
 		lime.system.System.exit(result);
 		#end
 	}
