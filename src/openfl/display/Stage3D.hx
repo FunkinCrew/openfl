@@ -61,9 +61,9 @@ import js.Browser;
 @:noDebug
 #end
 @:access(lime.graphics.opengl.GL)
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D, openfl.display3D.Program3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D, openfl.display3D.backends.opengl.Program3D)
 #end
 @:access(openfl.display.Bitmap)

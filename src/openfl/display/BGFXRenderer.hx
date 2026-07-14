@@ -123,7 +123,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
 	{
 		super();
-		#if bgfx
+		#if lime_bgfx
 		__context3D = context;
 		__context = context.__context;
 
@@ -194,7 +194,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function applyAlpha(alpha:Float):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		__alphaValue[0] = alpha * __worldAlpha;
 
 		if (__currentShaderBuffer != null)
@@ -214,7 +214,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__currentShaderBuffer != null)
 		{
 			if (bitmapData != null)
@@ -265,7 +265,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function applyColorTransform(colorTransform:ColorTransform):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		var enabled = (colorTransform != null && !colorTransform.__isDefault(true));
 		applyHasColorTransform(enabled);
 
@@ -306,7 +306,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function applyHasColorTransform(enabled:Bool):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		__hasColorTransformValue[0] = enabled;
 
 		if (__currentShaderBuffer != null)
@@ -325,7 +325,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function applyMatrix(matrix:Array<Float>):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__currentShaderBuffer != null)
 		{
 			__currentShaderBuffer.addFloatOverride("openfl_Matrix", matrix);
@@ -345,7 +345,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function getMatrix(transform:Matrix):#if lime Matrix4 #else Dynamic #end
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (gl != null)
 		{
 			__getMatrix(transform, NEVER);
@@ -383,7 +383,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function setShader(shader:Shader):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		__currentShaderBuffer = null;
 
 		if (__currentShader == shader) return;
@@ -419,7 +419,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function setViewport():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		// __gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
 		#end
 	}
@@ -431,7 +431,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function updateShader():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__currentShader != null)
 		{
 			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
@@ -447,7 +447,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __flushUseArray():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		var program = __currentShader.program;
 		if (program == null || program.__bgfxUniforms == null) return;
 
@@ -470,7 +470,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function useAlphaArray():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__currentShader != null)
 		{
 			if (__currentShader.__alpha != null) __currentShader.__alpha.__useArray = true;
@@ -484,7 +484,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 	**/
 	public function useColorTransformArray():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__currentShader != null)
 		{
 			if (__currentShader.__colorMultiplier != null) __currentShader.__colorMultiplier.__useArray = true;
@@ -495,7 +495,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __cleanup():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__stencilReference > 0)
 		{
 			__stencilReference = 0;
@@ -513,7 +513,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __clear():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__stage == null || __stage.__transparent)
 		{
 			__context3D.clear(0, 0, 0, 0, 0, 0, Context3DClearMask.COLOR);
@@ -529,7 +529,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __clearShader():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__currentShader != null)
 		{
 			if (__currentShaderBuffer == null)
@@ -553,7 +553,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __copyShader(other:BGFXRenderer):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		__currentShader = other.__currentShader;
 		__currentShaderBuffer = other.__currentShaderBuffer;
 		__currentDisplayShader = other.__currentDisplayShader;
@@ -565,7 +565,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __getMatrix(transform:Matrix, pixelSnapping:PixelSnapping):Array<Float>
 	{
-		#if bgfx
+		#if lime_bgfx
 		__matrix[0] = transform.a * __worldTransform.a + transform.b * __worldTransform.c;
 		__matrix[1] = transform.a * __worldTransform.b + transform.b * __worldTransform.d;
 		__matrix[2] = 0;
@@ -609,7 +609,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initShader(shader:Shader):Shader
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -632,7 +632,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initDisplayShader(shader:Shader):Shader
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -655,7 +655,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initGraphicsShader(shader:Shader):Shader
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -678,7 +678,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initShaderBuffer(shaderBuffer:ShaderBuffer):Shader
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (shaderBuffer != null)
 		{
 			return __initGraphicsShader(shaderBuffer.shader);
@@ -692,7 +692,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMask():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__stencilReference == 0) return;
 
 		var mask = __maskObjects.pop();
@@ -721,7 +721,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (object.__mask != null)
 		{
 			__popMask();
@@ -744,7 +744,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMaskRect():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__numClipRects > 0)
 		{
 			__numClipRects--;
@@ -763,7 +763,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMask(mask:DisplayObject):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__stencilReference == 0)
 		{
 			__context3D.clear(0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
@@ -786,7 +786,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (handleScrollRect && object.__scrollRect != null)
 		{
 			if (object.__renderTransform.b != 0 || object.__renderTransform.c != 0)
@@ -813,7 +813,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		// TODO: Handle rotation?
 
 		if (__numClipRects == __clipRects.length)
@@ -853,7 +853,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __render(object:IBitmapDrawable):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (object.__drawableType == openfl.display._internal.IBitmapDrawableType.STAGE)
 		{
 			__context3D.setDepthTest(false, ALWAYS);
@@ -976,7 +976,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (object == null) return;
 
 		switch (object.__drawableType)
@@ -1004,7 +1004,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderDrawableMask(object:IBitmapDrawable):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (object == null) return;
 
 		switch (object.__drawableType)
@@ -1032,7 +1032,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderFilterPass(source:BitmapData, shader:Shader, smooth:Bool, clear:Bool = true):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 
@@ -1077,7 +1077,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __resize(width:Int, height:Int):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		__width = width;
 		__height = height;
 
@@ -1096,7 +1096,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __resumeClipAndMask(childRenderer:BGFXRenderer):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__stencilReference > 0)
 		{
 			__context3D.setStencilActions(FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
@@ -1121,7 +1121,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __scissorRect(clipRect:Rectangle = null):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (clipRect != null)
 		{
 			var x = Math.ffloor(clipRect.x);
@@ -1155,7 +1155,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __setBlendMode(value:BlendMode):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value && !__complexBlendsSupported) return;
 		__blendMode = value;
@@ -1258,7 +1258,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __setRenderTarget(renderTarget:BitmapData):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		__defaultRenderTarget = renderTarget;
 		__flipped = (renderTarget == null);
 
@@ -1271,7 +1271,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __setShaderBuffer(shaderBuffer:ShaderBuffer):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		setShader(shaderBuffer.shader);
 		__currentShaderBuffer = shaderBuffer;
 		#end
@@ -1279,7 +1279,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __suspendClipAndMask():Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__stencilReference > 0)
 		{
 			__context3D.setStencilActions();
@@ -1295,7 +1295,7 @@ class BGFXRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __updateShaderBuffer(bufferOffset:Int):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__currentShader != null && __currentShaderBuffer != null)
 		{
 			__currentShader.__updateFromBuffer(__currentShaderBuffer, bufferOffset);

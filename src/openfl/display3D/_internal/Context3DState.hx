@@ -1,12 +1,12 @@
 package openfl.display3D._internal;
 
 #if !flash
-#if opengl
+#if (lime_opengl || lime_opengles)
 import openfl.display3D._internal.GLBuffer;
 import openfl.display3D._internal.GLFramebuffer;
 import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D._internal.GLTexture;
-#elseif bgfx
+#elseif lime_bgfx
 import lime.graphics.bgfx.BGFXFrameBuffer;
 #end
 import openfl.display._internal.SamplerState;
@@ -18,7 +18,7 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.display.Shader;
 import openfl.geom.Rectangle;
-#if opengl
+#if (lime_opengl || lime_opengles)
 import lime.graphics.opengl.GL;
 #end
 
@@ -62,10 +62,10 @@ class Context3DState
 	// vertex buffer at?
 	public var shader:Shader; // TODO: Merge shader/program3d
 
-	#if bgfx
+	#if lime_bgfx
 	private var __primaryBGFXFramebuffer:BGFXFrameBuffer;
 	private var __rttBGFXFramebuffer:BGFXFrameBuffer;
-	#elseif opengl
+	#elseif (lime_opengl || lime_opengles)
 	private var __currentGLArrayBuffer:GLBuffer;
 	private var __currentGLElementArrayBuffer:GLBuffer;
 	private var __currentGLFramebuffer:GLFramebuffer;
@@ -110,7 +110,7 @@ class Context3DState
 		stencilWriteMask = 0xFF;
 		textures = new Array();
 
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__frontFaceGLCCW = true;
 		__glBlendEquation = GL.FUNC_ADD;
 		#end

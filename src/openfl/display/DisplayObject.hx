@@ -184,9 +184,9 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.display3D._internal.Context3DState)
 @:access(openfl.display._internal.Context3DGraphics)
 @:access(openfl.events.Event)
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Bitmap)

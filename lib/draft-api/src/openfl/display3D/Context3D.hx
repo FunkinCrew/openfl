@@ -131,9 +131,9 @@ import lime.math.Vector2;
 @:access(openfl.display3D._internal.Context3DState)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.textures.TextureBase)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.textures.TextureBase)
 #end
 @:access(openfl.display3D.textures.Texture)

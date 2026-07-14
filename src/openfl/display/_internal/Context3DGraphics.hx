@@ -24,9 +24,9 @@ import openfl.display._internal.stats.DrawCallContext;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.DisplayObject)

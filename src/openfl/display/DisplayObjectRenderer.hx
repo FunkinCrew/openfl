@@ -32,9 +32,9 @@ import lime.graphics.RenderContextType;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Tilemap)
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.events.RenderEvent)
@@ -160,7 +160,7 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			if (renderer.__type == OPENGL || renderer.__type == BGFX)
 			{
-				var renderer:#if bgfx BGFXRenderer #else OpenGLRenderer #end = cast renderer;
+				var renderer:#if lime_bgfx BGFXRenderer #else OpenGLRenderer #end = cast renderer;
 				renderer.setViewport();
 			}
 		}
@@ -594,8 +594,8 @@ class DisplayObjectRenderer extends EventDispatcher
 
 				if (displayObject.__cacheBitmapRenderer.__type == OPENGL || displayObject.__cacheBitmapRenderer.__type == BGFX)
 				{
-					var parentRenderer:#if bgfx BGFXRenderer #else OpenGLRenderer #end = cast renderer;
-					var childRenderer:#if bgfx BGFXRenderer #else OpenGLRenderer #end = cast displayObject.__cacheBitmapRenderer;
+					var parentRenderer:#if lime_bgfx BGFXRenderer #else OpenGLRenderer #end = cast renderer;
+					var childRenderer:#if lime_bgfx BGFXRenderer #else OpenGLRenderer #end = cast displayObject.__cacheBitmapRenderer;
 
 					var context = childRenderer.__context3D;
 

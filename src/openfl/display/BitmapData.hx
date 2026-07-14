@@ -120,14 +120,14 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.textures.TextureBase)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.textures.TextureBase)
 #end
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.DisplayObject)

@@ -3,7 +3,7 @@ package openfl.display;
 #if !flash
 import openfl.utils._internal.Float32Array;
 import openfl.display3D.Context3D;
-#if bgfx
+#if lime_bgfx
 import lime.graphics.bgfx.BGFXUniformType;
 import openfl.display3D.Program3D.UniformData;
 #end
@@ -93,9 +93,9 @@ import openfl.display3D.Program3D.UniformData;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 #if (!js && !display)
@@ -170,7 +170,7 @@ import openfl.display3D.Program3D.UniformData;
 	@:noCompletion private var __length:Int;
 	@:noCompletion private var __uniformMatrix:Float32Array;
 	@:noCompletion private var __useArray:Bool;
-	#if bgfx
+	#if lime_bgfx
 	@:noCompletion private var __bgfxUniform:UniformData;
 	@:noCompletion private var __bgfxData:Float32Array;
 	#end
@@ -182,7 +182,7 @@ import openfl.display3D.Program3D.UniformData;
 
 	@:noCompletion private function __disableGL(context:Context3D):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (index < 0) return;
 
 		var gl = context.gl;
@@ -199,7 +199,7 @@ import openfl.display3D.Program3D.UniformData;
 
 	@:noCompletion private function __updateGL(context:Context3D, overrideValue:Array<T> = null):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__bgfxUniform == null) return;
 
 		var value = overrideValue != null ? overrideValue : this.value;
@@ -282,7 +282,7 @@ import openfl.display3D.Program3D.UniformData;
 		}
 
 		context.bgfx.setUniform(u.uniform, data, u.info.num);
-		#elseif opengl
+		#elseif (lime_opengl || lime_opengles)
 		if (index < 0) return;
 
 		#if lime
@@ -520,7 +520,7 @@ import openfl.display3D.Program3D.UniformData;
 
 	@:noCompletion private function __updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
 	{
-		#if bgfx
+		#if lime_bgfx
 		if (__bgfxUniform == null || length < __length) return;
 
 		var u = __bgfxUniform;
@@ -567,7 +567,7 @@ import openfl.display3D.Program3D.UniformData;
 
 		context.bgfx.setUniform(u.uniform, data, u.info.num);
 		return;
-		#elseif opengl
+		#elseif (lime_opengl || lime_opengles)
 		if (index < 0) return;
 
 		#if lime

@@ -1,7 +1,7 @@
 package openfl.display3D.backends.bgfx.textures;
 
 import haxe.Int64;
-#if bgfx
+#if lime_bgfx
 import lime.graphics.bgfx.BGFXTexture;
 import lime.graphics.bgfx.BGFXTextureFormat;
 import lime.graphics.bgfx.BGFXFrameBuffer;

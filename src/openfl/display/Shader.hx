@@ -4,7 +4,7 @@ import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 #if !flash
-#if bgfx
+#if lime_bgfx
 import lime.graphics.bgfx.BGFXUniform;
 import lime.graphics.bgfx.BGFXUniformInfo;
 import lime.graphics.bgfx.BGFXShader;
@@ -124,9 +124,9 @@ import openfl.Lib;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display3D.Program3D)
@@ -207,7 +207,7 @@ class Shader
 
 		This property is not available on the Flash target.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(get, never):#if bgfx BGFXProgram #else GLProgram #end;
+	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(get, never):#if lime_bgfx BGFXProgram #else GLProgram #end;
 
 	/**
 		The default GLSL vertex header, before being applied to the vertex source.
@@ -515,7 +515,7 @@ class Shader
 
 	@:noCompletion private function __disableGL():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var gl = __context.gl;
 
 		var textureCount = 0;
@@ -565,7 +565,7 @@ class Shader
 
 	@:noCompletion private function __enableGL():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var textureCount = 0;
 
 		var gl = __context.gl;
@@ -690,7 +690,7 @@ class Shader
 
 		if (__context != null && program == null)
 		{
-			#if bgfx
+			#if lime_bgfx
 			var vertex = glVertexSource;
 			var fragment = glFragmentSource;
 			#else
@@ -727,7 +727,7 @@ class Shader
 
 			if (program != null)
 			{
-				#if opengl
+				#if (lime_opengl || lime_opengles)
 				var gl = __context.gl;
 
 				for (input in __inputBitmapData)
@@ -804,7 +804,7 @@ class Shader
 		}
 	}
 
-	@:noCompletion private function get_glProgram():#if bgfx BGFXProgram #else GLProgram #end
+	@:noCompletion private function get_glProgram():#if lime_bgfx BGFXProgram #else GLProgram #end
 	{
 		return program != null ? program.__glProgram : null;
 	}
@@ -1077,7 +1077,7 @@ class Shader
 			}
 		}
 
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var gl = __context.gl;
 
 		if (shaderBuffer.paramDataLength > 0)

@@ -1,7 +1,7 @@
 package openfl.display3D.textures;
 
 #if !flash
-#if bgfx
+#if lime_bgfx
 import lime.graphics.bgfx.BGFXTextureFormat;
 #end
 import openfl.display3D.Context3D;
@@ -23,9 +23,9 @@ using StringTools;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:final class ASTCTexture extends TextureBase
@@ -42,11 +42,11 @@ using StringTools;
 
 		var reader:ASTCReader = new ASTCReader(data);
 
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		final format:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_ASTC_${reader.blockX}x${reader.blockY}_KHR');
 
 		if (format == null) throw new IllegalOperationError('ASTC format ${reader.blockX}x${reader.blockY} is not supported on this device');
-		#elseif bgfx
+		#elseif lime_bgfx
 		final bgfx = __context.bgfx;
 		final caps = bgfx.getCaps();
 		final format:BGFXTextureFormat = __getASTCFormat(reader.blockX, reader.blockY);
@@ -61,12 +61,12 @@ using StringTools;
 		__internalFormat = format;
 		__premultiplyAlpha = true;
 
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__textureTarget = __context.gl.TEXTURE_2D;
 		__context.__bindGLTexture2D(__textureID);
 		__context.gl.compressedTexImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, reader.getCompressedData());
 		__context.__bindGLTexture2D(null);
-		#elseif bgfx
+		#elseif lime_bgfx
 		__textureID = bgfx.createTexture2D(__width, __height, false, 1, format, 0, bgfx.copy(reader.getCompressedData()));
 		#end
 
@@ -79,7 +79,7 @@ using StringTools;
 	{
 		if (super.__setSamplerState(state))
 		{
-			#if opengl
+			#if (lime_opengl || lime_opengles)
 			if (Context3D.__maxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)
@@ -117,7 +117,7 @@ using StringTools;
 		return false;
 	}
 
-	#if bgfx
+	#if lime_bgfx
 	@:noCompletion private static function __getASTCFormat(blockX:Int, blockY:Int):BGFXTextureFormat
 	{
 		return switch ([blockX, blockY])

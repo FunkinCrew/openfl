@@ -180,9 +180,9 @@ typedef Element = Dynamic;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.DisplayObjectRenderer)
@@ -1380,7 +1380,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		switch (window.context.type)
 		{
 			case BGFX:
-				#if (!disable_cffi && bgfx)
+				#if (!disable_cffi && lime_bgfx)
 				context3D = new Context3D(this);
 				#if openfl_dpi_aware
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);

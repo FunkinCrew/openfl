@@ -12,9 +12,9 @@ import openfl.display._internal.stats.DrawCallContext;
 #end
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Shader)
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 class Context3DBitmapData

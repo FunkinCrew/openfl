@@ -1,6 +1,6 @@
 package openfl.display3D.backends.bgfx;
 
-#if bgfx
+#if lime_bgfx
 import haxe.Int64;
 import lime.graphics.bgfx.BGFXProgram;
 import lime.graphics.BGFXRenderContext;

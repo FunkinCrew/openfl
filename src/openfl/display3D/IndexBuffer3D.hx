@@ -1,9 +1,9 @@
 package openfl.display3D;
 
 #if !flash
-#if opengl
+#if (lime_opengl || lime_opengles)
 import openfl.display3D._internal.GLBuffer;
-#elseif bgfx
+#elseif lime_bgfx
 import lime.graphics.bgfx.BGFXIndexBuffer;
 import lime.graphics.bgfx.BGFXDynamicIndexBuffer;
 #end
@@ -29,9 +29,9 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Stage)
@@ -42,9 +42,9 @@ import openfl.Vector;
 	@:noCompletion private var __numIndices:Int;
 	@:noCompletion private var __tempUInt16Array:UInt16Array;
 	@:noCompletion private var __usage:Context3DBufferUsage;
-	#if opengl
+	#if (lime_opengl || lime_opengles)
 	@:noCompletion private var __id:GLBuffer;
-	#elseif bgfx
+	#elseif lime_bgfx
 	@:noCompletion private var __idbh:BGFXIndexBufferHandle;
 	#end
 
@@ -53,7 +53,7 @@ import openfl.Vector;
 		__context = context3D;
 		__numIndices = numIndices;
 
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var gl = __context.gl;
 		__id = gl.createBuffer();
 		#end
@@ -67,10 +67,10 @@ import openfl.Vector;
 	**/
 	public function dispose():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
-		#elseif bgfx
+		#elseif lime_bgfx
 		var bgfx = __context.bgfx;
 		switch (__idbh)
 		{
@@ -120,7 +120,7 @@ import openfl.Vector;
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var gl = __context.gl;
 		var usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
 		__context.__bindGLElementArrayBuffer(__id);
@@ -128,7 +128,7 @@ import openfl.Vector;
 		if (__memoryUsage == data.byteLength) gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, data);
 		else
 			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, usage);
-		#elseif bgfx
+		#elseif lime_bgfx
 		var bgfx = __context.bgfx;
 		var mem = bgfx.copy(data);
 
@@ -244,7 +244,7 @@ import openfl.Vector;
 	}
 }
 
-#if bgfx
+#if lime_bgfx
 // to hold either static or dynamic buffer in one field
 enum BGFXIndexBufferHandle
 {

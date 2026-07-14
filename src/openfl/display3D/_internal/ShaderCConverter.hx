@@ -251,7 +251,7 @@ class ShaderCConverter
 
 		if (!isVertex && fragVaryings.length > 0 && results.indexOf("void main()") != -1)
 		{
-			var globals = '#if BGFX_SHADER_LANGUAGE_HLSL || BGFX_SHADER_LANGUAGE_PSSL || BGFX_SHADER_LANGUAGE_SPIRV || BGFX_SHADER_LANGUAGE_METAL\n#define _OFL_G static\n#else\n#define _OFL_G\n#endif\n';
+			var globals = '#if lime_bgfx_SHADER_LANGUAGE_HLSL || BGFX_SHADER_LANGUAGE_PSSL || BGFX_SHADER_LANGUAGE_SPIRV || BGFX_SHADER_LANGUAGE_METAL\n#define _OFL_G static\n#else\n#define _OFL_G\n#endif\n';
 			var copies = '';
 			for (v in fragVaryings)
 			{

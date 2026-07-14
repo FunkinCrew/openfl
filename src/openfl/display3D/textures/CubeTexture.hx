@@ -26,9 +26,9 @@ import openfl.utils.ByteArray;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Stage)
@@ -49,7 +49,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__textureTarget = __context.gl.TEXTURE_CUBE_MAP;
 		#end
 
@@ -249,13 +249,13 @@ import openfl.utils.ByteArray;
 		var size = __size >> miplevel;
 		if (size == 0) return;
 
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var gl = __context.gl;
 		var target = __sideToTarget(side);
 		__context.__bindGLTextureCubeMap(__textureID);
 		gl.texImage2D(target, miplevel, __internalFormat, size, size, 0, __format, gl.UNSIGNED_BYTE, data);
 		__context.__bindGLTextureCubeMap(null);
-		#elseif bgfx
+		#elseif lime_bgfx
 		var bgfx = __context.bgfx;
 		__textureID = bgfx.createTextureCube(size, miplevel > 0, 0, __internalFormat, 0, data == null ? null : bgfx.copy(data));
 		#end
@@ -266,7 +266,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private override function __getFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		// TODO: cube texture FB for bgfx?
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var gl = __context.gl;
 
 		if (__framebuffer == null)
@@ -301,7 +301,7 @@ import openfl.utils.ByteArray;
 	{
 		if (super.__setSamplerState(state))
 		{
-			#if opengl
+			#if (lime_opengl || lime_opengles)
 			var gl = __context.gl;
 
 			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
@@ -328,7 +328,7 @@ import openfl.utils.ByteArray;
 
 				gl.texParameterf(gl.TEXTURE_CUBE_MAP, Context3D.__textureMaxAnisotropy, aniso);
 			}
-			#elseif bgfx
+			#elseif lime_bgfx
 			// TODO: mip generation?
 			var bgfx = __context.bgfx;
 			// bgfx has no per-texture anisotropic filtering
@@ -350,7 +350,7 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __sideToTarget(side:UInt):Int
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var gl = __context.gl;
 
 		return switch (side)
@@ -370,7 +370,7 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(__size, __size, true);
 

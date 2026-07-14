@@ -36,9 +36,9 @@ import lime.math.Matrix4;
 #end
 @:access(lime.graphics.GLRenderContext)
 @:access(openfl.display._internal.ShaderBuffer)
-#if bgfx
+#if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif opengl
+#elseif (lime_opengl || lime_opengles)
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.BitmapData)
@@ -120,7 +120,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
 	{
 		super();
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__context3D = context;
 		__context = context.__context;
 
@@ -225,7 +225,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyAlpha(alpha:Float):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__alphaValue[0] = alpha * __worldAlpha;
 
 		if (__currentShaderBuffer != null)
@@ -245,7 +245,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__currentShaderBuffer != null)
 		{
 			if (bitmapData != null)
@@ -296,7 +296,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyColorTransform(colorTransform:ColorTransform):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		var enabled = (colorTransform != null && !colorTransform.__isDefault(true));
 		applyHasColorTransform(enabled);
 
@@ -337,7 +337,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyHasColorTransform(enabled:Bool):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__hasColorTransformValue[0] = enabled;
 
 		if (__currentShaderBuffer != null)
@@ -356,7 +356,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyMatrix(matrix:Array<Float>):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__currentShaderBuffer != null)
 		{
 			__currentShaderBuffer.addFloatOverride("openfl_Matrix", matrix);
@@ -376,7 +376,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function getMatrix(transform:Matrix):#if lime Matrix4 #else Dynamic #end
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (gl != null)
 		{
 			__getMatrix(transform, NEVER);
@@ -414,7 +414,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function setShader(shader:Shader):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__currentShaderBuffer = null;
 
 		if (__currentShader == shader) return;
@@ -450,7 +450,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function setViewport():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
 		#end
 	}
@@ -462,7 +462,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function updateShader():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__currentShader != null)
 		{
 			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
@@ -481,7 +481,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function useAlphaArray():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__currentShader != null)
 		{
 			if (__currentShader.__alpha != null) __currentShader.__alpha.__useArray = true;
@@ -495,7 +495,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function useColorTransformArray():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__currentShader != null)
 		{
 			if (__currentShader.__colorMultiplier != null) __currentShader.__colorMultiplier.__useArray = true;
@@ -506,7 +506,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __cleanup():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__stencilReference > 0)
 		{
 			__stencilReference = 0;
@@ -524,7 +524,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __clear():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__stage == null || __stage.__transparent)
 		{
 			__context3D.clear(0, 0, 0, 0, 0, 0, Context3DClearMask.COLOR);
@@ -540,7 +540,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __clearShader():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__currentShader != null)
 		{
 			if (__currentShaderBuffer == null)
@@ -564,7 +564,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __copyShader(other:OpenGLRenderer):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__currentShader = other.__currentShader;
 		__currentShaderBuffer = other.__currentShaderBuffer;
 		__currentDisplayShader = other.__currentDisplayShader;
@@ -576,7 +576,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __getMatrix(transform:Matrix, pixelSnapping:PixelSnapping):Array<Float>
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__matrix[0] = transform.a * __worldTransform.a + transform.b * __worldTransform.c;
 		__matrix[1] = transform.a * __worldTransform.b + transform.b * __worldTransform.d;
 		__matrix[2] = 0;
@@ -620,7 +620,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initShader(shader:Shader):Shader
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -643,7 +643,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initDisplayShader(shader:Shader):Shader
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -666,7 +666,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initGraphicsShader(shader:Shader):Shader
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -689,7 +689,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initShaderBuffer(shaderBuffer:ShaderBuffer):Shader
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (shaderBuffer != null)
 		{
 			return __initGraphicsShader(shaderBuffer.shader);
@@ -703,7 +703,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMask():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__stencilReference == 0) return;
 
 		var mask = __maskObjects.pop();
@@ -732,7 +732,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (object.__mask != null)
 		{
 			__popMask();
@@ -755,7 +755,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __popMaskRect():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__numClipRects > 0)
 		{
 			__numClipRects--;
@@ -774,7 +774,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMask(mask:DisplayObject):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__stencilReference == 0)
 		{
 			__context3D.clear(0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
@@ -797,7 +797,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (handleScrollRect && object.__scrollRect != null)
 		{
 			if (object.__renderTransform.b != 0 || object.__renderTransform.c != 0)
@@ -824,7 +824,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		// TODO: Handle rotation?
 
 		if (__numClipRects == __clipRects.length)
@@ -864,7 +864,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __render(object:IBitmapDrawable):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (object.__drawableType == openfl.display._internal.IBitmapDrawableType.STAGE)
 		{
 			__context3D.setDepthTest(false, ALWAYS);
@@ -987,7 +987,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (object == null) return;
 
 		switch (object.__drawableType)
@@ -1015,7 +1015,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderDrawableMask(object:IBitmapDrawable):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (object == null) return;
 
 		switch (object.__drawableType)
@@ -1043,7 +1043,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __renderFilterPass(source:BitmapData, shader:Shader, smooth:Bool, clear:Bool = true):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (source == null || shader == null) return;
 		if (__defaultRenderTarget == null) return;
 
@@ -1088,7 +1088,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __resize(width:Int, height:Int):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__width = width;
 		__height = height;
 
@@ -1107,7 +1107,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __resumeClipAndMask(childRenderer:OpenGLRenderer):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__stencilReference > 0)
 		{
 			__context3D.setStencilActions(FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
@@ -1132,7 +1132,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __scissorRect(clipRect:Rectangle = null):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (clipRect != null)
 		{
 			var x = Math.ffloor(clipRect.x);
@@ -1166,7 +1166,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __setBlendMode(value:BlendMode):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value && !__complexBlendsSupported) return;
 		__blendMode = value;
@@ -1269,7 +1269,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __setRenderTarget(renderTarget:BitmapData):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		__defaultRenderTarget = renderTarget;
 		__flipped = (renderTarget == null);
 
@@ -1282,7 +1282,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __setShaderBuffer(shaderBuffer:ShaderBuffer):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		setShader(shaderBuffer.shader);
 		__currentShaderBuffer = shaderBuffer;
 		#end
@@ -1290,7 +1290,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __suspendClipAndMask():Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__stencilReference > 0)
 		{
 			__context3D.setStencilActions();
@@ -1306,7 +1306,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __updateShaderBuffer(bufferOffset:Int):Void
 	{
-		#if opengl
+		#if (lime_opengl || lime_opengles)
 		if (__currentShader != null && __currentShaderBuffer != null)
 		{
 			__currentShader.__updateFromBuffer(__currentShaderBuffer, bufferOffset);
