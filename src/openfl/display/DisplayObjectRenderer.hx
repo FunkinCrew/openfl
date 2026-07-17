@@ -34,7 +34,7 @@ import lime.graphics.RenderContextType;
 @:access(openfl.display.Tilemap)
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.events.RenderEvent)
@@ -122,7 +122,7 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			switch (renderer.__type)
 			{
-				case OPENGL:
+				case WEBGL:
 					if (!renderer.__cleared) renderer.__clear();
 
 					var renderer:OpenGLRenderer = cast renderer;
@@ -158,7 +158,7 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			renderer.__popMaskObject(displayObject);
 
-			if (renderer.__type == OPENGL || renderer.__type == BGFX)
+			if (renderer.__type == WEBGL || renderer.__type == BGFX)
 			{
 				var renderer:#if lime_bgfx BGFXRenderer #else OpenGLRenderer #end = cast renderer;
 				renderer.setViewport();
@@ -227,20 +227,20 @@ class DisplayObjectRenderer extends EventDispatcher
 				var bitmap:Bitmap = cast displayObject;
 				// TODO: Handle filters without an intermediate draw
 				if (bitmap.__bitmapData == null
-					|| (bitmap.__filters == null #if lime && (renderer.__type == OPENGL || renderer.__type == BGFX) #end && bitmap.__cacheBitmap == null))
+					|| (bitmap.__filters == null #if lime && (renderer.__type == WEBGL || renderer.__type == BGFX) #end && bitmap.__cacheBitmap == null))
 					return false;
 				force = (bitmap.__bitmapData.image != null && bitmap.__bitmapData.image.version != bitmap.__imageVersion);
 
 			case TEXT_FIELD:
 				var textField:TextField = cast displayObject;
-				if (textField.__filters == null #if lime && (renderer.__type == OPENGL || renderer.__type == BGFX) #end && textField.__cacheBitmap == null
+				if (textField.__filters == null #if lime && (renderer.__type == WEBGL || renderer.__type == BGFX) #end && textField.__cacheBitmap == null
 					&& !textField.__domRender) return false;
 				if (force) textField.__renderDirty = true;
 				force = force || textField.__dirty;
 
 			case TILEMAP:
 				var tilemap:Tilemap = cast displayObject;
-				if (tilemap.__filters == null #if lime && (renderer.__type == OPENGL || renderer.__type == BGFX) #end && tilemap.__cacheBitmap == null) return
+				if (tilemap.__filters == null #if lime && (renderer.__type == WEBGL || renderer.__type == BGFX) #end && tilemap.__cacheBitmap == null) return
 					false;
 
 			default:
@@ -258,9 +258,9 @@ class DisplayObjectRenderer extends EventDispatcher
 		var updated = false;
 
 		if (displayObject.cacheAsBitmap
-			|| (renderer.__type != OPENGL
+			|| (renderer.__type != WEBGL
 				&& !colorTransform.__isDefault(true) #if (openfl_legacy_scale9grid && openfl_force_gl_cacheasbitmap_for_scale9grid)
-					|| ((renderer.__type == OPENGL || renderer.__type == BGFX) L && displayObject.scale9Grid != null) #end))
+					|| ((renderer.__type == WEBGL || renderer.__type == BGFX) L && displayObject.scale9Grid != null) #end))
 		{
 			var rect:Rectangle = null;
 
@@ -277,7 +277,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			if (softwareDirty || hardwareDirty)
 			{
 				#if !openfl_force_gl_cacheasbitmap
-				if (renderer.__type == OPENGL || renderer.__type == BGFX)
+				if (renderer.__type == WEBGL || renderer.__type == BGFX)
 				{
 					if (#if !openfl_disable_gl_cacheasbitmap __shouldCacheHardware(displayObject, null) == false #else true #end)
 					{
@@ -291,7 +291,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				#end
 
 				if (softwareDirty && (renderType == CANVAS || renderType == CAIRO)) needRender = true;
-				if (hardwareDirty && (renderer.__type == OPENGL || renderer.__type == BGFX)) needRender = true;
+				if (hardwareDirty && (renderer.__type == WEBGL || renderer.__type == BGFX)) needRender = true;
 			}
 
 			var updateTransform = (needRender || !displayObject.__cacheBitmap.__worldTransform.equals(displayObject.__worldTransform));
@@ -342,7 +342,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			}
 
 			if (!needRender
-				&& renderer.__type != OPENGL
+				&& renderer.__type != WEBGL
 				&& displayObject.__cacheBitmapData != null
 				&& displayObject.__cacheBitmapData.image != null
 				&& displayObject.__cacheBitmapData.image.version < displayObject.__cacheBitmapData.__textureVersion)
@@ -426,7 +426,7 @@ class DisplayObjectRenderer extends EventDispatcher
 						&& (bitmapWidth != filterWidth || bitmapHeight != filterHeight));
 					var fillColor = displayObject.opaqueBackground != null ? (0xFF << 24) | displayObject.opaqueBackground : 0;
 					var bitmapColor = needsFill ? 0 : fillColor;
-					var allowFramebuffer = (renderer.__type == OPENGL);
+					var allowFramebuffer = (renderer.__type == WEBGL);
 
 					if (displayObject.__cacheBitmapData == null
 						|| bitmapWidth > displayObject.__cacheBitmapData.width
@@ -443,7 +443,7 @@ class DisplayObjectRenderer extends EventDispatcher
 						displayObject.__cacheBitmapData.__fillRect(displayObject.__cacheBitmapData.rect, bitmapColor, allowFramebuffer);
 					}
 
-					if (renderer.__type == OPENGL
+					if (renderer.__type == WEBGL
 						&& displayObject.__cacheBitmapData.__texture != null
 						&& __hasMaskedDescendant(displayObject)
 						&& __isOnMouseOverPath(displayObject))
@@ -542,7 +542,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				#if lime
 				if (displayObject.__cacheBitmapRenderer == null || renderType != displayObject.__cacheBitmapRenderer.__type)
 				{
-					if (renderType == OPENGL)
+					if (renderType == WEBGL)
 					{
 						displayObject.__cacheBitmapRenderer = new OpenGLRenderer(cast(renderer, OpenGLRenderer).__context3D, displayObject.__cacheBitmapData);
 					}
@@ -592,7 +592,7 @@ class DisplayObjectRenderer extends EventDispatcher
 
 				displayObject.__isCacheBitmapRender = true;
 
-				if (displayObject.__cacheBitmapRenderer.__type == OPENGL || displayObject.__cacheBitmapRenderer.__type == BGFX)
+				if (displayObject.__cacheBitmapRenderer.__type == WEBGL || displayObject.__cacheBitmapRenderer.__type == BGFX)
 				{
 					var parentRenderer:#if lime_bgfx BGFXRenderer #else OpenGLRenderer #end = cast renderer;
 					var childRenderer:#if lime_bgfx BGFXRenderer #else OpenGLRenderer #end = cast displayObject.__cacheBitmapRenderer;

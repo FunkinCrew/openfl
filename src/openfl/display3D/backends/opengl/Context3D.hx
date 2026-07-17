@@ -1,6 +1,6 @@
 package openfl.display3D.backends.opengl;
 
-#if (opengl && !flash)
+#if (lime_webgl && !flash)
 import openfl.display3D._internal.Context3DState;
 import openfl.display3D._internal.GLBuffer;
 import openfl.display3D._internal.GLFramebuffer;
@@ -2514,13 +2514,13 @@ import lime.math.Vector2;
 					__bindGLTextureCubeMap(texture.__getTexture());
 				}
 
-				#if lime
-				if (__context.type == OPENGL)
-				{
-					// TODO: Cache?
-					gl.enable(gl.TEXTURE_2D);
-				}
-				#end
+				// #if lime
+				// if (__context.type == OPENGL)
+				// {
+				// 	// TODO: Cache?
+				// 	gl.enable(gl.TEXTURE_2D);
+				// }
+				// #end
 
 				__contextState.textures[i] = texture;
 
@@ -2551,13 +2551,13 @@ import lime.math.Vector2;
 					texture.__alphaTexture.__setSamplerState(samplerState);
 					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 1);
 
-					#if lime
-					if (__context.type == OPENGL)
-					{
-						// TODO: Cache?
-						gl.enable(gl.TEXTURE_2D);
-					}
-					#end
+					// #if lime
+					// if (__context.type == OPENGL)
+					// {
+					// 	// TODO: Cache?
+					// 	gl.enable(gl.TEXTURE_2D);
+					// }
+					// #end
 				}
 				else
 				{

@@ -186,7 +186,7 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.events.Event)
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Bitmap)

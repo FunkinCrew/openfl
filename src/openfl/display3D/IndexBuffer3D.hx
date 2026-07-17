@@ -1,7 +1,7 @@
 package openfl.display3D;
 
 #if !flash
-#if (lime_opengl || lime_opengles)
+#if lime_webgl
 import openfl.display3D._internal.GLBuffer;
 #elseif lime_bgfx
 import lime.graphics.bgfx.BGFXIndexBuffer;
@@ -31,7 +31,7 @@ import openfl.Vector;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Stage)
@@ -42,7 +42,7 @@ import openfl.Vector;
 	@:noCompletion private var __numIndices:Int;
 	@:noCompletion private var __tempUInt16Array:UInt16Array;
 	@:noCompletion private var __usage:Context3DBufferUsage;
-	#if (lime_opengl || lime_opengles)
+	#if lime_webgl
 	@:noCompletion private var __id:GLBuffer;
 	#elseif lime_bgfx
 	@:noCompletion private var __idbh:BGFXIndexBufferHandle;
@@ -53,7 +53,7 @@ import openfl.Vector;
 		__context = context3D;
 		__numIndices = numIndices;
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		__id = gl.createBuffer();
 		#end
@@ -67,7 +67,7 @@ import openfl.Vector;
 	**/
 	public function dispose():Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
 		#elseif lime_bgfx
@@ -120,7 +120,7 @@ import openfl.Vector;
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		var usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
 		__context.__bindGLElementArrayBuffer(__id);

@@ -30,7 +30,7 @@ import openfl.net.NetStream;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Stage)
@@ -65,7 +65,7 @@ import openfl.net.NetStream;
 	{
 		super(context);
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		__textureTarget = __context.gl.TEXTURE_2D;
 		#end
 	}
@@ -152,7 +152,7 @@ import openfl.net.NetStream;
 	}
 	#end
 
-	@:noCompletion private override function __getTexture():#if (lime_opengl || lime_opengles) GLTexture #elseif lime_bgfx lime.graphics.bgfx.BGFXTexture #end
+	@:noCompletion private override function __getTexture():#if lime_webgl GLTexture #elseif lime_bgfx lime.graphics.bgfx.BGFXTexture #end
 	{
 		#if (js && html5)
 		if (__netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)

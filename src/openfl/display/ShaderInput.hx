@@ -51,7 +51,7 @@ import openfl.display3D.Context3D;
 **/
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 #if !openfl_debug

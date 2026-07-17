@@ -58,7 +58,7 @@ import lime.utils.BytePointer;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.ShaderInput)
@@ -143,7 +143,7 @@ import lime.utils.BytePointer;
 	**/
 	public function getAttributeIndex(name:String):Int
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (__format == AGAL)
 		{
 			// TODO: Validate that it exists in the current program
@@ -181,7 +181,7 @@ import lime.utils.BytePointer;
 	**/
 	public function getConstantIndex(name:String):Int
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (__format == AGAL)
 		{
 			// TODO: Validate that it exists in the current program
@@ -416,7 +416,7 @@ import lime.utils.BytePointer;
 	{
 		// TODO: AGAL on BGFX?
 		return;
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (__format != AGAL) return;
 
 		// var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
@@ -502,7 +502,7 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __buildAGALUniformList():Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (__format == GLSL) return;
 
 		#if lime
@@ -629,7 +629,7 @@ import lime.utils.BytePointer;
 			bgfx.destroyShader(__glFragmentShader);
 			__glFragmentShader = null;
 		}
-		#elseif (lime_opengl || lime_opengles)
+		#elseif lime_webgl
 		var gl = __context.gl;
 
 		if (__glProgram != null)
@@ -653,7 +653,7 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __disable():Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (__format == GLSL)
 		{
 			// var gl = __context.gl;
@@ -697,7 +697,7 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __enable():Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		gl.useProgram(__glProgram);
 
@@ -754,7 +754,7 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __flush():Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (__format == AGAL)
 		{
 			__agalVertexUniformMap.flush();
@@ -802,7 +802,7 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __markDirty(isVertex:Bool, index:Int, count:Int):Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (__format == GLSL) return;
 
 		if (isVertex)
@@ -818,7 +818,7 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __processGLSLData(source:String, storageType:String):Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var lastMatch = 0, position, regex, name, type;
 
 		if (storageType == "uniform")
@@ -892,7 +892,7 @@ import lime.utils.BytePointer;
 
 	@:noCompletion private function __setPositionScale(positionScale:Float32Array):Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (__format == GLSL) return;
 
 		if (__agalPositionScale != null)
@@ -966,7 +966,7 @@ import lime.utils.BytePointer;
 		__glProgram = bgfx.createProgram(__glVertexShader, __glFragmentShader, false);
 
 		__readBGFXUniforms();
-		#elseif (lime_opengl || lime_opengles)
+		#elseif lime_webgl
 		var gl = __context.gl;
 
 		__glVertexSource = vertexShaderSource;
@@ -1046,7 +1046,7 @@ import lime.utils.BytePointer;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -1078,17 +1078,12 @@ import lime.utils.BytePointer;
 
 	public function flush():Void
 	{
-		#if lime
-		#if (js && html5)
-		var gl = context.gl;
-		#else
-		var gl = context.__context.gles2;
-		#end
+		#if (lime && (js && html5))
+		var gl = context.webgl;
 
 		var index:Int = regIndex * 4;
 		switch (type)
 		{
-			#if (js && html5)
 			case GL.FLOAT_MAT2:
 				gl.uniformMatrix2fv(location, false, __getUniformRegisters(index, size * 2 * 2));
 			case GL.FLOAT_MAT3:
@@ -1103,22 +1098,6 @@ import lime.utils.BytePointer;
 				gl.uniform4fv(location, __getUniformRegisters(index, regCount * 4));
 			default:
 				gl.uniform4fv(location, __getUniformRegisters(index, regCount * 4));
-			#else
-			case GL.FLOAT_MAT2:
-				gl.uniformMatrix2fv(location, size, false, __getUniformRegisters(index, size * 2 * 2));
-			case GL.FLOAT_MAT3:
-				gl.uniformMatrix3fv(location, size, false, __getUniformRegisters(index, size * 3 * 3));
-			case GL.FLOAT_MAT4:
-				gl.uniformMatrix4fv(location, size, false, __getUniformRegisters(index, size * 4 * 4));
-			case GL.FLOAT_VEC2:
-				gl.uniform2fv(location, regCount, __getUniformRegisters(index, regCount * 2));
-			case GL.FLOAT_VEC3:
-				gl.uniform3fv(location, regCount, __getUniformRegisters(index, regCount * 3));
-			case GL.FLOAT_VEC4:
-				gl.uniform4fv(location, regCount, __getUniformRegisters(index, regCount * 4));
-			default:
-				gl.uniform4fv(location, regCount, __getUniformRegisters(index, regCount * 4));
-			#end
 		}
 		#end
 	}
@@ -1248,12 +1227,14 @@ import lime.utils.BytePointer;
 	}
 }
 
+#if lime_bgfx
 typedef UniformData =
 {
 	uniform:BGFXUniform,
 	info:BGFXUniformInfo,
 	?samplerID:Int
 };
+#end
 
 #else
 typedef Program3D = flash.display3D.Program3D;

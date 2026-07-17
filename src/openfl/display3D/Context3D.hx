@@ -4,7 +4,7 @@ package openfl.display3D;
 typedef Context3D = flash.display3D.Context3D;
 #elseif lime_bgfx
 typedef Context3D = openfl.display3D.backends.bgfx.Context3D;
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 typedef Context3D = openfl.display3D.backends.opengl.Context3D;
 #else
 typedef Context3D = Dynamic;

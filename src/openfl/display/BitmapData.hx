@@ -122,12 +122,12 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(lime.math.Rectangle)
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.textures.TextureBase)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.textures.TextureBase)
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.DisplayObject)
@@ -3233,10 +3233,7 @@ class BitmapData implements IBitmapDrawable
 			color = 0;
 		}
 
-		if (allowFramebuffer
-			&& __texture != null
-			&& __texture.__framebuffer != null
-			&& Lib.current.stage.__renderer.__type == OPENGL)
+		if (allowFramebuffer && __texture != null && __texture.__framebuffer != null && Lib.current.stage.__renderer.__type == WEBGL)
 		{
 			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
 			var context = renderer.__context3D;

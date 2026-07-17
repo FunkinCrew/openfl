@@ -14,7 +14,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(openfl.display.Shader)
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 class Context3DBitmapData

@@ -1,6 +1,6 @@
 package openfl.display3D.backends.opengl.textures;
 
-#if (lime_opengl || lime_opengles)
+#if lime_webgl
 import openfl.display3D._internal.GLFramebuffer;
 import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D._internal.GLTexture;

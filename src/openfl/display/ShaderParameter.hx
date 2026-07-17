@@ -95,7 +95,7 @@ import openfl.display3D.Program3D.UniformData;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 #if (!js && !display)
@@ -182,7 +182,7 @@ import openfl.display3D.Program3D.UniformData;
 
 	@:noCompletion private function __disableGL(context:Context3D):Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		if (index < 0) return;
 
 		var gl = context.gl;
@@ -282,7 +282,7 @@ import openfl.display3D.Program3D.UniformData;
 		}
 
 		context.bgfx.setUniform(u.uniform, data, u.info.num);
-		#elseif (lime_opengl || lime_opengles)
+		#elseif lime_webgl
 		if (index < 0) return;
 
 		#if lime
@@ -567,7 +567,7 @@ import openfl.display3D.Program3D.UniformData;
 
 		context.bgfx.setUniform(u.uniform, data, u.info.num);
 		return;
-		#elseif (lime_opengl || lime_opengles)
+		#elseif lime_webgl
 		if (index < 0) return;
 
 		#if lime

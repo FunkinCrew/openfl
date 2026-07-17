@@ -28,7 +28,7 @@ import openfl.utils.ByteArray;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Stage)
@@ -49,7 +49,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		__textureTarget = __context.gl.TEXTURE_CUBE_MAP;
 		#end
 
@@ -211,7 +211,7 @@ import openfl.utils.ByteArray;
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void
 	{
 		#if lime
-		#if (js && opengl && !display)
+		#if (js && lime_webgl && !display)
 		if (byteArrayOffset == 0)
 		{
 			uploadFromTypedArray(@:privateAccess (data : ByteArrayData).b, side, miplevel);
@@ -249,7 +249,7 @@ import openfl.utils.ByteArray;
 		var size = __size >> miplevel;
 		if (size == 0) return;
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		var target = __sideToTarget(side);
 		__context.__bindGLTextureCubeMap(__textureID);
@@ -266,7 +266,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private override function __getFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		// TODO: cube texture FB for bgfx?
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 
 		if (__framebuffer == null)
@@ -301,7 +301,7 @@ import openfl.utils.ByteArray;
 	{
 		if (super.__setSamplerState(state))
 		{
-			#if (lime_opengl || lime_opengles)
+			#if lime_webgl
 			var gl = __context.gl;
 
 			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
@@ -350,7 +350,7 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __sideToTarget(side:UInt):Int
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 
 		return switch (side)
@@ -370,7 +370,7 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(__size, __size, true);
 

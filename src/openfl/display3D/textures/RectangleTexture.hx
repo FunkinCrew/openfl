@@ -23,7 +23,7 @@ import openfl.utils.ByteArray;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Stage)
@@ -38,7 +38,7 @@ import openfl.utils.ByteArray;
 		// __format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		__textureTarget = __context.gl.TEXTURE_2D;
 		#end
 
@@ -121,7 +121,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
@@ -138,7 +138,7 @@ import openfl.utils.ByteArray;
 	{
 		if (super.__setSamplerState(state))
 		{
-			#if (lime_opengl || lime_opengles)
+			#if lime_webgl
 			if (Context3D.__maxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)

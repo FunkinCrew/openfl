@@ -1,7 +1,7 @@
 package openfl.display3D._internal;
 
 #if !flash
-#if (lime_opengl || lime_opengles)
+#if lime_webgl
 import openfl.display3D._internal.GLBuffer;
 import openfl.display3D._internal.GLFramebuffer;
 import openfl.display3D._internal.GLRenderbuffer;
@@ -18,7 +18,7 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.display.Shader;
 import openfl.geom.Rectangle;
-#if (lime_opengl || lime_opengles)
+#if lime_webgl
 import lime.graphics.opengl.GL;
 #end
 
@@ -65,7 +65,7 @@ class Context3DState
 	#if lime_bgfx
 	private var __primaryBGFXFramebuffer:BGFXFrameBuffer;
 	private var __rttBGFXFramebuffer:BGFXFrameBuffer;
-	#elseif (lime_opengl || lime_opengles)
+	#elseif lime_webgl
 	private var __currentGLArrayBuffer:GLBuffer;
 	private var __currentGLElementArrayBuffer:GLBuffer;
 	private var __currentGLFramebuffer:GLFramebuffer;
@@ -110,7 +110,7 @@ class Context3DState
 		stencilWriteMask = 0xFF;
 		textures = new Array();
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		__frontFaceGLCCW = true;
 		__glBlendEquation = GL.FUNC_ADD;
 		#end

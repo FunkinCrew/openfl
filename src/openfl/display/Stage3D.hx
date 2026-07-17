@@ -63,7 +63,7 @@ import js.Browser;
 @:access(lime.graphics.opengl.GL)
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D, openfl.display3D.Program3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D, openfl.display3D.backends.opengl.Program3D)
 #end
 @:access(openfl.display.Bitmap)
@@ -316,7 +316,7 @@ class Stage3D extends EventDispatcher
 			return;
 		}
 
-		if (renderer.__type == OPENGL)
+		if (renderer.__type == WEBGL)
 		{
 			#if openfl_share_context
 			context3D = stage.context3D;

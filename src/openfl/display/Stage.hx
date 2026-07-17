@@ -182,7 +182,7 @@ typedef Element = Dynamic;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.DisplayObjectRenderer)
@@ -1390,7 +1390,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				context3D.present();
 				__renderer = new BGFXRenderer(context3D);
 				#end
-			case OPENGL, OPENGLES, WEBGL:
+			case WEBGL:
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D(this);
 				#if openfl_dpi_aware

@@ -126,7 +126,7 @@ import openfl.Lib;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display3D.Program3D)
@@ -515,7 +515,7 @@ class Shader
 
 	@:noCompletion private function __disableGL():Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 
 		var textureCount = 0;
@@ -544,12 +544,12 @@ class Shader
 
 		__context.__bindGLArrayBuffer(null);
 
-		#if lime
-		if (__context.__context.type == OPENGL)
-		{
-			gl.disable(gl.TEXTURE_2D);
-		}
-		#end
+		// #if lime
+		// if (__context.__context.type == OPENGL)
+		// {
+		// 	gl.disable(gl.TEXTURE_2D);
+		// }
+		// #end
 		#end
 	}
 
@@ -565,7 +565,7 @@ class Shader
 
 	@:noCompletion private function __enableGL():Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var textureCount = 0;
 
 		var gl = __context.gl;
@@ -576,12 +576,12 @@ class Shader
 			textureCount++;
 		}
 
-		#if lime
-		if (__context.__context.type == OPENGL && textureCount > 0)
-		{
-			gl.enable(gl.TEXTURE_2D);
-		}
-		#end
+		// #if lime
+		// if (__context.__context.type == OPENGL && textureCount > 0)
+		// {
+		// 	gl.enable(gl.TEXTURE_2D);
+		// }
+		// #end
 		#end
 	}
 
@@ -609,38 +609,38 @@ class Shader
 			extensions += "#extension " + ext.name + " : " + ext.behavior + "\n";
 		}
 
-		var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment;
-		var standardDerivativesSupported = OpenGLRenderer.__standardDerivativesSupported && isFragment;
+		// var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment;
+		// var standardDerivativesSupported = OpenGLRenderer.__standardDerivativesSupported && isFragment;
 
-		#if lime
-		if (__context.__context.type == OPENGL)
-		{
-			complexBlendsSupported = complexBlendsSupported && (__glVersion == "150" || !StringTools.startsWith(__glVersion, "1"));
-		}
-		else if (__context.__context.type == OPENGLES)
-		{
-			complexBlendsSupported = complexBlendsSupported && !StringTools.startsWith(__glVersion, "1");
-		}
-		#end
+		// #if lime
+		// if (__context.__context.type == OPENGL)
+		// {
+		// 	complexBlendsSupported = complexBlendsSupported && (__glVersion == "150" || !StringTools.startsWith(__glVersion, "1"));
+		// }
+		// else if (__context.__context.type == OPENGLES)
+		// {
+		// 	complexBlendsSupported = complexBlendsSupported && !StringTools.startsWith(__glVersion, "1");
+		// }
+		// #end
 
-		if (complexBlendsSupported)
-		{
-			extensions += "#extension GL_KHR_blend_equation_advanced : enable\n";
+		// if (complexBlendsSupported)
+		// {
+		// 	extensions += "#extension GL_KHR_blend_equation_advanced : enable\n";
 
-			#if lime
-			if (__context.__context.type == OPENGL)
-			{
-				// compiling without this gives the error
-				// 'gl_SampleID' : required extension not requested: GL_ARB_sample_shading
-				extensions += "#extension GL_ARB_sample_shading : enable\n";
-			}
-			#end
-		}
+		// 	#if lime
+		// 	if (__context.__context.type == OPENGL)
+		// 	{
+		// 		// compiling without this gives the error
+		// 		// 'gl_SampleID' : required extension not requested: GL_ARB_sample_shading
+		// 		extensions += "#extension GL_ARB_sample_shading : enable\n";
+		// 	}
+		// 	#end
+		// }
 
-		if (standardDerivativesSupported)
-		{
-			extensions += "#extension GL_OES_standard_derivatives : enable\n";
-		}
+		// if (standardDerivativesSupported)
+		// {
+		// 	extensions += "#extension GL_OES_standard_derivatives : enable\n";
+		// }
 
 		// #version must be the first directive and cannot be repeated,
 		// while #extension directives must be before any non-preprocessor tokens.
@@ -662,10 +662,10 @@ class Shader
 				#endif
 				";
 
-		if (complexBlendsSupported)
-		{
-			prefix += "#ifdef GL_KHR_blend_equation_advanced\nlayout (blend_support_all_equations) out;\n#endif\n";
-		}
+		// if (complexBlendsSupported)
+		// {
+		// 	prefix += "#ifdef GL_KHR_blend_equation_advanced\nlayout (blend_support_all_equations) out;\n#endif\n";
+		// }
 
 		return prefix;
 	}
@@ -727,7 +727,7 @@ class Shader
 
 			if (program != null)
 			{
-				#if (lime_opengl || lime_opengles)
+				#if lime_webgl
 				var gl = __context.gl;
 
 				for (input in __inputBitmapData)
@@ -1077,7 +1077,7 @@ class Shader
 			}
 		}
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 
 		if (shaderBuffer.paramDataLength > 0)

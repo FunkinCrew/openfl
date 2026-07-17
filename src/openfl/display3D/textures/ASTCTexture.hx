@@ -25,7 +25,7 @@ using StringTools;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:final class ASTCTexture extends TextureBase
@@ -42,7 +42,7 @@ using StringTools;
 
 		var reader:ASTCReader = new ASTCReader(data);
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		final format:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_ASTC_${reader.blockX}x${reader.blockY}_KHR');
 
 		if (format == null) throw new IllegalOperationError('ASTC format ${reader.blockX}x${reader.blockY} is not supported on this device');
@@ -61,7 +61,7 @@ using StringTools;
 		__internalFormat = format;
 		__premultiplyAlpha = true;
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		__textureTarget = __context.gl.TEXTURE_2D;
 		__context.__bindGLTexture2D(__textureID);
 		__context.gl.compressedTexImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, reader.getCompressedData());
@@ -79,7 +79,7 @@ using StringTools;
 	{
 		if (super.__setSamplerState(state))
 		{
-			#if (lime_opengl || lime_opengles)
+			#if lime_webgl
 			if (Context3D.__maxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)

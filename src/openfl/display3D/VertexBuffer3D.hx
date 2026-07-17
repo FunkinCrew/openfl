@@ -12,7 +12,7 @@ import lime.graphics.bgfx.BGFXVertexBuffer;
 import lime.graphics.bgfx.BGFXVertexLayout;
 import lime.graphics.bgfx.BGFXVertexLayoutHandle;
 import haxe.ds.Map;
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 import openfl.display3D._internal.GLBuffer;
 #end
 import openfl.utils._internal.ArrayBufferView;
@@ -62,7 +62,7 @@ import openfl.Vector;
 #end
 #if lime_bgfx
 @:access(openfl.display3D.backends.bgfx.Context3D)
-#elseif (lime_opengl || lime_opengles)
+#elseif lime_webgl
 @:access(openfl.display3D.backends.opengl.Context3D)
 #end
 @:access(openfl.display.Stage)
@@ -75,7 +75,7 @@ class VertexBuffer3D
 	@:noCompletion private var __tempFloat32Array:Float32Array;
 	@:noCompletion private var __usage:Context3DBufferUsage;
 	@:noCompletion private var __vertexSize:Int;
-	#if (lime_opengl || lime_opengles)
+	#if lime_webgl
 	@:noCompletion private var __id:GLBuffer;
 	#elseif lime_bgfx
 	@:noCompletion private var __layoutStartVertex:Int = 0;
@@ -256,7 +256,7 @@ class VertexBuffer3D
 		__numVertices = numVertices;
 		__vertexSize = dataPerVertex;
 
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		__id = gl.createBuffer();
 		#end
@@ -271,7 +271,7 @@ class VertexBuffer3D
 	**/
 	public function dispose():Void
 	{
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
 		#elseif lime_bgfx
@@ -331,7 +331,7 @@ class VertexBuffer3D
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
-		#if (lime_opengl || lime_opengles)
+		#if lime_webgl
 		var gl = __context.gl;
 		var usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
 		__context.__bindGLArrayBuffer(__id);
