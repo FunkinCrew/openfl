@@ -327,7 +327,7 @@ class TextEngine
 			__defaultFonts.set("_typewriter",
 				new DefaultFontSet(findFont(systemFontDirectory + "/cour.ttf"), findFont(systemFontDirectory + "/courbd.ttf"),
 					findFont(systemFontDirectory + "/couri.ttf"), findFont(systemFontDirectory + "/courbi.ttf")));
-			#elseif (mac || ios || tvos)
+			#elseif (mac || ios)
 			var sans = processFontList([
 				systemFontDirectory + "/Arial.ttf",
 				systemFontDirectory + "/Cache/Arial.ttf",

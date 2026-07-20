@@ -51,7 +51,7 @@
 
 	</section>
 
-	<set name="openfl-has-default-fonts" if="windows || mac || linux || ios || android || html5 || tvos" />
+	<set name="openfl-has-default-fonts" if="windows || mac || linux || ios || android || html5" />
 
 	<assets path="assets/fonts" unless="openfl-has-default-fonts || openfl-no-default-fonts" />
 

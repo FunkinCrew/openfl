@@ -584,7 +584,7 @@ import sys.io.Process;
 	@:noCompletion private static inline function get_os():String
 	{
 		#if lime
-		#if (ios || tvos)
+		#if ios
 		return System.deviceModel;
 		#elseif mac
 		return "Mac OS " + System.platformVersion;
@@ -732,8 +732,6 @@ import sys.io.Process;
 		var value = "LNX";
 		#elseif ios
 		var value = "IOS";
-		#elseif tvos
-		var value = "TVO";
 		#elseif android
 		var value = "AND";
 		#elseif blackberry
