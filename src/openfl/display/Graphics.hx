@@ -2016,8 +2016,8 @@ import js.html.CanvasRenderingContext2D;
 
 		if (__owner.__worldScale9Grid != null)
 		{
-			scaleX = Math.abs(__bitmapScaleX) * pixelRatio;
-			scaleY = Math.abs(__bitmapScaleY) * pixelRatio;
+			scaleX = Math.abs(__owner.scaleX) * pixelRatio;
+			scaleY = Math.abs(__owner.scaleY) * pixelRatio;
 		}
 
 		#if openfl_disable_graphics_upscaling
