@@ -30,7 +30,6 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
 
-	// private var __compressedMemoryUsage:Int;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Int;
 	@:noCompletion private var __glDepthRenderbuffer:GLRenderbuffer;
@@ -40,7 +39,6 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private var __internalFormat:Int;
 	// private var __memoryUsage:Int;
 	@:noCompletion private var __optimizeForRenderToTexture:Bool;
-	// private var __outputTextureMemoryUsage:Bool = false;
 	@:noCompletion private var __premultiplyAlpha:Bool;
 	@:noCompletion private var __samplerState:SamplerState;
 	@:noCompletion private var __streamingLevels:Int;
@@ -55,7 +53,6 @@ class TextureBase extends EventDispatcher
 
 		__context = context;
 		var gl = __context.gl;
-		// __textureTarget = target;
 
 		__textureID = gl.createTexture();
 		__textureContext = __context.__context;
@@ -95,7 +92,6 @@ class TextureBase extends EventDispatcher
 		__format = __textureFormat;
 
 		// __memoryUsage = 0;
-		// __compressedMemoryUsage = 0;
 	}
 
 	/**
@@ -357,9 +353,6 @@ class TextureBase extends EventDispatcher
 		else if (!image.premultiplied && image.transparent)
 		{
 			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
-			// gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
-			// textureImage = textureImage.clone ();
-			// textureImage.premultiplied = true;
 		}
 
 		if (image.type == DATA)
