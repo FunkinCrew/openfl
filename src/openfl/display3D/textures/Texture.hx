@@ -4,7 +4,6 @@ import haxe.io.Bytes;
 import haxe.Timer;
 import openfl.utils._internal.ArrayBufferView;
 import openfl.utils._internal.UInt8Array;
-import openfl.display3D._internal.ATFReader;
 import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
@@ -81,32 +80,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt, async:Bool = false):Void
 	{
-		if (!async)
-		{
-			__uploadCompressedTextureFromByteArray(data, byteArrayOffset);
-		}
-		else
-		{
-			Timer.delay(function()
-			{
-				__uploadCompressedTextureFromByteArray(data, byteArrayOffset);
-
-				var event:Event = null;
-
-				#if openfl_pool_events
-				event = Event.__pool.get();
-				event.type = Event.TEXTURE_READY;
-				#else
-				event = new Event(Event.TEXTURE_READY);
-				#end
-
-				dispatchEvent(event);
-
-				#if openfl_pool_events
-				Event.__pool.release(event);
-				#end
-			}, 1);
-		}
+		openfl.utils._internal.Lib.notImplemented();
 	}
 
 	/**
@@ -289,62 +263,5 @@ import openfl.utils.ByteArray;
 		}
 
 		return false;
-	}
-
-	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
-	{
-		var reader = new ATFReader(data, byteArrayOffset);
-		var alpha = reader.readHeader(__width, __height, false);
-
-		var context = __context;
-		var gl = context.gl;
-
-		__context.__bindGLTexture2D(__textureID);
-
-		var hasTexture = false;
-
-		#if lime
-		reader.readTextures(function(target, level, gpuFormat, width, height, blockLength, bytes:Bytes)
-		{
-			var format = alpha ? TextureBase.__compressedFormatsAlpha[gpuFormat] : TextureBase.__compressedFormats[gpuFormat];
-			if (format == 0) return;
-
-			hasTexture = true;
-			__format = format;
-			__internalFormat = format;
-
-			if (alpha && gpuFormat == 2)
-			{
-				var size = Std.int(blockLength / 2);
-
-				gl.compressedTexImage2D(__textureTarget, level, __internalFormat, width, height, 0,
-					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
-
-				var alphaTexture = new Texture(__context, __width, __height, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture,
-					__streamingLevels);
-				alphaTexture.__format = format;
-				alphaTexture.__internalFormat = format;
-
-				__context.__bindGLTexture2D(alphaTexture.__textureID);
-				gl.compressedTexImage2D(alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0,
-					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
-
-				__alphaTexture = alphaTexture;
-			}
-			else
-			{
-				gl.compressedTexImage2D(__textureTarget, level, __internalFormat, width, height, 0,
-					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
-			}
-		});
-
-		if (!hasTexture)
-		{
-			var data = new UInt8Array(__width * __height * 4);
-			gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
-		}
-		#end
-
-		__context.__bindGLTexture2D(null);
 	}
 }
