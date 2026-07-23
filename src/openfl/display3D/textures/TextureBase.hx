@@ -37,7 +37,7 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private var __glStencilRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __internalFormat:Int;
-	// private var __memoryUsage:Int;
+	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __optimizeForRenderToTexture:Bool;
 	@:noCompletion private var __premultiplyAlpha:Bool;
 	@:noCompletion private var __samplerState:SamplerState;
@@ -91,7 +91,7 @@ class TextureBase extends EventDispatcher
 		__internalFormat = __textureInternalFormat;
 		__format = __textureFormat;
 
-		// __memoryUsage = 0;
+		__memoryUsage = 0;
 	}
 
 	/**
@@ -364,10 +364,19 @@ class TextureBase extends EventDispatcher
 			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, image.src);
 		}
 		#else
-		gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, gl.UNSIGNED_BYTE, image.data);
+		if (__memoryUsage == image.data.byteLength)
+		{
+			gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, image.buffer.width, image.buffer.height, format, gl.UNSIGNED_BYTE, image.data);
+		}
+		else
+		{
+			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, gl.UNSIGNED_BYTE, image.data);
+		}
 		#end
 
 		__context.__bindGLTexture2D(null);
+
+		__memoryUsage = image.data.byteLength;
 	}
 	#end
 }

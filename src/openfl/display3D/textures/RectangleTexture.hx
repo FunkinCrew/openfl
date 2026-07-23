@@ -111,8 +111,19 @@ import openfl.utils.ByteArray;
 		var gl = __context.gl;
 
 		__context.__bindGLTexture2D(__textureID);
-		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
+
+		if (data != null && __memoryUsage == data.byteLength)
+		{
+			gl.texSubImage2D(__textureTarget, 0, 0, 0, __width, __height, __format, gl.UNSIGNED_BYTE, data);
+		}
+		else
+		{
+			gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
+		}
+
 		__context.__bindGLTexture2D(null);
+
+		__memoryUsage = data != null ? data.byteLength : 0;
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
