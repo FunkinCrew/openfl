@@ -2532,35 +2532,10 @@ import lime.math.Vector2;
 			{
 				gl.activeTexture(gl.TEXTURE0 + sampler + 4);
 
-				if (texture != null && texture.__alphaTexture != null)
+				__bindGLTexture2D(null);
+				if (__state.program.__agalAlphaSamplerEnabled[sampler] != null)
 				{
-					if (texture.__alphaTexture.__textureTarget == gl.TEXTURE_2D)
-					{
-						__bindGLTexture2D(texture.__alphaTexture.__getTexture());
-					}
-					else
-					{
-						__bindGLTextureCubeMap(texture.__alphaTexture.__getTexture());
-					}
-
-					texture.__alphaTexture.__setSamplerState(samplerState);
-					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 1);
-
-					#if lime
-					if (__context.type == OPENGL)
-					{
-						// TODO: Cache?
-						gl.enable(gl.TEXTURE_2D);
-					}
-					#end
-				}
-				else
-				{
-					__bindGLTexture2D(null);
-					if (__state.program.__agalAlphaSamplerEnabled[sampler] != null)
-					{
-						gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
-					}
+					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
 				}
 			}
 

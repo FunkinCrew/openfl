@@ -30,7 +30,6 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
 
-	@:noCompletion private var __alphaTexture:TextureBase;
 	// private var __compressedMemoryUsage:Int;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Int;
@@ -106,12 +105,6 @@ class TextureBase extends EventDispatcher
 	public function dispose():Void
 	{
 		var gl = __context.gl;
-
-		if (__alphaTexture != null)
-		{
-			__alphaTexture.dispose();
-			__alphaTexture = null;
-		}
 
 		if (__textureID != null)
 		{
