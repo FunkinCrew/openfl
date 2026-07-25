@@ -31,17 +31,11 @@ import openfl.utils.ByteArray;
 
 		__width = width;
 		__height = height;
-		// __format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
+		__textureTarget = __context.gl.TEXTURE_2D;
 
-		var gl = __context.gl;
-
-		__textureTarget = gl.TEXTURE_2D;
-
-		__context.__bindGLTexture2D(__textureID);
-		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, null);
-		__context.__bindGLTexture2D(null);
+		uploadFromTypedArray(null);
 
 		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
 	}
@@ -211,8 +205,6 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, miplevel:UInt = 0):Void
 	{
-		if (data == null) return;
-
 		var gl = __context.gl;
 
 		var width = __width >> miplevel;

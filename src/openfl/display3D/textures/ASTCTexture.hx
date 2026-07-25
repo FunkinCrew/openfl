@@ -65,9 +65,11 @@ using StringTools;
 	{
 		if (super.__setSamplerState(state))
 		{
+			var gl = __context.gl;
+
 			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
 			{
-				__context.gl.generateMipmap(__textureTarget);
+				gl.generateMipmap(__textureTarget);
 				__samplerState.mipmapGenerated = true;
 			}
 
@@ -94,7 +96,7 @@ using StringTools;
 
 				if (aniso > Context3D.__glMaxTextureMaxAnisotropy) aniso = Context3D.__glMaxTextureMaxAnisotropy;
 
-				__context.gl.texParameterf(__context.gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
 			}
 
 			return true;

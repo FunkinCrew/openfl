@@ -35,7 +35,6 @@ import openfl.utils.ByteArray;
 
 		__size = size;
 		__width = __height = __size;
-		// __format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
