@@ -7,6 +7,7 @@ import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
+import openfl.utils._internal.ArrayBufferView;
 import openfl.utils._internal.Log;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
@@ -31,11 +32,16 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private static var __textureInternalFormat:Int;
 
 	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __format:Int;
 	@:noCompletion private var __glDepthRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __glFramebuffer:GLFramebuffer;
 	@:noCompletion private var __glStencilRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __memoryWidth:Int = -1;
+	@:noCompletion private var __memoryHeight:Int = -1;
+	@:noCompletion private var __memoryFormat:Int = -1;
+	@:noCompletion private var __memoryInternalFormat:Int = -1;
+	@:noCompletion private var __width:Int;
 	@:noCompletion private var __height:Int;
+	@:noCompletion private var __format:Int;
 	@:noCompletion private var __internalFormat:Int;
 	@:noCompletion private var __optimizeForRenderToTexture:Bool;
 	@:noCompletion private var __premultiplyAlpha:Bool;
@@ -44,7 +50,6 @@ class TextureBase extends EventDispatcher
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __textureID:GLTexture;
 	@:noCompletion private var __textureTarget:Int;
-	@:noCompletion private var __width:Int;
 
 	@:noCompletion private function new(context:Context3D)
 	{
@@ -356,17 +361,39 @@ class TextureBase extends EventDispatcher
 
 		if (image.type == DATA)
 		{
-			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, gl.UNSIGNED_BYTE, image.data);
+			__uploadTexture2D(__textureTarget, image.buffer.width, image.buffer.height, internalFormat, format, image.data);
 		}
 		else
 		{
-			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, image.src);
+			gl.texImage2D(__textureTarget, 0, internalFormat, format, gl.UNSIGNED_BYTE, image.src);
 		}
 		#else
-		gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, gl.UNSIGNED_BYTE, image.data);
+		__uploadTexture2D(__textureTarget, image.buffer.width, image.buffer.height, internalFormat, format, image.data);
 		#end
 
 		__context.__bindGLTexture2D(null);
 	}
 	#end
+
+	@:noCompletion private function __uploadTexture2D(target:Int, width:Int, height:Int, internalFormat:Int, format:Int, data:ArrayBufferView):Void
+	{
+		var gl = __context.gl;
+
+		if (__memoryWidth == width
+			&& __memoryHeight == height
+			&& __memoryFormat == format
+			&& __memoryInternalFormat == internalFormat)
+		{
+			gl.texSubImage2D(target, 0, 0, 0, width, height, format, gl.UNSIGNED_BYTE, data);
+		}
+		else
+		{
+			gl.texImage2D(target, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, data);
+
+			__memoryWidth = width;
+			__memoryHeight = height;
+			__memoryFormat = format;
+			__memoryInternalFormat = internalFormat;
+		}
+	}
 }

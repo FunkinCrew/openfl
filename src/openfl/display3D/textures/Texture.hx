@@ -207,16 +207,8 @@ import openfl.utils.ByteArray;
 	{
 		var gl = __context.gl;
 
-		var width = __width >> miplevel;
-		var height = __height >> miplevel;
-
-		if (width == 0 && height == 0) return;
-
-		if (width == 0) width = 1;
-		if (height == 0) height = 1;
-
 		__context.__bindGLTexture2D(__textureID);
-		gl.texImage2D(__textureTarget, miplevel, __internalFormat, width, height, 0, __format, gl.UNSIGNED_BYTE, data);
+		__uploadTexture2D(__textureTarget, __width, __height, __internalFormat, __format, data);
 		__context.__bindGLTexture2D(null);
 	}
 
