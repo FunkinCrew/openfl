@@ -122,8 +122,6 @@ import js.html.CanvasRenderingContext2D;
 		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
-		__renderTransform = new Matrix();
-		__worldTransform = new Matrix();
 		__width = 0;
 		__height = 0;
 		__renderWidth = 0;
@@ -2105,6 +2103,16 @@ import js.html.CanvasRenderingContext2D;
 
 		var inverseA:Float;
 		var inverseD:Float;
+
+		if (__renderTransform == null)
+		{
+			__renderTransform = new Matrix();
+		}
+
+		if (__worldTransform == null)
+		{
+			__worldTransform = new Matrix();
+		}
 
 		if (__owner.__worldScale9Grid != null)
 		{
