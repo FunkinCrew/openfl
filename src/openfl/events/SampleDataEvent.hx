@@ -100,7 +100,7 @@ class SampleDataEvent extends Event
 	public static inline var SAMPLE_DATA:EventType<SampleDataEvent> = "sampleData";
 
 	// using @:keep on data/position vars because Haxe removes them with
-	// dce full on some targets (at least cpp and hl), but doesn't remove the
+	// dce full on some targets (cpp), but doesn't remove the
 	// code in the constructor that sets them
 
 	/**

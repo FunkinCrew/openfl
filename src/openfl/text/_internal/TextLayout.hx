@@ -154,8 +154,6 @@ class TextLayout
 			__hbBuffer.addString(text, 0, -1);
 			#elseif (cpp && disable_unicode_strings)
 			__hbBuffer.addUTF8(text, 0, -1);
-			#elseif hl
-			__hbBuffer.addUTF16(text, text.length, 0, -1);
 			#elseif cpp
 			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
 			#end

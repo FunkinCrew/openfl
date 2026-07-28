@@ -454,9 +454,6 @@ class NativeProcess extends EventDispatcher
 				standardOutputMutex.acquire();
 				stdoutDone = true;
 				standardOutputMutex.release();
-				#if hl
-				createStderrThread();
-				#end
 			});
 		}
 		function createExitThread():Void
@@ -501,12 +498,7 @@ class NativeProcess extends EventDispatcher
 			});
 		}
 		createStdoutThread();
-		#if !hl
-		// for some reason, reading both stdout and stderr on HashLink causes
-		// a freeze. as a workaround, we'll wait until stdout throws EOF before
-		// we try to read stderr.
 		createStderrThread();
-		#end
 		createExitThread();
 	}
 }

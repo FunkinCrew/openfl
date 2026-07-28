@@ -1,6 +1,6 @@
 package openfl.net;
 
-#if (cpp || hl)
+#if native
 import haxe.io.Path;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;

@@ -6,8 +6,6 @@ import lime.system.System as LimeSystem;
 #end
 #if cpp
 import cpp.vm.Gc;
-#elseif hl
-import hl.Gc;
 #end
 
 /**
@@ -187,8 +185,6 @@ import hl.Gc;
 	{
 		#if cpp
 		return Gc.run(true);
-		#elseif hl
-		return Gc.major();
 		#end
 	}
 
@@ -253,8 +249,6 @@ import hl.Gc;
 		return untyped __global__.__hxcpp_gc_used_bytes();
 		#elseif (js && html5)
 		return untyped js.Syntax.code("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
-		#elseif hl
-		return Std.int(Gc.stats().currentMemory);
 		#else
 		return 0;
 		#end
@@ -264,8 +258,6 @@ import hl.Gc;
 	{
 		#if cpp
 		return Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE);
-		#elseif hl
-		return Gc.stats().currentMemory;
 		#else
 		return System.totalMemory;
 		#end

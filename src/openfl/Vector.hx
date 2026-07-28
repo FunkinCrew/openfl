@@ -2514,21 +2514,18 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 	@:noCompletion private var index:Int;
 	@:noCompletion private var vector:Vector<T>;
 
-	#if !hl inline #end
-	public function new(vector:Vector<T>)
+	public inline function new(vector:Vector<T>)
 	{
 		this.vector = vector;
 		index = -1;
 	}
 
-	#if !hl inline #end
-	public function hasNext():Bool
+	public inline function hasNext():Bool
 	{
 		return index < vector.length - 1;
 	}
 
-	#if !hl inline #end
-	public function next():T
+	public inline function next():T
 	{
 		index++;
 		return vector[index];

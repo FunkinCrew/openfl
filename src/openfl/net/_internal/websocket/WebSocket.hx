@@ -971,8 +971,6 @@ class WebSocket
 		#if cpp
 		// Add process ID to the seed for additional entropy
 		seed += cpp.NativeSys.sys_get_pid();
-		#elseif hl
-		seed += Sys.cpuTime();
 		#end
 
 		// Add some additional random seed

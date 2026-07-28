@@ -627,6 +627,7 @@ private class Listener
 	public function match(callback:Dynamic->Void, useCapture:Bool):Bool
 	{
 		var resolvedCallback = this.callback;
+
 		#if (js && html5)
 		if (weakRefCallback != null)
 		{
@@ -637,11 +638,7 @@ private class Listener
 			}
 		}
 		#end
-		#if hl // https://github.com/HaxeFoundation/hashlink/issues/301
-		return ((Reflect.compareMethods(resolvedCallback, callback) || Reflect.compare(resolvedCallback, callback) == 0)
-			&& this.useCapture == useCapture);
-		#else
+
 		return (Reflect.compareMethods(resolvedCallback, callback) && this.useCapture == useCapture);
-		#end
 	}
 }

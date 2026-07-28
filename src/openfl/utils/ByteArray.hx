@@ -1136,9 +1136,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		}
 		#end
 
-		#if hl
-		super(bytes.getData(), length);
-		#elseif js
+		#if js
 		super(bytes.b.buffer);
 		#else
 		super(length, bytes.getData());

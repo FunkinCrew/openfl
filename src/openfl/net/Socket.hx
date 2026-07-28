@@ -1157,7 +1157,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 				var peer = __socket.peer();
 				if (peer == null)
 				{
-					// not connected yet (hxcpp and hl)
+					// not connected yet hxcpp
 					if (Sys.time() - __timestamp > timeout / 1000)
 					{
 						doClose = true;
