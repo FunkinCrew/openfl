@@ -12,7 +12,7 @@ import haxe.macro.Expr;
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
 #if (static_link || ios)
-@:cppFileCode("\nextern \"C\" int zlib_register_prims ();\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
+@:cppFileCode("\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
 #end
 class ApplicationMain
 {
@@ -20,7 +20,6 @@ class ApplicationMain
 	public static function main()
 	{
 		#if (static_link || ios)
-		untyped __cpp__("zlib_register_prims ()");
 		untyped __cpp__("lime_register_prims ()");
 		::foreach ndlls::::if (registerStatics)::untyped __cpp__("::nameSafe::_register_prims ()");::end::::end::
 		#end
