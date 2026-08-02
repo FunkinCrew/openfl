@@ -64,6 +64,7 @@ class TextureBase extends EventDispatcher
 		if (__context.isBGFX)
 		{
 			var bgfx = __context.bgfx;
+			__textureContext = __context.__context;
 
 			if (__supportsBGRA == null)
 			{
@@ -178,7 +179,7 @@ class TextureBase extends EventDispatcher
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	@:noCompletion private function __getFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
+	@:noCompletion private function __getFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):Dynamic
 	{
 		if (__context.isBGFX)
 		{
