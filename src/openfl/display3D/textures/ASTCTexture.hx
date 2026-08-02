@@ -1,6 +1,7 @@
 package openfl.display3D.textures;
 
 import lime.graphics.bgfx.BGFXTextureFormat;
+import openfl.utils._internal.ArrayBufferView;
 import openfl.display3D.Context3D;
 import openfl.display3D._internal.ASTCReader;
 import openfl.errors.IllegalOperationError;
@@ -29,7 +30,7 @@ using StringTools;
 
 		var reader:ASTCReader = new ASTCReader(data);
 
-		var format:Int;
+		var format:Int = -1;
 
 		if (__context.isBGFX)
 		{
@@ -40,7 +41,7 @@ using StringTools;
 			if ((caps.formats[format] & bgfx.CAPS_FORMAT_TEXTURE_2D) == 0)
 				throw new IllegalOperationError('ASTC format ${reader.blockX}x${reader.blockY} is not supported on this device.');
 		}
-		else
+		else if (__context.isOpenGL)
 		{
 			var extension:Dynamic = __context.gl.getExtension("KHR_texture_compression_astc_ldr");
 			final glFormat:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_ASTC_${reader.blockX}x${reader.blockY}_KHR');
@@ -58,7 +59,7 @@ using StringTools;
 		if (__context.isBGFX)
 		{
 			final bgfx = __context.bgfx;
-			__textureID = bgfx.createTexture2D(__width, __height, false, 1, format, 0, bgfx.copy(reader.getCompressedData()));
+			__textureID = bgfx.createTexture2D(__width, __height, false, 1, __internalFormat, 0, bgfx.copy(reader.getCompressedData()));
 		}
 		else
 		{
@@ -136,5 +137,33 @@ using StringTools;
 			default:
 				throw new IllegalOperationError('Unavailable ASTC block size: ${blockX}x${blockY}');
 		}
+	}
+
+	@:noCompletion private override function __uploadTexture2D(target:Int, width:Int, height:Int, internalFormat:Int, format:Int, data:ArrayBufferView):Void
+	{
+		var reader:ASTCReader = new ASTCReader(ByteArray.fromArrayBuffer(data.buffer));
+		var _format:Int = -1;
+
+		if (__context.isBGFX)
+		{
+			final bgfx = __context.bgfx;
+			final caps = bgfx.getCaps();
+			_format = __getASTCFormat(reader.blockX, reader.blockY);
+
+			if ((caps.formats[_format] & bgfx.CAPS_FORMAT_TEXTURE_2D) == 0)
+				throw new IllegalOperationError('ASTC format ${reader.blockX}x${reader.blockY} is not supported on this device.');
+		}
+
+		super.__uploadTexture2D(target, width, height, _format, _format, data);
+	}
+
+	@:noCompletion private override function __getFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):Dynamic
+	{
+		return null;
+	}
+
+	@:noCompletion private override function __uploadFromImage(image:lime.graphics.Image):Void
+	{
+		return;
 	}
 }
