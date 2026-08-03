@@ -48,17 +48,12 @@ class ApplicationMain
 
 		var app = new openfl.display.Application(appMeta);
 
-		#if !disable_preloader_assets
-		ManifestResources.init(config);
-		#end
-
 		::foreach windows::
 		var attributes:lime.ui.WindowAttributes = {
 			allowHighDPI: ::allowHighDPI::,
 			alwaysOnTop: ::alwaysOnTop::,
 			transparent: ::transparent::,
 			borderless: ::borderless::,
-			// display: ::display::,
 			element: null,
 			frameRate: ::fps::,
 			#if !web
@@ -103,10 +98,6 @@ class ApplicationMain
 					}
 				}
 			}
-
-			#if sys
-			lime.system.System.__parseArguments(attributes);
-			#end
 		}
 
 		app.createWindow(attributes);
@@ -125,6 +116,8 @@ class ApplicationMain
 		preloader.onComplete.add(start.bind((cast app.window:openfl.display.Window).stage));
 
 		#if !disable_preloader_assets
+		ManifestResources.init(config);
+
 		for (library in ManifestResources.preloadLibraries)
 		{
 			app.preloader.addLibrary(library);
