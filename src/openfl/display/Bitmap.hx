@@ -125,6 +125,13 @@ class Bitmap extends DisplayObject
 		{
 			__setRenderDirty();
 		}
+		else if (__bitmapData != null
+			&& !__bitmapData.readable
+			&& __bitmapData.__texture != null
+			&& bitmapData.__textureVersion != __imageVersion)
+		{
+			__setRenderDirty();
+		}
 	}
 
 	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
