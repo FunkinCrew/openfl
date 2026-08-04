@@ -3223,10 +3223,11 @@ class BitmapData implements IBitmapDrawable
 		if (allowFramebuffer
 			&& __texture != null
 			&& __texture.__glFramebuffer != null
-			&& Lib.current.stage.__renderer.__type == OPENGL)
+			&& __texture.__context != null
+			&& __texture.__context.gl != null)
 		{
-			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
-			var context = renderer.__context3D;
+			var context = __texture.__context;
+
 			var color:ARGB = (color : ARGB);
 			var useScissor = !this.rect.equals(rect);
 
@@ -3234,6 +3235,8 @@ class BitmapData implements IBitmapDrawable
 			var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
 			var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
 			var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+			var cacheSE = context.__state.scissorEnabled;
+			var cacheSR = context.__state.scissorRectangle;
 
 			context.setRenderToTexture(__texture);
 
@@ -3258,11 +3261,6 @@ class BitmapData implements IBitmapDrawable
 
 			context.__clear(useScissor, color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, transparent ? color.a / 0xFF : 1, 0, 0, Context3DClearMask.COLOR);
 
-			if (useScissor)
-			{
-				context.setScissorRectangle(null);
-			}
-
 			if (cacheRTT != null)
 			{
 				context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
@@ -3270,6 +3268,15 @@ class BitmapData implements IBitmapDrawable
 			else
 			{
 				context.setRenderToBackBuffer();
+			}
+
+			if (cacheSE)
+			{
+				context.setScissorRectangle(cacheSR);
+			}
+			else
+			{
+				context.setScissorRectangle(null);
 			}
 		}
 		else if (readable)

@@ -65,7 +65,12 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:access(openfl.geom.Rectangle)
 @:final class BlurFilter extends BitmapFilter
 {
-	@:noCompletion private static var __blurShader:BlurShader = new BlurShader();
+	@:noCompletion private static var __blurShader:BlurShader;
+	@:noCompletion private static inline function __getShader():BlurShader
+	{
+		if (__blurShader == null) __blurShader = new BlurShader();
+		return __blurShader;
+	}
 
 	/**
 		The amount of horizontal blur. Valid values are from 0 to 255(floating
@@ -170,22 +175,24 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
+		var shader = __getShader();
+
 		#if !macro
 		if (pass < __horizontalPasses)
 		{
 			var scale = Math.pow(0.5, pass >> 1);
-			__blurShader.uRadius.value[0] = blurX * scale;
-			__blurShader.uRadius.value[1] = 0;
+			shader.uRadius.value[0] = blurX * scale;
+			shader.uRadius.value[1] = 0;
 		}
 		else
 		{
 			var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
-			__blurShader.uRadius.value[0] = 0;
-			__blurShader.uRadius.value[1] = blurY * scale;
+			shader.uRadius.value[0] = 0;
+			shader.uRadius.value[1] = blurY * scale;
 		}
 		#end
 
-		return __blurShader;
+		return shader;
 	}
 
 	@:noCompletion inline function __padFor(value:Float):Int

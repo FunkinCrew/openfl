@@ -9,6 +9,7 @@ import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 import openfl.display.SpreadMethod;
 import openfl.display.TriangleCulling;
+import openfl.display3D.Context3DCompareMode;
 import openfl.geom.Matrix;
 import openfl.Vector;
 
@@ -112,6 +113,10 @@ class DrawCommandReader
 
 			case OVERRIDE_MATRIX:
 				oPos += 1; // matrix
+
+			case OVERRIDE_DEPTH_TEST:
+				bPos += 1; // depthTest
+				oPos += 1; // compareMode
 
 			case WINDING_EVEN_ODD, WINDING_NON_ZERO:
 				// no parameters
@@ -310,6 +315,13 @@ class DrawCommandReader
 		advance();
 		prev = WINDING_NON_ZERO;
 		return new WindingNonZeroView(this);
+	}
+
+	public inline function readOverrideDepthTest():OverrideDepthTest
+	{
+		advance();
+		prev = OVERRIDE_DEPTH_TEST;
+		return new OverrideDepthTest(this);
 	}
 
 	public function reset():Void
@@ -1023,5 +1035,27 @@ abstract WindingNonZeroView(DrawCommandReader)
 	public inline function new(d:DrawCommandReader)
 	{
 		this = d;
+	}
+}
+
+abstract OverrideDepthTest(DrawCommandReader)
+{
+	public inline function new(d:DrawCommandReader)
+	{
+		this = d;
+	}
+
+	public var depthTest(get, never):Bool;
+
+	private inline function get_depthTest():Bool
+	{
+		return this.bool(0);
+	}
+
+	public var compareMode(get, never):Context3DCompareMode;
+
+	private inline function get_compareMode():Context3DCompareMode
+	{
+		return this.obj(0);
 	}
 }

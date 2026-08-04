@@ -111,7 +111,7 @@ class Context3DVideo
 
 			var shader = renderer.__maskShader;
 			renderer.setShader(shader);
-			renderer.applyBitmapData(Context3DMaskShader.opaqueBitmapData, true);
+			renderer.applyBitmapData(Context3DGraphics.blankBitmapData, true);
 			renderer.applyMatrix(renderer.__getMatrix(video.__renderTransform, AUTO));
 			renderer.updateShader();
 

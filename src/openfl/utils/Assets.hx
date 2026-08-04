@@ -10,6 +10,7 @@ import openfl.media.Sound;
 import openfl.text.Font;
 #if lime
 import lime.app.Promise;
+import lime.media.AudioBuffer;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
 #end
@@ -42,6 +43,9 @@ import lime.utils.Assets as LimeAssets;
 @:access(openfl.utils.AssetLibrary)
 class Assets
 {
+	public static var allowCompressedTextures:Bool = true;
+	public static var allowHardwareTextures:Bool = true;
+
 	public static var cache:IAssetCache = new AssetCache();
 
 	@:noCompletion private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher() #end;
@@ -71,8 +75,10 @@ class Assets
 		@param	allowCompressedTextures Whether to check for compressed texture formats (e.g., ASTC) when the asset is a PNG. Defaults to true.
 		@return		Whether the requested asset ID and type exists
 	**/
-	public static function exists(id:String, type:AssetType = null, allowCompressedTextures:Bool = true):Bool
+	public static function exists(id:String, type:AssetType = null, ?allowCompressedTextures:Null<Bool>):Bool
 	{
+		if (allowCompressedTextures == null) allowCompressedTextures = Assets.allowCompressedTextures;
+
 		#if lime
 		if (allowCompressedTextures)
 		{
@@ -127,8 +133,11 @@ class Assets
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true):BitmapData
+	public static function getBitmapData(id:String, useCache:Bool = true, ?allowCompressedTextures:Null<Bool>, ?allowHardwareTextures:Null<Bool>):BitmapData
 	{
+		if (allowCompressedTextures == null) allowCompressedTextures = Assets.allowCompressedTextures;
+		if (allowHardwareTextures == null) allowHardwareTextures = Assets.allowHardwareTextures;
+
 		#if (lime && tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
 		{
@@ -162,11 +171,46 @@ class Assets
 			}
 		}
 
+		#if (cpp && lime_cffi && !macro && sys)
+		// HTML5 does not like synchronously loads bitmap, and it already caches all of the images initially.
+		// So the methods to get hardware textures with cached bytes will be cpp only.
+		// The reason why this exists so it doesn't have to make gc in under pressure for allocating temporary bytes
+		// just for to make it not readable later.
+		if (allowHardwareTextures)
+		{
+			var bitmapData = BitmapData.fromFile(LimeAssets.getPath(id), true);
+			if (bitmapData == null)
+			{
+				try
+				{
+					bitmapData = BitmapData.fromBytes(LimeAssets.getBytes(id), null, true);
+				}
+				catch (e)
+				{
+					// Causes crash for some reason for casting some weird stuff in lime getBytes AssetLibrary?
+				}
+			}
+
+			if (bitmapData != null)
+			{
+				bitmapData.__asset = true;
+
+				if (useCache && cache.enabled)
+				{
+					cache.setBitmapData(id, bitmapData);
+				}
+
+				return bitmapData;
+			}
+		}
+		#end
+
 		var image = LimeAssets.getImage(id, false);
 
 		if (image != null)
 		{
 			var bitmapData = BitmapData.fromImage(image);
+			if (allowHardwareTextures) bitmapData.toHardware();
 
 			bitmapData.__asset = true;
 
@@ -229,7 +273,6 @@ class Assets
 		if (limeFont != null)
 		{
 			var font = new Font();
-
 			font.__fromLimeFont(limeFont);
 
 			if (useCache && cache.enabled)
@@ -303,7 +346,12 @@ class Assets
 
 	public static function getMusic(id:String, useCache:Bool = true):Sound
 	{
-		// TODO: Streaming sound
+		#if (lime_funkin && lime_native)
+		var path = getPath(id);
+		var buffer = AudioBuffer.fromFile(path, true);
+		if (buffer != null) return Sound.fromAudioBuffer(buffer);
+		#end
+
 		return getSound(id, useCache);
 	}
 
@@ -418,7 +466,6 @@ class Assets
 		if (libraryBindings.exists(className))
 		{
 			var library = libraryBindings.get(className);
-
 			if (instance == null)
 			{
 				Sprite.__constructor = function(instance:Sprite)
@@ -491,7 +538,7 @@ class Assets
 
 	@:noCompletion private static function isValidSound(sound:Sound):Bool
 	{
-		#if ((tools && !display) && (cpp || nodejs))
+		#if ((tools && !display) && (cpp || neko || nodejs))
 		return true;
 		// return (sound.__handle != null && sound.__handle != 0);
 		#else
@@ -526,8 +573,11 @@ class Assets
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function loadBitmapData(id:String, useCache:Null<Bool> = true):Future<BitmapData>
+	public static function loadBitmapData(id:String, useCache:Null<Bool> = true, ?allowCompressedTextures:Null<Bool>, ?allowHardwareTextures:Null<Bool>):Future<BitmapData>
 	{
+		if (allowCompressedTextures == null) allowCompressedTextures = Assets.allowCompressedTextures;
+		if (allowHardwareTextures == null) allowHardwareTextures = Assets.allowHardwareTextures;
+
 		if (useCache == null) useCache = true;
 
 		#if (lime && tools && !display)
@@ -544,11 +594,48 @@ class Assets
 			}
 		}
 
+		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
+		{
+			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
+
+			if (LimeAssets.exists(astcTexture, BINARY))
+			{
+				LimeAssets.loadBytes(astcTexture).onComplete(function(bytes)
+				{
+					if (bytes != null)
+					{
+						var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(bytes), false);
+						bitmapData.__asset = true;
+
+						if (useCache && cache.enabled)
+						{
+							cache.setBitmapData(id, bitmapData);
+						}
+
+						promise.complete(bitmapData);
+					}
+					else
+					{
+						promise.error("[Assets] Could not load Image \"" + id + "\"");
+					}
+				}).onError(promise.error).onProgress(promise.progress);
+
+				return promise.future;
+			}
+
+			if (haxe.io.Path.extension(id) == "astc")
+			{
+				promise.error("[Assets] Could not load Image \"" + id + "\"");
+				return promise.future;
+			}
+		}
+
 		LimeAssets.loadImage(id, false).onComplete(function(image)
 		{
 			if (image != null)
 			{
 				var bitmapData = BitmapData.fromImage(image);
+				if (allowHardwareTextures) bitmapData.toHardware();
 
 				bitmapData.__asset = true;
 
@@ -629,7 +716,6 @@ class Assets
 			.onComplete(function(limeFont)
 			{
 				var font = new Font();
-
 				font.__fromLimeFont(limeFont);
 
 				if (useCache && cache.enabled)
@@ -707,6 +793,17 @@ class Assets
 		#if lime
 		#if !html5
 		var promise = new Promise<Sound>();
+
+		if (useCache && cache.enabled && cache.hasSound(id))
+		{
+			var sound = cache.getSound(id);
+
+			if (isValidSound(sound))
+			{
+				promise.complete(sound);
+				return promise.future;
+			}
+		}
 
 		LimeAssets.loadAudioBuffer(id, useCache)
 			.onComplete(function(buffer)
@@ -805,6 +902,17 @@ class Assets
 		#if lime
 		var promise = new Promise<Sound>();
 
+		if (useCache && cache.enabled && cache.hasSound(id))
+		{
+			var sound = cache.getSound(id);
+
+			if (isValidSound(sound))
+			{
+				promise.complete(sound);
+				return promise.future;
+			}
+		}
+
 		LimeAssets.loadAudioBuffer(id, useCache)
 			.onComplete(function(buffer)
 			{
@@ -887,7 +995,9 @@ class Assets
 
 	@:noCompletion private static function resolveEnum(name:String):Enum<Dynamic>
 	{
-		return Type.resolveEnum(name);
+		var value = Type.resolveEnum(name);
+
+		return value;
 	}
 
 	public static function unloadLibrary(name:String):Void
