@@ -63,18 +63,6 @@ enum abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
 
 	/**
 		Specifies that objects are serialized using the
-		Action Message Format for ActionScript 1.0 and 2.0.
-	**/
-	public var AMF0 = 0;
-
-	/**
-		Specifies that objects are serialized using the
-		Action Message Format for ActionScript 3.0.
-	**/
-	public var AMF3 = 3;
-
-	/**
-		Specifies that objects are serialized using the
 		Haxe Serialization Format (HXSF). Serialized objects
 		in this format are prefixed with a 16-bit length
 		header, which limits the maximum data size to 65,535 bytes.

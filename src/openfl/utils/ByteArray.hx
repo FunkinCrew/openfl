@@ -12,14 +12,6 @@ import haxe.Unserializer;
 import openfl.errors.EOFError;
 import openfl.errors.RangeError;
 import openfl.net.ObjectEncoding;
-import openfl.utils._internal.format.amf.AMFReader;
-import openfl.utils._internal.format.amf.AMFTools;
-import openfl.utils._internal.format.amf.AMFWriter;
-import openfl.utils._internal.format.amf.AMFValue;
-import openfl.utils._internal.format.amf3.AMF3Reader;
-import openfl.utils._internal.format.amf3.AMF3Tools;
-import openfl.utils._internal.format.amf3.AMF3Value;
-import openfl.utils._internal.format.amf3.AMF3Writer;
 #if lime
 import lime.system.System;
 import lime.utils.ArrayBuffer;
@@ -1118,8 +1110,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	@:noCompletion private var __allocated:Int;
 
-	@:noCompletion private var __amf3Reader:AMF3Reader;
-
 	/**
 		An alias for `length`, except guaranteed not to have side effects.
 	**/
@@ -1385,20 +1375,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		switch (objectEncoding)
 		{
-			case AMF0:
-				var input:BytesInput = new BytesInput(this, position);
-				var reader:AMFReader = new AMFReader(input);
-				var data = AMFTools.unwrapValue(reader.read());
-				position = input.position;
-				return data;
-
-			case AMF3:
-				var input = new BytesInput(this, position);
-				var reader = new AMF3Reader(input, __amf3Reader);
-				var data = AMF3Tools.decode(reader.read());
-				position = input.position;
-				return data;
-
 			case HXSF:
 				var data:String = readUTF();
 				return Unserializer.run(data);
@@ -1657,29 +1633,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		switch (objectEncoding)
 		{
-			case AMF0:
-				var value = AMFTools.encode(object);
-				var output:BytesOutput = new BytesOutput();
-				var writer:AMFWriter = new AMFWriter(output);
-				writer.write(value);
-				writeBytes(output.getBytes());
-
-			case AMF3:
-				var output:BytesOutput = new BytesOutput();
-				var writer:AMF3Writer = new AMF3Writer(output);
-
-				if (Std.isOfType(object, ByteArrayData))
-				{
-					writer.write(AByteArray(object));
-				}
-				else
-				{
-					var value = AMF3Tools.encode(object);
-					writer.write(value);
-				}
-
-				writeBytes(output.getBytes());
-
 			case HXSF:
 				var value:String = Serializer.run(object);
 				writeUTF(value);

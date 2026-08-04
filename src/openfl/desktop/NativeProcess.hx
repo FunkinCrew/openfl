@@ -17,12 +17,6 @@ import openfl.events.IOErrorEvent;
 import openfl.events.NativeProcessExitEvent;
 import openfl.events.ProgressEvent;
 import openfl.net.ObjectEncoding;
-import openfl.utils._internal.format.amf.AMFReader;
-import openfl.utils._internal.format.amf.AMFTools;
-import openfl.utils._internal.format.amf.AMFWriter;
-import openfl.utils._internal.format.amf3.AMF3Reader;
-import openfl.utils._internal.format.amf3.AMF3Tools;
-import openfl.utils._internal.format.amf3.AMF3Writer;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
@@ -854,22 +848,6 @@ private class OutboundPipe implements IDataOutput
 		}
 		switch (objectEncoding)
 		{
-			case AMF0:
-				var value = AMFTools.encode(object);
-				var output:BytesOutput = new BytesOutput();
-				var writer = new AMFWriter(output);
-				writer.write(value);
-				var bytes:Bytes = output.getBytes();
-				output.writeBytes(bytes, 0, bytes.length);
-
-			case AMF3:
-				var value = AMF3Tools.encode(object);
-				var output = new BytesOutput();
-				var writer = new AMF3Writer(output);
-				writer.write(value);
-				var bytes:Bytes = output.getBytes();
-				output.writeBytes(bytes, 0, bytes.length);
-
 			case HXSF:
 				var value = Serializer.run(object);
 				writeUTF(value);
