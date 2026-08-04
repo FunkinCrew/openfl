@@ -711,9 +711,7 @@ class SharedObject extends EventDispatcher
 			{
 				try
 				{
-					var unserializer = new Unserializer(encodedData);
-					unserializer.setResolver(cast {resolveEnum: Type.resolveEnum, resolveClass: __resolveClass});
-					sharedObject.data = unserializer.unserialize();
+					sharedObject.data = new Unserializer(encodedData).unserialize();
 				}
 				catch (e:Dynamic) {}
 			}
@@ -943,46 +941,6 @@ class SharedObject extends EventDispatcher
 			Sys.setCwd(oldPath);
 		}
 		#end
-	}
-
-	@:noCompletion private static function __resolveClass(name:String):Class<Dynamic>
-	{
-		if (name != null)
-		{
-			if (name == "Dynamic")
-			{
-				return null;
-			}
-
-			if (StringTools.startsWith(name, "neash."))
-			{
-				name = StringTools.replace(name, "neash.", "openfl.");
-			}
-
-			if (StringTools.startsWith(name, "native."))
-			{
-				name = StringTools.replace(name, "native.", "openfl.");
-			}
-
-			if (StringTools.startsWith(name, "flash."))
-			{
-				name = StringTools.replace(name, "flash.", "openfl.");
-			}
-
-			if (StringTools.startsWith(name, "openfl._v2."))
-			{
-				name = StringTools.replace(name, "openfl._v2.", "openfl.");
-			}
-
-			if (StringTools.startsWith(name, "openfl._legacy."))
-			{
-				name = StringTools.replace(name, "openfl._legacy.", "openfl.");
-			}
-
-			return Type.resolveClass(name);
-		}
-
-		return null;
 	}
 
 	// Event Handlers

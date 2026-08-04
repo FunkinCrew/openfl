@@ -32,26 +32,10 @@ package openfl.system;
 **/
 @:final class ApplicationDomain
 {
-	#if false
-	/**
-		Gets the minimum memory object length required to be used as
-		ApplicationDomain.domainMemory.
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public static var MIN_DOMAIN_MEMORY_LENGTH (default, null):UInt;
-	#end
-
 	/**
 		Gets the current application domain in which your code is executing.
 	**/
 	public static var currentDomain(default, null) = new ApplicationDomain(null);
-
-	#if false
-	/**
-		Gets and sets the object on which domain-global memory operations will
-		operate within this ApplicationDomain.
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var domainMemory:ByteArray;
-	#end
 
 	/**
 		Gets the parent domain of this application domain.
@@ -87,10 +71,9 @@ package openfl.system;
 	**/
 	public function getDefinition(name:String):Class<Dynamic>
 	{
-		return Type.resolveClass(name);
+		openfl.utils._internal.Lib.notImplemented();
+		return null;
 	}
-
-	// @:noCompletion @:dox(hide) @:require(flash11_3) function getQualifiedDefinitionNames() : openfl.Vector<String>;
 
 	/**
 		Checks to see if a public definition exists within the specified
@@ -103,6 +86,7 @@ package openfl.system;
 	**/
 	public function hasDefinition(name:String):Bool
 	{
-		return (Type.resolveClass(name) != null);
+		openfl.utils._internal.Lib.notImplemented();
+		return false;
 	}
 }

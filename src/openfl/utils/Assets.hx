@@ -880,16 +880,6 @@ class Assets
 		dispatcher.removeEventListener(type, listener, capture);
 	}
 
-	@:noCompletion private static function resolveClass(name:String):Class<Dynamic>
-	{
-		return Type.resolveClass(name);
-	}
-
-	@:noCompletion private static function resolveEnum(name:String):Enum<Dynamic>
-	{
-		return Type.resolveEnum(name);
-	}
-
 	public static function unloadLibrary(name:String):Void
 	{
 		#if lime
