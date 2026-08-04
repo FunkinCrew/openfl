@@ -63,12 +63,48 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:access(openfl.geom.Rectangle)
 @:final class GlowFilter extends BitmapFilter
 {
-	@:noCompletion private static var __invertAlphaShader = new InvertAlphaShader();
-	@:noCompletion private static var __blurAlphaShader = new BlurAlphaShader();
-	@:noCompletion private static var __combineShader = new CombineShader();
-	@:noCompletion private static var __innerCombineShader = new InnerCombineShader();
-	@:noCompletion private static var __combineKnockoutShader = new CombineKnockoutShader();
-	@:noCompletion private static var __innerCombineKnockoutShader = new InnerCombineKnockoutShader();
+	@:noCompletion private static var __invertAlphaShader:InvertAlphaShader;
+	@:noCompletion private static inline function __getInvertAlphaShader():InvertAlphaShader
+	{
+		if (__invertAlphaShader == null) __invertAlphaShader = new InvertAlphaShader();
+		return __invertAlphaShader;
+	}
+
+	@:noCompletion private static var __blurAlphaShader:BlurAlphaShader;
+	@:noCompletion private static inline function __getBlurAlphaShader():BlurAlphaShader
+	{
+		if (__blurAlphaShader == null) __blurAlphaShader = new BlurAlphaShader();
+		return __blurAlphaShader;
+	}
+
+	@:noCompletion private static var __combineShader:CombineShader;
+	@:noCompletion private static inline function __getCombineShader():CombineShader
+	{
+		if (__combineShader == null) __combineShader = new CombineShader();
+		return __combineShader;
+	}
+
+	@:noCompletion private static var __innerCombineShader:InnerCombineShader;
+	@:noCompletion private static inline function __getInnerCombineShader():InnerCombineShader
+	{
+		if (__innerCombineShader == null) __innerCombineShader = new InnerCombineShader();
+		return __innerCombineShader;
+	}
+
+	@:noCompletion private static var __combineKnockoutShader:CombineKnockoutShader;
+	@:noCompletion private static inline function __getCombineKnockoutShader():CombineKnockoutShader
+	{
+		if (__combineKnockoutShader == null) __combineKnockoutShader = new CombineKnockoutShader();
+		return __combineKnockoutShader;
+	}
+
+	@:noCompletion private static var __innerCombineKnockoutShader:InnerCombineKnockoutShader;
+	@:noCompletion private static inline function __getInnerCombineKnockoutShader():InnerCombineKnockoutShader
+	{
+		if (__innerCombineKnockoutShader == null) __innerCombineKnockoutShader = new InnerCombineKnockoutShader();
+		return __innerCombineKnockoutShader;
+	}
+
 
 	/**
 		The alpha transparency value for the color. Valid values are 0 to 1. For
@@ -234,7 +270,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		// First pass of inner glow is invert alpha
 		if (__inner && pass == 0)
 		{
-			return __invertAlphaShader;
+			return __getInvertAlphaShader();
 		}
 
 		var blurPass = pass - (__inner ? 1 : 0);
@@ -242,7 +278,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 		if (blurPass < numBlurPasses)
 		{
-			var shader = __blurAlphaShader;
+			var shader = __getBlurAlphaShader();
 			if (blurPass < __horizontalPasses)
 			{
 				var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
@@ -266,13 +302,13 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			if (__knockout)
 			{
-				var shader = __innerCombineKnockoutShader;
+				var shader = __getInnerCombineKnockoutShader();
 				shader.sourceBitmap.input = sourceBitmapData;
 				shader.offset.value[0] = 0.0;
 				shader.offset.value[1] = 0.0;
 				return shader;
 			}
-			var shader = __innerCombineShader;
+			var shader = __getInnerCombineShader();
 			shader.sourceBitmap.input = sourceBitmapData;
 			shader.offset.value[0] = 0.0;
 			shader.offset.value[1] = 0.0;
@@ -282,13 +318,13 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			if (__knockout)
 			{
-				var shader = __combineKnockoutShader;
+				var shader = __getCombineKnockoutShader();
 				shader.sourceBitmap.input = sourceBitmapData;
 				shader.offset.value[0] = 0.0;
 				shader.offset.value[1] = 0.0;
 				return shader;
 			}
-			var shader = __combineShader;
+			var shader = __getCombineShader();
 			shader.sourceBitmap.input = sourceBitmapData;
 			shader.offset.value[0] = 0.0;
 			shader.offset.value[1] = 0.0;

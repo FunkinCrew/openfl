@@ -95,7 +95,7 @@ abstract ShaderData(Dynamic) from Dynamic to Dynamic
 
 		@param byteCode The shader's byte code.
 	**/
-	public function new(byteArray:ByteArray)
+	public function new(byteArray:Null<ByteArray>)
 	{
 		this = {};
 	}

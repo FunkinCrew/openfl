@@ -26,4 +26,7 @@ enum abstract DrawCommandType(Int)
 	var WINDING_EVEN_ODD;
 	var WINDING_NON_ZERO;
 	var UNKNOWN;
+
+	// custom
+	var OVERRIDE_DEPTH_TEST;
 }

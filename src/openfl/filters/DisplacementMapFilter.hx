@@ -61,7 +61,13 @@ import lime.math.Vector4;
 @:access(openfl.geom.Rectangle)
 @:final class DisplacementMapFilter extends BitmapFilter
 {
-	@:noCompletion private static var __displacementMapShader:DisplacementMapShader = new DisplacementMapShader();
+	@:noCompletion private static var __displacementMapShader:DisplacementMapShader;
+	@:noCompletion private static inline function __getShader():DisplacementMapShader
+	{
+		if (__displacementMapShader == null) __displacementMapShader = new DisplacementMapShader();
+		return __displacementMapShader;
+	}
+
 	private static var __matrixData:Array<Float> = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 	private static var __offset:Array<Float> = [0.5, 0.5, 0.0, 0.0];
 
@@ -239,20 +245,22 @@ import lime.math.Vector4;
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
+		var shader = __getShader();
+
 		#if !macro
 		// TODO: mapX/mapY/mapU/mapV + offsets
 
 		__updateMapMatrix();
 
-		__displacementMapShader.uOffsets.value = __offset;
-		__displacementMapShader.uDisplacements.value = __matrixData;
+		shader.uOffsets.value = __offset;
+		shader.uDisplacements.value = __matrixData;
 
-		__displacementMapShader.mapTextureCoordsOffset.value = [mapPoint.x / __mapBitmap.width, mapPoint.y / __mapBitmap.height];
+		shader.mapTextureCoordsOffset.value = [mapPoint.x / __mapBitmap.width, mapPoint.y / __mapBitmap.height];
 
-		__displacementMapShader.mapTexture.input = __mapBitmap;
+		shader.mapTexture.input = __mapBitmap;
 		#end
 
-		return __displacementMapShader;
+		return shader;
 	}
 
 	@:noCompletion private function __updateMapMatrix():Void

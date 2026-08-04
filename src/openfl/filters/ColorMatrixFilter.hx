@@ -55,7 +55,12 @@ import lime.math.RGBA;
 **/
 @:final class ColorMatrixFilter extends BitmapFilter
 {
-	@:noCompletion private static var __colorMatrixShader:ColorMatrixShader = new ColorMatrixShader();
+	@:noCompletion private static var __colorMatrixShader:ColorMatrixShader;
+	@:noCompletion private static inline function __getShader():ColorMatrixShader
+	{
+		if (__colorMatrixShader == null) __colorMatrixShader = new ColorMatrixShader();
+		return __colorMatrixShader;
+	}
 
 	/**
 		An array of 20 items for 4 x 5 color transform. The `matrix` property
@@ -206,8 +211,9 @@ import lime.math.RGBA;
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		__colorMatrixShader.init(matrix);
-		return __colorMatrixShader;
+		var shader = __getShader();
+		shader.init(matrix);
+		return shader;
 	}
 
 	// Get & Set Methods

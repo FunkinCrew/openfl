@@ -32,8 +32,8 @@ import lime.math.Vector2;
 class CairoGraphics
 {
 	#if lime_cairo
-	private static var SIN45:Float = 0.70710678118654752440084436210485;
-	private static var TAN22:Float = 0.4142135623730950488016887242097;
+	private static inline var SIN45:Float = 0.70710678118654752440084436210485;
+	private static inline var TAN22:Float = 0.4142135623730950488016887242097;
 	private static var allowSmoothing:Bool;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;

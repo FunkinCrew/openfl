@@ -6,6 +6,7 @@ import openfl.display._internal.Context3DBuffer;
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
 import openfl.display._internal.ShaderBuffer;
+import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
@@ -1564,6 +1565,12 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (blendMode == null) blendMode = NORMAL;
 		__commands.overrideBlendMode(blendMode);
+	}
+
+	public function overrideDepthTest(depthTest:Bool = false, compareMode:Context3DCompareMode):Void
+	{
+		if (compareMode == null) compareMode = ALWAYS;
+		__commands.overrideDepthTest(depthTest, compareMode);
 	}
 
 	/**
