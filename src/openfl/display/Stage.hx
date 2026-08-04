@@ -1332,11 +1332,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__renderer = new CanvasRenderer(window.context.canvas2D);
 				#end
 
-			case DOM:
-				#if (js && html5)
-				__renderer = new DOMRenderer(window.context.dom);
-				#end
-
 			case CAIRO:
 				#if lime_cairo
 				__renderer = new CairoRenderer(window.context.cairo);
@@ -1348,16 +1343,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (__renderer != null)
 		{
 			__renderer.__clear();
-
 			__renderer.__allowSmoothing = (quality != LOW);
 			__renderer.__pixelRatio = #if openfl_disable_hdpi 1 #else window.scale #end;
 			__renderer.__worldTransform = __displayMatrix;
 			__renderer.__stage = this;
-
-			#if (js && html5 && dom && !openfl_disable_hdpi)
-			__renderer.__pixelRatio = Browser.window.devicePixelRatio;
-			#end
-
 			__renderer.__resize(windowWidth, windowHeight);
 		}
 		#end
@@ -2291,7 +2280,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			#end
 		}
 
-		#if (openfl_enable_experimental_update_queue && !dom)
+		#if openfl_enable_experimental_update_queue
 		__updateQueue(false, true);
 		#else
 		__update(false, true);
@@ -3740,7 +3729,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 	}
 
-	#if (openfl_enable_experimental_update_queue && !dom)
+	#if openfl_enable_experimental_update_queue
 	@:noCompletion private function __updateQueue(transformOnly:Bool, updateChildren:Bool):Void
 	{
 		var updateFix:Array<DisplayObjectContainer> = [];
@@ -3786,25 +3775,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			if (__transformDirty || __renderDirty)
 			{
 				super.__update(false, updateChildren);
-
-				if (updateChildren)
-				{
-					if (DisplayObject.__supportDOM)
-					{
-						__wasDirty = true;
-					}
-
-					// __dirty = false;
-				}
 			}
-			/*
-				#if dom
-			**/
 			else if (!__renderDirty && __wasDirty)
 			{
-				// If we were dirty last time, we need at least one more
-				// update in order to clear "changed" properties
-
 				super.__update(false, updateChildren);
 
 				if (updateChildren)
@@ -3812,9 +3785,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					__wasDirty = false;
 				}
 			}
-			/*
-				#end
-			**/
 		}
 	}
 	#end

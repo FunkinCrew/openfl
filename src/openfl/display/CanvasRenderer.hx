@@ -35,7 +35,6 @@ class CanvasRenderer extends DisplayObjectRenderer
 	@SuppressWarnings("checkstyle:Dynamic")
 	public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
 
-	@:noCompletion private var __isDOM:Bool;
 	@:noCompletion private var __tempMatrix:Matrix;
 
 	@SuppressWarnings("checkstyle:Dynamic")

@@ -2058,40 +2058,19 @@ class CanvasGraphics
 
 				renderer.__setBlendModeContext(context, NORMAL);
 
-				if (renderer.__isDOM)
+				if (canvas.width == scaledWidth && canvas.height == scaledHeight)
 				{
-					if (canvas.width == scaledWidth && canvas.height == scaledHeight)
-					{
-						context.clearRect(0, 0, scaledWidth, scaledHeight);
-					}
-					else
-					{
-						canvas.width = scaledWidth;
-						canvas.height = scaledHeight;
-						canvas.style.width = width + "px";
-						canvas.style.height = height + "px";
-					}
-
-					var transform = graphics.__renderTransform;
-					context.setTransform(transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale,
-						transform.ty * scale);
+					context.closePath();
+					context.setTransform(1, 0, 0, 1, 0, 0);
+					context.clearRect(0, 0, scaledWidth, scaledHeight);
 				}
 				else
 				{
-					if (canvas.width == scaledWidth && canvas.height == scaledHeight)
-					{
-						context.closePath();
-						context.setTransform(1, 0, 0, 1, 0, 0);
-						context.clearRect(0, 0, scaledWidth, scaledHeight);
-					}
-					else
-					{
-						canvas.width = width;
-						canvas.height = height;
-					}
-
-					context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					canvas.width = width;
+					canvas.height = height;
 				}
+
+				context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 				fillCommands.clear();
 				strokeCommands.clear();

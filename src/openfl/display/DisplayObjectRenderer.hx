@@ -125,16 +125,6 @@ class DisplayObjectRenderer extends EventDispatcher
 				case CAIRO:
 					displayObject.__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
 
-				case DOM:
-					if (displayObject.stage != null && displayObject.__worldVisible)
-					{
-						displayObject.__customRenderEvent.type = RenderEvent.RENDER_DOM;
-					}
-					else
-					{
-						displayObject.__customRenderEvent.type = RenderEvent.CLEAR_DOM;
-					}
-
 				case CANVAS:
 					displayObject.__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
 
@@ -288,13 +278,6 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			var updateTransform = (needRender || !displayObject.__cacheBitmap.__worldTransform.equals(displayObject.__worldTransform));
 			var hasFilters = #if !openfl_disable_filters displayObject.__filters != null #else false #end;
-
-			#if !openfl_enable_cacheasbitmap
-			if (renderer.__type == DOM && !hasFilters)
-			{
-				return false;
-			}
-			#end
 
 			if (hasFilters && !needRender)
 			{
@@ -868,12 +851,6 @@ class DisplayObjectRenderer extends EventDispatcher
 		}
 		else if (displayObject.__cacheBitmap != null)
 		{
-			if (renderer.__type == DOM)
-			{
-				var domRenderer:DOMRenderer = cast renderer;
-				domRenderer.__renderDrawableClear(displayObject.__cacheBitmap);
-			}
-
 			displayObject.__cacheBitmap = null;
 			displayObject.__cacheBitmapData = null;
 			displayObject.__cacheBitmapData2 = null;

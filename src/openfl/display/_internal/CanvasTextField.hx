@@ -137,12 +137,6 @@ class CanvasTextField
 				graphics.__canvas.width = width;
 				graphics.__canvas.height = height;
 
-				if (renderer.__isDOM)
-				{
-					graphics.__canvas.style.width = Math.round(width / pixelRatio) + "px";
-					graphics.__canvas.style.height = Math.round(height / pixelRatio) + "px";
-				}
-
 				var matrix = Matrix.__pool.get();
 				matrix.scale(pixelRatio, pixelRatio);
 				matrix.concat(graphics.__renderTransform);
@@ -434,28 +428,6 @@ class CanvasTextField
 	public static function renderDrawable(textField:TextField, renderer:CanvasRenderer):Void
 	{
 		#if (js && html5)
-		// TODO: Better DOM workaround on cacheAsBitmap
-
-		if (renderer.__isDOM && !textField.__renderedOnCanvasWhileOnDOM)
-		{
-			textField.__renderedOnCanvasWhileOnDOM = true;
-
-			if (textField.type == TextFieldType.INPUT)
-			{
-				textField.replaceText(0, textField.__text.length, textField.__text);
-			}
-
-			if (textField.__isHTML)
-			{
-				textField.__updateText(HTMLParser.parse(textField.__text, textField.multiline, textField.__styleSheet, textField.__textFormat,
-					textField.__textEngine.textFormatRanges));
-			}
-
-			textField.__dirty = true;
-			textField.__layoutDirty = true;
-			textField.__setRenderDirty();
-		}
-
 		if (textField.mask == null || (textField.mask.width > 0 && textField.mask.height > 0))
 		{
 			renderer.__updateCacheBitmap(textField, textField.__dirty);
