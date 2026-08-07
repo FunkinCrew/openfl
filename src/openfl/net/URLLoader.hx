@@ -433,9 +433,7 @@ class URLLoader extends EventDispatcher
 
 		__httpRequest.followRedirects = request.followRedirects;
 		__httpRequest.timeout = Std.int(request.idleTimeout);
-		#if (lime >= "8.0.0")
 		__httpRequest.manageCookies = request.manageCookies;
-		#end
 		__httpRequest.withCredentials = request.withCredentials;
 
 		// TODO: Better user agent?

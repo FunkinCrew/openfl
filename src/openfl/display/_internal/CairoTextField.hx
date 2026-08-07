@@ -447,7 +447,6 @@ class CairoTextField
 
 					if (group.format.strikethrough)
 					{
-						#if (lime >= "8.3.0")
 						var strikethroughThickness:Float;
 						if (font != null && font.strikethroughThickness != 0.0)
 						{
@@ -466,10 +465,6 @@ class CairoTextField
 						{
 							strikethroughPosition = -group.ascent / 3.0;
 						}
-						#else
-						var strikethroughThickness = Math.max(1.0, 0.05 * group.format.size);
-						var strikethroughPosition = -group.ascent / 3.0;
-						#end
 
 						cairo.newPath();
 						cairo.lineWidth = strikethroughThickness;

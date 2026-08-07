@@ -42,9 +42,7 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
-#if (lime >= "8.3.0")
 import lime.system.Orientation;
-#end
 #end
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
@@ -2216,7 +2214,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 	}
 
-	#if (lime >= "8.3.0")
 	@:noCompletion private function __onLimeDisplayOrientationChange(display:Int, orientation:Orientation):Void
 	{
 		var newStageOrientation:StageOrientation;
@@ -2237,7 +2234,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__oldStageOrientation = newStageOrientation;
 		dispatchEvent(new StageOrientationEvent(StageOrientationEvent.ORIENTATION_CHANGE, true, false, oldStageOrientation, newStageOrientation));
 	}
-	#end
 
 	@:noCompletion private function __renderAfterEvent():Void
 	{
@@ -2557,7 +2553,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__createRenderer();
 		}
 
-		#if (lime >= "8.3.0")
 		if (window.display != null)
 		{
 			// StageOrientationEvent references both the old and new
@@ -2577,7 +2572,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					__oldStageOrientation = UNKNOWN;
 			}
 		}
-		#end
 	}
 
 	@:noCompletion private function __onLimeWindowDeactivate(window:Window):Void
@@ -2897,7 +2891,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			var event:MouseEvent = null;
 
-			var clickCount = #if (lime >= "8.1.0") supportsClickCount ? window.clickCount : 0 #else 0 #end;
+			var clickCount = supportsClickCount ? window.clickCount : 0;
 			#if openfl_pool_events
 			event = MouseEvent.__pool.get();
 			event.type = type;
@@ -3480,9 +3474,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		application.onCreateWindow.add(__onLimeCreateWindow);
 		application.onUpdate.add(__onLimeUpdate);
 		application.onExit.add(__onLimeModuleExit, false, 0);
-		#if (lime >= "8.3.0")
 		application.onDisplayOrientationChange.add(__onLimeDisplayOrientationChange);
-		#end
 
 		for (gamepad in Gamepad.devices)
 		{
@@ -3717,9 +3709,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		application.onCreateWindow.remove(__onLimeCreateWindow);
 		application.onUpdate.remove(__onLimeUpdate);
 		application.onExit.remove(__onLimeModuleExit);
-		#if (lime >= "8.3.0")
 		application.onDisplayOrientationChange.remove(__onLimeDisplayOrientationChange);
-		#end
 
 		Gamepad.onConnect.remove(__onLimeGamepadConnect);
 		Touch.onStart.remove(__onLimeTouchStart);
@@ -3792,12 +3782,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	// Get & Set Methods
 	@:noCompletion private static function get_supportsOrientationChange():Bool
 	{
-		#if (lime >= "8.3.0")
 		#if (ios || android)
 		return true;
-		#end
-		#end
+		#else
 		return false;
+		#end
 	}
 
 	@:noCompletion private function get_autoOrients():Bool
@@ -3851,7 +3840,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function get_deviceOrientation():StageOrientation
 	{
-		#if (lime >= "8.3.0")
 		switch (application.deviceOrientation)
 		{
 			case LANDSCAPE:
@@ -3865,7 +3853,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			default:
 				return StageOrientation.UNKNOWN;
 		}
-		#end
+
 		return StageOrientation.UNKNOWN;
 	}
 
@@ -4005,8 +3993,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function get_orientation():StageOrientation
 	{
-		#if (lime >= "8.3.0")
 		var display = window.display;
+
 		if (display != null)
 		{
 			switch (display.orientation)
@@ -4023,7 +4011,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					return StageOrientation.UNKNOWN;
 			}
 		}
-		#end
+
 		return StageOrientation.UNKNOWN;
 	}
 

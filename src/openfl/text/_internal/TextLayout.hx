@@ -149,14 +149,7 @@ class TextLayout
 			__hbBuffer.script = script.toHBScript();
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
-
-			#if (lime >= "8.3.0")
 			__hbBuffer.addString(text, 0, -1);
-			#elseif (cpp && disable_unicode_strings)
-			__hbBuffer.addUTF8(text, 0, -1);
-			#elseif cpp
-			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
-			#end
 
 			HB.shape(__hbFont, __hbBuffer);
 

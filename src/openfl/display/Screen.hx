@@ -139,13 +139,11 @@ class Screen extends EventDispatcher
 	@:noCompletion private function get_safeArea():Rectangle
 	{
 		var display = System.getDisplay(__displayIndex);
-		#if (lime >= "8.3.0")
 		var safeArea = display.safeArea;
 		if (safeArea != null)
 		{
 			return new Rectangle(safeArea.x, safeArea.y, safeArea.width, safeArea.height);
 		}
-		#end
 		return this.visibleBounds;
 	}
 
