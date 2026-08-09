@@ -120,7 +120,10 @@ class CairoGraphics
 
 	private static function createImagePattern(bitmapFill:BitmapData, bitmapRepeat:Bool, smooth:Bool):CairoPattern
 	{
-		var pattern = CairoPattern.createForSurface(bitmapFill.getSurface());
+		var surface = bitmapFill.getSurface();
+		if (surface == null) return null;
+
+		var pattern = CairoPattern.createForSurface(surface);
 		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 
 		if (bitmapRepeat)
@@ -1157,9 +1160,9 @@ class CairoGraphics
 
 					cairo.moveTo(positionX - offsetX, positionY - offsetY);
 
-					if (c.bitmap.readable)
+					strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
+					if (strokePattern != null)
 					{
-						strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						bitmapStroke = c.bitmap;
 						bitmapStrokeMatrix = c.matrix;
 					}
@@ -1187,9 +1190,9 @@ class CairoGraphics
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
 
-					if (c.bitmap.readable)
+					fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
+					if (fillPattern != null)
 					{
-						fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						bitmapFill = c.bitmap;
 						bitmapFillMatrix = c.matrix;
 					}
@@ -1259,11 +1262,8 @@ class CairoGraphics
 					if (shaderBuffer.inputCount > 0)
 					{
 						bitmapFill = shaderBuffer.inputs[0];
-						if (bitmapFill.readable)
-						{
-							fillPattern = createImagePattern(bitmapFill, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
-						}
-						else
+						fillPattern = createImagePattern(bitmapFill, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
+						if (fillPattern == null)
 						{
 							// if it's hardware-only BitmapData, fall back to
 							// drawing solid black because we have no software
