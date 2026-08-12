@@ -574,6 +574,8 @@ class Shader
 			extensions += "#extension GL_OES_standard_derivatives : enable\n";
 		}
 
+		extensions += "#extension GL_EXT_draw_buffers : enable\n";
+
 		// #version must be the first directive and cannot be repeated,
 		// while #extension directives must be before any non-preprocessor tokens.
 

@@ -6,6 +6,7 @@ import openfl.display3D._internal.GLFramebuffer;
 import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DClearMask;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
@@ -193,6 +194,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __drawableType:IBitmapDrawableType;
 	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
 	// @:noCompletion private var __vertexBufferAlpha:Float;
+	@:noCompletion private var __extraBufferFormats:Array<Context3DTextureFormat>;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __framebufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
@@ -2268,7 +2270,15 @@ class BitmapData implements IBitmapDrawable
 		if (__texture == null || __textureContext != context.__context)
 		{
 			__textureContext = context.__context;
-			__texture = context.createRectangleTexture(width, height, BGRA, false);
+
+			if (__extraBufferFormats != null && __extraBufferFormats.length > 0)
+			{
+				__texture = context.createMultiBufferTexture(width, height, [BGRA].concat(__extraBufferFormats));
+			}
+			else
+			{
+				__texture = context.createRectangleTexture(width, height, BGRA, false);
+			}
 
 			// context.__bindGLTexture2D (__texture);
 			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -3187,7 +3197,7 @@ class BitmapData implements IBitmapDrawable
 		image.version++;
 	}
 
-	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
+	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer, enableDepthAndStencil:Bool = true):Void
 	{
 		var context = renderer.__context3D;
 
@@ -3196,7 +3206,7 @@ class BitmapData implements IBitmapDrawable
 		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
 		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
 
-		context.setRenderToTexture(getTexture(context), true);
+		context.setRenderToTexture(getTexture(context), enableDepthAndStencil);
 
 		renderer.__render(source);
 

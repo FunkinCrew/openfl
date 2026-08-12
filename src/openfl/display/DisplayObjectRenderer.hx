@@ -4,6 +4,7 @@ import openfl.display._internal.Context3DGraphics;
 import openfl.display.Bitmap;
 import openfl.display.DisplayObject;
 import openfl.display.Tilemap;
+import openfl.display3D.textures.MultiBufferTexture;
 import openfl.events.EventDispatcher;
 import openfl.events.RenderEvent;
 import openfl.filters.ShaderFilter;
@@ -195,6 +196,111 @@ class DisplayObjectRenderer extends EventDispatcher
 		}
 
 		return null;
+	}
+
+	@:noCompletion private function __updateBufferFilters(displayObject:DisplayObject, renderer:OpenGLRenderer, filterWidth:Int, filterHeight:Int):Void
+	{
+		var graphics = displayObject.__graphics;
+		if (graphics == null || graphics.__extraBufferFormats == null || graphics.__bufferFilters == null) return;
+
+		var context = renderer.__context3D;
+		var sourceTexture:MultiBufferTexture = cast displayObject.__cacheBitmapData.getTexture(context);
+
+		var sourceWidth = filterWidth;
+		var sourceHeight = filterHeight;
+
+		if (graphics.__bufferCache == null) graphics.__bufferCache = [];
+		if (graphics.__bufferResult == null) graphics.__bufferResult = [];
+
+		if (graphics.__bufferSourceView == null
+			|| graphics.__bufferSourceView.__texture != sourceTexture) graphics.__bufferSourceView = BitmapData.fromTexture(sourceTexture);
+
+		graphics.__bufferSourceView.__setUVRect(context, 0, 0, filterWidth, filterHeight);
+
+		renderer.__setBlendMode(NORMAL);
+		renderer.__worldAlpha = 1;
+		renderer.__worldTransform.identity();
+		renderer.__worldColorTransform.__identity();
+
+		var now = haxe.Timer.stamp();
+
+		for (i in 0...graphics.__extraBufferFormats.length)
+		{
+			var filters = graphics.__bufferFilters[i];
+			if (filters == null || filters.length == 0) continue;
+
+			var interval = graphics.__bufferUpdateDelay != null ? graphics.__bufferUpdateDelay[i] : 0;
+			if (interval > 0 && graphics.__bufferResult != null && graphics.__bufferResult[i] != null)
+			{
+				if (graphics.__bufferNextUpdateTime == null) graphics.__bufferNextUpdateTime = [];
+
+				var nextUpdateTime = graphics.__bufferNextUpdateTime[i];
+				if (now < nextUpdateTime) continue;
+
+				graphics.__bufferNextUpdateTime[i] = now + interval;
+			}
+
+			var scale = graphics.__bufferResolutionScale != null ? graphics.__bufferResolutionScale[i] : 1.0;
+			var scaledWidth = Math.round(sourceWidth * scale);
+			var scaledHeight = Math.round(sourceHeight * scale);
+			if (scaledWidth < 1 || scaledHeight < 1) continue;
+
+			if (graphics.__bufferCache[i] == null) graphics.__bufferCache[i] = [null, null];
+
+			graphics.__bufferCache[i][0] = __getBuffer(graphics.__bufferCache[i][0], scaledWidth, scaledHeight);
+			graphics.__bufferCache[i][1] = __getBuffer(graphics.__bufferCache[i][1], scaledWidth, scaledHeight);
+
+			var attachmentIndex = i + 1;
+			var downscaleTarget = graphics.__bufferCache[i][0];
+
+			graphics.__bufferSourceView.__renderTransform.identity();
+			graphics.__bufferSourceView.__renderTransform.scale(scale, scale);
+
+			sourceTexture.withAttachment(attachmentIndex, () ->
+			{
+				renderer.__setRenderTarget(downscaleTarget);
+				renderer.__renderFilterPass(graphics.__bufferSourceView, renderer.__defaultDisplayShader, false, true);
+			});
+
+			var bitmap = graphics.__bufferCache[i][0];
+			var bitmap2 = graphics.__bufferCache[i][1];
+			var shader:Shader;
+
+			for (filter in filters)
+			{
+				for (p in 0...filter.__numShaderPasses)
+				{
+					shader = filter.__initShader(renderer, p, null);
+					renderer.__setBlendMode(filter.__shaderBlendMode);
+					renderer.__setRenderTarget(bitmap2);
+					renderer.__renderFilterPass(bitmap, shader, filter.__smooth);
+
+					var swap = bitmap;
+					bitmap = bitmap2;
+					bitmap2 = swap;
+				}
+
+				filter.__renderDirty = false;
+			}
+
+			graphics.__bufferCache[i][0] = bitmap;
+			graphics.__bufferCache[i][1] = bitmap2;
+			graphics.__bufferResult[i] = __getBuffer(graphics.__bufferResult[i], scaledWidth, scaledHeight);
+
+			renderer.__setRenderTarget(graphics.__bufferResult[i]);
+			renderer.__renderFilterPass(bitmap, renderer.__defaultDisplayShader, false, true);
+		}
+	}
+
+	@:noCompletion private function __getBuffer(buffer:BitmapData, width:Int, height:Int):BitmapData
+	{
+		if (buffer == null || buffer.width != width || buffer.height != height)
+		{
+			return new BitmapData(width, height, true, 0);
+		}
+
+		buffer.fillRect(buffer.rect, 0);
+		return buffer;
 	}
 
 	@:noCompletion private function __updateCacheBitmap(displayObject:DisplayObject, force:Bool):Bool
@@ -408,6 +514,8 @@ class DisplayObjectRenderer extends EventDispatcher
 						|| bitmapHeight > displayObject.__cacheBitmapData.height)
 					{
 						displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
+						if (displayObject.__graphics != null)
+							displayObject.__cacheBitmapData.__extraBufferFormats = displayObject.__graphics.__extraBufferFormats;
 
 						if (displayObject.__cacheBitmap == null) displayObject.__cacheBitmap = new Bitmap();
 						displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
@@ -592,7 +700,11 @@ class DisplayObjectRenderer extends EventDispatcher
 						displayObject.__cacheBitmapData.__textureVersion = displayObject.__cacheBitmapData.image.version
 						+ 1;
 
-					displayObject.__cacheBitmapData.__drawGL(displayObject, childRenderer);
+					var hasBuffers = displayObject.__cacheBitmapData.__extraBufferFormats != null
+						&& displayObject.__cacheBitmapData.__extraBufferFormats.length > 0;
+					displayObject.__cacheBitmapData.__drawGL(displayObject, childRenderer, !hasBuffers);
+
+					if (hasBuffers) __updateBufferFilters(displayObject, childRenderer, filterWidth, filterHeight);
 
 					if (hasFilters)
 					{

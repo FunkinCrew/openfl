@@ -6,9 +6,11 @@ import openfl.display._internal.Context3DBuffer;
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
 import openfl.display._internal.ShaderBuffer;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
+import openfl.filters.BitmapFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.utils._internal.Float32Array;
@@ -59,7 +61,15 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
+	@:noCompletion private var __bufferCache:Array<Array<BitmapData>>;
+	@:noCompletion private var __bufferFilters:Array<Array<BitmapFilter>>;
+	@:noCompletion private var __bufferNextUpdateTime:Array<Float>;
+	@:noCompletion private var __bufferResolutionScale:Array<Float>;
+	@:noCompletion private var __bufferResult:Array<BitmapData>;
+	@:noCompletion private var __bufferSourceView:BitmapData;
+	@:noCompletion private var __bufferUpdateDelay:Array<Float>;
 	@:noCompletion private var __dirty(default, set):Bool = true;
+	@:noCompletion private var __extraBufferFormats:Array<Context3DTextureFormat>;
 	@:noCompletion private var __hardwareDirty:Bool;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __managed:Bool;
@@ -1557,6 +1567,30 @@ import js.html.CanvasRenderingContext2D;
 		__positionY = y;
 
 		__commands.moveTo(x, y);
+	}
+
+	public function addBuffer(format:Context3DTextureFormat):Int
+	{
+		if (__extraBufferFormats == null) __extraBufferFormats = [];
+		__extraBufferFormats.push(format);
+		return __extraBufferFormats.length;
+	}
+
+	public function setBufferFilters(index:Int, filters:Array<BitmapFilter>, resolutionScale:Float = 1.0, updateInterval:Float = 0):Void
+	{
+		if (__bufferFilters == null) __bufferFilters = [];
+		if (__bufferResolutionScale == null) __bufferResolutionScale = [];
+		if (__bufferUpdateDelay == null) __bufferUpdateDelay = [];
+
+		__bufferFilters[index - 1] = filters;
+		__bufferResolutionScale[index - 1] = resolutionScale;
+		__bufferUpdateDelay[index - 1] = updateInterval;
+	}
+
+	public function getBuffer(index:Int):BitmapData
+	{
+		if (__bufferResult == null) return null;
+		return __bufferResult[index - 1];
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")

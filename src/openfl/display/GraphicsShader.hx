@@ -43,6 +43,7 @@ class GraphicsShader extends Shader
 
 		uniform bool openfl_HasColorTransform;
 		uniform vec2 openfl_TextureSize;
+		uniform bool sampleAttachment;
 		uniform sampler2D bitmap;", true)
 	@:glFragmentBody("vec4 color = texture2D (bitmap, openfl_TextureCoordv);
 
