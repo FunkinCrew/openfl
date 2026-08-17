@@ -45,33 +45,6 @@ class MouseEvent extends Event
 	**/
 	public static inline var CLICK:EventType<MouseEvent> = "click";
 
-	#if false
-	/**
-		The `MouseEvent.CONTEXT_MENU` constant defines the value of the `type`
-		property of a `contextMenu` event object.
-		This event has the following properties:
-
-		| Property | Value |
-		| --- | --- |
-		| `altKey` | `true` if the Alt key is active (Windows). |
-		| `bubbles` | `true` |
-		| `buttonDown` | `true` if the right mouse button is pressed; `false` otherwise. |
-		| `cancelable` | `false`; the default behavior cannot be canceled. |
-		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
-		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
-		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
-		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
-		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
-		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
-	#end
-
 	/**
 		Defines the value of the `type` property of a `doubleClick` event
 		object. The `doubleClickEnabled` property must be `true` for an object

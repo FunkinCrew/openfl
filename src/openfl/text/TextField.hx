@@ -126,18 +126,6 @@ class TextField extends InteractiveObject
 	@:noCompletion private static var __defaultTextFormat:TextFormat;
 	@:noCompletion private static var __missingFontWarning:Map<String, Bool> = new Map();
 
-	#if false
-	/**
-		When set to `true` and the text field is not in focus, OpenFL
-		highlights the selection in the text field in gray. When set to
-		`false` and the text field is not in focus, OpenFL does not
-		highlight the selection in the text field.
-
-		@default false
-	**/
-	// var alwaysShowSelection : Bool;
-	#end
-
 	/**
 		The type of anti-aliasing used for this text field. Use
 		`openfl.text.AntiAliasType` constants for this property. You can
@@ -626,18 +614,6 @@ class TextField extends InteractiveObject
 	**/
 	public var textHeight(get, never):Float;
 
-	#if false
-	/**
-		The interaction mode property, Default value is
-		TextInteractionMode.NORMAL. On mobile platforms, the normal mode
-		implies that the text can be scrolled but not selected. One can switch
-		to the selectable mode through the in-built context menu on the text
-		field. On Desktop, the normal mode implies that the text is in
-		scrollable as well as selection mode.
-	**/
-	// @:require(flash11) var textInteractionMode(default,never) : TextInteractionMode;
-	#end
-
 	/**
 		The width of the text in pixels.
 	**/
@@ -665,18 +641,6 @@ class TextField extends InteractiveObject
 		@see [Capturing text input](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/capturing-text-input.html)
 	**/
 	public var type(get, set):TextFieldType;
-
-	#if false
-	/**
-		Specifies whether to copy and paste the text formatting along with the
-		text. When set to `true`, OpenFL copies and pastes formatting
-		(such as alignment, bold, and italics) when you copy and paste between
-		text fields. Both the origin and destination text fields for the copy
-		and paste procedure must have `useRichTextClipboard` set to `true`.
-		The default value is `false`.
-	**/
-	// var useRichTextClipboard : Bool;
-	#end
 
 	/**
 		A Boolean value that indicates whether the text field has word wrap. If
@@ -897,29 +861,6 @@ class TextField extends InteractiveObject
 
 		return __textEngine.lineBreaks[__textEngine.lineBreaks.length - 1] + 1;
 	}
-
-	#if false
-	/**
-		Returns a DisplayObject reference for the given `id`, for an image or
-		SWF file that has been added to an HTML-formatted text field by using
-		an `<img>` tag. The `<img>` tag is in the following format:
-
-		```html
-		<img src='filename.jpg' id='instanceName' />
-		```
-
-		@param id The `id` to match (in the `id` attribute of the `<img>`
-				  tag).
-		@return The display object corresponding to the image or SWF file with
-				the matching `id` attribute in the `<img>` tag of the text
-				field. For media loaded from an external source, this object
-				is a Loader object, and, once loaded, the media object is a
-				child of that Loader object. For media embedded in the SWF
-				file, it is the loaded object. If no `<img>` tag with the
-				matching `id` exists, the method returns `null`.
-	**/
-	// function getImageReference(id : String) : openfl.display.DisplayObject;
-	#end
 
 	/**
 		Returns the zero-based index value of the line at the point specified by
@@ -1210,37 +1151,6 @@ class TextField extends InteractiveObject
 		if (format == null) format = new TextFormat();
 		return format;
 	}
-
-	#if false
-	/**
-		Returns true if an embedded font is available with the specified
-		`fontName` and `fontStyle` where `Font.fontType` is
-		`openfl.text.FontType.EMBEDDED`. Starting with Flash Player 10, two
-		kinds of embedded fonts can appear in a SWF file. Normal embedded
-		fonts are only used with TextField objects. CFF embedded fonts are
-		only used with the openfl.text.engine classes. The two types are
-		distinguished by the `fontType` property of the `Font` class, as
-		returned by the `enumerateFonts()` function.
-		TextField cannot use a font of type `EMBEDDED_CFF`. If `embedFonts` is
-		set to `true` and the only font available at run time with the
-		specified name and style is of type `EMBEDDED_CFF`, Flash Player fails
-		to render the text, as if no embedded font were available with the
-		specified name and style.
-
-		If both `EMBEDDED` and `EMBEDDED_CFF` fonts are available with the
-		same name and style, the `EMBEDDED` font is selected and text renders
-		with the `EMBEDDED` font.
-
-		@param fontName  The name of the embedded font to check.
-		@param fontStyle Specifies the font style to check. Use
-						 `openfl.text.FontStyle`
-		@return `true` if a compatible embedded font is available, otherwise
-				`false`.
-		@throws ArgumentError The `fontStyle` specified is not a member of
-							  `openfl.text.FontStyle`.
-	**/
-	// @:require(flash10) static function isFontCompatible(fontName : String, fontStyle : String) : Bool;
-	#end
 
 	/**
 		Replaces the current selection with the contents of the `value`

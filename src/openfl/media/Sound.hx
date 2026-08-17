@@ -337,32 +337,6 @@ class Sound extends EventDispatcher
 		#end
 	}
 
-	#if false
-	/**
-		Extracts raw sound data from a Sound object.
-		This method is designed to be used when you are working with
-		dynamically generated audio, using a function you assign to the
-		`sampleData` event for a different Sound object. That is, you can use
-		this method to extract sound data from a Sound object. Then you can
-		write the data to the byte array that another Sound object is using to
-		stream dynamic audio.
-
-		The audio data is placed in the target byte array starting from the
-		current position of the byte array. The audio data is always exposed
-		as 44100 Hz Stereo. The sample type is a 32-bit floating-point value,
-		which can be converted to a Number using `ByteArray.readFloat()`.
-
-		@param target A ByteArray object in which the extracted sound samples
-					  are placed.
-		@param length The number of sound samples to extract. A sample
-					  contains both the left and right channels — that is,
-					  two 32-bit floating-point values.
-		@return The number of samples written to the ByteArray specified in
-				the `target` parameter.
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
-	#end
-
 	#if lime
 	/**
 		Creates a new Sound from an AudioBuffer immediately.

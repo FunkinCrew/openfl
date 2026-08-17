@@ -66,55 +66,6 @@ package openfl.media;
 		return false;
 	}
 
-	#if false
-	/**
-		Takes a snapshot of the current sound wave and places it into the
-		specified ByteArray object. The values are formatted as normalized
-		floating-point values, in the range -1.0 to 1.0. The ByteArray object
-		passed to the `outputArray` parameter is overwritten with the new
-		values. The size of the ByteArray object created is fixed to 512
-		floating-point values, where the first 256 values represent the left
-		channel, and the second 256 values represent the right channel.
-		**Note:** This method is subject to local file security restrictions
-		and restrictions on cross-domain loading. If you are working with
-		local files or sounds loaded from a server in a different domain than
-		the calling content, you might need to address sandbox restrictions
-		through a cross-domain policy file. For more information, see the
-		Sound class description. In addition, this method cannot be used to
-		extract data from RTMP streams, even when it is called by content that
-		reside in the same domain as the RTMP server.
-
-		This method is supported over RTMP in Flash Player 9.0.115.0 and later
-		and in Adobe AIR. You can control access to streams on Flash Media
-		Server in a server-side script. For more information, see the
-		`Client.audioSampleAccess` and `Client.videoSampleAccess` properties
-		in <a href="http://www.adobe.com/go/documentation" scope="external">_
-		Server-Side ActionScript Language Reference for Adobe Flash Media
-		Server_</a>.
-
-		@param outputArray   A ByteArray object that holds the values
-							 associated with the sound. If any sounds are not
-							 available due to security restrictions
-							 (`areSoundsInaccessible == true`), the
-							 `outputArray` object is left unchanged. If all
-							 sounds are stopped, the `outputArray` object is
-							 filled with zeros.
-		@param FFTMode       A Boolean value indicating whether a Fourier
-							 transformation is performed on the sound data
-							 first. Setting this parameter to `true` causes
-							 the method to return a frequency spectrum instead
-							 of the raw sound wave. In the frequency spectrum,
-							 low frequencies are represented on the left and
-							 high frequencies are on the right.
-		@param stretchFactor The resolution of the sound samples. If you set
-							 the `stretchFactor` value to 0, data is sampled
-							 at 44.1 KHz; with a value of 1, data is sampled
-							 at 22.05 KHz; with a value of 2, data is sampled
-							 11.025 KHz; and so on.
-	**/
-	// @:noCompletion @:dox(hide) public static function computeSpectrum (outputArray:ByteArray, FFTMode:Bool = false, stretchFactor:Int = 0):Void;
-	#end
-
 	/**
 		Stops all sounds currently playing.
 		>In Flash Professional, this method does not stop the playhead. Sounds

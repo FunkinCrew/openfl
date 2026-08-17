@@ -40,13 +40,6 @@ class SystemTrayIcon extends InteractiveIcon
 		super();
 	}
 
-	#if false
-	/**
-		The system tray icon menu.
-	**/
-	// public var menu:NativeMenu;
-	#end
-
 	/**
 		The tooltip that pops up for the system tray icon. If the string is
 		longer than `SystemTrayIcon.MAX_TIP_LENGTH`, the tip will be truncated.
