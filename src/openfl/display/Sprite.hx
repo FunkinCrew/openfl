@@ -98,15 +98,6 @@ class Sprite extends DisplayObjectContainer
 	**/
 	public var hitArea:Sprite;
 
-	#if false
-	/**
-		Controls sound within this sprite.
-		**Note:** This property does not affect HTML content in an HTMLControl
-		object (in Adobe AIR).
-	**/
-	// @:noCompletion @:dox(hide) public var soundTransform:SoundTransform;
-	#end
-
 	/**
 		A Boolean value that indicates whether the pointing hand (hand cursor)
 		appears when the pointer rolls over a sprite in which the
@@ -204,32 +195,6 @@ class Sprite extends DisplayObjectContainer
 		}
 	}
 
-	#if false
-	/**
-		Lets the user drag the specified sprite on a touch-enabled device. The
-		sprite remains draggable until explicitly stopped through a call to
-		the `Sprite.stopTouchDrag()` method, or until another sprite is made
-		draggable. Only one sprite is draggable at a time.
-		Three-dimensional display objects follow the pointer and
-		`Sprite.startTouchDrag()` moves the object within the
-		three-dimensional plane defined by the display object. Or, if the
-		display object is a two-dimensional object and the child of a
-		three-dimensional object, the two-dimensional object moves within the
-		three dimensional plane defined by the three-dimensional parent
-		object.
-
-		@param touchPointID An integer to assign to the touch point.
-		@param lockCenter   Specifies whether the draggable sprite is locked
-							to the center of the pointer position (`true`), or
-							locked to the point where the user first clicked
-							the sprite (`false`).
-		@param bounds       Value relative to the coordinates of the Sprite's
-							parent that specify a constraint rectangle for the
-							Sprite.
-	**/
-	// @:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
-	#end
-
 	/**
 		Ends the `startDrag()` method. A sprite that was made draggable
 		with the `startDrag()` method remains draggable until a
@@ -254,19 +219,6 @@ class Sprite extends DisplayObjectContainer
 		super.__setStageReference(stage);
 	}
 
-	#if false
-	/**
-		Ends the `startTouchDrag()` method, for use with touch-enabled
-		devices. A sprite that was made draggable with the `startTouchDrag()`
-		method remains draggable until a `stopTouchDrag()` method is added, or
-		until another sprite becomes draggable. Only one sprite is draggable
-		at a time.
-
-		@param touchPointID The integer assigned to the touch point in the
-							`startTouchDrag` method.
-	**/
-	// @:noCompletion @:dox(hide) public function stopTouchDrag (touchPointID:Int):Void;
-	#end
 	@:noCompletion private function __bind(library:AssetLibrary, className:String):Void
 	{
 		if (__worldTransform == null) // super() has not been called

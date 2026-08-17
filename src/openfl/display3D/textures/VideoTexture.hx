@@ -59,20 +59,6 @@ import openfl.net.NetStream;
 		__textureTarget = __context.gl.TEXTURE_2D;
 	}
 
-	#if false
-	/**
-		Specifies a video stream from a camera to be rendered within the texture of the
-		VideoTexture object.
-
-		Use this method to attach live video captured by the user to the VideoTexture
-		object. To drop the connection to the VideoTexture object, set the value of the
-		`theCamera` parameter to `null`.
-
-		@param	theCamera
-	**/
-	// public function attachCamera(theCamera:Camera):Void {}
-	#end
-
 	/**
 		Specifies a video stream to be rendered within the texture of the VideoTexture
 		object.

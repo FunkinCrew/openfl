@@ -1316,25 +1316,6 @@ import js.html.CanvasRenderingContext2D;
 		__commands.lineGradientStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 	}
 
-	#if false
-	/**
-		Specifies a shader to use for the line stroke when drawing lines.
-
-		The shader line style is used for subsequent calls to Graphics methods such as the `lineTo()` method or the
-		`drawCircle()` method. The line style remains in effect until you call the `lineStyle()` or
-		`lineGradientStyle()` methods, or the `lineBitmapStyle()` method again with different parameters.
-
-		You can call the `lineShaderStyle()` method in the middle of drawing a path to specify different styles for
-		different line segments within a path.
-
-		Call the `lineStyle()` method before you call the `lineShaderStyle()` method to enable a stroke, or else the
-		value of the line style is undefined.
-
-		Calls to the `clear()` method set the line style back to undefined.
-	**/
-	// @:require(flash10) public function lineShaderStyle (shader:Shader, ?matrix:Matrix):Void;
-	#end
-
 	/**
 		Specifies a line style used for subsequent calls to Graphics methods such
 		as the `lineTo()` method or the `drawCircle()`

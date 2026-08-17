@@ -261,66 +261,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var color(get, set):Null<Int>;
 
-	#if false
-	/**
-		Controls Flash runtime color correction for displays. Color correction
-		works only if the main monitor is assigned a valid ICC color profile,
-		which specifies the device's particular color attributes. By default,
-		the Flash runtime tries to match the color correction of its host
-		(usually a browser).
-		Use the `Stage.colorCorrectionSupport` property to determine if color
-		correction is available on the current system and the default state. .
-		If color correction is available, all colors on the stage are assumed
-		to be in the sRGB color space, which is the most standard color space.
-		Source profiles of input devices are not considered during color
-		correction. No input color correction is applied; only the stage
-		output is mapped to the main monitor's ICC color profile.
-
-		In general, the benefits of activating color management include
-		predictable and consistent color, better conversion, accurate proofing
-		and more efficient cross-media output. Be aware, though, that color
-		management does not provide perfect conversions due to devices having
-		a different gamut from each other or original images. Nor does color
-		management eliminate the need for custom or edited profiles. Color
-		profiles are dependent on browsers, operating systems (OS), OS
-		extensions, output devices, and application support.
-
-		Applying color correction degrades the Flash runtime performance. A
-		Flash runtime's color correction is document style color correction
-		because all SWF movies are considered documents with implicit sRGB
-		profiles. Use the `Stage.colorCorrectionSupport` property to tell the
-		Flash runtime to correct colors when displaying the SWF file
-		(document) to the display color space. Flash runtimes only compensates
-		for differences between monitors, not for differences between input
-		devices (camera/scanner/etc.).
-
-		The three possible values are strings with corresponding constants in
-		the openfl.display.ColorCorrection class:
-
-		* `"default"`: Use the same color correction as the host system.
-		* `"on"`: Always perform color correction.
-		* `"off"`: Never perform color correction.
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:openfl.display.ColorCorrection;
-	#end
-	#if false
-	/**
-		Specifies whether the Flash runtime is running on an operating system
-		that supports color correction and whether the color profile of the
-		main (primary) monitor can be read and understood by the Flash
-		runtime. This property also returns the default state of color
-		correction on the host system (usually the browser). Currently the
-		return values can be:
-		The three possible values are strings with corresponding constants in
-		the openfl.display.ColorCorrectionSupport class:
-
-		* `"unsupported"`: Color correction is not available.
-		* `"defaultOn"`: Always performs color correction.
-		* `"defaultOff"`: Never performs color correction.
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):openfl.display.ColorCorrectionSupport;
-	#end
-
 	/**
 		Specifies the effective pixel scaling factor of the stage. This
 		value is 1 on standard screens and HiDPI (Retina display)
@@ -795,35 +735,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var stageHeight(default, null):Int;
 
-	#if false
-	/**
-		A list of StageVideo objects available for playing external videos.
-		You can use only a limited number of StageVideo objects at a time.
-		When a SWF begins to run, the number of available StageVideo objects
-		depends on the platform and on available hardware.
-
-		To use a StageVideo object, assign a member of the `stageVideos`
-		Vector object to a StageVideo variable.
-
-		All StageVideo objects are displayed on the stage behind any display
-		objects. The StageVideo objects are displayed on the stage in the
-		order they appear in the `stageVideos` Vector object. For example, if
-		the `stageVideos` Vector object contains three entries:
-
-		1. The StageVideo object in the 0 index of the `stageVideos` Vector
-		object is displayed behind all StageVideo objects.
-		2. The StageVideo object at index 1 is displayed in front of the
-		StageVideo object at index 0.
-		3. The StageVideo object at index 2 is displayed in front of the
-		StageVideo object at index 1.
-
-		Use the `StageVideo.depth` property to change this ordering.
-
-		**Note:** AIR for TV devices support only one StageVideo object.
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):Vector<openfl.media.StageVideo>;
-	#end
-
 	/**
 		Specifies the current width, in pixels, of the Stage.
 
@@ -964,9 +875,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		event of any `DisplayObject`, the `wmodeGPU` value at is the correct
 		value.
 	**/
-	#if false
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU (default, null):Bool;
-	#end
 	@:noCompletion private var __cacheFocus:InteractiveObject;
 	@:noCompletion private var __clearBeforeRender:Bool;
 	@:noCompletion private var __color:Int;

@@ -8,44 +8,6 @@ import openfl.Vector;
 **/
 class Utils3D
 {
-	#if false
-	/**
-		Interpolates the orientation of an object toward a position. The `pointTowards()`
-		method combines the functionality of the `Matrix3D.pointAt()` and
-		`Matrix3D.interpolateTo()` methods.
-
-		The `pointTowards()` method allows for in-place modification to the orientation.
-		It decomposes the Matrix3D of the display object and replaces the rotation
-		elements by ones that make a percent turn toward the position of the target. The
-		object can make an incremental turn toward the target while still moving in its
-		own direction. The consecutive calls to the `pointTowards()` followed by a
-		translation method can produce the animation of an object chasing or following a
-		moving target. First point the object a percent point toward the target, then
-		incrementally move the object along an axis.
-
-		@param	percent	A Number between 0 and 1 that incrementally turns the object
-		toward the target.
-		@param	mat	The Matrix3D property of the object that is transformed.
-		@param	pos	The world-relative position of the target object. World-relative
-		defines the transformation of the object relative to the world space and
-		coordinates, where all objects are positioned.
-		@param	at	The object-relative vector that defines where the display object is
-		pointing. Object-relative defines the transformation of the object relative to the
-		object space, the object's own frame of reference and coordinate system. Default
-		value is (0,0,-1).
-		@param	up	The object-relative vector that defines "up" for the display object.
-		If the object is drawn looking down from the above, the +z axis is its "up"
-		vector. Object-relative defines the transformation of the object relative to the
-		object space, the object's own frame of reference and coordinate system. Default
-		value is (0,-1,0).
-		@returns	A modified version of the Matrix3D object specified in the second
-		parameter. To transform the display object using the `pointTowards()` method, set
-		the Matrix3D property of the display object to the returned Matrix3D object.
-	**/
-	// static function pointTowards(percent : Float, mat : Matrix3D, pos : Vector3D, ?at : Vector3D, ?up : Vector3D) : Matrix3D;
-	// static function pointTowardsToOutput(percent : Float, mat : Matrix3D, pos : Vector3D, ?at : Vector3D, ?up : Vector3D, ?output : Matrix3D) : Matrix3D;
-	#end
-
 	/**
 		Using a projection Matrix3D object, projects a Vector3D object from one space
 		coordinate to another. The `projectVector()` method is like the
