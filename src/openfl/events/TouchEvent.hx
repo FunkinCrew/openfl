@@ -319,20 +319,6 @@ class TouchEvent extends Event
 	**/
 	public var isPrimaryTouchPoint:Bool;
 
-	#if false
-	/**
-		If `true`, the `relatedObject` property is set to `null` for reasons
-		related to security sandboxes. If the nominal value of `relatedObject`
-		is a reference to a DisplayObject in another sandbox, `relatedObject`
-		is set to `null` unless there is permission in both directions across
-		this sandbox boundary. Permission is established by calling
-		`Security.allowDomain()` from a SWF file, or by providing a policy
-		file from the server of an image file, and setting the
-		`LoaderContext.checkPolicyFile` property when loading the image.
-	**/
-	// @:noCompletion @:dox(hide) public var isRelatedObjectInaccessible:Bool;
-	#end
-
 	/**
 		The horizontal coordinate at which the event occurred relative to the
 		containing sprite.

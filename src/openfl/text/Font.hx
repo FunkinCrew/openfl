@@ -137,18 +137,6 @@ class Font #if lime extends LimeFont #end
 		#end
 	}
 
-	#if false
-	/**
-		Specifies whether a provided string can be displayed using the
-		currently assigned font.
-
-		@param str The string to test against the current font.
-		@return A value of `true` if the specified string can be fully
-				displayed using this font.
-	**/
-	// @:noCompletion @:dox(hide) public function hasGlyphs (str:String):Bool;
-	#end
-
 	/**
 		Creates a new Font from haxe.io.Bytes or openfl.utils.ByteArray data
 		asynchronously. The font decoding will occur in the background.

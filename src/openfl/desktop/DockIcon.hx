@@ -43,16 +43,6 @@ class DockIcon extends InteractiveIcon
 		super();
 	}
 
-	#if false
-	/**
-		The system-supplied menu of this dock icon.
-
-		Any items in the menu are displayed above the standard items. The
-		standard items cannot be modified or removed.
-	**/
-	// public var menu:NativeMenu;
-	#end
-
 	/**
 		Notifies the user that an event has occurred that may require attention.
 

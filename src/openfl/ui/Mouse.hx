@@ -83,18 +83,6 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		#end
 	}
 
-	#if false
-	/**
-		Registers a native cursor under the given name, with the given data.
-
-		@param name   The name to use as a reference to the native cursor
-					  instance.
-		@param cursor The properties for the native cursor, such as icon
-					  bitmap, specified as a MouseCursorData instance.
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_2) public static function registerCursor (name:String, cursor:openfl.ui.MouseCursorData):Void;
-	#end
-
 	/**
 		Displays the pointer. The pointer is visible by default.
 
@@ -112,14 +100,6 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		cursor = cacheCursor;
 	}
 
-	#if false
-	/**
-		Unregisters the native cursor with the given name.
-
-		@param name The name referring to the native cursor instance.
-	**/
-	// @:noCompletion @:dox(hide) @:require(flash11) public static function unregisterCursor (name:String):Void;
-	#end
 	// Get & Set Methods
 	@:noCompletion private static function get_cursor():MouseCursor
 	{
