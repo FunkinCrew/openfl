@@ -4,6 +4,7 @@ import openfl.display._internal.Context3DGraphics;
 import openfl.display.Bitmap;
 import openfl.display.DisplayObject;
 import openfl.display.Tilemap;
+import openfl.display3D.Context3D;
 import openfl.display3D.textures.MultiBufferTexture;
 import openfl.events.EventDispatcher;
 import openfl.events.RenderEvent;
@@ -244,17 +245,38 @@ class DisplayObjectRenderer extends EventDispatcher
 			var scaledWidth = Math.round(sourceWidth * scale);
 			var scaledHeight = Math.round(sourceHeight * scale);
 			if (scaledWidth < 1 || scaledHeight < 1) continue;
+			var finalWidth = scaledWidth;
+			var finalHeight = scaledHeight;
+			var currentResult = graphics.__bufferResult[i];
+			if (currentResult != null)
+			{
+				var ratio = sourceWidth / sourceHeight;
+				var currentAspect = currentResult.width / currentResult.height;
+				// So like sometimes the buffer bitmap doesn't size to the exact aspect ratio
+				// Which causes odd visual glitches... so add a tiny threshold so check if the ratio somehow differs
+				var ratioChanged = Math.abs(currentAspect - ratio) / ratio > 0.02;
+
+				if (!ratioChanged
+					&& Math.abs(currentResult.width - scaledWidth) <= currentResult.width * 0.25
+					&& Math.abs(currentResult.height - scaledHeight) <= currentResult.height * 0.25)
+				{
+					finalWidth = currentResult.width;
+					finalHeight = currentResult.height;
+				}
+			}
 
 			if (graphics.__bufferCache[i] == null) graphics.__bufferCache[i] = [null, null];
 
-			graphics.__bufferCache[i][0] = __getBuffer(graphics.__bufferCache[i][0], scaledWidth, scaledHeight);
-			graphics.__bufferCache[i][1] = __getBuffer(graphics.__bufferCache[i][1], scaledWidth, scaledHeight);
+			graphics.__bufferCache[i][0] = __getScaledBuffer(context, graphics.__bufferCache[i][0], finalWidth, finalHeight);
+			graphics.__bufferCache[i][1] = __getScaledBuffer(context, graphics.__bufferCache[i][1], finalWidth, finalHeight);
 
 			var attachmentIndex = i + 1;
 			var downscaleTarget = graphics.__bufferCache[i][0];
+			var downscaleX = (finalWidth == scaledWidth) ? scale : finalWidth / sourceWidth;
+			var downscaleY = (finalHeight == scaledHeight) ? scale : finalHeight / sourceHeight;
 
 			graphics.__bufferSourceView.__renderTransform.identity();
-			graphics.__bufferSourceView.__renderTransform.scale(scale, scale);
+			graphics.__bufferSourceView.__renderTransform.scale(downscaleX, downscaleY);
 
 			sourceTexture.withAttachment(attachmentIndex, () ->
 			{
@@ -285,7 +307,7 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			graphics.__bufferCache[i][0] = bitmap;
 			graphics.__bufferCache[i][1] = bitmap2;
-			graphics.__bufferResult[i] = __getBuffer(graphics.__bufferResult[i], scaledWidth, scaledHeight);
+			graphics.__bufferResult[i] = __getBuffer(graphics.__bufferResult[i], finalWidth, finalHeight);
 
 			renderer.__setRenderTarget(graphics.__bufferResult[i]);
 			renderer.__renderFilterPass(bitmap, renderer.__defaultDisplayShader, false, true);
@@ -296,10 +318,30 @@ class DisplayObjectRenderer extends EventDispatcher
 	{
 		if (buffer == null || buffer.width != width || buffer.height != height)
 		{
+			if (buffer != null && buffer.__texture != null) buffer.__texture.dispose();
 			return new BitmapData(width, height, true, 0);
 		}
 
 		buffer.fillRect(buffer.rect, 0);
+		return buffer;
+	}
+
+	@:noCompletion private function __getScaledBuffer(context:Context3D, buffer:BitmapData, width:Int, height:Int):BitmapData
+	{
+		if (buffer == null || width > buffer.width || height > buffer.height)
+		{
+			if (buffer != null && buffer.__texture != null) buffer.__texture.dispose();
+
+			var finalWidth = Math.ceil(Math.max(width * 1.25, buffer != null ? buffer.width : 0));
+			var finalHeight = Math.ceil(Math.max(height * 1.25, buffer != null ? buffer.height : 0));
+			buffer = new BitmapData(finalWidth, finalHeight, true, 0);
+		}
+		else
+		{
+			buffer.fillRect(buffer.rect, 0);
+		}
+
+		buffer.__setUVRect(context, 0, 0, width, height);
 		return buffer;
 	}
 
@@ -513,6 +555,11 @@ class DisplayObjectRenderer extends EventDispatcher
 						|| bitmapWidth > displayObject.__cacheBitmapData.width
 						|| bitmapHeight > displayObject.__cacheBitmapData.height)
 					{
+						if (displayObject.__cacheBitmapData != null && displayObject.__cacheBitmapData.__texture != null)
+						{
+							displayObject.__cacheBitmapData.__texture.dispose();
+						}
+
 						displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
 						if (displayObject.__graphics != null)
 							displayObject.__cacheBitmapData.__extraBufferFormats = displayObject.__graphics.__extraBufferFormats;
@@ -731,6 +778,11 @@ class DisplayObjectRenderer extends EventDispatcher
 							|| bitmapWidth > displayObject.__cacheBitmapData2.width
 							|| bitmapHeight > displayObject.__cacheBitmapData2.height)
 						{
+							if (displayObject.__cacheBitmapData2 != null && displayObject.__cacheBitmapData2.__texture != null)
+							{
+								displayObject.__cacheBitmapData2.__texture.dispose();
+							}
+
 							displayObject.__cacheBitmapData2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 						}
 						else
@@ -753,6 +805,11 @@ class DisplayObjectRenderer extends EventDispatcher
 								|| bitmapWidth > displayObject.__cacheBitmapData3.width
 								|| bitmapHeight > displayObject.__cacheBitmapData3.height)
 							{
+								if (displayObject.__cacheBitmapData3 != null && displayObject.__cacheBitmapData3.__texture != null)
+								{
+									displayObject.__cacheBitmapData3.__texture.dispose();
+								}
+
 								displayObject.__cacheBitmapData3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 							}
 							else
