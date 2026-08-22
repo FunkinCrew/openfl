@@ -80,7 +80,7 @@ class GraphicsTessellator
 		var positionX = 0.0;
 		var positionY = 0.0;
 
-		inline function reject(reason:String):Bool
+		inline function reject():Bool
 		{
 			data.destroy();
 			return false;
@@ -151,8 +151,8 @@ class GraphicsTessellator
 				{
 					var uvtData = new Vector<Float>();
 					populateBitmapUvt(partVertices, currentBitmap, currentBitmapMatrix, uvtData);
-					parts.push(new GraphicsTessellatedFillPart(partVertices, partIndices, null, currentBitmap, currentBitmapMatrix,
-						currentBitmapSmooth, currentBitmapRepeat, uvtData));
+					parts.push(new GraphicsTessellatedFillPart(partVertices, partIndices, null, currentBitmap, currentBitmapMatrix, currentBitmapSmooth,
+						currentBitmapRepeat, uvtData));
 				}
 				else
 				{
@@ -172,12 +172,12 @@ class GraphicsTessellator
 			switch (type)
 			{
 				case BEGIN_GRADIENT_FILL, LINE_GRADIENT_STYLE:
-					return reject("gradientFill");
+					return reject();
 
 				case BEGIN_BITMAP_FILL:
 					if (!finalizeFill())
 					{
-						return reject("finalizeFill");
+						return reject();
 					}
 
 					skipStrokePaths = false;
@@ -185,7 +185,7 @@ class GraphicsTessellator
 					var bitmapCommand = data.readBeginBitmapFill();
 					if (bitmapCommand.bitmap == null)
 					{
-						return reject("bitmapNull");
+						return reject();
 					}
 
 					if (bitmapCommand.matrix != null)
@@ -193,7 +193,7 @@ class GraphicsTessellator
 						var m = bitmapCommand.matrix;
 						if (m.a * m.d - m.b * m.c == 0)
 						{
-							return reject("bitmapMatrixSingular");
+							return reject();
 						}
 					}
 
@@ -207,7 +207,7 @@ class GraphicsTessellator
 				case BEGIN_FILL:
 					if (!finalizeFill())
 					{
-						return reject("finalizeFill");
+						return reject();
 					}
 
 					skipStrokePaths = false;
@@ -230,7 +230,7 @@ class GraphicsTessellator
 					}
 					else if (!finalizeFill())
 					{
-						return reject("endFill");
+						return reject();
 					}
 
 				case MOVE_TO:
@@ -246,12 +246,12 @@ class GraphicsTessellator
 					{
 						if (currentFill == null && currentBitmap == null)
 						{
-							return reject("moveWithoutFill");
+							return reject();
 						}
 
 						if (!finalizeContour())
 						{
-							return reject("contourFinalizeOnMove");
+							return reject();
 						}
 
 						currentContour.push(positionX);
@@ -263,14 +263,12 @@ class GraphicsTessellator
 					positionX = lineCommand.x;
 					positionY = lineCommand.y;
 
-					if (skipStrokePaths)
-					{
-					}
+					if (skipStrokePaths) {}
 					else
 					{
 						if ((currentFill == null && currentBitmap == null) || currentContour.length == 0)
 						{
-							return reject("lineWithoutContour");
+							return reject();
 						}
 
 						currentContour.push(positionX);
@@ -289,7 +287,7 @@ class GraphicsTessellator
 					{
 						if ((currentFill == null && currentBitmap == null) || currentContour.length == 0)
 						{
-							return reject("curveWithoutContour");
+							return reject();
 						}
 
 						appendQuadraticCurve(currentContour, positionX, positionY, curveCommand.controlX, curveCommand.controlY, curveCommand.anchorX,
@@ -310,7 +308,7 @@ class GraphicsTessellator
 					{
 						if ((currentFill == null && currentBitmap == null) || currentContour.length == 0)
 						{
-							return reject("cubicWithoutContour");
+							return reject();
 						}
 
 						appendCubicCurve(currentContour, positionX, positionY, cubicCommand.controlX1, cubicCommand.controlY1, cubicCommand.controlX2,
@@ -323,7 +321,7 @@ class GraphicsTessellator
 					var c = data.readLineStyle();
 					if (c.thickness != null)
 					{
-						return reject("lineStyle");
+						return reject();
 					}
 
 				case WINDING_EVEN_ODD:
@@ -335,7 +333,7 @@ class GraphicsTessellator
 					winding = GraphicsPathWinding.NON_ZERO;
 
 				case OVERRIDE_BLEND_MODE, OVERRIDE_MATRIX:
-					return reject(Type.enumConstructor(type));
+					return reject();
 
 				default:
 					if (skipStrokePaths)
@@ -344,14 +342,14 @@ class GraphicsTessellator
 					}
 					else
 					{
-						return reject(Type.enumConstructor(type));
+						return reject();
 					}
 			}
 		}
 
 		if (!finalizeFill())
 		{
-			return reject("finalizeEnd");
+			return reject();
 		}
 
 		data.destroy();
@@ -481,6 +479,7 @@ class GraphicsTessellator
 		outIndices.push(vertexOffset + available[2]);
 		return true;
 	}
+
 	private static function appendTriangulatedContours(contours:Array<Vector<Float>>, outVertices:Vector<Float>, outIndices:Vector<Int>):Bool
 	{
 		if (contours.length == 1)
@@ -640,7 +639,6 @@ class GraphicsTessellator
 		return ax > bx ? -1 : (ax < bx ? 1 : 0);
 	}
 
-
 	private static function copyContour(contour:Vector<Float>):Vector<Float>
 	{
 		var copy = new Vector<Float>();
@@ -768,7 +766,8 @@ class GraphicsTessellator
 
 			var px = polygon[index * 2];
 			var py = polygon[index * 2 + 1];
-			if ((almostEqual(px, ax) && almostEqual(py, ay)) || (almostEqual(px, bx) && almostEqual(py, by))
+			if ((almostEqual(px, ax) && almostEqual(py, ay))
+				|| (almostEqual(px, bx) && almostEqual(py, by))
 				|| (almostEqual(px, cx) && almostEqual(py, cy)))
 			{
 				continue;
@@ -845,18 +844,16 @@ class GraphicsTessellator
 
 		return inside;
 	}
-	private static function isBridgeVisible(ax:Float, ay:Float, bx:Float, by:Float, outer:Vector<Float>, hole:Vector<Float>, outerIndex:Int,
-			holeIndex:Int):Bool
+
+	private static function isBridgeVisible(ax:Float, ay:Float, bx:Float, by:Float, outer:Vector<Float>, hole:Vector<Float>, outerIndex:Int, holeIndex:Int):Bool
 	{
 		if (!contourContainsPoint(outer, (ax + bx) * 0.5, (ay + by) * 0.5))
 		{
 			return false;
 		}
 
-		return !segmentIntersectsContour(ax, ay, bx, by, outer, outerIndex)
-			&& !segmentIntersectsContour(ax, ay, bx, by, hole, holeIndex);
+		return !segmentIntersectsContour(ax, ay, bx, by, outer, outerIndex) && !segmentIntersectsContour(ax, ay, bx, by, hole, holeIndex);
 	}
-
 
 	private static function populateBitmapUvt(vertices:Vector<Float>, bitmap:BitmapData, bitmapMatrix:Matrix, result:Vector<Float>):Void
 	{
@@ -918,12 +915,12 @@ class GraphicsTessellator
 		contour.push(x);
 		contour.push(y);
 	}
+
 	private static function pushRawPoint(contour:Vector<Float>, x:Float, y:Float):Void
 	{
 		contour.push(x);
 		contour.push(y);
 	}
-
 
 	private static function quadraticFlatnessSq(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float):Float
 	{
@@ -949,8 +946,7 @@ class GraphicsTessellator
 				var cx = contour[next * 2];
 				var cy = contour[next * 2 + 1];
 
-				if (Math.abs(cross(ax, ay, bx, by, cx, cy)) <= COLLINEAR_EPSILON
-					&& isPointOnSegment(bx, by, ax, ay, cx, cy))
+				if (Math.abs(cross(ax, ay, bx, by, cx, cy)) <= COLLINEAR_EPSILON && isPointOnSegment(bx, by, ax, ay, cx, cy))
 				{
 					contour.splice(i * 2, 2);
 					changed = true;
@@ -995,6 +991,7 @@ class GraphicsTessellator
 			|| (Math.abs(cd1) <= COLLINEAR_EPSILON && isPointOnSegment(ax, ay, cx, cy, dx, dy))
 			|| (Math.abs(cd2) <= COLLINEAR_EPSILON && isPointOnSegment(bx, by, cx, cy, dx, dy));
 	}
+
 	private static function segmentIntersectsContour(ax:Float, ay:Float, bx:Float, by:Float, contour:Vector<Float>, allowedVertex:Int):Bool
 	{
 		var count = contour.length >> 1;
@@ -1018,7 +1015,6 @@ class GraphicsTessellator
 
 		return false;
 	}
-
 
 	private static function signedArea(contour:Vector<Float>):Float
 	{
@@ -1049,8 +1045,8 @@ class GraphicsTessellator
 			&& py >= Math.min(ay, by) - CONTOUR_EPSILON
 			&& py <= Math.max(ay, by) + CONTOUR_EPSILON;
 	}
-
 }
+
 private class ContourInfo
 {
 	public var contour:Vector<Float>;
@@ -1066,7 +1062,6 @@ private class ContourInfo
 	}
 }
 
-
 class GraphicsTessellatedFillPart
 {
 	public var fill(default, null):Null<Int>;
@@ -1078,8 +1073,8 @@ class GraphicsTessellatedFillPart
 	public var indices(default, null):Vector<Int>;
 	public var vertices(default, null):Vector<Float>;
 
-	public function new(vertices:Vector<Float>, indices:Vector<Int>, fill:Null<Int> = null, ?bitmap:BitmapData,
-			?bitmapMatrix:Matrix, ?smooth:Bool, ?repeat:Bool, ?uvtData:Vector<Float>)
+	public function new(vertices:Vector<Float>, indices:Vector<Int>, fill:Null<Int> = null, ?bitmap:BitmapData, ?bitmapMatrix:Matrix, ?smooth:Bool,
+			?repeat:Bool, ?uvtData:Vector<Float>)
 	{
 		this.vertices = vertices;
 		this.indices = indices;
