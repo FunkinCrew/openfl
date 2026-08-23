@@ -37,6 +37,7 @@ class Context3DGraphics
 	{
 		return blankBitmapData;
 	}
+
 	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
 	private static var tempVerticesVector:Vector<Float> = new Vector<Float>();
@@ -50,7 +51,6 @@ class Context3DGraphics
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
-
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
@@ -224,7 +224,6 @@ class Context3DGraphics
 		else
 		#end
 		{
-
 			for (type in graphics.__commands.types)
 			{
 				switch (type)
@@ -591,7 +590,6 @@ class Context3DGraphics
 
 		Rectangle.__pool.release(tileRect);
 		Matrix.__pool.release(tileTransform);
-
 	}
 
 	private static function isCompatible(graphics:Graphics):Bool
@@ -714,9 +712,7 @@ class Context3DGraphics
 
 				case LINE_STYLE:
 					var c = data.readLineStyle();
-					if (c.thickness == null)
-					{
-					}
+					if (c.thickness == null) {}
 					else
 					{
 						data.destroy();
@@ -869,7 +865,6 @@ class Context3DGraphics
 		data.destroy();
 		return cacheCompatibility(true);
 	}
-
 
 	public static function render(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
@@ -1465,7 +1460,6 @@ class Context3DGraphics
 			graphics.__dirty = false;
 		}
 		graphics.__hardwareDirty = false;
-
 	}
 
 	public static function renderMask(graphics:Graphics, renderer:OpenGLRenderer):Void
@@ -1626,9 +1620,7 @@ class Context3DGraphics
 			return 0;
 		}
 
-		if (numVertices >= 2
-			&& vertices[0] == vertices[vertices.length - 2]
-			&& vertices[1] == vertices[vertices.length - 1])
+		if (numVertices >= 2 && vertices[0] == vertices[vertices.length - 2] && vertices[1] == vertices[vertices.length - 1])
 		{
 			numVertices--;
 		}

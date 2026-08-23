@@ -344,8 +344,7 @@ class DisplayObjectRenderer extends EventDispatcher
 		return buffer;
 	}
 
-	@:noCompletion private function __clipCacheBounds(displayObject:DisplayObject, renderer:DisplayObjectRenderer, bitmapMatrix:Matrix,
-		rect:Rectangle):Bool
+	@:noCompletion private function __clipCacheBounds(displayObject:DisplayObject, renderer:DisplayObjectRenderer, bitmapMatrix:Matrix, rect:Rectangle):Bool
 	{
 		#if lime
 		if (renderer.__type != OPENGL) return false;
@@ -415,6 +414,7 @@ class DisplayObjectRenderer extends EventDispatcher
 		cacheBounds.width = rect.width > 0 ? Math.ceil((rect.width + 1) * pixelRatio) : 0;
 		cacheBounds.height = rect.height > 0 ? Math.ceil((rect.height + 1) * pixelRatio) : 0;
 	}
+
 	@:noCompletion private function __updateCacheBitmap(displayObject:DisplayObject, force:Bool):Bool
 	{
 		if (displayObject == null) return false;
@@ -591,7 +591,9 @@ class DisplayObjectRenderer extends EventDispatcher
 						desiredCacheBounds = Rectangle.__pool.get();
 						__getFilterCacheBounds(clippedRect, pixelRatio, desiredCacheBounds);
 
-						if (!needRender && displayObject.__cacheBitmapBounds != null && !displayObject.__cacheBitmapBounds.equals(desiredCacheBounds))
+						if (!needRender
+							&& displayObject.__cacheBitmapBounds != null
+							&& !displayObject.__cacheBitmapBounds.equals(desiredCacheBounds))
 						{
 							needRender = true;
 						}
@@ -1135,7 +1137,6 @@ class DisplayObjectRenderer extends EventDispatcher
 					// object/transform invalidation flow.
 					displayObject.__graphics.__softwareDirty = false;
 				}
-
 			}
 
 			if (updateTransform || needRender)

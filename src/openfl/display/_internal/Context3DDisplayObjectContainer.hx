@@ -12,7 +12,6 @@ import openfl.utils.ByteArray;
 @:fileXml(' tags="haxe,release" ')
 @:noDebug
 #end
-
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.BitmapData)
@@ -122,7 +121,8 @@ class Context3DDisplayObjectContainer
 
 		var leaves = [];
 		var multiRejection = null;
-		if (__collectRenderableColorMatrixLeaves(displayObjectContainer, true, colorMatrixFilter, leaves, multiRejection) && leaves.length > 0)
+		if (__collectRenderableColorMatrixLeaves(displayObjectContainer, true, colorMatrixFilter, leaves, multiRejection)
+			&& leaves.length > 0)
 		{
 			Context3DDisplayObject.render(displayObjectContainer, renderer);
 
@@ -138,7 +138,8 @@ class Context3DDisplayObjectContainer
 		}
 
 		return __rejectColorMatrixFastPath(displayObjectContainer, multiRejection != null && multiRejection.length > 0 ? multiRejection[0] : (rejection != null
-			&& rejection.length > 0 ? rejection[0] : "not-single-leaf"), null);
+			&& rejection.length > 0 ? rejection[0] : "not-single-leaf"),
+			null);
 		#end
 	}
 
@@ -249,7 +250,10 @@ class Context3DDisplayObjectContainer
 	private static inline function __isEmptyColorMatrixLeaf(displayObject:DisplayObject):Bool
 	{
 		var container:DisplayObjectContainer = __isDisplayObjectContainer(displayObject) ? cast displayObject : null;
-		return container != null && !__hasDrawableGraphics(displayObject) && container.__children != null && container.__children.length == 0;
+		return container != null
+			&& !__hasDrawableGraphics(displayObject)
+			&& container.__children != null
+			&& container.__children.length == 0;
 	}
 
 	private static function __collectRenderableColorMatrixLeaves(displayObject:DisplayObject, isFilterRoot:Bool, rootFilter:ColorMatrixFilter,
