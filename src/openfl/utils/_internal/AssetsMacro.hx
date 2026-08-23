@@ -10,9 +10,6 @@ import sys.io.File;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class AssetsMacro
 {
-	#if 0
-	private static var __suppressWarning:Array<Class<Dynamic>> = [Expr];
-	#end
 	@:noCompletion private static var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	@:noCompletion private static var base64Encoder:BaseCode;
 

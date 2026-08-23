@@ -12,10 +12,6 @@ using haxe.macro.TypeTools;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class ShaderMacro
 {
-	#if 0
-	private static var __suppressWarning:Array<Class<Dynamic>> = [Expr];
-	#end
-
 	public static function build():Array<Field>
 	{
 		var fields = Context.getBuildFields();

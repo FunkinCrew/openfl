@@ -28,9 +28,6 @@ class Lib
 	@:noCompletion private static var __timers:Map<UInt, Timer> = new Map();
 	@:noCompletion private static var __registeredClassAliases:Map<String, Class<Dynamic>> = new Map();
 	@:noCompletion private static var __registeredClasses:Dictionary<Class<Dynamic>, String> = new Dictionary();
-	#if 0
-	private static var __unusedImports:Array<Class<Dynamic>> = [SWFLibrary, SWFLiteLibrary];
-	#end
 
 	public static function as<T>(v:Dynamic, c:Class<T>):Null<T>
 	{
