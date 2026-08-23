@@ -32,7 +32,6 @@ import openfl.errors.ArgumentError;
 
 	_OpenFL target support:_ Not supported, except when targeting AIR.
 **/
-@SuppressWarnings("checkstyle:Dynamic")
 class AVM1Movie extends DisplayObject
 {
 	@:noCompletion private function new()

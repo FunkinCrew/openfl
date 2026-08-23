@@ -1393,7 +1393,7 @@ class FileReference extends EventDispatcher
 		#end
 	}
 
-	private function __uploadFileBytes(request:URLRequest, uploadDataFieldName:String, fileBytes:ByteArray):Void
+	@:noCompletion private function __uploadFileBytes(request:URLRequest, uploadDataFieldName:String, fileBytes:ByteArray):Void
 	{
 		var hasUrlVars = Type.typeof(request.data) == Type.ValueType.TObject;
 		if (hasUrlVars && request.method == URLRequestMethod.GET)

@@ -272,7 +272,7 @@ class NativeApplication extends EventDispatcher
 	**/
 	public var startAtLogin(default, default):Bool;
 
-	private function new()
+	@:noCompletion private function new()
 	{
 		super();
 	}

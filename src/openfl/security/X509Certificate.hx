@@ -21,7 +21,7 @@ import openfl.utils.ByteArray;
 **/
 class X509Certificate
 {
-	private function new() {}
+	@:noCompletion private function new() {}
 
 	/**
 		Provides the whole certificate in encoded form. Client code can decode

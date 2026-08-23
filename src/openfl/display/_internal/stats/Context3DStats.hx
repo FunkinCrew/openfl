@@ -5,7 +5,7 @@ import haxe.ds.IntMap;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DStats
 {
-	private static var drawCallsCounters:IntMap<DrawCallCounter> = [
+	@:noCompletion private static var drawCallsCounters:IntMap<DrawCallCounter> = [
 		DrawCallContext.STAGE => new DrawCallCounter(),
 		DrawCallContext.STAGE3D => new DrawCallCounter()
 	];

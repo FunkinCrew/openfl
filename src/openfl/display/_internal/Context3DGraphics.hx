@@ -29,25 +29,25 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DGraphics
 {
-	private static var blankBitmapData = new BitmapData(1, 1, false, 0);
+	@:noCompletion private static var blankBitmapData = new BitmapData(1, 1, false, 0);
 
 	public static inline function getBlankBitmapData():BitmapData
 	{
 		return blankBitmapData;
 	}
 
-	private static var maskRender:Bool;
-	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
-	private static var tempVerticesVector:Vector<Float> = new Vector<Float>();
-	private static var tempIndicesVector:Vector<Int> = new Vector<Int>();
-	private static var tempUvtVector:Vector<Float> = new Vector<Float>();
-	private static var tempScale9VerticesVector:Vector<Float>;
-	private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
-	private static var buildBufferReader:DrawCommandReader = new DrawCommandReader(null);
-	private static var tempLinePathVertices:Vector<Float> = new Vector<Float>();
-	private static var tempLinePathReducedVertices:Vector<Float> = new Vector<Float>();
+	@:noCompletion private static var maskRender:Bool;
+	@:noCompletion private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
+	@:noCompletion private static var tempVerticesVector:Vector<Float> = new Vector<Float>();
+	@:noCompletion private static var tempIndicesVector:Vector<Int> = new Vector<Int>();
+	@:noCompletion private static var tempUvtVector:Vector<Float> = new Vector<Float>();
+	@:noCompletion private static var tempScale9VerticesVector:Vector<Float>;
+	@:noCompletion private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
+	@:noCompletion private static var buildBufferReader:DrawCommandReader = new DrawCommandReader(null);
+	@:noCompletion private static var tempLinePathVertices:Vector<Float> = new Vector<Float>();
+	@:noCompletion private static var tempLinePathReducedVertices:Vector<Float> = new Vector<Float>();
 
-	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
+	@:noCompletion private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
@@ -590,7 +590,7 @@ class Context3DGraphics
 		Matrix.__pool.release(tileTransform);
 	}
 
-	private static function isCompatible(graphics:Graphics):Bool
+	@:noCompletion private static function isCompatible(graphics:Graphics):Bool
 	{
 		#if (openfl_force_sw_graphics || force_sw_graphics)
 		return false;
@@ -1454,7 +1454,7 @@ class Context3DGraphics
 		maskRender = false;
 	}
 
-	private static function resizeIndexBuffer(graphics:Graphics, isQuad:Bool, length:Int):Void
+	@:noCompletion private static function resizeIndexBuffer(graphics:Graphics, isQuad:Bool, length:Int):Void
 	{
 		if (isQuad) return;
 
@@ -1500,7 +1500,7 @@ class Context3DGraphics
 		}
 	}
 
-	private static function resizeVertexBuffer(graphics:Graphics, hasUVTData:Bool, length:Int):Void
+	@:noCompletion private static function resizeVertexBuffer(graphics:Graphics, hasUVTData:Bool, length:Int):Void
 	{
 		var buffer = (hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData);
 		var newBuffer:Float32Array = null;
@@ -1521,7 +1521,7 @@ class Context3DGraphics
 		}
 	}
 
-	private static function populateUvtVector(vertices:Vector<Float>, bitmap:BitmapData, result:Vector<Float>):Void
+	@:noCompletion private static function populateUvtVector(vertices:Vector<Float>, bitmap:BitmapData, result:Vector<Float>):Void
 	{
 		var minX = vertices[0];
 		var maxX = minX;
@@ -1563,7 +1563,7 @@ class Context3DGraphics
 		}
 	}
 
-	private static function populateBitmapUvtVector(vertices:Vector<Float>, bitmap:BitmapData, bitmapMatrix:Matrix, result:Vector<Float>):Void
+	@:noCompletion private static function populateBitmapUvtVector(vertices:Vector<Float>, bitmap:BitmapData, bitmapMatrix:Matrix, result:Vector<Float>):Void
 	{
 		if (bitmapMatrix == null)
 		{
@@ -1589,7 +1589,7 @@ class Context3DGraphics
 		}
 	}
 
-	private static function reduceBitmapLinePath(vertices:Vector<Float>, result:Vector<Float>):Int
+	@:noCompletion private static function reduceBitmapLinePath(vertices:Vector<Float>, result:Vector<Float>):Int
 	{
 		result.length = 0;
 
@@ -1639,7 +1639,7 @@ class Context3DGraphics
 		return Std.int(result.length / 2);
 	}
 
-	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
+	@:noCompletion private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
 	{
 		if (scale <= 0.0)
 		{

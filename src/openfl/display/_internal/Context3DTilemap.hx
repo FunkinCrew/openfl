@@ -31,19 +31,19 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DTilemap
 {
-	private static var cacheColorTransform:ColorTransform;
-	private static var context:Context3D;
-	private static var dataPerVertex:Int;
-	private static var currentBitmapData:BitmapData;
-	private static var currentBlendMode:BlendMode;
-	private static var currentShader:Shader;
-	private static var bufferPosition:Int;
-	private static var lastFlushedPosition:Int;
-	private static var lastUsedBitmapData:BitmapData;
-	private static var lastUsedShader:Shader;
-	private static var numTiles:Int;
-	private static var vertexBufferData:Float32Array;
-	private static var vertexDataPosition:Int;
+	@:noCompletion private static var cacheColorTransform:ColorTransform;
+	@:noCompletion private static var context:Context3D;
+	@:noCompletion private static var dataPerVertex:Int;
+	@:noCompletion private static var currentBitmapData:BitmapData;
+	@:noCompletion private static var currentBlendMode:BlendMode;
+	@:noCompletion private static var currentShader:Shader;
+	@:noCompletion private static var bufferPosition:Int;
+	@:noCompletion private static var lastFlushedPosition:Int;
+	@:noCompletion private static var lastUsedBitmapData:BitmapData;
+	@:noCompletion private static var lastUsedShader:Shader;
+	@:noCompletion private static var numTiles:Int;
+	@:noCompletion private static var vertexBufferData:Float32Array;
+	@:noCompletion private static var vertexDataPosition:Int;
 
 	public static function buildBuffer(tilemap:Tilemap, renderer:OpenGLRenderer):Void
 	{
@@ -77,7 +77,7 @@ class Context3DTilemap
 		Matrix.__pool.release(parentTransform);
 	}
 
-	private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:OpenGLRenderer, parentTransform:Matrix,
+	@:noCompletion private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:OpenGLRenderer, parentTransform:Matrix,
 			defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform,
 			cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix, isTopLevel:Bool = true):Void
 	{
@@ -295,7 +295,7 @@ class Context3DTilemap
 		Matrix.__pool.release(tileTransform);
 	}
 
-	private static function flush(tilemap:Tilemap, renderer:OpenGLRenderer, blendMode:BlendMode):Void
+	@:noCompletion private static function flush(tilemap:Tilemap, renderer:OpenGLRenderer, blendMode:BlendMode):Void
 	{
 		if (currentShader == null)
 		{
@@ -390,7 +390,7 @@ class Context3DTilemap
 		lastUsedShader = currentShader;
 	}
 
-	private static function getRecursiveLength(tileContainer:TileContainer):Int
+	@:noCompletion private static function getRecursiveLength(tileContainer:TileContainer):Int
 	{
 		var tiles = tileContainer.__tiles;
 		var totalLength = 0;
@@ -480,8 +480,8 @@ class Context3DTilemap
 		// }
 	}
 
-	private static function renderTileContainer(tilemap:Tilemap, renderer:OpenGLRenderer, group:TileContainer, defaultShader:Shader, defaultTileset:Tileset,
-			worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData):Void
+	@:noCompletion private static function renderTileContainer(tilemap:Tilemap, renderer:OpenGLRenderer, group:TileContainer, defaultShader:Shader,
+			defaultTileset:Tileset, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData):Void
 	{
 		var tiles = group.__tiles;
 
@@ -637,7 +637,7 @@ class Context3DTilemap
 		// }
 	}
 
-	private static function resizeBuffer(tilemap:Tilemap, count:Int):Void
+	@:noCompletion private static function resizeBuffer(tilemap:Tilemap, count:Int):Void
 	{
 		numTiles = count;
 

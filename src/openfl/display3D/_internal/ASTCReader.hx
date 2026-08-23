@@ -33,8 +33,7 @@ class ASTCReader
 
 	public var expectedDataSize(default, null):Int;
 
-	@:noCompletion
-	private var data:ByteArray;
+	@:noCompletion private var data:ByteArray;
 
 	public function new(data:ByteArray):Void
 	{

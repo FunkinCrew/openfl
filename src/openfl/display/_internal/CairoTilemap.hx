@@ -40,8 +40,7 @@ class CairoTilemap
 		renderer.__pushMaskRect(rect, tilemap.__renderTransform);
 
 		renderTileContainer(tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing),
-			tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, null, rect,
-			#if lime new Matrix3() #else null #end);
+			tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, null, rect, new Matrix3());
 
 		renderer.__popMaskRect();
 		renderer.__popMaskObject(tilemap);
@@ -49,7 +48,6 @@ class CairoTilemap
 		Rectangle.__pool.release(rect);
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private static function renderTileContainer(group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset,
 			smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData,
 			surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void

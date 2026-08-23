@@ -291,7 +291,6 @@ class LoaderInfo extends EventDispatcher
 		only non-null for Loader objects that contain SWF files that use
 		ActionScript 3.0.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public var parameters(default, null):Dynamic<String>;
 
 	/**

@@ -190,7 +190,7 @@ class Shader
 
 		This property is not available on the Flash target.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
+	public var glProgram(default, null):GLProgram;
 
 	/**
 		The default GLSL vertex header, before being applied to the vertex source.
@@ -292,6 +292,7 @@ class Shader
 	@:noCompletion private var __textureCoord:ShaderParameter<Float>;
 	@:noCompletion private var __texture:ShaderInput<BitmapData>;
 	@:noCompletion private var __textureSize:ShaderParameter<Float>;
+	@:noCompletion private var __fieldList:Array<String> = null;
 
 	/**
 		Creates a new Shader instance.
@@ -1095,6 +1096,16 @@ class Shader
 		}
 	}
 
+	@:noCompletion private function thisHasField(name:String)
+	{
+		// Reflect.hasField(this, name) is REALLY expensive so we cache the result.
+		if (__fieldList == null)
+		{
+			__fieldList = Reflect.fields(this).concat(Type.getInstanceFields(Type.getClass(this)));
+		}
+		return __fieldList.indexOf(name) != -1;
+	}
+
 	// Get & Set Methods
 	@:noCompletion private function get_data():ShaderData
 	{
@@ -1214,17 +1225,5 @@ class Shader
 		}
 
 		return __glVertexSource = value;
-	}
-
-	private var __fieldList:Array<String> = null;
-
-	private function thisHasField(name:String)
-	{
-		// Reflect.hasField(this, name) is REALLY expensive so we cache the result.
-		if (__fieldList == null)
-		{
-			__fieldList = Reflect.fields(this).concat(Type.getInstanceFields(Type.getClass(this)));
-		}
-		return __fieldList.indexOf(name) != -1;
 	}
 }

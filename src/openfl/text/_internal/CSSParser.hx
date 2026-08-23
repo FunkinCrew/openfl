@@ -14,15 +14,14 @@ class CSSParser
 	public var source:String;
 	public var options:StringMap<Dynamic>;
 
-	private var importStatements:Array<Dynamic> = [];
-	private var keyframeStatements:Array<Dynamic> = [];
-
-	private var cssRegex:EReg = new EReg('([\\s\\S]*?){([\\s\\S]*?)*}', 'ig');
-	private var mediaQueryRegex:String = '((@media [\\s\\S]*?){([\\s\\S]*?}\\s*?)})';
-	private var keyframeRegex:String = "((@.*?keyframes [\\s\\S]*?){([\\s\\S]*?}\\s*?)})";
-	private var combinedCSSRegex:String = "((\\s*?(?:\\/\\*[\\s\\S]*?\\*\\/)?\\s*?@media[\\s\\S]*?){([\\s\\S]*?)}\\s*?})|(([\\s\\S]*?){([\\s\\S]*?)*?})";
-	private var commentRegex:String = "(\\/\\*[\\s\\S]*?\\*\\/)";
-	private var importRegex:EReg = new EReg('@import .*?;', 'ig');
+	@:noCompletion private var importStatements:Array<Dynamic> = [];
+	@:noCompletion private var keyframeStatements:Array<Dynamic> = [];
+	@:noCompletion private var cssRegex:EReg = new EReg('([\\s\\S]*?){([\\s\\S]*?)*}', 'ig');
+	@:noCompletion private var mediaQueryRegex:String = '((@media [\\s\\S]*?){([\\s\\S]*?}\\s*?)})';
+	@:noCompletion private var keyframeRegex:String = "((@.*?keyframes [\\s\\S]*?){([\\s\\S]*?}\\s*?)})";
+	@:noCompletion private var combinedCSSRegex:String = "((\\s*?(?:\\/\\*[\\s\\S]*?\\*\\/)?\\s*?@media[\\s\\S]*?){([\\s\\S]*?)}\\s*?})|(([\\s\\S]*?){([\\s\\S]*?)*?})";
+	@:noCompletion private var commentRegex:String = "(\\/\\*[\\s\\S]*?\\*\\/)";
+	@:noCompletion private var importRegex:EReg = new EReg('@import .*?;', 'ig');
 
 	public function new(options:StringMap<Dynamic>) {}
 

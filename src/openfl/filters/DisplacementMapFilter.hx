@@ -60,8 +60,8 @@ import lime.math.Vector4;
 @:final class DisplacementMapFilter extends BitmapFilter
 {
 	@:noCompletion private static var __displacementMapShader:DisplacementMapShader = new DisplacementMapShader();
-	private static var __matrixData:Array<Float> = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
-	private static var __offset:Array<Float> = [0.5, 0.5, 0.0, 0.0];
+	@:noCompletion private static var __matrixData:Array<Float> = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+	@:noCompletion private static var __offset:Array<Float> = [0.5, 0.5, 0.0, 0.0];
 
 	/**
 		Specifies the alpha transparency value to use for out-of-bounds

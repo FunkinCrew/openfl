@@ -293,7 +293,7 @@ import openfl.utils._internal.Lib;
 		#end
 	}
 
-	private static function get_objectID():String
+	@:noCompletion private static function get_objectID():String
 	{
 		#if (js && html5)
 		if (Lib.application != null && Lib.application.window != null && Lib.application.window.element != null)

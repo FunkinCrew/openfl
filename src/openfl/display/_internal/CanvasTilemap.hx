@@ -58,9 +58,8 @@ class CanvasTilemap
 		#end
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
-	private static function renderTileContainer(group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
-			alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, source:Dynamic,
+	@:noCompletion private static function renderTileContainer(group:TileContainer, renderer:CanvasRenderer, parentTransform:Matrix, defaultTileset:Tileset,
+			smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, source:Dynamic,
 			rect:Rectangle):Void
 	{
 		#if (js && html5)

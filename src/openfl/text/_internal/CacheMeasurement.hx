@@ -5,8 +5,8 @@ import haxe.ds.IntMap;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CacheMeasurement
 {
-	private var __collisions:Array<String>;
-	private var __wordMap:IntMap< #if (js && html5) Array<Float> #else Array<GlyphPosition> #end>;
+	@:noCompletion private var __collisions:Array<String>;
+	@:noCompletion private var __wordMap:IntMap< #if (js && html5) Array<Float> #else Array<GlyphPosition> #end>;
 
 	public var hash:Int;
 
@@ -34,7 +34,7 @@ class CacheMeasurement
 		return __wordMap.get(0);
 	}
 
-	private function __addCollision(wordKey:String, positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Void
+	@:noCompletion private function __addCollision(wordKey:String, positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Void
 	{
 		// If the collision represents a unique value, add it to the collection
 		if (!exists(wordKey))

@@ -45,8 +45,7 @@ class FPS extends TextField
 
 	// Event Handlers
 
-	@:noCompletion
-	private override function __enterFrame(deltaTime:Float):Void
+	@:noCompletion private override function __enterFrame(deltaTime:Float):Void
 	{
 		currentTime += deltaTime;
 		times.push(currentTime);

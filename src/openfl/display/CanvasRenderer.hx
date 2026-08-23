@@ -30,12 +30,10 @@ class CanvasRenderer extends DisplayObjectRenderer
 	/**
 		The current HTML5 canvas render context
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public var context:Canvas2DRenderContext;
 
 	@:noCompletion private var __tempMatrix:Matrix;
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(context:Canvas2DRenderContext)
 	{
 		super();
@@ -50,7 +48,6 @@ class CanvasRenderer extends DisplayObjectRenderer
 	/**
 		Set whether smoothing should be enabled on a canvas context
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public function applySmoothing(context:Canvas2DRenderContext, value:Bool):Void
 	{
 		context.imageSmoothingEnabled = value;
@@ -60,7 +57,6 @@ class CanvasRenderer extends DisplayObjectRenderer
 		Set the matrix value for the current render context, or (optionally) another canvas
 		context
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public function setTransform(transform:Matrix, context:Canvas2DRenderContext = null):Void
 	{
 		if (context == null)
@@ -235,7 +231,6 @@ class CanvasRenderer extends DisplayObjectRenderer
 		__setBlendModeContext(context, value);
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __setBlendModeContext(context:Canvas2DRenderContext, value:BlendMode):Void
 	{
 		switch (value)

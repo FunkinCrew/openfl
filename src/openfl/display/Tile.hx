@@ -51,7 +51,7 @@ class Tile
 	/**
 		An additional field for custom user-data
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var data:Dynamic;
+	public var data:Dynamic;
 
 	/**
 		Indicates the height of the tile, in pixels. The height is

@@ -160,45 +160,45 @@ class ShaderFilter extends BitmapFilter
 		__renderDirty = true;
 	}
 
-	private function get_topExtension():Int
+	@:noCompletion private function get_topExtension():Int
 	{
 		return __topExtension;
 	}
 
-	private function set_topExtension(value:Int):Int
+	@:noCompletion private function set_topExtension(value:Int):Int
 	{
 		__topExtension = value;
 		return __topExtension;
 	}
 
-	private function get_bottomExtension():Int
+	@:noCompletion private function get_bottomExtension():Int
 	{
 		return __bottomExtension;
 	}
 
-	private function set_bottomExtension(value:Int):Int
+	@:noCompletion private function set_bottomExtension(value:Int):Int
 	{
 		__bottomExtension = value;
 		return __bottomExtension;
 	}
 
-	private function get_leftExtension():Int
+	@:noCompletion private function get_leftExtension():Int
 	{
 		return __leftExtension;
 	}
 
-	private function set_leftExtension(value:Int):Int
+	@:noCompletion private function set_leftExtension(value:Int):Int
 	{
 		__leftExtension = value;
 		return __leftExtension;
 	}
 
-	private function get_rightExtension():Int
+	@:noCompletion private function get_rightExtension():Int
 	{
 		return __rightExtension;
 	}
 
-	private function set_rightExtension(value:Int):Int
+	@:noCompletion private function set_rightExtension(value:Int):Int
 	{
 		__rightExtension = value;
 		return __rightExtension;

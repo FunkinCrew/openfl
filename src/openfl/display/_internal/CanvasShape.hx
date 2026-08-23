@@ -65,7 +65,7 @@ class CanvasShape
 	}
 
 	#if (openfl_legacy_scale9grid && !canvas)
-	private static inline function legacyScale9Render(shape:DisplayObject, renderer:CanvasRenderer):Void
+	@:noCompletion private static inline function legacyScale9Render(shape:DisplayObject, renderer:CanvasRenderer):Void
 	{
 		#if (js && html5)
 		if (!shape.__renderable) return;

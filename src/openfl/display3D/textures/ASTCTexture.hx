@@ -18,11 +18,9 @@ using StringTools;
 @:access(openfl.display3D.Context3D)
 @:final class ASTCTexture extends TextureBase
 {
-	@:noCompletion
-	private static var __astcCompressedTexturesSupported:Null<Bool>;
+	@:noCompletion private static var __astcCompressedTexturesSupported:Null<Bool>;
 
-	@:noCompletion
-	private function new(context:Context3D, data:ByteArray):Void
+	@:noCompletion private function new(context:Context3D, data:ByteArray):Void
 	{
 		super(context);
 
@@ -60,8 +58,7 @@ using StringTools;
 		reader = null;
 	}
 
-	@:noCompletion
-	private override function __setSamplerState(state:openfl.display._internal.SamplerState):Bool
+	@:noCompletion private override function __setSamplerState(state:openfl.display._internal.SamplerState):Bool
 	{
 		if (super.__setSamplerState(state))
 		{

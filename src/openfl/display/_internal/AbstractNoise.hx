@@ -15,14 +15,14 @@ import openfl.display.BitmapData;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class AbstractNoise
 {
-	private var octaves(null, null):Int;
-	private var stitch(null, null):Bool;
-	private var stitch_threshold(null, null):Float;
-	private var channels(null, null):Int;
-	private var grayscale(null, null):Bool;
-	private var octaves_frequencies(null, null):Array<Float>; // frequency per octave
-	private var octaves_persistences(null, null):Array<Float>; // persistence per octave
-	private var persistence_max(null, null):Float; // 1 / max persistence
+	@:noCompletion private var octaves(null, null):Int;
+	@:noCompletion private var stitch(null, null):Bool;
+	@:noCompletion private var stitch_threshold(null, null):Float;
+	@:noCompletion private var channels(null, null):Int;
+	@:noCompletion private var grayscale(null, null):Bool;
+	@:noCompletion private var octaves_frequencies(null, null):Array<Float>; // frequency per octave
+	@:noCompletion private var octaves_persistences(null, null):Array<Float>; // persistence per octave
+	@:noCompletion private var persistence_max(null, null):Float; // 1 / max persistence
 
 	public function new(seed:Int, octaves:Int, channels:Int, grayScale:Bool, falloff:Float, stitch:Bool = false, stitch_threshold:Float = 0.05)
 	{
@@ -42,7 +42,7 @@ class AbstractNoise
 		// put your noise code in here ...
 	}
 
-	private function stitching(bitmap:BitmapData, color:Int, px:Int, py:Int, stitch_w:Int, stitch_h:Int, width:Int, height:Int):Int
+	@:noCompletion private function stitching(bitmap:BitmapData, color:Int, px:Int, py:Int, stitch_w:Int, stitch_h:Int, width:Int, height:Int):Int
 	{
 		var r:Int = (color >> 16) & 255;
 		var g:Int = (color >> 8) & 255;
@@ -81,7 +81,7 @@ class AbstractNoise
 		return 0xFF000000 | r << 16 | g << 8 | b;
 	}
 
-	private function color(r_noise:Null<Float>, g_noise:Null<Float>, b_noise:Null<Float>):Int
+	@:noCompletion private function color(r_noise:Null<Float>, g_noise:Null<Float>, b_noise:Null<Float>):Int
 	{
 		var color_r:Int = 0;
 		var color_g:Int = 0;
@@ -105,42 +105,42 @@ class AbstractNoise
 		return 0xFF000000 | color_r << 16 | color_g << 8 | color_b;
 	}
 
-	private function noiseToColor(noise:Float):Int
+	@:noCompletion private function noiseToColor(noise:Float):Int
 	{
 		return Std.int((noise * this.persistence_max + 1.0) * 128);
 	}
 
-	private function fade(t:Float):Float
+	@:noCompletion private function fade(t:Float):Float
 	{
 		return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
 	}
 
-	private function mixI(x:Int, y:Int, t:Float):Int
+	@:noCompletion private function mixI(x:Int, y:Int, t:Float):Int
 	{
 		return Std.int((1.0 - t) * x + t * y);
 	}
 
-	private function mix(x:Float, y:Float, t:Float):Float
+	@:noCompletion private function mix(x:Float, y:Float, t:Float):Float
 	{
 		return (1.0 - t) * x + t * y;
 	}
 
-	private function fastfloor(x:Float):Int
+	@:noCompletion private function fastfloor(x:Float):Int
 	{
 		return x > 0 ? Std.int(x) : Std.int(x - 1);
 	}
 
-	private function dot2d(grad:Array<Int>, x:Float, y:Float):Float
+	@:noCompletion private function dot2d(grad:Array<Int>, x:Float, y:Float):Float
 	{
 		return grad[0] * x + grad[1] * y;
 	}
 
-	private function dot(grad:Array<Int>, x:Float, y:Float, z:Float):Float
+	@:noCompletion private function dot(grad:Array<Int>, x:Float, y:Float, z:Float):Float
 	{
 		return grad[0] * x + grad[1] * y + grad[2] * z;
 	}
 
-	private function calculateOctaves(fPersistence:Float):Void
+	@:noCompletion private function calculateOctaves(fPersistence:Float):Void
 	{
 		var fFreq:Float, fPers:Float;
 

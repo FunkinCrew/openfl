@@ -14,7 +14,6 @@ import lime.ui.WindowAttributes;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Window extends LimeWindow
 {
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(application:Application, attributes:WindowAttributes)
 	{
 		super(application, attributes);

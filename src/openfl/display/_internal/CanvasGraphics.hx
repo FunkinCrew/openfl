@@ -34,44 +34,45 @@ import js.html.Path2D;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasGraphics
 {
-	private static inline var SIN45:Float = 0.70710678118654752440084436210485;
-	private static inline var TAN22:Float = 0.4142135623730950488016887242097;
-	private static var allowSmoothing:Bool;
-	private static var bitmapRepeat:Bool;
-	private static var bounds:Rectangle;
-	private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
-	private static var playCommandsReader:DrawCommandReader = new DrawCommandReader(null);
-	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var bitmapFill:BitmapData;
-	private static var fillScale9Bounds:Scale9GridBounds;
-	private static var graphics:Graphics;
-	private static var hasFill:Bool;
-	private static var hasStroke:Bool;
-	private static var hitTesting:Bool;
-	private static var inversePendingMatrix:Matrix;
-	private static var pendingMatrix:Matrix;
-	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var strokePattern:#if (js && html5) CanvasPattern #else Dynamic #end;
-	private static var bitmapStroke:BitmapData;
-	private static var bitmapStrokeMatrix:Matrix;
-	private static var strokeScale9Bounds:Scale9GridBounds;
-	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
-	private static var worldAlpha:Float;
+	@:noCompletion private static inline var SIN45:Float = 0.70710678118654752440084436210485;
+	@:noCompletion private static inline var TAN22:Float = 0.4142135623730950488016887242097;
+
+	@:noCompletion private static var allowSmoothing:Bool;
+	@:noCompletion private static var bitmapRepeat:Bool;
+	@:noCompletion private static var bounds:Rectangle;
+	@:noCompletion private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
+	@:noCompletion private static var playCommandsReader:DrawCommandReader = new DrawCommandReader(null);
+	@:noCompletion private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	@:noCompletion private static var bitmapFill:BitmapData;
+	@:noCompletion private static var fillScale9Bounds:Scale9GridBounds;
+	@:noCompletion private static var graphics:Graphics;
+	@:noCompletion private static var hasFill:Bool;
+	@:noCompletion private static var hasStroke:Bool;
+	@:noCompletion private static var hitTesting:Bool;
+	@:noCompletion private static var inversePendingMatrix:Matrix;
+	@:noCompletion private static var pendingMatrix:Matrix;
+	@:noCompletion private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	@:noCompletion private static var strokePattern:#if (js && html5) CanvasPattern #else Dynamic #end;
+	@:noCompletion private static var bitmapStroke:BitmapData;
+	@:noCompletion private static var bitmapStrokeMatrix:Matrix;
+	@:noCompletion private static var strokeScale9Bounds:Scale9GridBounds;
+	@:noCompletion private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
+	@:noCompletion private static var worldAlpha:Float;
 	#if (js && html5)
-	private static var context:CanvasRenderingContext2D;
-	private static var hitTestCanvas:CanvasElement;
-	private static var hitTestContext:CanvasRenderingContext2D;
+	@:noCompletion private static var context:CanvasRenderingContext2D;
+	@:noCompletion private static var hitTestCanvas:CanvasElement;
+	@:noCompletion private static var hitTestContext:CanvasRenderingContext2D;
 	#end
 
 	#if (js && html5)
-	private static function __init__():Void
+	@:noCompletion private static function __init__():Void
 	{
 		hitTestCanvas = Browser.supported ? cast Browser.document.createElement("canvas") : null;
 		hitTestContext = Browser.supported ? hitTestCanvas.getContext("2d") : null;
 	}
 	#end
 
-	private static function closePath(strokeBefore:Bool = false):Void
+	@:noCompletion private static function closePath(strokeBefore:Bool = false):Void
 	{
 		#if (js && html5)
 		if (context.strokeStyle == null)
@@ -132,8 +133,8 @@ class CanvasGraphics
 		#end
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
-	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if (js && html5) CanvasPattern #else Dynamic #end
+	@:noCompletion private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool,
+			smooth:Bool):#if (js && html5) CanvasPattern #else Dynamic #end
 	{
 		#if (js && html5)
 		ImageCanvasUtil.convertToCanvas(bitmap.image);
@@ -147,8 +148,7 @@ class CanvasGraphics
 		#end
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
-	private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
+	@:noCompletion private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if (js && html5) CanvasPattern #else Void #end
 	{
 		#if (js && html5)
@@ -376,7 +376,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function getRGBA(color:UInt, alpha:Float):String
+	@:noCompletion private static function getRGBA(color:UInt, alpha:Float):String
 	{
 		var r:UInt = (color & 0xFF0000) >>> 16;
 		var g:UInt = (color & 0x00FF00) >>> 8;
@@ -385,7 +385,7 @@ class CanvasGraphics
 		return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 	}
 
-	private static function getDimensions(matrix:Matrix):Dynamic
+	@:noCompletion private static function getDimensions(matrix:Matrix):Dynamic
 	{
 		var angle:Float = Math.atan2(matrix.c, matrix.a);
 		var cos:Float = Math.cos(angle);
@@ -403,7 +403,8 @@ class CanvasGraphics
 		};
 	}
 
-	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):#if (js && html5) CanvasElement #else Void #end
+	@:noCompletion private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int,
+			height:Int):#if (js && html5) CanvasElement #else Void #end
 	{
 		// TODO: Don't create extra canvas elements like this
 
@@ -427,8 +428,8 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>, ?scale9Grid:Rectangle,
-			?scale9UnscaledWidth:Float, ?scale9UnscaledHeight:Float, ?scaleX:Float, ?scaleY:Float):Void
+	@:noCompletion private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>,
+			?scale9Grid:Rectangle, ?scale9UnscaledWidth:Float, ?scale9UnscaledHeight:Float, ?scaleX:Float, ?scaleY:Float):Void
 	{
 		#if (js && html5)
 		if (ellipseHeight == null) ellipseHeight = ellipseWidth;
@@ -499,7 +500,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function endFill():Void
+	@:noCompletion private static function endFill():Void
 	{
 		#if (js && html5)
 		context.beginPath();
@@ -508,7 +509,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function endStroke():Void
+	@:noCompletion private static function endStroke():Void
 	{
 		#if (js && html5)
 		context.beginPath();
@@ -518,7 +519,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
+	@:noCompletion private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
 	{
 		if (scale <= 0.0)
 		{
@@ -554,7 +555,7 @@ class CanvasGraphics
 		return scale9Start + center * (pos - scale9Start) / scale9Center;
 	}
 
-	private static function applyScale9GridUnscaledX(x:Float):Void
+	@:noCompletion private static function applyScale9GridUnscaledX(x:Float):Void
 	{
 		if (fillScale9Bounds != null && bitmapFill != null)
 		{
@@ -566,7 +567,7 @@ class CanvasGraphics
 		}
 	}
 
-	private static function applyScale9GridUnscaledY(y:Float):Void
+	@:noCompletion private static function applyScale9GridUnscaledY(y:Float):Void
 	{
 		if (fillScale9Bounds != null && bitmapFill != null)
 		{
@@ -578,7 +579,7 @@ class CanvasGraphics
 		}
 	}
 
-	private static function applyScale9GridScaledX(x:Float):Void
+	@:noCompletion private static function applyScale9GridScaledX(x:Float):Void
 	{
 		if (fillScale9Bounds != null && bitmapFill != null)
 		{
@@ -590,7 +591,7 @@ class CanvasGraphics
 		}
 	}
 
-	private static function applyScale9GridScaledY(y:Float):Void
+	@:noCompletion private static function applyScale9GridScaledY(y:Float):Void
 	{
 		if (fillScale9Bounds != null && bitmapFill != null)
 		{
@@ -840,12 +841,12 @@ class CanvasGraphics
 		return false;
 	}
 
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
+	@:noCompletion private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
 	{
 		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
 
-	private static function normalizeUVT(uvt:Vector<Float>, skipT:Bool = false):NormalizedUVT
+	@:noCompletion private static function normalizeUVT(uvt:Vector<Float>, skipT:Bool = false):NormalizedUVT
 	{
 		var max:Float = Math.NEGATIVE_INFINITY;
 		var tmp = Math.NEGATIVE_INFINITY;
@@ -886,7 +887,7 @@ class CanvasGraphics
 		return {max: max, uvt: result};
 	}
 
-	private static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
+	@:noCompletion private static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
 	{
 		#if (js && html5)
 		bounds = graphics.__bounds;
@@ -2471,7 +2472,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function setSmoothing(smooth:Bool):Void
+	@:noCompletion private static function setSmoothing(smooth:Bool):Void
 	{
 		#if (js && html5)
 		if (!allowSmoothing)
@@ -2498,14 +2499,14 @@ private class Scale9GridBounds
 	public var scale9MinX(default, null):Null<Float> = null;
 	public var scale9MinY(default, null):Null<Float> = null;
 
-	private var scale9MaxX:Null<Float> = null;
-	private var scale9MaxY:Null<Float> = null;
+	@:noCompletion private var scale9MaxX:Null<Float> = null;
+	@:noCompletion private var scale9MaxY:Null<Float> = null;
 
 	public var unscaledMinX(default, null):Null<Float> = null;
 	public var unscaledMinY(default, null):Null<Float> = null;
 
-	private var unscaledMaxX:Null<Float> = null;
-	private var unscaledMaxY:Null<Float> = null;
+	@:noCompletion private var unscaledMaxX:Null<Float> = null;
+	@:noCompletion private var unscaledMaxY:Null<Float> = null;
 
 	public function new() {}
 

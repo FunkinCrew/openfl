@@ -24,7 +24,7 @@ package openfl.security;
 **/
 class X500DistinguishedName
 {
-	private function new() {}
+	@:noCompletion private function new() {}
 
 	/**
 		Returns the DN CommonName attribute.

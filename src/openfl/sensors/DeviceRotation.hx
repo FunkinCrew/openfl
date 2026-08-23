@@ -160,7 +160,7 @@ class DeviceRotation extends EventDispatcher
 	}
 
 	// Getters & Setters
-	private static function get_isSupported():Bool
+	@:noCompletion private static function get_isSupported():Bool
 	{
 		initialize();
 		return supported;

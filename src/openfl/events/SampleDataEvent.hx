@@ -127,13 +127,13 @@ class SampleDataEvent extends Event
 		@param thedata     A byte array of data.
 	**/
 	#if (js && html5)
-	private var tempBuffer:Float32Array;
-	private var leftChannel:js.lib.Float32Array;
-	private var rightChannel:js.lib.Float32Array;
+	@:noCompletion private var tempBuffer:Float32Array;
+	@:noCompletion private var leftChannel:js.lib.Float32Array;
+	@:noCompletion private var rightChannel:js.lib.Float32Array;
 	#end
 	#if lime_openal
-	private var leftChannel:Int;
-	private var rightChannel:Int;
+	@:noCompletion private var leftChannel:Int;
+	@:noCompletion private var rightChannel:Int;
 	#end
 
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false)
@@ -170,7 +170,7 @@ class SampleDataEvent extends Event
 	}
 
 	#if lime_openal
-	private function getBufferSize():Int
+	@:noCompletion private function getBufferSize():Int
 	{
 		var bufferSize:Int = Std.int(data.length / 4 / 2);
 		if (bufferSize > 0)
@@ -187,7 +187,7 @@ class SampleDataEvent extends Event
 		return bufferSize;
 	}
 
-	private function getSamples(outputBuffer:ByteArray):Void
+	@:noCompletion private function getSamples(outputBuffer:ByteArray):Void
 	{
 		var bytesLength:Int = data.length;
 		var tempFloat:Float;
@@ -208,7 +208,7 @@ class SampleDataEvent extends Event
 	#end
 
 	#if (js && html5)
-	private function getBufferSize():Int
+	@:noCompletion private function getBufferSize():Int
 	{
 		var bufferSize:Int = Std.int(data.length / 4 / 2);
 		if (bufferSize > 0)
@@ -226,7 +226,7 @@ class SampleDataEvent extends Event
 		return 0;
 	}
 
-	private function getSamples(event:js.html.audio.AudioProcessingEvent):Void
+	@:noCompletion private function getSamples(event:js.html.audio.AudioProcessingEvent):Void
 	{
 		data.position = 0;
 		tempBuffer = Float32Array.fromBytes(data);

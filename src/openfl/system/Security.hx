@@ -578,7 +578,7 @@ class Security
 		// similar to AIR, does nothing
 	}
 
-	private static function get_pageDomain():String
+	@:noCompletion private static function get_pageDomain():String
 	{
 		#if (js && html5)
 		var jsWindow = cast(js.Lib.global, js.html.Window);
@@ -588,7 +588,7 @@ class Security
 		#end
 	}
 
-	private static function get_sandboxType():String
+	@:noCompletion private static function get_sandboxType():String
 	{
 		#if (js && html5)
 		var jsWindow = cast(js.Lib.global, js.html.Window);

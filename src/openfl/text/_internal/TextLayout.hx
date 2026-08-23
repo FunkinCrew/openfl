@@ -17,31 +17,27 @@ import lime.text.Glyph;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class TextLayout
 {
-	private static inline var FT_LOAD_DEFAULT:Int = 0;
-	private static inline var FT_LOAD_NO_SCALE:Int = 1;
-	private static inline var FT_LOAD_NO_HINTING:Int = 2;
-	private static inline var FT_LOAD_RENDER:Int = 4;
-	private static inline var FT_LOAD_NO_BITMAP:Int = 8;
-	private static inline var FT_LOAD_VERTICAL_LAYOUT:Int = 16;
-	private static inline var FT_LOAD_FORCE_AUTOHINT:Int = 32;
-	private static inline var FT_LOAD_CROP_BITMAP:Int = 64;
-	private static inline var FT_LOAD_PEDANTIC:Int = 128;
-	private static inline var FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH:Int = 256;
-	private static inline var FT_LOAD_NO_RECURSE:Int = 512;
-	private static inline var FT_LOAD_IGNORE_TRANSFORM:Int = 1024;
-	private static inline var FT_LOAD_MONOCHROME:Int = 2048;
-	private static inline var FT_LOAD_LINEAR_DESIGN:Int = 4096;
-	private static inline var FT_LOAD_NO_AUTOHINT:Int = 8192;
-	private static inline var FT_LOAD_COLOR:Int = 16384;
-	private static inline var FT_LOAD_COMPUTE_METRICS:Int = 32768;
-	private static inline var FT_LOAD_BITMAP_METRICS_ONLY:Int = 65536;
-	// define FT_LOAD_TARGET_( x )   ( (FT_Int32)( (x) & 15 ) << 16 )
-	private static inline var FT_LOAD_TARGET_NORMAL:Int = (0 & 15) << 16; // FT_LOAD_TARGET_( FT_RENDER_MODE_NORMAL )
-	private static inline var FT_LOAD_TARGET_LIGHT:Int = ((((0 & 15) << 16) & 15) << 16); //  FT_LOAD_TARGET_( FT_RENDER_MODE_LIGHT  )
+	@:noCompletion private static inline var FT_LOAD_DEFAULT:Int = 0;
+	@:noCompletion private static inline var FT_LOAD_NO_SCALE:Int = 1;
+	@:noCompletion private static inline var FT_LOAD_NO_HINTING:Int = 2;
+	@:noCompletion private static inline var FT_LOAD_RENDER:Int = 4;
+	@:noCompletion private static inline var FT_LOAD_NO_BITMAP:Int = 8;
+	@:noCompletion private static inline var FT_LOAD_VERTICAL_LAYOUT:Int = 16;
+	@:noCompletion private static inline var FT_LOAD_FORCE_AUTOHINT:Int = 32;
+	@:noCompletion private static inline var FT_LOAD_CROP_BITMAP:Int = 64;
+	@:noCompletion private static inline var FT_LOAD_PEDANTIC:Int = 128;
+	@:noCompletion private static inline var FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH:Int = 256;
+	@:noCompletion private static inline var FT_LOAD_NO_RECURSE:Int = 512;
+	@:noCompletion private static inline var FT_LOAD_IGNORE_TRANSFORM:Int = 1024;
+	@:noCompletion private static inline var FT_LOAD_MONOCHROME:Int = 2048;
+	@:noCompletion private static inline var FT_LOAD_LINEAR_DESIGN:Int = 4096;
+	@:noCompletion private static inline var FT_LOAD_NO_AUTOHINT:Int = 8192;
+	@:noCompletion private static inline var FT_LOAD_COLOR:Int = 16384;
+	@:noCompletion private static inline var FT_LOAD_COMPUTE_METRICS:Int = 32768;
+	@:noCompletion private static inline var FT_LOAD_BITMAP_METRICS_ONLY:Int = 65536;
+	@:noCompletion private static inline var FT_LOAD_TARGET_NORMAL:Int = (0 & 15) << 16;
+	@:noCompletion private static inline var FT_LOAD_TARGET_LIGHT:Int = ((((0 & 15) << 16) & 15) << 16);
 
-	// private static inline var FT_LOAD_TARGET_MONO    FT_LOAD_TARGET_( FT_RENDER_MODE_MONO   )
-	// private static inline var FT_LOAD_TARGET_LCD     FT_LOAD_TARGET_( FT_RENDER_MODE_LCD    )
-	// private static inline var FT_LOAD_TARGET_LCD_V   FT_LOAD_TARGET_( FT_RENDER_MODE_LCD_V  )
 	public var autoHint:Bool;
 	public var direction(get, set):TextDirection;
 	public var font(default, set):Font;
@@ -53,16 +49,16 @@ class TextLayout
 	public var size(default, set):Int;
 	public var text(default, set):String;
 
-	private var __buffer:Bytes;
-	private var __direction:TextDirection;
-	private var __dirty:Bool;
-	@SuppressWarnings("checkstyle:Dynamic") private var __handle:Dynamic;
-	private var __language:String;
-	private var __script:TextScript;
-	private var __font:Font;
-	@SuppressWarnings("checkstyle:Dynamic") private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
-	@SuppressWarnings("checkstyle:Dynamic") private var __hbFont:#if lime HBFTFont #else Dynamic #end;
-	private var __hbFontSize:Int = -1;
+	@:noCompletion private var __buffer:Bytes;
+	@:noCompletion private var __direction:TextDirection;
+	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __handle:Dynamic;
+	@:noCompletion private var __language:String;
+	@:noCompletion private var __script:TextScript;
+	@:noCompletion private var __font:Font;
+	@:noCompletion private var __hbBuffer:HBBuffer;
+	@:noCompletion private var __hbFont:HBFTFont;
+	@:noCompletion private var __hbFontSize:Int = -1;
 
 	public function new(text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON,
 			language:String = "en")
@@ -80,7 +76,7 @@ class TextLayout
 		__create(__direction, __script, __language);
 	}
 
-	private function __create(direction:TextDirection, script:TextScript, language:String):Void
+	@:noCompletion private function __create(direction:TextDirection, script:TextScript, language:String):Void
 	{
 		if (language.length != 4) return;
 
@@ -215,7 +211,6 @@ class TextLayout
 		return value;
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function get_glyphs():Array<Glyph>
 	{
 		var glyphs:Array<Glyph> = [];

@@ -1938,7 +1938,7 @@ class Matrix3D
 	}
 
 	// Getters & Setters
-	private function get_determinant():Float
+	@:noCompletion private function get_determinant():Float
 	{
 		return 1 * ((rawData[0] * rawData[5] - rawData[4] * rawData[1]) * (rawData[10] * rawData[15] - rawData[14] * rawData[11])
 			- (rawData[0] * rawData[9] - rawData[8] * rawData[1]) * (rawData[6] * rawData[15] - rawData[14] * rawData[7])
@@ -1948,12 +1948,12 @@ class Matrix3D
 			+ (rawData[8] * rawData[13] - rawData[12] * rawData[9]) * (rawData[2] * rawData[7] - rawData[6] * rawData[3]));
 	}
 
-	private function get_position():Vector3D
+	@:noCompletion private function get_position():Vector3D
 	{
 		return new Vector3D(rawData[12], rawData[13], rawData[14]);
 	}
 
-	private function set_position(val:Vector3D):Vector3D
+	@:noCompletion private function set_position(val:Vector3D):Vector3D
 	{
 		rawData[12] = val.x;
 		rawData[13] = val.y;

@@ -47,7 +47,7 @@ class MultiBufferTexture extends TextureBase
 		}
 	}
 
-	private override function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
+	@:noCompletion private override function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		var gl = __context.gl;
 		var addedBuffers = __glFramebuffer == null;
@@ -107,7 +107,7 @@ class MultiBufferTexture extends TextureBase
 		__textureID = previousTexture;
 	}
 
-	private function context3DFormatToGLFormat(f:Context3DTextureFormat):Int
+	@:noCompletion private function context3DFormatToGLFormat(f:Context3DTextureFormat):Int
 	{
 		var gl = __context.gl;
 
@@ -136,7 +136,7 @@ class MultiBufferTexture extends TextureBase
 		}
 	}
 
-	private function context3DFormatToInternalGLFormat(f:Context3DTextureFormat, baseGLFormat:Int):Int
+	@:noCompletion private function context3DFormatToInternalGLFormat(f:Context3DTextureFormat, baseGLFormat:Int):Int
 	{
 		var gl = __context.gl;
 

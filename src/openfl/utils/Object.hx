@@ -83,13 +83,13 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	}
 
 	@:op(a.b)
-	private inline function __fieldRead(name:String):Object
+	@:noCompletion private inline function __fieldRead(name:String):Object
 	{
 		return __get(name);
 	}
 
 	@:op(a.b)
-	private inline function __fieldWrite(name:String, value:Object):Object
+	@:noCompletion private inline function __fieldWrite(name:String, value:Object):Object
 	{
 		return __set(name, value);
 	}

@@ -10,7 +10,7 @@ package openfl.net.dns;
 **/
 class ResourceRecord
 {
-	private function new() {}
+	@:noCompletion private function new() {}
 
 	/**
 		The query string used to look up this resource record.

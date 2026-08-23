@@ -84,7 +84,6 @@ import openfl.utils.ByteArray;
 	is available as the Shader instance's `data` property.
 **/
 @:forward()
-@SuppressWarnings("checkstyle:Dynamic")
 abstract ShaderData(Dynamic) from Dynamic to Dynamic
 {
 	/**

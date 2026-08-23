@@ -30,22 +30,22 @@ abstract FlexSocket(EitherType<Socket, SSLSocket>) from Socket to Socket from SS
 
 	public static var DEFAULT_VERIFY_CERT(get, set):Null<Bool>;
 
-	private static inline function get_DEFAULT_CA():Null<Certificate>
+	@:noCompletion private static inline function get_DEFAULT_CA():Null<Certificate>
 	{
 		return SSLSocket.DEFAULT_CA;
 	}
 
-	private static inline function set_DEFAULT_VERIFY_CERT(value:Null<Bool>):Null<Bool>
+	@:noCompletion private static inline function set_DEFAULT_VERIFY_CERT(value:Null<Bool>):Null<Bool>
 	{
 		return SSLSocket.DEFAULT_VERIFY_CERT = value;
 	}
 
-	private static inline function get_DEFAULT_VERIFY_CERT():Null<Bool>
+	@:noCompletion private static inline function get_DEFAULT_VERIFY_CERT():Null<Bool>
 	{
 		return SSLSocket.DEFAULT_VERIFY_CERT;
 	}
 
-	private static inline function set_DEFAULT_CA(value:Null<Certificate>):Null<Certificate>
+	@:noCompletion private static inline function set_DEFAULT_CA(value:Null<Certificate>):Null<Certificate>
 	{
 		return SSLSocket.DEFAULT_CA = value;
 	}
@@ -55,7 +55,7 @@ abstract FlexSocket(EitherType<Socket, SSLSocket>) from Socket to Socket from SS
 		return Socket.select(read, write, others, timeout);
 	}
 
-	private static inline function __requireSSL(field:String, instance:FlexSocket):Void
+	@:noCompletion private static inline function __requireSSL(field:String, instance:FlexSocket):Void
 	{
 		if (!instance.isSecure)
 		{
@@ -87,22 +87,22 @@ abstract FlexSocket(EitherType<Socket, SSLSocket>) from Socket to Socket from SS
 		}
 	}
 
-	private inline function get_custom():Dynamic
+	@:noCompletion private inline function get_custom():Dynamic
 	{
 		return (this : Socket).custom;
 	}
 
-	private inline function set_custom(value:Dynamic):Dynamic
+	@:noCompletion private inline function set_custom(value:Dynamic):Dynamic
 	{
 		return (this : Socket).custom = value;
 	}
 
-	private inline function get_input():Input
+	@:noCompletion private inline function get_input():Input
 	{
 		return (this : Socket).input;
 	}
 
-	private inline function get_isSecure():Bool
+	@:noCompletion private inline function get_isSecure():Bool
 	{
 		if (Std.isOfType(this, SSLSocket))
 		{
@@ -112,19 +112,19 @@ abstract FlexSocket(EitherType<Socket, SSLSocket>) from Socket to Socket from SS
 		return false;
 	}
 
-	private inline function get_output():Output
+	@:noCompletion private inline function get_output():Output
 	{
 		return (this : Socket).output;
 	}
 
-	private inline function get_verifyCert():Null<Bool>
+	@:noCompletion private inline function get_verifyCert():Null<Bool>
 	{
 		__requireSSL("verifyCert", this);
 
 		return (this : sys.ssl.Socket).verifyCert;
 	}
 
-	private inline function set_verifyCert(value:Null<Bool>):Null<Bool>
+	@:noCompletion private inline function set_verifyCert(value:Null<Bool>):Null<Bool>
 	{
 		__requireSSL("verifyCert", this);
 
@@ -234,12 +234,12 @@ abstract FlexSocket(EitherType<Socket, SSLSocket>) from Socket to Socket from SS
 		(this : Socket).shutdown(read, write);
 	}
 
-	private inline function waitForRead():Void
+	@:noCompletion private inline function waitForRead():Void
 	{
 		(this : Socket).waitForRead();
 	}
 
-	private inline function write(content:String):Void
+	@:noCompletion private inline function write(content:String):Void
 	{
 		(this : Socket).write(content);
 	}

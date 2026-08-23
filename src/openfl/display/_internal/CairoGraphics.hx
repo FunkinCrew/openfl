@@ -30,34 +30,34 @@ import lime.math.Vector2;
 class CairoGraphics
 {
 	#if lime_cairo
-	private static var SIN45:Float = 0.70710678118654752440084436210485;
-	private static var TAN22:Float = 0.4142135623730950488016887242097;
-	private static var allowSmoothing:Bool;
-	private static var bitmapRepeat:Bool;
-	private static var bounds:Rectangle;
-	private static var cairo:Cairo;
-	private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
-	private static var playCommandsReader:DrawCommandReader = new DrawCommandReader(null);
-	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var fillPattern:CairoPattern;
-	private static var bitmapFill:BitmapData;
-	private static var bitmapFillMatrix:Matrix;
-	private static var fillScale9Bounds:Scale9GridBounds;
-	private static var graphics:Graphics;
-	private static var hasFill:Bool;
-	private static var hasStroke:Bool;
-	private static var hitTesting:Bool;
-	private static var inversePendingMatrix:Matrix;
-	private static var pendingMatrix:Matrix;
-	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var strokePattern:CairoPattern;
-	private static var bitmapStroke:BitmapData;
-	private static var bitmapStrokeMatrix:Matrix;
-	private static var strokeScale9Bounds:Scale9GridBounds;
-	private static var tempMatrix3 = new Matrix3();
-	private static var worldAlpha:Float;
+	@:noCompletion private static var SIN45:Float = 0.70710678118654752440084436210485;
+	@:noCompletion private static var TAN22:Float = 0.4142135623730950488016887242097;
+	@:noCompletion private static var allowSmoothing:Bool;
+	@:noCompletion private static var bitmapRepeat:Bool;
+	@:noCompletion private static var bounds:Rectangle;
+	@:noCompletion private static var cairo:Cairo;
+	@:noCompletion private static var renderOrHitTestReader:DrawCommandReader = new DrawCommandReader(null);
+	@:noCompletion private static var playCommandsReader:DrawCommandReader = new DrawCommandReader(null);
+	@:noCompletion private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	@:noCompletion private static var fillPattern:CairoPattern;
+	@:noCompletion private static var bitmapFill:BitmapData;
+	@:noCompletion private static var bitmapFillMatrix:Matrix;
+	@:noCompletion private static var fillScale9Bounds:Scale9GridBounds;
+	@:noCompletion private static var graphics:Graphics;
+	@:noCompletion private static var hasFill:Bool;
+	@:noCompletion private static var hasStroke:Bool;
+	@:noCompletion private static var hitTesting:Bool;
+	@:noCompletion private static var inversePendingMatrix:Matrix;
+	@:noCompletion private static var pendingMatrix:Matrix;
+	@:noCompletion private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	@:noCompletion private static var strokePattern:CairoPattern;
+	@:noCompletion private static var bitmapStroke:BitmapData;
+	@:noCompletion private static var bitmapStrokeMatrix:Matrix;
+	@:noCompletion private static var strokeScale9Bounds:Scale9GridBounds;
+	@:noCompletion private static var tempMatrix3 = new Matrix3();
+	@:noCompletion private static var worldAlpha:Float;
 
-	private static function closePath(strokeBefore:Bool = false):Void
+	@:noCompletion private static function closePath(strokeBefore:Bool = false):Void
 	{
 		if (strokePattern == null)
 		{
@@ -116,7 +116,7 @@ class CairoGraphics
 		cairo.newPath();
 	}
 
-	private static function createImagePattern(bitmapFill:BitmapData, bitmapRepeat:Bool, smooth:Bool):CairoPattern
+	@:noCompletion private static function createImagePattern(bitmapFill:BitmapData, bitmapRepeat:Bool, smooth:Bool):CairoPattern
 	{
 		var pattern = CairoPattern.createForSurface(bitmapFill.getSurface());
 		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
@@ -136,7 +136,7 @@ class CairoGraphics
 		return pattern;
 	}
 
-	private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
+	@:noCompletion private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CairoPattern
 	{
 		var pattern:CairoPattern = null,
@@ -269,8 +269,8 @@ class CairoGraphics
 		return pattern;
 	}
 
-	private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>, ?scale9Grid:Rectangle,
-			?scale9UnscaledWidth:Float, ?scale9UnscaledHeight:Float, ?scaleX:Float, ?scaleY:Float):Void
+	@:noCompletion private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>,
+			?scale9Grid:Rectangle, ?scale9UnscaledWidth:Float, ?scale9UnscaledHeight:Float, ?scaleX:Float, ?scaleY:Float):Void
 	{
 		if (ellipseHeight == null) ellipseHeight = ellipseWidth;
 
@@ -339,14 +339,14 @@ class CairoGraphics
 		}
 	}
 
-	private static function endFill():Void
+	@:noCompletion private static function endFill():Void
 	{
 		cairo.newPath();
 		playCommands(fillCommands, false);
 		fillCommands.clear();
 	}
 
-	private static function endStroke():Void
+	@:noCompletion private static function endStroke():Void
 	{
 		cairo.newPath();
 		playCommands(strokeCommands, true);
@@ -354,7 +354,7 @@ class CairoGraphics
 		strokeCommands.clear();
 	}
 
-	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
+	@:noCompletion private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
 	{
 		if (scale <= 0.0)
 		{
@@ -390,7 +390,7 @@ class CairoGraphics
 		return scale9Start + center * (pos - scale9Start) / scale9Center;
 	}
 
-	private static function applyScale9GridUnscaledX(x:Float):Void
+	@:noCompletion private static function applyScale9GridUnscaledX(x:Float):Void
 	{
 		if (fillScale9Bounds != null && bitmapFill != null)
 		{
@@ -402,7 +402,7 @@ class CairoGraphics
 		}
 	}
 
-	private static function applyScale9GridUnscaledY(y:Float):Void
+	@:noCompletion private static function applyScale9GridUnscaledY(y:Float):Void
 	{
 		if (fillScale9Bounds != null && bitmapFill != null)
 		{
@@ -414,7 +414,7 @@ class CairoGraphics
 		}
 	}
 
-	private static function applyScale9GridScaledX(x:Float):Void
+	@:noCompletion private static function applyScale9GridScaledX(x:Float):Void
 	{
 		if (fillScale9Bounds != null && bitmapFill != null)
 		{
@@ -426,7 +426,7 @@ class CairoGraphics
 		}
 	}
 
-	private static function applyScale9GridScaledY(y:Float):Void
+	@:noCompletion private static function applyScale9GridScaledY(y:Float):Void
 	{
 		if (fillScale9Bounds != null && bitmapFill != null)
 		{
@@ -679,12 +679,12 @@ class CairoGraphics
 	}
 
 	#if lime_cairo
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
+	@:noCompletion private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
 	{
 		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
 
-	private static function normalizeUVT(uvt:Vector<Float>, skipT:Bool = false):NormalizedUVT
+	@:noCompletion private static function normalizeUVT(uvt:Vector<Float>, skipT:Bool = false):NormalizedUVT
 	{
 		var max:Float = Math.NEGATIVE_INFINITY;
 		var tmp = Math.NEGATIVE_INFINITY;
@@ -725,7 +725,7 @@ class CairoGraphics
 		return {max: max, uvt: result};
 	}
 
-	private static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
+	@:noCompletion private static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
 	{
 		if (commands.length == 0) return;
 
@@ -1822,7 +1822,7 @@ class CairoGraphics
 		}
 	}
 
-	private static function quadraticCurveTo(cx:Float, cy:Float, x:Float, y:Float):Void
+	@:noCompletion private static function quadraticCurveTo(cx:Float, cy:Float, x:Float, y:Float):Void
 	{
 		var current:Vector2 = null;
 
@@ -2297,7 +2297,7 @@ class CairoGraphics
 	}
 
 	#if lime_cairo
-	private static function setSmoothing(smooth:Bool):Void
+	@:noCompletion private static function setSmoothing(smooth:Bool):Void
 	{
 		if (!allowSmoothing)
 		{
@@ -2320,14 +2320,14 @@ private class Scale9GridBounds
 	public var scale9MinX(default, null):Null<Float> = null;
 	public var scale9MinY(default, null):Null<Float> = null;
 
-	private var scale9MaxX:Null<Float> = null;
-	private var scale9MaxY:Null<Float> = null;
+	@:noCompletion private var scale9MaxX:Null<Float> = null;
+	@:noCompletion private var scale9MaxY:Null<Float> = null;
 
 	public var unscaledMinX(default, null):Null<Float> = null;
 	public var unscaledMinY(default, null):Null<Float> = null;
 
-	private var unscaledMaxX:Null<Float> = null;
-	private var unscaledMaxY:Null<Float> = null;
+	@:noCompletion private var unscaledMaxX:Null<Float> = null;
+	@:noCompletion private var unscaledMaxY:Null<Float> = null;
 
 	public function new() {}
 

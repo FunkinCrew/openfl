@@ -1014,7 +1014,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 		}
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	public override function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
@@ -1254,7 +1253,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 		return __getRenderTransform().transformPoint(point);
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	public override function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void
 	{
 		super.removeEventListener(type, listener, useCapture);

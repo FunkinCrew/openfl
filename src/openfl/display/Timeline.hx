@@ -59,7 +59,7 @@ class Timeline
 	@:noCompletion private var __timeElapsed:Float;
 	@:noCompletion private var __totalFrames:Int;
 
-	private function new()
+	@:noCompletion private function new()
 	{
 		__framesLoaded = 1;
 		__totalFrames = 1;

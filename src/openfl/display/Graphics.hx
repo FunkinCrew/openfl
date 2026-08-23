@@ -104,9 +104,9 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __worldTransform:Matrix;
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __context:#if lime CanvasRenderingContext2D #else Dynamic #end;
+	@:noCompletion private var __context:CanvasRenderingContext2D;
 	#else
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
+	@:noCompletion private var __cairo:Cairo;
 	#end
 	@:noCompletion private var __bitmap:BitmapData;
 	@:noCompletion private var __bitmapScaleX:Float;
@@ -1648,15 +1648,13 @@ import js.html.CanvasRenderingContext2D;
 		return graphicsData;
 	}
 
-	@:noCompletion
-	private #if !js inline #end function __calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
+	@:noCompletion private #if !js inline #end function __calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
 	{
 		var iT = 1 - t;
 		return p1 * (iT * iT * iT) + 3 * p2 * t * (iT * iT) + 3 * p3 * iT * (t * t) + p4 * (t * t * t);
 	}
 
-	@:noCompletion
-	private #if !js inline #end function __calculateBezierQuadPoint(t:Float, p1:Float, p2:Float, p3:Float):Float
+	@:noCompletion private #if !js inline #end function __calculateBezierQuadPoint(t:Float, p1:Float, p2:Float, p3:Float):Float
 	{
 		var iT = 1 - t;
 		return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;

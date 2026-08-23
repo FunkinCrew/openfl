@@ -86,7 +86,7 @@ class ShaderJob extends EventDispatcher
 		This object must be a BitmapData, ByteArray, or Vector<Float>
 		instance.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var target:Dynamic;
+	public var target:Dynamic;
 
 	/**
 		The width of the result data in the `target` if it is a ByteArray or
@@ -109,7 +109,6 @@ class ShaderJob extends EventDispatcher
 					  ByteArray or Vector<Float> instance is enlarged if
 					  necessary and existing data is overwritten.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(shader:Shader = null, target:Dynamic = null, width:Int = 0, height:Int = 0)
 	{
 		super();

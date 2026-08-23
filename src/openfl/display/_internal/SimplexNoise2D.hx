@@ -12,7 +12,7 @@ import openfl.display.BitmapData;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class SimplexNoise2D extends AbstractNoise
 {
-	private static var grad3:Array<Array<Int>> = [
+	@:noCompletion private static var grad3:Array<Array<Int>> = [
 		[1, 1, 0],
 		[-1, 1, 0],
 		[1, -1, 0],
@@ -27,7 +27,7 @@ class SimplexNoise2D extends AbstractNoise
 		[0, -1, -1]
 	];
 	@SuppressWarnings("checkstyle:ConstantName")
-	private static var P:Array<Int> = [
+	@:noCompletion private static var P:Array<Int> = [
 		151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120,
 		234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71,
 		134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161,
@@ -46,7 +46,7 @@ class SimplexNoise2D extends AbstractNoise
 		150, 254, 138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180
 	];
 
-	private var p_perm(null, null):Array<Int>;
+	@:noCompletion private var p_perm(null, null):Array<Int>;
 
 	public function new(seed:Int, octaves:Int, channels:Int, grayScale:Bool, falloff:Float, stitch:Bool = false, stitch_threshold:Float = 0.05)
 	{
@@ -182,7 +182,7 @@ class SimplexNoise2D extends AbstractNoise
 		return Std.int(((noise * this.persistence_max + 1.0) * 0.5) * 255);
 	}
 
-	private function noise(xin:Float, yin:Float):Float
+	@:noCompletion private function noise(xin:Float, yin:Float):Float
 	{
 		var n0:Float, n1:Float, n2:Float;
 

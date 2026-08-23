@@ -93,9 +93,9 @@ import openfl.display3D.Context3D;
 	/**
 		The zero-based index of the parameter.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var index(default, null):Dynamic;
+	public var index(default, null):Dynamic;
 
-	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment") public var name(default, set):String;
+	@SuppressWarnings("checkstyle:FieldDocComment") public var name(default, set):String;
 
 	/**
 		The data type of the parameter as defined in the shader. The set of

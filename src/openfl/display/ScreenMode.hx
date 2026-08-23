@@ -23,24 +23,24 @@ class ScreenMode
 	 */
 	public var width(get, null):Int;
 
-	private function get_height():Int
+	@:noCompletion private function get_height():Int
 	{
 		return _displayMode.height;
 	}
 
-	private function get_refreshRate():Int
+	@:noCompletion private function get_refreshRate():Int
 	{
 		return _displayMode.refreshRate;
 	}
 
-	private function get_width():Int
+	@:noCompletion private function get_width():Int
 	{
 		return _displayMode.width;
 	}
 
-	private var _displayMode:DisplayMode;
+	@:noCompletion private var _displayMode:DisplayMode;
 
-	private function new(displayMode:DisplayMode)
+	@:noCompletion private function new(displayMode:DisplayMode)
 	{
 		_displayMode = displayMode;
 	}

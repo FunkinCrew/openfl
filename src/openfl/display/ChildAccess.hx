@@ -1019,7 +1019,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	**/
 	@:op(a.b)
 	@:arrayAccess
-	private function __resolve(childName:String):ChildAccess<DisplayObject>
+	@:noCompletion private function __resolve(childName:String):ChildAccess<DisplayObject>
 	{
 		if (this == null || this.__children == null) return null;
 		for (child in this.__children)
@@ -1250,262 +1250,262 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	// Get & Set Methods
 
-	private inline function get_alpha():Float
+	@:noCompletion private inline function get_alpha():Float
 	{
 		return this.alpha;
 	}
 
-	private inline function set_alpha(value:Float):Float
+	@:noCompletion private inline function set_alpha(value:Float):Float
 	{
 		return this.alpha = value;
 	}
 
-	private inline function get_antiAliasType():AntiAliasType
+	@:noCompletion private inline function get_antiAliasType():AntiAliasType
 	{
 		return cast(this, TextField).antiAliasType;
 	}
 
-	private inline function set_antiAliasType(value:AntiAliasType):AntiAliasType
+	@:noCompletion private inline function set_antiAliasType(value:AntiAliasType):AntiAliasType
 	{
 		return cast(this, TextField).antiAliasType = value;
 	}
 
-	private inline function get_autoSize():TextFieldAutoSize
+	@:noCompletion private inline function get_autoSize():TextFieldAutoSize
 	{
 		return cast(this, TextField).autoSize;
 	}
 
-	private inline function set_autoSize(value:TextFieldAutoSize):TextFieldAutoSize
+	@:noCompletion private inline function set_autoSize(value:TextFieldAutoSize):TextFieldAutoSize
 	{
 		return cast(this, TextField).autoSize = value;
 	}
 
-	private inline function get_background():Bool
+	@:noCompletion private inline function get_background():Bool
 	{
 		return cast(this, TextField).background;
 	}
 
-	private inline function set_background(value:Bool):Bool
+	@:noCompletion private inline function set_background(value:Bool):Bool
 	{
 		return cast(this, TextField).background = value;
 	}
 
-	private inline function get_backgroundColor():Int
+	@:noCompletion private inline function get_backgroundColor():Int
 	{
 		return cast(this, TextField).backgroundColor;
 	}
 
-	private inline function set_backgroundColor(value:Int):Int
+	@:noCompletion private inline function set_backgroundColor(value:Int):Int
 	{
 		return cast(this, TextField).backgroundColor = value;
 	}
 
-	private inline function get_bitmapData():BitmapData
+	@:noCompletion private inline function get_bitmapData():BitmapData
 	{
 		return cast(this, Bitmap).bitmapData;
 	}
 
-	private inline function set_bitmapData(value:BitmapData):BitmapData
+	@:noCompletion private inline function set_bitmapData(value:BitmapData):BitmapData
 	{
 		return cast(this, Bitmap).bitmapData = value;
 	}
 
-	private inline function get_blendMode():BlendMode
+	@:noCompletion private inline function get_blendMode():BlendMode
 	{
 		return this.blendMode;
 	}
 
-	private inline function set_blendMode(value:BlendMode):BlendMode
+	@:noCompletion private inline function set_blendMode(value:BlendMode):BlendMode
 	{
 		return this.blendMode = value;
 	}
 
-	private inline function get_border():Bool
+	@:noCompletion private inline function get_border():Bool
 	{
 		return cast(this, TextField).border;
 	}
 
-	private inline function set_border(value:Bool):Bool
+	@:noCompletion private inline function set_border(value:Bool):Bool
 	{
 		return cast(this, TextField).border = value;
 	}
 
-	private inline function get_borderColor():Int
+	@:noCompletion private inline function get_borderColor():Int
 	{
 		return cast(this, TextField).borderColor;
 	}
 
-	private inline function set_borderColor(value:Int):Int
+	@:noCompletion private inline function set_borderColor(value:Int):Int
 	{
 		return cast(this, TextField).borderColor = value;
 	}
 
-	private inline function get_bottomScrollV():Int
+	@:noCompletion private inline function get_bottomScrollV():Int
 	{
 		return cast(this, TextField).bottomScrollV;
 	}
 
-	private inline function get_buttonMode():Bool
+	@:noCompletion private inline function get_buttonMode():Bool
 	{
 		return cast(this, Sprite).buttonMode;
 	}
 
-	private inline function set_buttonMode(value:Bool):Bool
+	@:noCompletion private inline function set_buttonMode(value:Bool):Bool
 	{
 		return cast(this, Sprite).buttonMode = value;
 	}
 
-	private inline function get_cacheAsBitmap():Bool
+	@:noCompletion private inline function get_cacheAsBitmap():Bool
 	{
 		return this.cacheAsBitmap;
 	}
 
-	private inline function set_cacheAsBitmap(value:Bool):Bool
+	@:noCompletion private inline function set_cacheAsBitmap(value:Bool):Bool
 	{
 		return this.cacheAsBitmap = value;
 	}
 
-	private inline function get_cacheAsBitmapMatrix():Matrix
+	@:noCompletion private inline function get_cacheAsBitmapMatrix():Matrix
 	{
 		return this.cacheAsBitmapMatrix;
 	}
 
-	private inline function set_cacheAsBitmapMatrix(value:Matrix):Matrix
+	@:noCompletion private inline function set_cacheAsBitmapMatrix(value:Matrix):Matrix
 	{
 		return this.cacheAsBitmapMatrix = value;
 	}
 
-	private inline function get_caretIndex():Int
+	@:noCompletion private inline function get_caretIndex():Int
 	{
 		return cast(this, TextField).caretIndex;
 	}
 
-	private inline function get_condenseWhite():Bool
+	@:noCompletion private inline function get_condenseWhite():Bool
 	{
 		return cast(this, TextField).condenseWhite;
 	}
 
-	private inline function set_condenseWhite(value:Bool):Bool
+	@:noCompletion private inline function set_condenseWhite(value:Bool):Bool
 	{
 		return cast(this, TextField).condenseWhite = value;
 	}
 
-	private inline function get_currentFrame():Int
+	@:noCompletion private inline function get_currentFrame():Int
 	{
 		return cast(this, MovieClip).currentFrame;
 	}
 
-	private inline function get_currentFrameLabel():String
+	@:noCompletion private inline function get_currentFrameLabel():String
 	{
 		return cast(this, MovieClip).currentFrameLabel;
 	}
 
-	private inline function get_currentLabel():String
+	@:noCompletion private inline function get_currentLabel():String
 	{
 		return cast(this, MovieClip).currentLabel;
 	}
 
-	private inline function get_currentLabels():Array<FrameLabel>
+	@:noCompletion private inline function get_currentLabels():Array<FrameLabel>
 	{
 		return cast(this, MovieClip).currentLabels;
 	}
 
-	private inline function get_currentScene():Scene
+	@:noCompletion private inline function get_currentScene():Scene
 	{
 		return cast(this, MovieClip).currentScene;
 	}
 
-	private inline function get_deblocking():Int
+	@:noCompletion private inline function get_deblocking():Int
 	{
 		return cast(this, Video).deblocking;
 	}
 
-	private inline function set_deblocking(value:Int):Int
+	@:noCompletion private inline function set_deblocking(value:Int):Int
 	{
 		return cast(this, Video).deblocking = value;
 	}
 
-	private inline function get_defaultTextFormat():TextFormat
+	@:noCompletion private inline function get_defaultTextFormat():TextFormat
 	{
 		return cast(this, TextField).defaultTextFormat;
 	}
 
-	private inline function set_defaultTextFormat(value:TextFormat):TextFormat
+	@:noCompletion private inline function set_defaultTextFormat(value:TextFormat):TextFormat
 	{
 		return cast(this, TextField).defaultTextFormat = value;
 	}
 
-	private inline function get_displayAsPassword():Bool
+	@:noCompletion private inline function get_displayAsPassword():Bool
 	{
 		return cast(this, TextField).displayAsPassword;
 	}
 
-	private inline function set_displayAsPassword(value:Bool):Bool
+	@:noCompletion private inline function set_displayAsPassword(value:Bool):Bool
 	{
 		return cast(this, TextField).displayAsPassword = value;
 	}
 
-	private inline function get_doubleClickEnabled():Bool
+	@:noCompletion private inline function get_doubleClickEnabled():Bool
 	{
 		return cast(this, InteractiveObject).doubleClickEnabled;
 	}
 
-	private inline function set_doubleClickEnabled(value:Bool):Bool
+	@:noCompletion private inline function set_doubleClickEnabled(value:Bool):Bool
 	{
 		return cast(this, InteractiveObject).doubleClickEnabled = value;
 	}
 
-	private inline function get_dropTarget():DisplayObject
+	@:noCompletion private inline function get_dropTarget():DisplayObject
 	{
 		return cast(this, Sprite).dropTarget;
 	}
 
-	private inline function get_embedFonts():Bool
+	@:noCompletion private inline function get_embedFonts():Bool
 	{
 		return cast(this, TextField).embedFonts;
 	}
 
-	private inline function set_embedFonts(value:Bool):Bool
+	@:noCompletion private inline function set_embedFonts(value:Bool):Bool
 	{
 		return cast(this, TextField).embedFonts = value;
 	}
 
-	private inline function get_enabled():Bool
+	@:noCompletion private inline function get_enabled():Bool
 	{
 		return cast(this, MovieClip).enabled;
 	}
 
-	private inline function set_enabled(value:Bool):Bool
+	@:noCompletion private inline function set_enabled(value:Bool):Bool
 	{
 		return cast(this, MovieClip).enabled = value;
 	}
 
-	private inline function get_filters():Array<BitmapFilter>
+	@:noCompletion private inline function get_filters():Array<BitmapFilter>
 	{
 		return this.filters;
 	}
 
-	private inline function set_filters(value:Array<BitmapFilter>):Array<BitmapFilter>
+	@:noCompletion private inline function set_filters(value:Array<BitmapFilter>):Array<BitmapFilter>
 	{
 		return this.filters = value;
 	}
 
-	private inline function get_focusRect():Null<Bool>
+	@:noCompletion private inline function get_focusRect():Null<Bool>
 	{
 		return cast(this, InteractiveObject).focusRect;
 	}
 
-	private inline function set_focusRect(value:Null<Bool>):Null<Bool>
+	@:noCompletion private inline function set_focusRect(value:Null<Bool>):Null<Bool>
 	{
 		return cast(this, InteractiveObject).focusRect = value;
 	}
 
-	private inline function get_framesLoaded():Int
+	@:noCompletion private inline function get_framesLoaded():Int
 	{
 		return cast(this, MovieClip).framesLoaded;
 	}
 
-	private inline function get_graphics():Graphics
+	@:noCompletion private inline function get_graphics():Graphics
 	{
 		if (Std.isOfType(this, Sprite))
 		{
@@ -1517,332 +1517,332 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 
-	private inline function get_gridFitType():GridFitType
+	@:noCompletion private inline function get_gridFitType():GridFitType
 	{
 		return cast(this, TextField).gridFitType;
 	}
 
-	private inline function set_gridFitType(value:GridFitType):GridFitType
+	@:noCompletion private inline function set_gridFitType(value:GridFitType):GridFitType
 	{
 		return cast(this, TextField).gridFitType = value;
 	}
 
-	private inline function get_height():Float
+	@:noCompletion private inline function get_height():Float
 	{
 		return this.height;
 	}
 
-	private inline function set_height(value:Float):Float
+	@:noCompletion private inline function set_height(value:Float):Float
 	{
 		return this.height = value;
 	}
 
-	private inline function get_htmlText():UTF8String
+	@:noCompletion private inline function get_htmlText():UTF8String
 	{
 		return cast(this, TextField).htmlText;
 	}
 
-	private inline function set_htmlText(value:UTF8String):UTF8String
+	@:noCompletion private inline function set_htmlText(value:UTF8String):UTF8String
 	{
 		return cast(this, TextField).htmlText = value;
 	}
 
-	private inline function get_hitArea():Sprite
+	@:noCompletion private inline function get_hitArea():Sprite
 	{
 		return cast(this, Sprite).hitArea;
 	}
 
-	private inline function set_hitArea(value:Sprite):Sprite
+	@:noCompletion private inline function set_hitArea(value:Sprite):Sprite
 	{
 		return cast(this, Sprite).hitArea = value;
 	}
 
-	private inline function get_isPlaying():Bool
+	@:noCompletion private inline function get_isPlaying():Bool
 	{
 		return cast(this, MovieClip).isPlaying;
 	}
 
-	private inline function get_length():Int
+	@:noCompletion private inline function get_length():Int
 	{
 		return cast(this, TextField).length;
 	}
 
-	private inline function get_loaderInfo():LoaderInfo
+	@:noCompletion private inline function get_loaderInfo():LoaderInfo
 	{
 		return this.loaderInfo;
 	}
 
-	private inline function get_mask():DisplayObject
+	@:noCompletion private inline function get_mask():DisplayObject
 	{
 		return this.mask;
 	}
 
-	private inline function set_mask(value:DisplayObject):DisplayObject
+	@:noCompletion private inline function set_mask(value:DisplayObject):DisplayObject
 	{
 		return this.mask = value;
 	}
 
-	private inline function get_maxChars():Int
+	@:noCompletion private inline function get_maxChars():Int
 	{
 		return cast(this, TextField).maxChars;
 	}
 
-	private inline function set_maxChars(value:Int):Int
+	@:noCompletion private inline function set_maxChars(value:Int):Int
 	{
 		return cast(this, TextField).maxChars = value;
 	}
 
-	private inline function get_maxScrollH():Int
+	@:noCompletion private inline function get_maxScrollH():Int
 	{
 		return cast(this, TextField).maxScrollH;
 	}
 
-	private inline function get_maxScrollV():Int
+	@:noCompletion private inline function get_maxScrollV():Int
 	{
 		return cast(this, TextField).maxScrollV;
 	}
 
-	private inline function get_mouseChildren():Bool
+	@:noCompletion private inline function get_mouseChildren():Bool
 	{
 		return cast(this, DisplayObjectContainer).mouseChildren;
 	}
 
-	private inline function set_mouseChildren(value:Bool):Bool
+	@:noCompletion private inline function set_mouseChildren(value:Bool):Bool
 	{
 		return cast(this, DisplayObjectContainer).mouseChildren = value;
 	}
 
-	private inline function get_mouseEnabled():Bool
+	@:noCompletion private inline function get_mouseEnabled():Bool
 	{
 		return cast(this, InteractiveObject).mouseEnabled;
 	}
 
-	private inline function set_mouseEnabled(value:Bool):Bool
+	@:noCompletion private inline function set_mouseEnabled(value:Bool):Bool
 	{
 		return cast(this, InteractiveObject).mouseEnabled = value;
 	}
 
-	private inline function get_mouseWheelEnabled():Bool
+	@:noCompletion private inline function get_mouseWheelEnabled():Bool
 	{
 		return cast(this, TextField).mouseWheelEnabled;
 	}
 
-	private inline function set_mouseWheelEnabled(value:Bool):Bool
+	@:noCompletion private inline function set_mouseWheelEnabled(value:Bool):Bool
 	{
 		return cast(this, TextField).mouseWheelEnabled = value;
 	}
 
-	private inline function get_mouseX():Float
+	@:noCompletion private inline function get_mouseX():Float
 	{
 		return this.mouseX;
 	}
 
-	private inline function get_mouseY():Float
+	@:noCompletion private inline function get_mouseY():Float
 	{
 		return this.mouseY;
 	}
 
-	private inline function get_multiline():Bool
+	@:noCompletion private inline function get_multiline():Bool
 	{
 		return cast(this, TextField).multiline;
 	}
 
-	private inline function set_multiline(value:Bool):Bool
+	@:noCompletion private inline function set_multiline(value:Bool):Bool
 	{
 		return cast(this, TextField).multiline = value;
 	}
 
-	private inline function get_name():String
+	@:noCompletion private inline function get_name():String
 	{
 		return this.name;
 	}
 
-	private inline function set_name(value:String):String
+	@:noCompletion private inline function set_name(value:String):String
 	{
 		return this.name = value;
 	}
 
-	private inline function get_needsSoftKeyboard():Bool
+	@:noCompletion private inline function get_needsSoftKeyboard():Bool
 	{
 		return cast(this, InteractiveObject).needsSoftKeyboard;
 	}
 
-	private inline function set_needsSoftKeyboard(value:Bool):Bool
+	@:noCompletion private inline function set_needsSoftKeyboard(value:Bool):Bool
 	{
 		return cast(this, InteractiveObject).needsSoftKeyboard = value;
 	}
 
-	private inline function get_numChildren():Int
+	@:noCompletion private inline function get_numChildren():Int
 	{
 		return cast(this, DisplayObjectContainer).numChildren;
 	}
 
-	private inline function get_numLines():Int
+	@:noCompletion private inline function get_numLines():Int
 	{
 		return cast(this, TextField).numLines;
 	}
 
-	private inline function get_numTiles():Int
+	@:noCompletion private inline function get_numTiles():Int
 	{
 		return cast(this, Tilemap).numTiles;
 	}
 
-	private inline function get_opaqueBackground():Null<Int>
+	@:noCompletion private inline function get_opaqueBackground():Null<Int>
 	{
 		return this.opaqueBackground;
 	}
 
-	private inline function set_opaqueBackground(value:Null<Int>):Null<Int>
+	@:noCompletion private inline function set_opaqueBackground(value:Null<Int>):Null<Int>
 	{
 		return this.opaqueBackground = value;
 	}
 
-	private inline function get_parent():DisplayObjectContainer
+	@:noCompletion private inline function get_parent():DisplayObjectContainer
 	{
 		return this.parent;
 	}
 
-	private inline function get_pixelSnapping():PixelSnapping
+	@:noCompletion private inline function get_pixelSnapping():PixelSnapping
 	{
 		return cast(this, Bitmap).pixelSnapping;
 	}
 
-	private inline function set_pixelSnapping(value:PixelSnapping):PixelSnapping
+	@:noCompletion private inline function set_pixelSnapping(value:PixelSnapping):PixelSnapping
 	{
 		return cast(this, Bitmap).pixelSnapping = value;
 	}
 
-	private inline function get_restrict():UTF8String
+	@:noCompletion private inline function get_restrict():UTF8String
 	{
 		return cast(this, TextField).restrict;
 	}
 
-	private inline function set_restrict(value:UTF8String):UTF8String
+	@:noCompletion private inline function set_restrict(value:UTF8String):UTF8String
 	{
 		return cast(this, TextField).restrict = value;
 	}
 
-	private inline function get_root():DisplayObject
+	@:noCompletion private inline function get_root():DisplayObject
 	{
 		return this.root;
 	}
 
-	private inline function get_rotation():Float
+	@:noCompletion private inline function get_rotation():Float
 	{
 		return this.rotation;
 	}
 
-	private inline function set_rotation(value:Float):Float
+	@:noCompletion private inline function set_rotation(value:Float):Float
 	{
 		return this.rotation = value;
 	}
 
-	private inline function get_scale9Grid():Rectangle
+	@:noCompletion private inline function get_scale9Grid():Rectangle
 	{
 		return this.scale9Grid;
 	}
 
-	private inline function set_scale9Grid(value:Rectangle):Rectangle
+	@:noCompletion private inline function set_scale9Grid(value:Rectangle):Rectangle
 	{
 		return this.scale9Grid = value;
 	}
 
-	private inline function get_scaleX():Float
+	@:noCompletion private inline function get_scaleX():Float
 	{
 		return this.scaleX;
 	}
 
-	private inline function set_scaleX(value:Float):Float
+	@:noCompletion private inline function set_scaleX(value:Float):Float
 	{
 		return this.scaleX = value;
 	}
 
-	private inline function get_scaleY():Float
+	@:noCompletion private inline function get_scaleY():Float
 	{
 		return this.scaleY;
 	}
 
-	private inline function set_scaleY(value:Float):Float
+	@:noCompletion private inline function set_scaleY(value:Float):Float
 	{
 		return this.scaleY = value;
 	}
 
-	private inline function get_scenes():Array<Scene>
+	@:noCompletion private inline function get_scenes():Array<Scene>
 	{
 		return cast(this, MovieClip).scenes;
 	}
 
-	private inline function get_scrollH():Int
+	@:noCompletion private inline function get_scrollH():Int
 	{
 		return cast(this, TextField).scrollH;
 	}
 
-	private inline function set_scrollH(value:Int):Int
+	@:noCompletion private inline function set_scrollH(value:Int):Int
 	{
 		return cast(this, TextField).scrollH = value;
 	}
 
-	private inline function get_scrollRect():Rectangle
+	@:noCompletion private inline function get_scrollRect():Rectangle
 	{
 		return this.scrollRect;
 	}
 
-	private inline function set_scrollRect(value:Rectangle):Rectangle
+	@:noCompletion private inline function set_scrollRect(value:Rectangle):Rectangle
 	{
 		return this.scrollRect = value;
 	}
 
-	private inline function get_scrollV():Int
+	@:noCompletion private inline function get_scrollV():Int
 	{
 		return cast(this, TextField).scrollV;
 	}
 
-	private inline function set_scrollV(value:Int):Int
+	@:noCompletion private inline function set_scrollV(value:Int):Int
 	{
 		return cast(this, TextField).scrollV = value;
 	}
 
-	private inline function get_selectable():Bool
+	@:noCompletion private inline function get_selectable():Bool
 	{
 		return cast(this, TextField).selectable;
 	}
 
-	private inline function set_selectable(value:Bool):Bool
+	@:noCompletion private inline function set_selectable(value:Bool):Bool
 	{
 		return cast(this, TextField).selectable = value;
 	}
 
-	private inline function get_selectionBeginIndex():Int
+	@:noCompletion private inline function get_selectionBeginIndex():Int
 	{
 		return cast(this, TextField).selectionBeginIndex;
 	}
 
-	private inline function get_selectionEndIndex():Int
+	@:noCompletion private inline function get_selectionEndIndex():Int
 	{
 		return cast(this, TextField).selectionEndIndex;
 	}
 
-	private inline function get_shader():Shader
+	@:noCompletion private inline function get_shader():Shader
 	{
 		return this.shader;
 	}
 
-	private inline function set_shader(value:Shader):Shader
+	@:noCompletion private inline function set_shader(value:Shader):Shader
 	{
 		return this.shader = value;
 	}
 
-	private inline function get_sharpness():Float
+	@:noCompletion private inline function get_sharpness():Float
 	{
 		return cast(this, TextField).sharpness;
 	}
 
-	private inline function set_sharpness(value:Float):Float
+	@:noCompletion private inline function set_sharpness(value:Float):Float
 	{
 		return cast(this, TextField).sharpness = value;
 	}
 
-	private inline function get_smoothing():Bool
+	@:noCompletion private inline function get_smoothing():Bool
 	{
 		if (Std.isOfType(this, Bitmap))
 		{
@@ -1854,7 +1854,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 
-	private inline function set_smoothing(value:Bool):Bool
+	@:noCompletion private inline function set_smoothing(value:Bool):Bool
 	{
 		if (Std.isOfType(this, Bitmap))
 		{
@@ -1866,62 +1866,62 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 
-	private inline function get_softKeyboardInputAreaOfInterest():Rectangle
+	@:noCompletion private inline function get_softKeyboardInputAreaOfInterest():Rectangle
 	{
 		return cast(this, InteractiveObject).softKeyboardInputAreaOfInterest;
 	}
 
-	private inline function set_softKeyboardInputAreaOfInterest(value:Rectangle):Rectangle
+	@:noCompletion private inline function set_softKeyboardInputAreaOfInterest(value:Rectangle):Rectangle
 	{
 		return cast(this, InteractiveObject).softKeyboardInputAreaOfInterest = value;
 	}
 
-	private inline function get_stage():Stage
+	@:noCompletion private inline function get_stage():Stage
 	{
 		return this.stage;
 	}
 
-	private inline function get_styleSheet():StyleSheet
+	@:noCompletion private inline function get_styleSheet():StyleSheet
 	{
 		return cast(this, TextField).styleSheet;
 	}
 
-	private inline function set_styleSheet(value:StyleSheet):StyleSheet
+	@:noCompletion private inline function set_styleSheet(value:StyleSheet):StyleSheet
 	{
 		return cast(this, TextField).styleSheet = value;
 	}
 
-	private inline function get_tabChildren():Bool
+	@:noCompletion private inline function get_tabChildren():Bool
 	{
 		return cast(this, DisplayObjectContainer).tabChildren;
 	}
 
-	private inline function set_tabChildren(value:Bool):Bool
+	@:noCompletion private inline function set_tabChildren(value:Bool):Bool
 	{
 		return cast(this, DisplayObjectContainer).tabChildren = value;
 	}
 
-	private inline function get_tabEnabled():Bool
+	@:noCompletion private inline function get_tabEnabled():Bool
 	{
 		return cast(this, InteractiveObject).tabEnabled;
 	}
 
-	private inline function set_tabEnabled(value:Bool):Bool
+	@:noCompletion private inline function set_tabEnabled(value:Bool):Bool
 	{
 		return cast(this, InteractiveObject).tabEnabled = value;
 	}
 
-	private inline function get_tabIndex():Int
+	@:noCompletion private inline function get_tabIndex():Int
 	{
 		return cast(this, InteractiveObject).tabIndex;
 	}
 
-	private inline function set_tabIndex(value:Int):Int
+	@:noCompletion private inline function set_tabIndex(value:Int):Int
 	{
 		return cast(this, InteractiveObject).tabIndex = value;
 	}
 
-	private inline function get_text():UTF8String
+	@:noCompletion private inline function get_text():UTF8String
 	{
 		if (Std.isOfType(this, TextField))
 		{
@@ -1933,162 +1933,162 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 
-	private inline function set_text(value:UTF8String):UTF8String
+	@:noCompletion private inline function set_text(value:UTF8String):UTF8String
 	{
 		return cast(this, TextField).text = value;
 	}
 
-	private inline function get_textColor():Int
+	@:noCompletion private inline function get_textColor():Int
 	{
 		return cast(this, TextField).textColor;
 	}
 
-	private inline function set_textColor(value:Int):Int
+	@:noCompletion private inline function set_textColor(value:Int):Int
 	{
 		return cast(this, TextField).textColor = value;
 	}
 
-	private inline function get_textHeight():Float
+	@:noCompletion private inline function get_textHeight():Float
 	{
 		return cast(this, TextField).textHeight;
 	}
 
-	private inline function get_textWidth():Float
+	@:noCompletion private inline function get_textWidth():Float
 	{
 		return cast(this, TextField).textWidth;
 	}
 
-	private inline function get_tileAlphaEnabled():Bool
+	@:noCompletion private inline function get_tileAlphaEnabled():Bool
 	{
 		return cast(this, Tilemap).tileAlphaEnabled;
 	}
 
-	private inline function set_tileAlphaEnabled(value:Bool):Bool
+	@:noCompletion private inline function set_tileAlphaEnabled(value:Bool):Bool
 	{
 		return cast(this, Tilemap).tileAlphaEnabled = value;
 	}
 
-	private inline function get_tileBlendModeEnabled():Bool
+	@:noCompletion private inline function get_tileBlendModeEnabled():Bool
 	{
 		return cast(this, Tilemap).tileBlendModeEnabled;
 	}
 
-	private inline function set_tileBlendModeEnabled(value:Bool):Bool
+	@:noCompletion private inline function set_tileBlendModeEnabled(value:Bool):Bool
 	{
 		return cast(this, Tilemap).tileBlendModeEnabled = value;
 	}
 
-	private inline function get_tileColorTransformEnabled():Bool
+	@:noCompletion private inline function get_tileColorTransformEnabled():Bool
 	{
 		return cast(this, Tilemap).tileColorTransformEnabled;
 	}
 
-	private inline function set_tileColorTransformEnabled(value:Bool):Bool
+	@:noCompletion private inline function set_tileColorTransformEnabled(value:Bool):Bool
 	{
 		return cast(this, Tilemap).tileColorTransformEnabled = value;
 	}
 
-	private inline function get_tileset():Tileset
+	@:noCompletion private inline function get_tileset():Tileset
 	{
 		return cast(this, Tilemap).tileset;
 	}
 
-	private inline function set_tileset(value:Tileset):Tileset
+	@:noCompletion private inline function set_tileset(value:Tileset):Tileset
 	{
 		return cast(this, Tilemap).tileset = value;
 	}
 
-	private inline function get_totalFrames():Int
+	@:noCompletion private inline function get_totalFrames():Int
 	{
 		return cast(this, MovieClip).totalFrames;
 	}
 
-	private inline function get_transform():Transform
+	@:noCompletion private inline function get_transform():Transform
 	{
 		return this.transform;
 	}
 
-	private inline function set_transform(value:Transform):Transform
+	@:noCompletion private inline function set_transform(value:Transform):Transform
 	{
 		return this.transform = value;
 	}
 
-	private inline function get_type():TextFieldType
+	@:noCompletion private inline function get_type():TextFieldType
 	{
 		return cast(this, TextField).type;
 	}
 
-	private inline function set_type(value:TextFieldType):TextFieldType
+	@:noCompletion private inline function set_type(value:TextFieldType):TextFieldType
 	{
 		return cast(this, TextField).type = value;
 	}
 
-	private inline function get_useHandCursor():Bool
+	@:noCompletion private inline function get_useHandCursor():Bool
 	{
 		return cast(this, Sprite).useHandCursor;
 	}
 
-	private inline function set_useHandCursor(value:Bool):Bool
+	@:noCompletion private inline function set_useHandCursor(value:Bool):Bool
 	{
 		return cast(this, Sprite).useHandCursor = value;
 	}
 
-	private inline function get_videoHeight():Int
+	@:noCompletion private inline function get_videoHeight():Int
 	{
 		return cast(this, Video).videoHeight;
 	}
 
-	private inline function get_videoWidth():Int
+	@:noCompletion private inline function get_videoWidth():Int
 	{
 		return cast(this, Video).videoWidth;
 	}
 
-	private inline function get_visible():Bool
+	@:noCompletion private inline function get_visible():Bool
 	{
 		return this.visible;
 	}
 
-	private inline function set_visible(value:Bool):Bool
+	@:noCompletion private inline function set_visible(value:Bool):Bool
 	{
 		return this.visible = value;
 	}
 
-	private inline function get_width():Float
+	@:noCompletion private inline function get_width():Float
 	{
 		return this.width;
 	}
 
-	private inline function set_width(value:Float):Float
+	@:noCompletion private inline function set_width(value:Float):Float
 	{
 		return this.width = value;
 	}
 
-	private inline function get_wordWrap():Bool
+	@:noCompletion private inline function get_wordWrap():Bool
 	{
 		return cast(this, TextField).wordWrap;
 	}
 
-	private inline function set_wordWrap(value:Bool):Bool
+	@:noCompletion private inline function set_wordWrap(value:Bool):Bool
 	{
 		return cast(this, TextField).wordWrap = value;
 	}
 
-	private inline function get_x():Float
+	@:noCompletion private inline function get_x():Float
 	{
 		return this.x;
 	}
 
-	private inline function set_x(value:Float):Float
+	@:noCompletion private inline function set_x(value:Float):Float
 	{
 		return this.x = value;
 	}
 
-	private inline function get_y():Float
+	@:noCompletion private inline function get_y():Float
 	{
 		return this.y;
 	}
 
-	private inline function set_y(value:Float):Float
+	@:noCompletion private inline function set_y(value:Float):Float
 	{
 		return this.y = value;
 	}

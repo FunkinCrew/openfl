@@ -243,13 +243,13 @@ class Sound extends EventDispatcher
 	#if (js && html5)
 	public var sampleRate(get, never):Int;
 
-	private var __webAudioContext:WebAudioContext = null;
+	@:noCompletion private var __webAudioContext:WebAudioContext = null;
 	#end
 
 	#if lime_openal
 	public var sampleRate(get, never):Int;
 
-	private var __alAudioContext:OpenALAudioContext = null;
+	@:noCompletion private var __alAudioContext:OpenALAudioContext = null;
 	#end
 
 	/**
@@ -769,14 +769,14 @@ class Sound extends EventDispatcher
 	}
 
 	#if (js && html5)
-	private function get_sampleRate():Int
+	@:noCompletion private function get_sampleRate():Int
 	{
 		return Std.int(__webAudioContext.sampleRate);
 	}
 	#end
 
 	#if lime_openal
-	private function get_sampleRate():Int
+	@:noCompletion private function get_sampleRate():Int
 	{
 		return 44100;
 	}

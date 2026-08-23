@@ -24,8 +24,8 @@ import js.Browser;
 class CanvasTextField
 {
 	#if (js && html5)
-	private static var context:CanvasRenderingContext2D;
-	private static var clearRect:Null<Bool>;
+	@:noCompletion private static var context:CanvasRenderingContext2D;
+	@:noCompletion private static var clearRect:Null<Bool>;
 	#end
 
 	public static inline function render(textField:TextField, renderer:CanvasRenderer, transform:Matrix):Void

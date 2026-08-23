@@ -29,7 +29,7 @@ class ShaderBuffer
 	public var overrideFloatValues:Array<Array<Float>>;
 	public var overrideIntCount:Int;
 	public var overrideIntNames:Array<String>;
-	@SuppressWarnings("checkstyle:Dynamic") public var overrideIntValues:Array<Array<Dynamic>>;
+	public var overrideIntValues:Array<Array<Dynamic>>;
 	// public var overrideNames:Array<String>;
 	// public var overrideValues:Array<Array<Dynamic>>;
 	public var paramBoolCount:Int;

@@ -9,8 +9,8 @@ import js.lib.intl.DateTimeFormat;
 #if !(js && html5)
 @:final class DateTimeFormatter
 {
-	private static var WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	private static var MONTH_NAMES_EN = [
+	@:noCompletion private static var WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	@:noCompletion private static var MONTH_NAMES_EN = [
 		"January",
 		"February",
 		"March",
@@ -24,11 +24,11 @@ import js.lib.intl.DateTimeFormat;
 		"November",
 		"December"
 	];
-	private static inline var MERIDIEM_AM = "AM";
-	private static inline var MERIDIEM_PM = "PM";
-	private static inline var ERA_AD_LONG = "Anno Domini";
-	private static inline var ERA_AD_SHORT = "AD";
-	private static inline var ERA_AD_NARROW = "A";
+	@:noCompletion private static inline var MERIDIEM_AM = "AM";
+	@:noCompletion private static inline var MERIDIEM_PM = "PM";
+	@:noCompletion private static inline var ERA_AD_LONG = "Anno Domini";
+	@:noCompletion private static inline var ERA_AD_SHORT = "AD";
+	@:noCompletion private static inline var ERA_AD_NARROW = "A";
 
 	public static function getAvailableLocaleIDNames():Vector<String>
 	{
@@ -44,9 +44,9 @@ import js.lib.intl.DateTimeFormat;
 		this.lastOperationStatus = NO_ERROR;
 	}
 
-	private var dateStyle:DateTimeStyle;
-	private var timeStyle:DateTimeStyle;
-	private var dateTimePattern:String;
+	@:noCompletion private var dateStyle:DateTimeStyle;
+	@:noCompletion private var timeStyle:DateTimeStyle;
+	@:noCompletion private var dateTimePattern:String;
 
 	public function getDateStyle():DateTimeStyle
 	{
@@ -102,7 +102,7 @@ import js.lib.intl.DateTimeFormat;
 		return result;
 	}
 
-	private function formatStyles(date:Date, utc:Bool):String
+	@:noCompletion private function formatStyles(date:Date, utc:Bool):String
 	{
 		var result = "";
 		if (this.dateStyle != NONE)
@@ -142,7 +142,7 @@ import js.lib.intl.DateTimeFormat;
 		return result;
 	}
 
-	private function formatPattern(date:Date, utc:Bool):String
+	@:noCompletion private function formatPattern(date:Date, utc:Bool):String
 	{
 		var result = "";
 		var tokens = DateTimeFormatTokenizer.tokenize(this.dateTimePattern);
@@ -411,11 +411,11 @@ import js.lib.intl.DateTimeFormat;
 		this.lastOperationStatus = NO_ERROR;
 	}
 
-	private var intlDateTimeFormat:DateTimeFormat;
-	private var intlDateTimeFormatUTC:DateTimeFormat;
-	private var dateStyle:DateTimeStyle;
-	private var timeStyle:DateTimeStyle;
-	private var dateTimePattern:String;
+	@:noCompletion private var intlDateTimeFormat:DateTimeFormat;
+	@:noCompletion private var intlDateTimeFormatUTC:DateTimeFormat;
+	@:noCompletion private var dateStyle:DateTimeStyle;
+	@:noCompletion private var timeStyle:DateTimeStyle;
+	@:noCompletion private var dateTimePattern:String;
 
 	public function getDateStyle():DateTimeStyle
 	{
@@ -445,7 +445,7 @@ import js.lib.intl.DateTimeFormat;
 	public var actualLocaleIDName(default, null):String;
 	public var requestedLocaleIDName(default, null):String;
 
-	private var _normalizedRequestedLocaleIDName:String;
+	@:noCompletion private var _normalizedRequestedLocaleIDName:String;
 
 	public var lastOperationStatus(default, null):LastOperationStatus;
 
@@ -499,7 +499,7 @@ import js.lib.intl.DateTimeFormat;
 		}
 	}
 
-	private function formatPatternJS(date:js.lib.Date, utc:Bool):String
+	@:noCompletion private function formatPatternJS(date:js.lib.Date, utc:Bool):String
 	{
 		var result = "";
 		var tokens = DateTimeFormatTokenizer.tokenize(this.dateTimePattern);
@@ -640,7 +640,7 @@ import js.lib.intl.DateTimeFormat;
 		return result;
 	}
 
-	private function getDateFormatPart(partName:String, parts:Array<DateTimeFormatPart>):String
+	@:noCompletion private function getDateFormatPart(partName:String, parts:Array<DateTimeFormatPart>):String
 	{
 		var result = "";
 		for (part in parts)
@@ -810,7 +810,7 @@ import js.lib.intl.DateTimeFormat;
 		}
 	}
 
-	private function resolveDateTimePattern():Void
+	@:noCompletion private function resolveDateTimePattern():Void
 	{
 		var pattern = "";
 		var parts = this.intlDateTimeFormat.formatToParts(js.lib.Date.fromHaxeDate(new Date(2021, 9, 12, 0, 0, 0)));

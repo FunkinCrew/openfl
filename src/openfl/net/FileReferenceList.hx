@@ -222,7 +222,7 @@ class FileReferenceList extends EventDispatcher
 {
 	public var fileList(default, null):Array<FileReference>;
 
-	private var fileInput:Dynamic;
+	@:noCompletion private var fileInput:Dynamic;
 
 	public function new()
 	{
@@ -253,7 +253,7 @@ class FileReferenceList extends EventDispatcher
 		return true;
 	}
 
-	private function fileInput_onChange(event:Dynamic):Void
+	@:noCompletion private function fileInput_onChange(event:Dynamic):Void
 	{
 		var files = (event.target : js.html.InputElement).files;
 		if (files.length == 0)

@@ -145,7 +145,6 @@ class BitmapData implements IBitmapDrawable
 
 		In Flash Player, this property is always `null`.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public var image(default, null):Image;
 
 	/**
@@ -190,9 +189,9 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __drawableType:IBitmapDrawableType;
 	@:noCompletion private var __extraBufferFormats:Array<Context3DTextureFormat>;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __framebufferContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __framebufferContext:RenderContext;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __indexBufferContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __indexBufferContext:RenderContext;
 	@:noCompletion private var __indexBufferData:UInt16Array;
 	@:noCompletion private var __indexBufferGrid:Rectangle;
 	@:noCompletion private var __isMask:Bool;
@@ -202,9 +201,9 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __surface:#if lime CairoSurface #else Dynamic #end;
+	@:noCompletion private var __surface:CairoSurface;
 	@:noCompletion private var __texture:TextureBase;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __textureContext:RenderContext;
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
@@ -212,7 +211,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __vertexBufferContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __vertexBufferContext:RenderContext;
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __vertexBufferGrid:Rectangle;
 	@:noCompletion private var __vertexBufferHeight:Float;
@@ -443,7 +442,6 @@ class BitmapData implements IBitmapDrawable
 		@param	otherBitmapData The BitmapData object to compare with the source BitmapData object.
 		@return If the two BitmapData objects have the same dimensions (width and height), the method returns a new BitmapData object that has the difference between the two objects (see the main discussion).If the BitmapData objects are equivalent, the method returns the number 0. If no argument is passed or if the argument is not a BitmapData object, the method returns -1. If either BitmapData object has been disposed of, the method returns -2. If the widths of the BitmapData objects are not equal, the method returns the number -3. If the heights of the BitmapData objects are not equal, the method returns the number -4.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public function compare(otherBitmapData:BitmapData):Dynamic
 	{
 		if (otherBitmapData == this)
@@ -2178,7 +2176,6 @@ class BitmapData implements IBitmapDrawable
 
 		@returns	The associated CairoImageSurface
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:dox(hide) public function getSurface():CairoImageSurface
 	{
 		if (!readable) return null;
@@ -3217,7 +3214,6 @@ class BitmapData implements IBitmapDrawable
 		__fromImage(Image.fromFile(path));
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __fromImage(image:Image):Void
 	{
 		if (image != null && image.buffer != null)

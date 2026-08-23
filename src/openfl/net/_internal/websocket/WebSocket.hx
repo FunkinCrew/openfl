@@ -39,16 +39,16 @@ class WebSocket
 	// The default ping interval. Set to 0 to disable pings.
 	public static var PING_INTERVAL:Int = 60000;
 
-	private static var __maskTable:StringMap<Int> = new StringMap();
-	private static var __maskPool:Array<ByteArray> = __constructMaskPool();
+	@:noCompletion private static var __maskTable:StringMap<Int> = new StringMap();
+	@:noCompletion private static var __maskPool:Array<ByteArray> = __constructMaskPool();
 
-	private static inline var WS:String = "ws";
-	private static inline var WSS:String = "wss";
+	@:noCompletion private static inline var WS:String = "ws";
+	@:noCompletion private static inline var WSS:String = "wss";
 
-	private static inline var CRLF:String = "\r\n";
-	private static inline var CRLFCRLF:String = "\r\n\r\n";
-	private static inline var GET:String = "GET";
-	private static inline var HTTP:String = "HTTP";
+	@:noCompletion private static inline var CRLF:String = "\r\n";
+	@:noCompletion private static inline var CRLFCRLF:String = "\r\n\r\n";
+	@:noCompletion private static inline var GET:String = "GET";
+	@:noCompletion private static inline var HTTP:String = "HTTP";
 
 	public var binaryType:BinaryType = ARRAYBUFFER;
 	public var bufferdAmount(default, null):Int = 0;
@@ -61,37 +61,37 @@ class WebSocket
 	public var readyState(default, null):Int = CONNECTING;
 	public var url(default, null):String;
 
-	private var __socket:FlexSocket;
-	private var __buffer:Bytes;
+	@:noCompletion private var __socket:FlexSocket;
+	@:noCompletion private var __buffer:Bytes;
 
-	private var __inputPosition:Int = 0;
-	private var __input:ByteArray;
-	private var __incomingMessageBuffer:ByteArray;
-	private var __output:ByteArray;
-	private var __connected:Bool = false;
-	private var __timestamp:Float;
-	private var __timeout:Int = 10000;
+	@:noCompletion private var __inputPosition:Int = 0;
+	@:noCompletion private var __input:ByteArray;
+	@:noCompletion private var __incomingMessageBuffer:ByteArray;
+	@:noCompletion private var __output:ByteArray;
+	@:noCompletion private var __connected:Bool = false;
+	@:noCompletion private var __timestamp:Float;
+	@:noCompletion private var __timeout:Int = 10000;
 
-	private var __origin:String;
-	private var __protocols:Array<String> = [];
-	private var __secure:Bool;
-	private var __path:String;
-	private var __scheme:String;
-	private var __host:String;
-	private var __port:Int;
-	private var __key:String;
+	@:noCompletion private var __origin:String;
+	@:noCompletion private var __protocols:Array<String> = [];
+	@:noCompletion private var __secure:Bool;
+	@:noCompletion private var __path:String;
+	@:noCompletion private var __scheme:String;
+	@:noCompletion private var __host:String;
+	@:noCompletion private var __port:Int;
+	@:noCompletion private var __key:String;
 
-	private var __handshakeBuffer:String = "";
+	@:noCompletion private var __handshakeBuffer:String = "";
 
-	private var __mask:ByteArray;
-	private var __maskedPayload:ByteArray;
-	private var __outgoingMessageBuffer:ByteArray;
+	@:noCompletion private var __mask:ByteArray;
+	@:noCompletion private var __maskedPayload:ByteArray;
+	@:noCompletion private var __outgoingMessageBuffer:ByteArray;
 
-	private var __heartbeatDelay:Int = 0;
-	private var __hasTimeoutPotential:Bool = false;
-	private var __heartbeatID:UInt = 0;
+	@:noCompletion private var __heartbeatDelay:Int = 0;
+	@:noCompletion private var __hasTimeoutPotential:Bool = false;
+	@:noCompletion private var __heartbeatID:UInt = 0;
 
-	private var __isClient:Null<Bool>;
+	@:noCompletion private var __isClient:Null<Bool>;
 
 	public function new(url:String, ?protocols:Array<String>, ?origin:String)
 	{
@@ -151,7 +151,7 @@ class WebSocket
 		}
 	}
 
-	private function __initSocket(?socket:FlexSocket):Void
+	@:noCompletion private function __initSocket(?socket:FlexSocket):Void
 	{
 		__buffer = Bytes.alloc(4096);
 		__input = new ByteArray();
@@ -188,7 +188,7 @@ class WebSocket
 		}
 	}
 
-	private function __connect():Void
+	@:noCompletion private function __connect():Void
 	{
 		try
 		{
@@ -199,7 +199,7 @@ class WebSocket
 		catch (e:Dynamic) {}
 	}
 
-	private function __onTickConnect(e:Event):Void
+	@:noCompletion private function __onTickConnect(e:Event):Void
 	{
 		if (!__connected)
 		{
@@ -217,7 +217,7 @@ class WebSocket
 		}
 	}
 
-	private function __onTickProcess(e:Event):Void
+	@:noCompletion private function __onTickProcess(e:Event):Void
 	{
 		var hasData:Bool = false;
 		var doClose:Bool = false;
@@ -286,7 +286,7 @@ class WebSocket
 		}
 	}
 
-	private function __doHandshake():Void
+	@:noCompletion private function __doHandshake():Void
 	{
 		var handshakeBytes:Bytes = Bytes.ofString([
 			'GET ${url} HTTP/1.1',
@@ -305,7 +305,7 @@ class WebSocket
 		__writeBytes(handshakeBytes);
 	}
 
-	private function __writeBytes(bytes:Bytes)
+	@:noCompletion private function __writeBytes(bytes:Bytes)
 	{
 		try
 		{
@@ -318,7 +318,7 @@ class WebSocket
 		}
 	}
 
-	private function __handleControlFrame(opcode:WebSocketOpcode):Void
+	@:noCompletion private function __handleControlFrame(opcode:WebSocketOpcode):Void
 	{
 		switch (opcode)
 		{
@@ -331,7 +331,7 @@ class WebSocket
 		}
 	}
 
-	private function __onData():Void
+	@:noCompletion private function __onData():Void
 	{
 		// trace("/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\", __input.length, __input.position, __input.bytesAvailable, __inputPosition);
 		if (readyState == OPEN)
@@ -533,7 +533,7 @@ class WebSocket
 		}
 	}
 
-	private inline function __validateInputPosition():Void
+	@:noCompletion private inline function __validateInputPosition():Void
 	{
 		if (__input.bytesAvailable > 0)
 		{
@@ -546,7 +546,7 @@ class WebSocket
 		}
 	}
 
-	private function __generateResponseHandshake(headers:StringMap<String>):Bytes
+	@:noCompletion private function __generateResponseHandshake(headers:StringMap<String>):Bytes
 	{
 		var responseHeadersBytes:Bytes = Bytes.ofString([
 			"HTTPS/1.1 101 Switching Protocols",
@@ -560,13 +560,13 @@ class WebSocket
 		return responseHeadersBytes;
 	}
 
-	private function __generateWebSocketAccept(key:String):String
+	@:noCompletion private function __generateWebSocketAccept(key:String):String
 	{
 		var magic:String = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 		return Base64.encode(Sha1.make(Bytes.ofString(key + magic)));
 	}
 
-	private function __parseHeaders(lines:Array<String>):StringMap<String>
+	@:noCompletion private function __parseHeaders(lines:Array<String>):StringMap<String>
 	{
 		var headers:StringMap<String> = new StringMap();
 
@@ -596,7 +596,7 @@ class WebSocket
 		return headers;
 	}
 
-	private function __validateResponseHandshake(headers:StringMap<String>):Bool
+	@:noCompletion private function __validateResponseHandshake(headers:StringMap<String>):Bool
 	{
 		// Check if the response status code is 101
 		if (headers.get("Status") != "101")
@@ -630,7 +630,7 @@ class WebSocket
 		return true;
 	}
 
-	private function __onConnect():Void
+	@:noCompletion private function __onConnect():Void
 	{
 		if (__secure)
 		{
@@ -642,7 +642,7 @@ class WebSocket
 		}
 	}
 
-	private function __openConnection(tickListener:Event->Void):Void
+	@:noCompletion private function __openConnection(tickListener:Event->Void):Void
 	{
 		__connected = true;
 		var stage:Stage = Lib.current.stage;
@@ -654,7 +654,7 @@ class WebSocket
 		}
 	}
 
-	private function __initSSLHandshake():Void
+	@:noCompletion private function __initSSLHandshake():Void
 	{
 		__timeout = 3000;
 		__timestamp = Sys.time();
@@ -664,7 +664,7 @@ class WebSocket
 		stage.addEventListener(Event.ENTER_FRAME, __onTickSSLHandshake);
 	}
 
-	private function __onTickSSLHandshake(e:Event):Void
+	@:noCompletion private function __onTickSSLHandshake(e:Event):Void
 	{
 		var doClose:Bool = false;
 		try
@@ -696,12 +696,12 @@ class WebSocket
 		}
 	}
 
-	private function __onError(errorMessage:String):Void
+	@:noCompletion private function __onError(errorMessage:String):Void
 	{
 		onerror(new WebsocketEvent(WebsocketEvent.ERROR, this, errorMessage));
 	}
 
-	private function __onMessage(data:Dynamic):Void
+	@:noCompletion private function __onMessage(data:Dynamic):Void
 	{
 		onmessage(new WebsocketEvent(WebsocketEvent.MESSAGE, this, data));
 	}
@@ -718,7 +718,7 @@ class WebSocket
 		__close(code, reason);
 	}
 
-	private function __close(code:Int, ?reason:String):Void
+	@:noCompletion private function __close(code:Int, ?reason:String):Void
 	{
 		if (__socket == null) return;
 
@@ -751,12 +751,12 @@ class WebSocket
 		__socket = null;
 	}
 
-	private function __initHeartbeat():Void
+	@:noCompletion private function __initHeartbeat():Void
 	{
 		__heartbeatID = Lib.setInterval(__heartbeatInterval, __heartbeatDelay);
 	}
 
-	private function __heartbeatInterval()
+	@:noCompletion private function __heartbeatInterval()
 	{
 		if (__hasTimeoutPotential)
 		{
@@ -779,7 +779,7 @@ class WebSocket
 		__prepareMessage(Bytes.ofString(data), WebSocketOpcode.TEXT);
 	}
 
-	private function __prepareMessage(data:ByteArray, opcode:Int):Void
+	@:noCompletion private function __prepareMessage(data:ByteArray, opcode:Int):Void
 	{
 		// handles fragmentation of message into multiple frames
 		if (data.length > MAX_PAYLOAD)
@@ -819,7 +819,7 @@ class WebSocket
 		}
 	}
 
-	private static function __constructMaskPool():Array<ByteArray>
+	@:noCompletion private static function __constructMaskPool():Array<ByteArray>
 	{
 		var pool:Array<ByteArray> = [];
 		for (i in 0...MASK_POOL_SIZE)
@@ -830,7 +830,7 @@ class WebSocket
 		return pool;
 	}
 
-	private static function __generateMaskBytes():ByteArray
+	@:noCompletion private static function __generateMaskBytes():ByteArray
 	{
 		var maskBytes:ByteArray = getRandomBytes(4);
 
@@ -846,7 +846,7 @@ class WebSocket
 		return maskBytes;
 	}
 
-	private function __getMask():ByteArray
+	@:noCompletion private function __getMask():ByteArray
 	{
 		if (MASK_POOL_SIZE == 0)
 		{
@@ -857,12 +857,12 @@ class WebSocket
 		return __maskPool.shift();
 	}
 
-	private function __freeMask(maskBytes:ByteArray):Void
+	@:noCompletion private function __freeMask(maskBytes:ByteArray):Void
 	{
 		__maskPool.push(maskBytes);
 	}
 
-	private inline function __sendFrame(payload:ByteArray, opcode:Int, isFinal:Bool):Void
+	@:noCompletion private inline function __sendFrame(payload:ByteArray, opcode:Int, isFinal:Bool):Void
 	{
 		// Write the frame header
 		var fin:Int = isFinal ? WebSocketHeaderMask.FIN : WebSocketOpcode.CONTINUATION;
@@ -908,7 +908,7 @@ class WebSocket
 		}
 	}
 
-	private inline function __writePayloadLength(length:UInt, maskFlag:Int = 0x00):Void
+	@:noCompletion private inline function __writePayloadLength(length:UInt, maskFlag:Int = 0x00):Void
 	{
 		if (length > 65535)
 		{
@@ -929,7 +929,7 @@ class WebSocket
 		}
 	}
 
-	private static var __pingPongBuffer:Bytes = Bytes.alloc(2);
+	@:noCompletion private static var __pingPongBuffer:Bytes = Bytes.alloc(2);
 
 	public function ping():Void
 	{
@@ -938,7 +938,7 @@ class WebSocket
 		__socket.output.flush();
 	}
 
-	private function __pong():Void
+	@:noCompletion private function __pong():Void
 	{
 		__pingPongBuffer.set(0, WebSocketOpcode.PONG);
 		__socket.output.writeBytes(__pingPongBuffer, 0, 2);
@@ -1021,7 +1021,7 @@ enum abstract WebSocketOpcode(Int) from Int to Int
 
 @:noCompletion class AcceptedWebSocket extends WebSocket
 {
-	private function new()
+	@:noCompletion private function new()
 	{
 		__isClient = false;
 		super(null, null, null);

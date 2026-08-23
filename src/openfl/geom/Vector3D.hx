@@ -538,17 +538,17 @@ class Vector3D
 		return x * x + y * y + z * z;
 	}
 
-	private inline static function get_X_AXIS():Vector3D
+	@:noCompletion private inline static function get_X_AXIS():Vector3D
 	{
 		return new Vector3D(1, 0, 0);
 	}
 
-	private inline static function get_Y_AXIS():Vector3D
+	@:noCompletion private inline static function get_Y_AXIS():Vector3D
 	{
 		return new Vector3D(0, 1, 0);
 	}
 
-	private inline static function get_Z_AXIS():Vector3D
+	@:noCompletion private inline static function get_Z_AXIS():Vector3D
 	{
 		return new Vector3D(0, 0, 1);
 	}

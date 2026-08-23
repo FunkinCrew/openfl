@@ -9,23 +9,23 @@ import openfl.Vector;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class HTMLParser
 {
-	private static var __regexAlign:EReg = ~/align\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
-	private static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexClass:EReg = ~/class\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
-	private static var __regexEntityApos:EReg = ~/&apos;/g;
-	private static var __regexEntityNbsp:EReg = ~/&nbsp;/g;
-	private static var __regexCharEntity:EReg = ~/&#(?:([0-9]+)|(x[0-9a-fA-F]+));/g;
-	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexHTMLTag:EReg = ~/<.*?>/g;
-	private static var __regexHref:EReg = ~/href\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexIndent:EReg = ~/ indent\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeading:EReg = ~/leading\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeftMargin:EReg = ~/leftmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexRightMargin:EReg = ~/rightmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexSize:EReg = ~/size\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexTabStops:EReg = ~/tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexAlign:EReg = ~/align\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
+	@:noCompletion private static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexClass:EReg = ~/class\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
+	@:noCompletion private static var __regexEntityApos:EReg = ~/&apos;/g;
+	@:noCompletion private static var __regexEntityNbsp:EReg = ~/&nbsp;/g;
+	@:noCompletion private static var __regexCharEntity:EReg = ~/&#(?:([0-9]+)|(x[0-9a-fA-F]+));/g;
+	@:noCompletion private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexHTMLTag:EReg = ~/<.*?>/g;
+	@:noCompletion private static var __regexHref:EReg = ~/href\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexIndent:EReg = ~/ indent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexLeading:EReg = ~/leading\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexLeftMargin:EReg = ~/leftmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexRightMargin:EReg = ~/rightmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexSize:EReg = ~/size\s?=\s?("([^"]+)"|'([^']+)')/i;
+	@:noCompletion private static var __regexTabStops:EReg = ~/tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
 
 	public static function parse(value:String, multiline:Bool, styleSheet:StyleSheet, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
 	{
@@ -301,7 +301,7 @@ class HTMLParser
 		return value;
 	}
 
-	private static function __getAttributeMatch(regex:EReg):String
+	@:noCompletion private static function __getAttributeMatch(regex:EReg):String
 	{
 		return regex.matched(2) != null ? regex.matched(2) : regex.matched(3);
 	}

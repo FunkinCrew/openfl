@@ -43,7 +43,7 @@ class Assets
 	public static var cache:IAssetCache = new AssetCache();
 
 	@:noCompletion private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher() #end;
-	private static var libraryBindings:Map<String, AssetLibrary> = new Map();
+	@:noCompletion private static var libraryBindings:Map<String, AssetLibrary> = new Map();
 
 	public static function addEventListener(type:String, listener:Dynamic, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
 	{

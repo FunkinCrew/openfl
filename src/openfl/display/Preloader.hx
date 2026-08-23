@@ -12,7 +12,6 @@ import openfl.Lib;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Preloader
 {
-	@SuppressWarnings("checkstyle:Dynamic")
 	public var onComplete:lime.app.Event<Void->Void> = new lime.app.Event<Void->Void>();
 
 	@:noCompletion private var complete:Bool;

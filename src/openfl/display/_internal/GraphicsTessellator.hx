@@ -22,11 +22,11 @@ import openfl.Vector;
 @:access(openfl.display._internal.DrawCommandReader)
 class GraphicsTessellator
 {
-	private static inline var COLLINEAR_EPSILON = 1e-4;
-	private static inline var CONTOUR_EPSILON = 1e-3;
-	private static inline var FLATTEN_TOLERANCE = 0.35;
-	private static inline var FLATTEN_TOLERANCE_SQ = FLATTEN_TOLERANCE * FLATTEN_TOLERANCE;
-	private static inline var MAX_FLATTEN_DEPTH = 8;
+	@:noCompletion private static inline var COLLINEAR_EPSILON = 1e-4;
+	@:noCompletion private static inline var CONTOUR_EPSILON = 1e-3;
+	@:noCompletion private static inline var FLATTEN_TOLERANCE = 0.35;
+	@:noCompletion private static inline var FLATTEN_TOLERANCE_SQ = FLATTEN_TOLERANCE * FLATTEN_TOLERANCE;
+	@:noCompletion private static inline var MAX_FLATTEN_DEPTH = 8;
 
 	public static function commandsContainGradient(graphics:Graphics):Bool
 	{
@@ -368,8 +368,8 @@ class GraphicsTessellator
 		return true;
 	}
 
-	private static function appendCubicCurve(contour:Vector<Float>, x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float,
-			depth:Int):Void
+	@:noCompletion private static function appendCubicCurve(contour:Vector<Float>, x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float,
+			y3:Float, depth:Int):Void
 	{
 		if (depth >= MAX_FLATTEN_DEPTH || cubicFlatnessSq(x0, y0, x1, y1, x2, y2, x3, y3) <= FLATTEN_TOLERANCE_SQ)
 		{
@@ -394,7 +394,8 @@ class GraphicsTessellator
 		appendCubicCurve(contour, x0123, y0123, x123, y123, x23, y23, x3, y3, depth + 1);
 	}
 
-	private static function appendQuadraticCurve(contour:Vector<Float>, x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, depth:Int):Void
+	@:noCompletion private static function appendQuadraticCurve(contour:Vector<Float>, x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
+			depth:Int):Void
 	{
 		if (depth >= MAX_FLATTEN_DEPTH || quadraticFlatnessSq(x0, y0, x1, y1, x2, y2) <= FLATTEN_TOLERANCE_SQ)
 		{
@@ -413,7 +414,7 @@ class GraphicsTessellator
 		appendQuadraticCurve(contour, x012, y012, x12, y12, x2, y2, depth + 1);
 	}
 
-	private static function appendTriangulatedContour(contour:Vector<Float>, outVertices:Vector<Float>, outIndices:Vector<Int>):Bool
+	@:noCompletion private static function appendTriangulatedContour(contour:Vector<Float>, outVertices:Vector<Float>, outIndices:Vector<Int>):Bool
 	{
 		var polygon = copyContour(contour);
 		if (signedArea(polygon) < 0)
@@ -480,7 +481,7 @@ class GraphicsTessellator
 		return true;
 	}
 
-	private static function appendTriangulatedContours(contours:Array<Vector<Float>>, outVertices:Vector<Float>, outIndices:Vector<Int>):Bool
+	@:noCompletion private static function appendTriangulatedContours(contours:Array<Vector<Float>>, outVertices:Vector<Float>, outIndices:Vector<Int>):Bool
 	{
 		if (contours.length == 1)
 		{
@@ -545,7 +546,7 @@ class GraphicsTessellator
 		return outIndices.length > 0;
 	}
 
-	private static function appendTriangulatedCompoundContour(outer:Vector<Float>, holes:Array<Vector<Float>>, outVertices:Vector<Float>,
+	@:noCompletion private static function appendTriangulatedCompoundContour(outer:Vector<Float>, holes:Array<Vector<Float>>, outVertices:Vector<Float>,
 			outIndices:Vector<Int>):Bool
 	{
 		var polygon = copyContour(outer);
@@ -573,7 +574,7 @@ class GraphicsTessellator
 		return appendTriangulatedContour(polygon, outVertices, outIndices);
 	}
 
-	private static function bridgeContourHole(outer:Vector<Float>, hole:Vector<Float>):Vector<Float>
+	@:noCompletion private static function bridgeContourHole(outer:Vector<Float>, hole:Vector<Float>):Vector<Float>
 	{
 		var holeIndex = findRightmostPoint(hole);
 		var hx = hole[holeIndex * 2];
@@ -624,7 +625,7 @@ class GraphicsTessellator
 		return result;
 	}
 
-	private static function appendContourRange(result:Vector<Float>, contour:Vector<Float>, start:Int, end:Int):Void
+	@:noCompletion private static function appendContourRange(result:Vector<Float>, contour:Vector<Float>, start:Int, end:Int):Void
 	{
 		for (i in start...end)
 		{
@@ -632,14 +633,14 @@ class GraphicsTessellator
 		}
 	}
 
-	private static function compareRightmostContour(a:Vector<Float>, b:Vector<Float>):Int
+	@:noCompletion private static function compareRightmostContour(a:Vector<Float>, b:Vector<Float>):Int
 	{
 		var ax = a[findRightmostPoint(a) * 2];
 		var bx = b[findRightmostPoint(b) * 2];
 		return ax > bx ? -1 : (ax < bx ? 1 : 0);
 	}
 
-	private static function copyContour(contour:Vector<Float>):Vector<Float>
+	@:noCompletion private static function copyContour(contour:Vector<Float>):Vector<Float>
 	{
 		var copy = new Vector<Float>();
 		for (i in 0...contour.length)
@@ -649,12 +650,12 @@ class GraphicsTessellator
 		return copy;
 	}
 
-	private static function cubicFlatnessSq(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Float
+	@:noCompletion private static function cubicFlatnessSq(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Float
 	{
 		return Math.max(distanceToSegmentSq(x1, y1, x0, y0, x3, y3), distanceToSegmentSq(x2, y2, x0, y0, x3, y3));
 	}
 
-	private static function distanceToSegmentSq(px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float):Float
+	@:noCompletion private static function distanceToSegmentSq(px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float):Float
 	{
 		var dx = bx - ax;
 		var dy = by - ay;
@@ -676,7 +677,7 @@ class GraphicsTessellator
 		return dx * dx + dy * dy;
 	}
 
-	private static function findRightmostPoint(contour:Vector<Float>):Int
+	@:noCompletion private static function findRightmostPoint(contour:Vector<Float>):Int
 	{
 		var best = 0;
 		var count = contour.length >> 1;
@@ -694,7 +695,7 @@ class GraphicsTessellator
 		return best;
 	}
 
-	private static function hasNestedContours(contours:Array<Vector<Float>>):Bool
+	@:noCompletion private static function hasNestedContours(contours:Array<Vector<Float>>):Bool
 	{
 		for (i in 0...contours.length)
 		{
@@ -711,7 +712,7 @@ class GraphicsTessellator
 		return false;
 	}
 
-	private static function hasSelfIntersection(contour:Vector<Float>):Bool
+	@:noCompletion private static function hasSelfIntersection(contour:Vector<Float>):Bool
 	{
 		var count = contour.length >> 1;
 		for (i in 0...count)
@@ -743,7 +744,7 @@ class GraphicsTessellator
 		return false;
 	}
 
-	private static function isEar(polygon:Vector<Float>, available:Array<Int>, prevIndex:Int, currIndex:Int, nextIndex:Int):Bool
+	@:noCompletion private static function isEar(polygon:Vector<Float>, available:Array<Int>, prevIndex:Int, currIndex:Int, nextIndex:Int):Bool
 	{
 		var ax = polygon[prevIndex * 2];
 		var ay = polygon[prevIndex * 2 + 1];
@@ -782,7 +783,7 @@ class GraphicsTessellator
 		return true;
 	}
 
-	private static function normalizeContour(source:Vector<Float>):Vector<Float>
+	@:noCompletion private static function normalizeContour(source:Vector<Float>):Vector<Float>
 	{
 		if (source == null || source.length < 6)
 		{
@@ -813,7 +814,7 @@ class GraphicsTessellator
 		return contour.length >= 6 ? contour : null;
 	}
 
-	private static function pointInTriangle(px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float):Bool
+	@:noCompletion private static function pointInTriangle(px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float):Bool
 	{
 		var ab = cross(ax, ay, bx, by, px, py);
 		var bc = cross(bx, by, cx, cy, px, py);
@@ -821,7 +822,7 @@ class GraphicsTessellator
 		return ab >= -COLLINEAR_EPSILON && bc >= -COLLINEAR_EPSILON && ca >= -COLLINEAR_EPSILON;
 	}
 
-	private static function contourContainsPoint(contour:Vector<Float>, px:Float, py:Float):Bool
+	@:noCompletion private static function contourContainsPoint(contour:Vector<Float>, px:Float, py:Float):Bool
 	{
 		var inside = false;
 		var count = contour.length >> 1;
@@ -845,7 +846,8 @@ class GraphicsTessellator
 		return inside;
 	}
 
-	private static function isBridgeVisible(ax:Float, ay:Float, bx:Float, by:Float, outer:Vector<Float>, hole:Vector<Float>, outerIndex:Int, holeIndex:Int):Bool
+	@:noCompletion private static function isBridgeVisible(ax:Float, ay:Float, bx:Float, by:Float, outer:Vector<Float>, hole:Vector<Float>, outerIndex:Int,
+			holeIndex:Int):Bool
 	{
 		if (!contourContainsPoint(outer, (ax + bx) * 0.5, (ay + by) * 0.5))
 		{
@@ -855,7 +857,7 @@ class GraphicsTessellator
 		return !segmentIntersectsContour(ax, ay, bx, by, outer, outerIndex) && !segmentIntersectsContour(ax, ay, bx, by, hole, holeIndex);
 	}
 
-	private static function populateBitmapUvt(vertices:Vector<Float>, bitmap:BitmapData, bitmapMatrix:Matrix, result:Vector<Float>):Void
+	@:noCompletion private static function populateBitmapUvt(vertices:Vector<Float>, bitmap:BitmapData, bitmapMatrix:Matrix, result:Vector<Float>):Void
 	{
 		if (bitmapMatrix == null)
 		{
@@ -904,7 +906,7 @@ class GraphicsTessellator
 		}
 	}
 
-	private static function pushPoint(contour:Vector<Float>, x:Float, y:Float):Void
+	@:noCompletion private static function pushPoint(contour:Vector<Float>, x:Float, y:Float):Void
 	{
 		var length = contour.length;
 		if (length >= 2 && almostEqual(contour[length - 2], x) && almostEqual(contour[length - 1], y))
@@ -916,18 +918,18 @@ class GraphicsTessellator
 		contour.push(y);
 	}
 
-	private static function pushRawPoint(contour:Vector<Float>, x:Float, y:Float):Void
+	@:noCompletion private static function pushRawPoint(contour:Vector<Float>, x:Float, y:Float):Void
 	{
 		contour.push(x);
 		contour.push(y);
 	}
 
-	private static function quadraticFlatnessSq(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float):Float
+	@:noCompletion private static function quadraticFlatnessSq(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float):Float
 	{
 		return distanceToSegmentSq(x1, y1, x0, y0, x2, y2);
 	}
 
-	private static function removeCollinearPoints(contour:Vector<Float>):Void
+	@:noCompletion private static function removeCollinearPoints(contour:Vector<Float>):Void
 	{
 		var changed = true;
 		while (changed && contour.length >= 6)
@@ -956,7 +958,7 @@ class GraphicsTessellator
 		}
 	}
 
-	private static function reverseContour(contour:Vector<Float>):Void
+	@:noCompletion private static function reverseContour(contour:Vector<Float>):Void
 	{
 		var reversed = new Vector<Float>();
 		var count = contour.length >> 1;
@@ -974,7 +976,7 @@ class GraphicsTessellator
 		}
 	}
 
-	private static function segmentsIntersect(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, dx:Float, dy:Float):Bool
+	@:noCompletion private static function segmentsIntersect(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, dx:Float, dy:Float):Bool
 	{
 		var ab1 = cross(ax, ay, bx, by, cx, cy);
 		var ab2 = cross(ax, ay, bx, by, dx, dy);
@@ -992,7 +994,7 @@ class GraphicsTessellator
 			|| (Math.abs(cd2) <= COLLINEAR_EPSILON && isPointOnSegment(bx, by, cx, cy, dx, dy));
 	}
 
-	private static function segmentIntersectsContour(ax:Float, ay:Float, bx:Float, by:Float, contour:Vector<Float>, allowedVertex:Int):Bool
+	@:noCompletion private static function segmentIntersectsContour(ax:Float, ay:Float, bx:Float, by:Float, contour:Vector<Float>, allowedVertex:Int):Bool
 	{
 		var count = contour.length >> 1;
 		for (i in 0...count)
@@ -1016,7 +1018,7 @@ class GraphicsTessellator
 		return false;
 	}
 
-	private static function signedArea(contour:Vector<Float>):Float
+	@:noCompletion private static function signedArea(contour:Vector<Float>):Float
 	{
 		var area = 0.0;
 		var count = contour.length >> 1;
@@ -1028,17 +1030,17 @@ class GraphicsTessellator
 		return area * 0.5;
 	}
 
-	private static inline function almostEqual(a:Float, b:Float):Bool
+	@:noCompletion private static inline function almostEqual(a:Float, b:Float):Bool
 	{
 		return Math.abs(a - b) <= CONTOUR_EPSILON;
 	}
 
-	private static inline function cross(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float):Float
+	@:noCompletion private static inline function cross(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float):Float
 	{
 		return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
 	}
 
-	private static inline function isPointOnSegment(px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float):Bool
+	@:noCompletion private static inline function isPointOnSegment(px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float):Bool
 	{
 		return px >= Math.min(ax, bx) - CONTOUR_EPSILON
 			&& px <= Math.max(ax, bx) + CONTOUR_EPSILON

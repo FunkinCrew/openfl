@@ -127,7 +127,6 @@ class TextureBase extends EventDispatcher
 		}
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		var gl = __context.gl;

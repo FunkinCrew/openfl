@@ -14,7 +14,7 @@ import lime.graphics.opengl.GL;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class AGALConverter
 {
-	private static var limitedProfile:Null<Bool> #if !desktop = true #end;
+	@:noCompletion private static var limitedProfile:Null<Bool> #if !desktop = true #end;
 
 	public static function prefixFromType(regType:RegisterType, programType:ProgramType):String
 	{
@@ -37,7 +37,7 @@ class AGALConverter
 		}
 	}
 
-	private static function readUInt64(byteArray:ByteArray):Int64
+	@:noCompletion private static function readUInt64(byteArray:ByteArray):Int64
 	{
 		var low = byteArray.readInt();
 		var high = byteArray.readInt();
@@ -653,7 +653,7 @@ private enum ProgramType
 @SuppressWarnings("checkstyle:FieldDocComment")
 class RegisterMap
 {
-	private var mEntries:Array<RegisterMapEntry> = new Array();
+	@:noCompletion private var mEntries:Array<RegisterMapEntry> = new Array();
 
 	public function new()
 	{

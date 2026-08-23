@@ -77,19 +77,19 @@ import lime.utils.Int16Array;
 	@:noCompletion private var __audioSource:AudioSource;
 
 	#if (js && html5)
-	private var __sampleDataEvent:SampleDataEvent;
-	private var __processor:ScriptProcessorNode;
-	private var __firstRun:Bool = true;
+	@:noCompletion private var __sampleDataEvent:SampleDataEvent;
+	@:noCompletion private var __processor:ScriptProcessorNode;
+	@:noCompletion private var __firstRun:Bool = true;
 	#end
 
 	#if lime_openal
-	private var __sampleDataEvent:SampleDataEvent;
-	private var __alSource:ALSource;
-	private var __outputBuffer:ByteArray;
-	private var __bufferView:ArrayBufferView;
-	private var __alBuffers:Array<ALBuffer>;
-	private var __numberOfBuffers:Int = 3;
-	private var __emptyBuffers:Array<ALBuffer>;
+	@:noCompletion private var __sampleDataEvent:SampleDataEvent;
+	@:noCompletion private var __alSource:ALSource;
+	@:noCompletion private var __outputBuffer:ByteArray;
+	@:noCompletion private var __bufferView:ArrayBufferView;
+	@:noCompletion private var __alBuffers:Array<ALBuffer>;
+	@:noCompletion private var __numberOfBuffers:Int = 3;
+	@:noCompletion private var __emptyBuffers:Array<ALBuffer>;
 	#end
 
 	@:noCompletion private function new(sound:Sound, audioSource:AudioSource = null, soundTransform:SoundTransform = null):Void
@@ -363,7 +363,7 @@ import lime.utils.Int16Array;
 	}
 
 	#if (js && html5)
-	private function onSample(event:AudioProcessingEvent):Void
+	@:noCompletion private function onSample(event:AudioProcessingEvent):Void
 	{
 		var hasSampleData = false;
 		if (__firstRun)
@@ -402,7 +402,7 @@ import lime.utils.Int16Array;
 	#end
 
 	#if lime_openal
-	private function watchBuffers(_):Void
+	@:noCompletion private function watchBuffers(_):Void
 	{
 		var alAudioContext = __sound.__alAudioContext;
 		var hasSampleData = true;

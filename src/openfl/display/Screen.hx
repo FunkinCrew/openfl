@@ -87,7 +87,7 @@ class Screen extends EventDispatcher
 
 	@:noCompletion private var __displayIndex:Int;
 
-	private function new(index:Int)
+	@:noCompletion private function new(index:Int)
 	{
 		super();
 		__displayIndex = index;

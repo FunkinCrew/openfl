@@ -31,14 +31,14 @@ import js.Browser;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class TextEngine
 {
-	private static inline var GUTTER:Int = 2;
-	private static inline var UTF8_TAB:Int = 9;
-	private static inline var UTF8_ENDLINE:Int = 10;
-	private static inline var UTF8_SPACE:Int = 32;
-	private static inline var UTF8_HYPHEN:Int = 0x2D;
-	private static var __defaultFonts:Map<String, DefaultFontSet>;
+	@:noCompletion private static inline var GUTTER:Int = 2;
+	@:noCompletion private static inline var UTF8_TAB:Int = 9;
+	@:noCompletion private static inline var UTF8_ENDLINE:Int = 10;
+	@:noCompletion private static inline var UTF8_SPACE:Int = 32;
+	@:noCompletion private static inline var UTF8_HYPHEN:Int = 0x2D;
+	@:noCompletion private static var __defaultFonts:Map<String, DefaultFontSet>;
 	#if (js && html5)
-	private static var __context:CanvasRenderingContext2D;
+	@:noCompletion private static var __context:CanvasRenderingContext2D;
 	#end
 
 	public var antiAliasType:AntiAliasType;
@@ -79,7 +79,7 @@ class TextEngine
 	public var width:Float;
 	public var wordWrap:Bool;
 
-	private var textField:TextField;
+	@:noCompletion private var textField:TextField;
 	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __hasFocus:Bool;
 	@:noCompletion private var __isKeyDown:Bool;
@@ -94,8 +94,8 @@ class TextEngine
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
-	private var __useIntAdvances:Null<Bool>;
-	private var __useLetterSpacing:Null<Bool>;
+	@:noCompletion private var __useIntAdvances:Null<Bool>;
+	@:noCompletion private var __useLetterSpacing:Null<Bool>;
 
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
@@ -148,7 +148,7 @@ class TextEngine
 		#end
 	}
 
-	private function createRestrictRegexp(restrict:String):EReg
+	@:noCompletion private function createRestrictRegexp(restrict:String):EReg
 	{
 		var declinedRange = ~/\^([^\^]+)/gu;
 		var declined = "";
@@ -181,7 +181,7 @@ class TextEngine
 		return new EReg('(${testRegexpParts.join('|')})', "g");
 	}
 
-	private static function findFont(name:String):Font
+	@:noCompletion private static function findFont(name:String):Font
 	{
 		#if (js && html5)
 		return Font.__fontByName.get(name);
@@ -218,7 +218,7 @@ class TextEngine
 		return null;
 	}
 
-	private static function findFontVariant(format:TextFormat):Font
+	@:noCompletion private static function findFontVariant(format:TextFormat):Font
 	{
 		var fontName = format.font;
 		var bold = format.bold;
@@ -243,7 +243,7 @@ class TextEngine
 		return findFont(fontName);
 	}
 
-	private function getBounds():Void
+	@:noCompletion private function getBounds():Void
 	{
 		var padding = border ? 1 : 0;
 
@@ -277,7 +277,7 @@ class TextEngine
 		textBounds.setTo(Math.max(x - 2, 0), Math.max(y - 2, 0), Math.min(textWidth + 4, bounds.width), Math.min(textHeight + 4, bounds.height));
 	}
 
-	private static function getDefaultFont(name:String, bold:Bool, italic:Bool):Font
+	@:noCompletion private static function getDefaultFont(name:String, bold:Bool, italic:Bool):Font
 	{
 		if (__defaultFonts == null)
 		{
@@ -636,7 +636,7 @@ class TextEngine
 		return -1;
 	}
 
-	private function getLineMeasurements():Void
+	@:noCompletion private function getLineMeasurements():Void
 	{
 		lineAscents.length = 0;
 		lineDescents.length = 0;
@@ -793,7 +793,7 @@ class TextEngine
 		if (scrollH > maxScrollH) scrollH = maxScrollH;
 	}
 
-	private function getLayoutGroups():Void
+	@:noCompletion private function getLayoutGroups():Void
 	{
 		layoutGroups.length = 0;
 
@@ -1717,7 +1717,7 @@ class TextEngine
 	}
 
 	#if (js && html5)
-	private function measureText(text:String):Float
+	@:noCompletion private function measureText(text:String):Float
 	{
 		return __context.measureText(text).width;
 	}
@@ -1744,7 +1744,7 @@ class TextEngine
 		return value;
 	}
 
-	private function setTextAlignment():Void
+	@:noCompletion private function setTextAlignment():Void
 	{
 		var lineIndex = -1;
 		var offsetX = 0.0;
@@ -1867,7 +1867,7 @@ class TextEngine
 		return value;
 	}
 
-	private function update():Void
+	@:noCompletion private function update():Void
 	{
 		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0)
 		{
@@ -1898,7 +1898,8 @@ class TextEngine
 	}
 
 	// Get & Set Methods
-	private function get_bottomScrollV():Int
+
+	@:noCompletion private function get_bottomScrollV():Int
 	{
 		// TODO: only update when dirty
 		if (numLines == 1 || lineHeights == null)
@@ -1945,7 +1946,7 @@ class TextEngine
 		}
 	}
 
-	private function get_maxScrollV():Int
+	@:noCompletion private function get_maxScrollV():Int
 	{
 		// TODO: only update when dirty
 		if (numLines == 1 || lineHeights == null)
@@ -1988,7 +1989,7 @@ class TextEngine
 		}
 	}
 
-	private function set_restrict(value:String):String
+	@:noCompletion private function set_restrict(value:String):String
 	{
 		if (restrict == value)
 		{
@@ -2009,7 +2010,7 @@ class TextEngine
 		return restrict;
 	}
 
-	private function get_scrollV():Int
+	@:noCompletion private function get_scrollV():Int
 	{
 		if (numLines == 1 || lineHeights == null) return 1;
 
@@ -2021,7 +2022,7 @@ class TextEngine
 		return scrollV;
 	}
 
-	private function set_scrollV(value:Int):Int
+	@:noCompletion private function set_scrollV(value:Int):Int
 	{
 		if (value < 1) value = 1;
 		else if (value > maxScrollV) value = maxScrollV;
@@ -2029,7 +2030,8 @@ class TextEngine
 		return scrollV = value;
 	}
 
-	private function set_text(value:String):String
+	@:noCompletion
+	function set_text(value:String):String
 	{
 		return text = value;
 	}
@@ -2037,10 +2039,10 @@ class TextEngine
 
 private class DefaultFontSet
 {
-	private var bold:Font;
-	private var boldItalic:Font;
-	private var italic:Font;
-	private var normal:Font;
+	@:noCompletion private var bold:Font;
+	@:noCompletion private var boldItalic:Font;
+	@:noCompletion private var italic:Font;
+	@:noCompletion private var normal:Font;
 
 	public function new(normal:Font, bold:Font = null, italic:Font = null, boldItalic:Font = null)
 	{

@@ -866,7 +866,7 @@ class Stage extends DisplayObjectContainer implements IModule
 	@:noCompletion private var __wasDirty:Bool;
 	@:noCompletion private var __wasFullscreen:Bool;
 	@:noCompletion private var __primaryTouch:Touch;
-	private var __oldStageOrientation:StageOrientation = UNKNOWN;
+	@:noCompletion private var __oldStageOrientation:StageOrientation = UNKNOWN;
 
 	public function new(#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null,
 		windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end)
@@ -1114,7 +1114,6 @@ class Stage extends DisplayObjectContainer implements IModule
 	**/
 	public function setOrientation(newOrientation:StageOrientation):Void {}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __broadcastEvent(event:Event):Void
 	{
 		if (DisplayObject.__broadcastEvents.exists(event.type))
@@ -1191,7 +1190,7 @@ class Stage extends DisplayObjectContainer implements IModule
 		}
 	}
 
-	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
+	@SuppressWarnings("checkstyle:LeftCurly")
 	@:noCompletion private override function __dispatchEvent(event:Event):Bool
 	{
 		var result:Bool;
@@ -1250,7 +1249,7 @@ class Stage extends DisplayObjectContainer implements IModule
 		}
 	}
 
-	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
+	@SuppressWarnings("checkstyle:LeftCurly")
 	@:noCompletion private function __dispatchStack(event:Event, stack:Array<DisplayObject>):Void
 	{
 		// TODO: Prevent repetition
@@ -1371,7 +1370,6 @@ class Stage extends DisplayObjectContainer implements IModule
 		}
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __dispatchTarget(target:EventDispatcher, event:Event):Bool
 	{
 		if (__uncaughtErrorEvents.__enabled)
@@ -1448,7 +1446,6 @@ class Stage extends DisplayObjectContainer implements IModule
 		return local;
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __handleError(e:Dynamic):Void
 	{
 		var event = new UncaughtErrorEvent(UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);

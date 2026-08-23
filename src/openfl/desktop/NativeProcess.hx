@@ -507,7 +507,7 @@ private class InboundPipe implements IDataInput
 
 	public var bytesAvailable(get, never):Int;
 
-	private function get_bytesAvailable():Int
+	@:noCompletion private function get_bytesAvailable():Int
 	{
 		if (input == null)
 		{
@@ -521,7 +521,7 @@ private class InboundPipe implements IDataInput
 
 	public var endian(get, set):Endian;
 
-	private function get_endian():Endian
+	@:noCompletion private function get_endian():Endian
 	{
 		if (input == null)
 		{
@@ -533,7 +533,7 @@ private class InboundPipe implements IDataInput
 		return result;
 	}
 
-	private function set_endian(value:Endian):Endian
+	@:noCompletion private function set_endian(value:Endian):Endian
 	{
 		if (input == null)
 		{
@@ -723,7 +723,7 @@ private class OutboundPipe implements IDataOutput
 
 	public var endian(get, set):Endian;
 
-	private function get_endian():Endian
+	@:noCompletion private function get_endian():Endian
 	{
 		if (output == null)
 		{
@@ -732,7 +732,7 @@ private class OutboundPipe implements IDataOutput
 		return output.bigEndian ? BIG_ENDIAN : LITTLE_ENDIAN;
 	}
 
-	private function set_endian(value:Endian):Endian
+	@:noCompletion private function set_endian(value:Endian):Endian
 	{
 		if (output == null)
 		{

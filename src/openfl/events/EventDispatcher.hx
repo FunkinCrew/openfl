@@ -598,7 +598,7 @@ private class Listener
 	#if (js && html5)
 	public var weakRefCallback:Dynamic;
 
-	private static var supportsWeakReference:Bool = Reflect.hasField(js.Lib.global, "WeakRef");
+	@:noCompletion private static var supportsWeakReference:Bool = Reflect.hasField(js.Lib.global, "WeakRef");
 	#end
 
 	public var priority:Int;

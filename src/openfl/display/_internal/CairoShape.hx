@@ -14,7 +14,7 @@ import lime.math.Matrix3;
 class CairoShape
 {
 	#if lime_cairo
-	private static var sourceTransform:Matrix3 = new Matrix3();
+	@:noCompletion private static var sourceTransform:Matrix3 = new Matrix3();
 	#end
 
 	public static function render(shape:DisplayObject, renderer:CairoRenderer):Void
@@ -72,7 +72,7 @@ class CairoShape
 	}
 
 	#if (openfl_legacy_scale9grid && !cairo)
-	private static inline function legacyScale9Render(shape:DisplayObject, renderer:CairoRenderer):Void
+	@:noCompletion private static inline function legacyScale9Render(shape:DisplayObject, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
 		if (!shape.__renderable) return;

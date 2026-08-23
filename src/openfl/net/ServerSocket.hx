@@ -314,7 +314,7 @@ class ServerSocket extends EventDispatcher
 		}
 	}
 
-	private function get_isSupported():Bool
+	@:noCompletion private function get_isSupported():Bool
 	{
 		#if html5
 		return false;

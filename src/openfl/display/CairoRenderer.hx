@@ -34,13 +34,11 @@ class CairoRenderer extends DisplayObjectRenderer
 	/**
 		The current Cairo render context
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public var cairo:CairoRenderContext;
 
 	@:noCompletion private var __matrix:Matrix;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __matrix3:#if lime Matrix3 #else Dynamic #end;
+	@:noCompletion private var __matrix3:Matrix3;
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(cairo:Cairo)
 	{
 		super();
@@ -59,7 +57,6 @@ class CairoRenderer extends DisplayObjectRenderer
 		Set the matrix value for the current render context, or (optionally) another Cairo
 		object
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
 	public function applyMatrix(transform:Matrix, cairo:Cairo = null):Void
 	{
 		if (cairo == null) cairo = this.cairo;
@@ -234,7 +231,6 @@ class CairoRenderer extends DisplayObjectRenderer
 		__setBlendModeCairo(cairo, value);
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __setBlendModeCairo(cairo:Cairo, value:BlendMode):Void
 	{
 		switch (value)

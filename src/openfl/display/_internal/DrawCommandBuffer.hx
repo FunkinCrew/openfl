@@ -16,27 +16,27 @@ import openfl.Vector;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class DrawCommandBuffer
 {
-	private static inline var COW_TYPES:Int = 1;
-	private static inline var COW_B:Int = 2;
-	private static inline var COW_I:Int = 4;
-	private static inline var COW_F:Int = 8;
-	private static inline var COW_O:Int = 16;
-	private static inline var COW_FF:Int = 32;
-	private static inline var COW_II:Int = 64;
-	private static inline var COW_ALL:Int = COW_TYPES | COW_B | COW_I | COW_F | COW_O | COW_FF | COW_II;
+	@:noCompletion private static inline var COW_TYPES:Int = 1;
+	@:noCompletion private static inline var COW_B:Int = 2;
+	@:noCompletion private static inline var COW_I:Int = 4;
+	@:noCompletion private static inline var COW_F:Int = 8;
+	@:noCompletion private static inline var COW_O:Int = 16;
+	@:noCompletion private static inline var COW_FF:Int = 32;
+	@:noCompletion private static inline var COW_II:Int = 64;
+	@:noCompletion private static inline var COW_ALL:Int = COW_TYPES | COW_B | COW_I | COW_F | COW_O | COW_FF | COW_II;
 
-	private static var empty:DrawCommandBuffer = new DrawCommandBuffer();
+	@:noCompletion private static var empty:DrawCommandBuffer = new DrawCommandBuffer();
 
 	public var length(get, never):Int;
 	public var types:Array<DrawCommandType>;
 
-	private var b:Array<Bool>;
-	private var copyOnWrite:Int;
-	private var f:Array<Float>;
-	private var ff:Array<Array<Float>>;
-	private var i:Array<Int>;
-	private var ii:Array<Array<Int>>;
-	@SuppressWarnings("checkstyle:Dynamic") private var o:Array<Dynamic>;
+	@:noCompletion private var b:Array<Bool>;
+	@:noCompletion private var copyOnWrite:Int;
+	@:noCompletion private var f:Array<Float>;
+	@:noCompletion private var ff:Array<Array<Float>>;
+	@:noCompletion private var i:Array<Int>;
+	@:noCompletion private var ii:Array<Array<Int>>;
+	@:noCompletion private var o:Array<Dynamic>;
 
 	public function new()
 	{
@@ -407,7 +407,7 @@ class DrawCommandBuffer
 		f.push(y);
 	}
 
-	private function prepareWrite(mask:Int):Void
+	@:noCompletion private function prepareWrite(mask:Int):Void
 	{
 		if ((copyOnWrite & mask) != 0)
 		{
@@ -454,7 +454,8 @@ class DrawCommandBuffer
 	}
 
 	// Get & Set Methods
-	private function get_length():Int
+
+	@:noCompletion private function get_length():Int
 	{
 		return types.length;
 	}

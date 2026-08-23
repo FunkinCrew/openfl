@@ -15,7 +15,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DVideo
 {
-	private static var __textureSizeValue:Array<Float> = [0, 0.];
+	@:noCompletion private static var __textureSizeValue:Array<Float> = [0, 0.];
 
 	public static function render(video:Video, renderer:OpenGLRenderer):Void
 	{

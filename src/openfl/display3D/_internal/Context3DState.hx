@@ -52,23 +52,23 @@ class Context3DState
 	// vertex buffer at?
 	public var shader:Shader; // TODO: Merge shader/program3d
 
-	private var __currentGLArrayBuffer:GLBuffer;
-	private var __currentGLElementArrayBuffer:GLBuffer;
-	private var __currentGLFramebuffer:GLFramebuffer;
-	private var __currentGLTexture2D:GLTexture;
-	private var __currentGLTextureCubeMap:GLTexture;
-	private var __enableGLBlend:Bool;
-	private var __enableGLCullFace:Bool;
-	private var __enableGLDepthTest:Bool;
-	private var __enableGLScissorTest:Bool;
-	private var __enableGLStencilTest:Bool;
-	private var __frontFaceGLCCW:Bool;
-	private var __glBlendEquation:Int;
-	private var __primaryGLFramebuffer:GLFramebuffer;
-	private var __rttDepthGLRenderbuffer:GLRenderbuffer;
-	private var __rttGLFramebuffer:GLFramebuffer;
-	private var __rttGLRenderbuffer:GLRenderbuffer;
-	private var __rttStencilGLRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __currentGLArrayBuffer:GLBuffer;
+	@:noCompletion private var __currentGLElementArrayBuffer:GLBuffer;
+	@:noCompletion private var __currentGLFramebuffer:GLFramebuffer;
+	@:noCompletion private var __currentGLTexture2D:GLTexture;
+	@:noCompletion private var __currentGLTextureCubeMap:GLTexture;
+	@:noCompletion private var __enableGLBlend:Bool;
+	@:noCompletion private var __enableGLCullFace:Bool;
+	@:noCompletion private var __enableGLDepthTest:Bool;
+	@:noCompletion private var __enableGLScissorTest:Bool;
+	@:noCompletion private var __enableGLStencilTest:Bool;
+	@:noCompletion private var __frontFaceGLCCW:Bool;
+	@:noCompletion private var __glBlendEquation:Int;
+	@:noCompletion private var __primaryGLFramebuffer:GLFramebuffer;
+	@:noCompletion private var __rttDepthGLRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __rttGLFramebuffer:GLFramebuffer;
+	@:noCompletion private var __rttGLRenderbuffer:GLRenderbuffer;
+	@:noCompletion private var __rttStencilGLRenderbuffer:GLRenderbuffer;
 
 	public function new()
 	{

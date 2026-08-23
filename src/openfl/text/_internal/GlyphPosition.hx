@@ -3,7 +3,7 @@ package openfl.text._internal;
 import lime.math.Vector2;
 import lime.text.Glyph;
 
-@SuppressWarnings(["checkstyle:FieldDocComment", "checkstyle:Dynamic"])
+@SuppressWarnings("checkstyle:FieldDocComment")
 class GlyphPosition
 {
 	public var advance:Vector2;

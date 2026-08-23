@@ -71,7 +71,7 @@ class Geolocation
 	**/
 	public static var isSupported(get, never):Bool;
 
-	private static function get_isSupported():Bool
+	@:noCompletion private static function get_isSupported():Bool
 	{
 		return false;
 	}
