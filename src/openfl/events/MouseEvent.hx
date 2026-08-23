@@ -531,9 +531,6 @@ class MouseEvent extends Event
 	**/
 	public var localY:Float;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementY:Float;
-
 	/**
 		A reference to a display list object that is related to the event. For
 		example, when a `mouseOut` event occurs,

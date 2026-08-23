@@ -131,9 +131,6 @@ class KeyboardEvent extends Event
 
 	@:noCompletion private var __updateAfterEventFlag:Bool;
 
-	// @:noCompletion private static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null),
-	// function(event) event.__init());
-
 	/**
 		Creates an Event object that contains specific information about keyboard
 		events. Event objects are passed as parameters to event listeners.

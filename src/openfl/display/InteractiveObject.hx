@@ -1048,9 +1048,6 @@ import openfl.geom.Rectangle;
 @:access(openfl.events.Event)
 class InteractiveObject extends DisplayObject
 {
-	// @:noCompletion @:dox(hide) public var accessibilityImplementation:openfl.accessibility.AccessibilityImplementation;
-	// @:noCompletion @:dox(hide) public var contextMenu:openfl.ui.ContextMenu;
-
 	/**
 		Specifies whether the object receives `doubleClick` events. The
 		default value is `false`, which means that by default an

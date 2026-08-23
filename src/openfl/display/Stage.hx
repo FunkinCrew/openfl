@@ -254,8 +254,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var application(default, null):Application;
 
-	// @:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor (default, null):Float;
-
 	/**
 		The window background color.
 	**/
@@ -306,8 +304,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		for more information regarding API support across multiple profiles.
 	**/
 	public var deviceOrientation(get, never):StageOrientation;
-
-	// @:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
 
 	/**
 		A value from the StageDisplayState class that specifies which display
@@ -514,8 +510,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		`Stage.scaleMode` is set to `StageScaleMode.NO_SCALE`.
 	**/
 	public var fullScreenWidth(get, never):UInt;
-
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
 
 	/**
 		The current orientation of the stage. This property is set to one of
@@ -1128,7 +1122,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__renderDirty = true;
 	}
 
-	// @:noCompletion @:dox(hide) public function isFocusInaccessible ():Bool;
 	public override function localToGlobal(pos:Point):Point
 	{
 		return pos.clone();

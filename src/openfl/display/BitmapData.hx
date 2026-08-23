@@ -192,8 +192,6 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __drawableType:IBitmapDrawableType;
-	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
-	// @:noCompletion private var __vertexBufferAlpha:Float;
 	@:noCompletion private var __extraBufferFormats:Array<Context3DTextureFormat>;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __framebufferContext:#if lime RenderContext #else Dynamic #end;
@@ -720,8 +718,6 @@ class BitmapData implements IBitmapDrawable
 			alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? __tempVector : null, mergeAlpha);
 		#end
 	}
-
-	// @:noCompletion @:dox(hide) @:require(flash11_4) public function copyPixelsToByteArray (rect:Rectangle, data:ByteArray):Void;
 
 	/**
 		Frees memory that is used to store the BitmapData object.
@@ -2911,8 +2907,6 @@ class BitmapData implements IBitmapDrawable
 		noise.fill(this, baseX, baseY, 0);
 	}
 
-	// @:noCompletion @:dox(hide) public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
-
 	/**
 		Scrolls an image by a certain(_x_, _y_) pixel amount. Edge
 		regions outside the scrolling area are left unchanged.
@@ -3352,33 +3346,6 @@ class BitmapData implements IBitmapDrawable
 		Rectangle.__pool.release(bounds);
 	}
 
-	// @:noCompletion private function __getFramebuffer (context:Context3D, requireStencil:Bool):GLFramebuffer {
-	// 	if (__framebuffer == null || __framebufferContext != context.__context) {
-	// 		var gl = context.gl;
-	// 		var texture = getTexture (context);
-	// 		context.__bindGLTexture2D (texture.__textureID);
-	// 		__framebufferContext = context.__context;
-	// 		__framebuffer = gl.createFramebuffer ();
-	// 		context.__bindGLFramebuffer (__framebuffer);
-	// 		gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.__textureID, 0);
-	// 		if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
-	// 			trace (gl.getError ());
-	// 		}
-	// 	}
-	// 	if (requireStencil && __stencilBuffer == null) {
-	// 		var gl = context.gl;
-	// 		__stencilBuffer = gl.createRenderbuffer ();
-	// 		gl.bindRenderbuffer (gl.RENDERBUFFER, __stencilBuffer);
-	// 		gl.renderbufferStorage (gl.RENDERBUFFER, gl.STENCIL_INDEX8, __textureWidth, __textureHeight);
-	// 		context.__bindGLFramebuffer (__framebuffer);
-	// 		gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, __stencilBuffer);
-	// 		if (gl.checkFramebufferStatus (gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) {
-	// 			trace (gl.getError ());
-	// 		}
-	// 		gl.bindRenderbuffer (gl.RENDERBUFFER, null);
-	// 	}
-	// 	return __framebuffer;
-	// }
 	@:noCompletion private inline function __loadFromBase64(base64:String, type:String):Future<BitmapData>
 	{
 		#if lime

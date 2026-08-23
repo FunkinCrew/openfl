@@ -37,9 +37,6 @@ class TimerEvent extends Event
 
 	@:noCompletion private var __updateAfterEventFlag:Bool;
 
-	// @:noCompletion private static var __pool:ObjectPool<TimerEvent> = new ObjectPool<TimerEvent>(function() return new TimerEvent(null),
-	// 	function(event) event.__init());
-
 	/**
 		Creates an Event object with specific information relevant to
 		`timer` events. Event objects are passed as parameters to event

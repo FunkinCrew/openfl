@@ -801,11 +801,8 @@ class NetStream extends EventDispatcher
 	**/
 	public var time(default, null):Float;
 
-	// @:noCompletion @:dox(hide) @:require(flash11) public var useHardwareDecoder:Bool;
-	// @:noCompletion @:dox(hide) @:require(flash11_3) public var useJitterBuffer:Bool;
 	public var videoCode(default, null):Int;
 
-	// @:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:openfl.media.VideoStreamSettings;
 	@:noCompletion private var __closed:Bool;
 	@:noCompletion private var __connection:NetConnection;
 	@:noCompletion private var __soundTransform:SoundTransform;

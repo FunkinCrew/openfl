@@ -151,9 +151,6 @@ class UncaughtErrorEvent extends ErrorEvent
 	**/
 	public var error(default, null):Dynamic;
 
-	// @:noCompletion private static var __pool:ObjectPool<UncaughtErrorEvent> = new ObjectPool<UncaughtErrorEvent>(function() return
-	// 	new UncaughtErrorEvent(null), function(event) event.__init());
-
 	/**
 		Creates an UncaughtErrorEvent object that contains information about
 		an `uncaughtError` event.

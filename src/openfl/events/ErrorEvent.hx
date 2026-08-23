@@ -44,9 +44,6 @@ class ErrorEvent extends TextEvent
 	**/
 	public var errorID(default, null):Int;
 
-	// @:noCompletion private static var __pool:ObjectPool<ErrorEvent> = new ObjectPool<ErrorEvent>(function() return new ErrorEvent(null),
-	// function(event) event.__init());
-
 	/**
 		Creates an Event object that contains information about error events.
 		Event objects are passed as parameters to event listeners.

@@ -96,9 +96,6 @@ class HTTPStatusEvent extends Event
 	**/
 	public var status(default, null):Int;
 
-	// @:noCompletion private static var __pool:ObjectPool<HTTPStatusEvent> = new ObjectPool<HTTPStatusEvent>(function() return new HTTPStatusEvent(null),
-	// function(event) event.__init());
-
 	/**
 		Creates an Event object that contains specific information about HTTP
 		status events. Event objects are passed as parameters to event listeners.

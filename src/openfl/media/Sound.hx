@@ -203,8 +203,6 @@ class Sound extends EventDispatcher
 	**/
 	public var isBuffering(default, null):Bool;
 
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
-
 	/**
 		The length of the current sound in milliseconds.
 	**/

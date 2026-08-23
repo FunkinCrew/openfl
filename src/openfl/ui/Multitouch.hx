@@ -54,8 +54,6 @@ import openfl.Vector;
 	**/
 	public static var inputMode:MultitouchInputMode;
 
-	// @:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;
-
 	/**
 		The maximum number of concurrent touch points supported by the current
 		environment.

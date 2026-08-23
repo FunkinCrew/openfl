@@ -34,9 +34,6 @@ class VideoTextureEvent extends Event
 	**/
 	@:isVar public var status(default, null):String;
 
-	// @:noCompletion private static var __pool:ObjectPool<VideoTextureEvent> = new ObjectPool<VideoTextureEvent>(function() return new VideoTextureEvent(null),
-	// function(event) event.__init());
-
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, status:String = null, colorSpace:String = null)
 	{
 		super(type, bubbles, cancelable);

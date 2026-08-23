@@ -95,8 +95,6 @@ class TextFormat
 	**/
 	public var color:Null<Int>;
 
-	// @:noCompletion @:dox(hide) public var display:openfl.text.TextFormatDisplay;
-
 	/**
 		The name of the font for text in this text format, as a string. The
 		default value is `null`, which means that Flash Player uses

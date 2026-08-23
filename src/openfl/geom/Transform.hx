@@ -122,8 +122,6 @@ class Transform
 	**/
 	public var matrix3D(get, set):Matrix3D;
 
-	// @:noCompletion @:dox(hide) @:require(flash10) public var perspectiveProjection:PerspectiveProjection;
-
 	/**
 		A Rectangle object that defines the bounding rectangle of the display
 		object on the stage.

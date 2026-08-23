@@ -46,9 +46,6 @@ class DataEvent extends TextEvent
 	**/
 	public var data:String;
 
-	// @:noCompletion private static var __pool:ObjectPool<DataEvent> = new ObjectPool<DataEvent>(function() return new DataEvent(null),
-	// function(event) event.__init());
-
 	/**
 		Creates an event object that contains information about data events.
 		Event objects are passed as parameters to event listeners.

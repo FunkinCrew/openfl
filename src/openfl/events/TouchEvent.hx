@@ -36,14 +36,6 @@ import openfl.utils.ByteArray;
 **/
 class TouchEvent extends Event
 {
-	// @:noCompletion @:dox(hide) public static var PROXIMITY_BEGIN:String;
-	// @:noCompletion @:dox(hide) public static var PROXIMITY_END:String;
-	// @:noCompletion @:dox(hide) public static var PROXIMITY_MOVE:String;
-	// @:noCompletion @:dox(hide) public static var PROXIMITY_OUT:String;
-	// @:noCompletion @:dox(hide) public static var PROXIMITY_OVER:String;
-	// @:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OUT:String;
-	// @:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OVER:String;
-
 	/**
 		Defines the value of the `type` property of a `TOUCH_BEGIN` touch
 		event object.
@@ -392,9 +384,6 @@ class TouchEvent extends Event
 	public var touchPointID:Int;
 
 	@:noCompletion private var __updateAfterEventFlag:Bool;
-
-	// @:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
-	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about touch events.

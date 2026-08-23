@@ -909,7 +909,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	**/
 	@:keep public var y(get, set):Float;
 
-	// @:noCompletion @:dox(hide) @:require(flash10) var z:Float;
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __cacheAsBitmap:Bool;
@@ -1171,8 +1170,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 		return __globalToLocal(pos, new Point());
 	}
 
-	// @:noCompletion @:dox(hide) @:require(flash10) public function globalToLocal3D (point:Point):Vector3D;
-
 	/**
 		Evaluates the bounding box of the display object to see if it overlaps or
 		intersects with the bounding box of the `obj` display object.
@@ -1258,8 +1255,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	{
 		return __getRenderTransform().transformPoint(point);
 	}
-
-	// @:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
 
 	@SuppressWarnings("checkstyle:Dynamic")
 	public override function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void

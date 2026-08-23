@@ -14,6 +14,5 @@ class SecurityDomain
 	**/
 	public static var currentDomain(default, null) = new SecurityDomain();
 
-	// @:noCompletion @:dox(hide) @:require(flash11_3) public var domainID (default, null):String;
 	@:noCompletion private function new() {}
 }

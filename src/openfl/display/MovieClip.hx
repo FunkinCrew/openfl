@@ -136,7 +136,6 @@ class MovieClip extends Sprite
 	**/
 	public var totalFrames(get, never):Int;
 
-	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	@:noCompletion private var __enabled:Bool;
 	@:noCompletion private var __hasDown:Bool;
 	@:noCompletion private var __hasOver:Bool;

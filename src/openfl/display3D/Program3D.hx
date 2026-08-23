@@ -69,7 +69,6 @@ import lime.utils.BytePointer;
 	@:noCompletion private var __glslUniformTypes:Array<ShaderParameterType>;
 	@:noCompletion private var __glVertexShader:GLShader;
 	@:noCompletion private var __glVertexSource:String;
-	// @:noCompletion private var __memUsage:Int;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
 
 	@:noCompletion private function new(context3D:Context3D, format:Context3DProgramFormat)

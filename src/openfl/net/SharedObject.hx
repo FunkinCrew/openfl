@@ -186,8 +186,6 @@ class SharedObject extends EventDispatcher
 	**/
 	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
-
 	/**
 		Indicates the object on which callback methods are invoked. The
 		default object is `this`. You can set the client property to another
@@ -379,8 +377,6 @@ class SharedObject extends EventDispatcher
 	}
 	#end
 
-	// @:noCompletion @:dox(hide) public static function deleteAll (url:String):Int;
-
 	/**
 		Immediately writes a locally persistent shared object to a local file. If
 		you don't use this method, Flash Player writes the shared object to a file
@@ -477,8 +473,6 @@ class SharedObject extends EventDispatcher
 
 		return SharedObjectFlushStatus.FLUSHED;
 	}
-
-	// @:noCompletion @:dox(hide) public static function getDiskUsage (url:String):Int;
 
 	/**
 		Returns a reference to a locally persistent shared object that is only

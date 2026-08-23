@@ -22,8 +22,6 @@ import cpp.vm.Gc;
 **/
 @:final class System
 {
-	// @:noCompletion @:dox(hide) @:require(flash11) public static var processCPUUsage (default, null):Float;
-
 	/**
 		The amount of memory (in bytes) currently in use that has been directly
 		allocated by Flash Player or AIR.
@@ -173,8 +171,6 @@ import cpp.vm.Gc;
 		openfl.utils._internal.Lib.notImplemented();
 	}
 	#end
-
-	// @:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
 
 	#if !openfl_strict
 	/**

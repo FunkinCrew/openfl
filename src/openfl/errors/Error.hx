@@ -16,8 +16,6 @@ class Error extends haxe.Exception
 {
 	@:noCompletion private static inline var DEFAULT_TO_STRING:String = "Error";
 
-	// @:noCompletion @:dox(hide) public static var length:Int;
-
 	/**
 		Contains the reference number associated with the specific error message. For a
 		custom Error object, this number is the value from the id parameter supplied in the
@@ -46,8 +44,6 @@ class Error extends haxe.Exception
 
 		name = "Error";
 	}
-
-	// @:noCompletion @:dox(hide) public static function getErrorMessage (index:Int):String;
 
 	/**
 		Returns the call stack for an error at the time of the error's construction as a
@@ -85,8 +81,6 @@ class Error extends haxe.Exception
 	{
 		return CallStack.toString(CallStack.exceptionStack());
 	}
-
-	// @:noCompletion @:dox(hide) public static function throwError (type:Class<Dynamic>, index:UInt, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic;
 
 	/**
 		Returns the string "Error" by default or the value contained in the `Error.message`

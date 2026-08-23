@@ -112,8 +112,6 @@ class LoaderInfo extends EventDispatcher
 {
 	@:noCompletion private static var __rootURL:String = #if (js && html5) (Browser.supported ? Browser.document.URL : "") #else "" #end;
 
-	// @:noCompletion @:dox(hide) public var actionScriptVersion (default, never):openfl.display.ActionScriptVersion;
-
 	/**
 		When an external SWF file is loaded, all ActionScript 3.0 definitions
 		contained in the loaded class are stored in the
@@ -191,8 +189,6 @@ class LoaderInfo extends EventDispatcher
 	**/
 	public var childAllowsParent(default, null):Bool;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_4) public var childSandboxBridge:Dynamic;
-
 	/**
 		The loaded object associated with this LoaderInfo object.
 
@@ -248,8 +244,6 @@ class LoaderInfo extends EventDispatcher
 					  requested information.
 	**/
 	public var height(default, null):Int = -1;
-
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 
 	/**
 		The Loader object associated with this LoaderInfo object. If this
@@ -317,8 +311,6 @@ class LoaderInfo extends EventDispatcher
 	**/
 	public var parentAllowsChild(default, null):Bool;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_4) public var parentSandboxBridge:Dynamic;
-
 	/**
 		Expresses the domain relationship between the loader and the content:
 		`true` if they have the same origin domain; `false`
@@ -337,8 +329,6 @@ class LoaderInfo extends EventDispatcher
 		object.
 	**/
 	public var sharedEvents(default, null):EventDispatcher;
-
-	// @:noCompletion @:dox(hide) public var swfVersion (default, null):UInt;
 
 	/**
 		An object that dispatches an `uncaughtError` event when an
@@ -415,7 +405,6 @@ class LoaderInfo extends EventDispatcher
 		return loaderInfo;
 	}
 
-	// @:noCompletion @:dox(hide) public static function getLoaderInfoByDefinition (object:Dynamic):LoaderInfo;
 	@:noCompletion private function __complete():Void
 	{
 		if (!__completed)
