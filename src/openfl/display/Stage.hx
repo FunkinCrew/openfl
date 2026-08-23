@@ -2,10 +2,23 @@ package openfl.display;
 
 import haxe.CallStack;
 import haxe.ds.ArraySort;
+import lime.app.Application;
+import lime.app.IModule;
+import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
+import lime.system.Orientation;
+import lime.ui.Gamepad;
+import lime.ui.GamepadAxis;
+import lime.ui.GamepadButton;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
+import lime.ui.MouseCursor as LimeMouseCursor;
+import lime.ui.MouseWheelMode;
+import lime.ui.Touch;
+import lime.ui.Window;
 import lime.utils.Log;
-import openfl.utils._internal.TouchData;
-import openfl.display3D.Context3D;
 import openfl.display.Application as OpenFLApplication;
+import openfl.display3D.Context3D;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -28,26 +41,13 @@ import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-import lime.app.Application;
-import lime.app.IModule;
-import lime.graphics.RenderContext;
-import lime.graphics.RenderContextType;
-import lime.ui.Touch;
-import lime.ui.Gamepad;
-import lime.ui.GamepadAxis;
-import lime.ui.GamepadButton;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseCursor as LimeMouseCursor;
-import lime.ui.MouseWheelMode;
-import lime.ui.Window;
-import lime.system.Orientation;
+import openfl.utils._internal.TouchData;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 #end
 #if (js && html5)
-import js.html.Element;
 import js.Browser;
+import js.html.Element;
 #elseif js
 typedef Element = Dynamic;
 #end

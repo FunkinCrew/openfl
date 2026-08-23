@@ -1,17 +1,17 @@
 package openfl.display;
 
-import openfl.display3D.Context3DWrapMode;
-import openfl.display3D.Context3DMipFilter;
-import openfl.display3D.Context3DTextureFilter;
-import openfl.display._internal.ShaderBuffer;
-import openfl.display3D.Context3D;
-import openfl.display3D.Program3D;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
-import openfl.utils.ByteArray;
 import lime.utils.Float32Array;
 import lime.utils.Log;
 import openfl.Lib;
+import openfl.display._internal.ShaderBuffer;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DTextureFilter;
+import openfl.display3D.Context3DWrapMode;
+import openfl.display3D.Program3D;
+import openfl.utils.ByteArray;
 
 /**
 	// TODO: Document GLSL Shaders

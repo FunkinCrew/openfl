@@ -1,7 +1,7 @@
 package openfl.ui;
 
-import openfl.utils.ByteArray;
 import lime.ui.Gamepad;
+import openfl.utils.ByteArray;
 
 @:access(openfl.ui.GameInputControl)
 @:final class GameInputDevice

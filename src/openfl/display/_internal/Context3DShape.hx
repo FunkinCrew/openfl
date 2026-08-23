@@ -2,11 +2,11 @@ package openfl.display._internal;
 
 import openfl.display.DisplayObject;
 import openfl.display.OpenGLRenderer;
+import openfl.geom.Matrix;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
 #end
-import openfl.geom.Matrix;
 
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)

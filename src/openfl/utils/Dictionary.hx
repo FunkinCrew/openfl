@@ -1,11 +1,11 @@
 package openfl.utils;
 
 #if !js
-import haxe.ds.StringMap;
+import haxe.Constraints.IMap;
+import haxe.ds.EnumValueMap;
 import haxe.ds.IntMap;
 import haxe.ds.ObjectMap;
-import haxe.ds.EnumValueMap;
-import haxe.Constraints.IMap;
+import haxe.ds.StringMap;
 
 /**
 	The Dictionary class lets you create a dynamic collection of properties,

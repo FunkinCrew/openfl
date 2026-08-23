@@ -1,15 +1,15 @@
 package openfl.filters;
 
-import openfl.display.BitmapDataChannel;
-import openfl.geom.Rectangle;
-import openfl.geom.Point;
-import openfl.display.BitmapData;
-import openfl.display.DisplayObjectRenderer;
-import openfl.display.Shader;
 import lime._internal.graphics.ImageCanvasUtil;
 import lime._internal.graphics.ImageDataUtil;
 import lime.math.Vector2;
 import lime.math.Vector4;
+import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
+import openfl.display.DisplayObjectRenderer;
+import openfl.display.Shader;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 /**
 	The DisplacementMapFilter class uses the pixel values from the specified

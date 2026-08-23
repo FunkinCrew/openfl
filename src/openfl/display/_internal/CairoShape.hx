@@ -1,11 +1,11 @@
 package openfl.display._internal;
 
-import openfl.display.CairoRenderer;
-import openfl.display.DisplayObject;
-import openfl.geom.Matrix;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
 import lime.math.Matrix3;
+import openfl.display.CairoRenderer;
+import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)

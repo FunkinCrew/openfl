@@ -1,9 +1,9 @@
 package openfl.system;
 
 import haxe.macro.Compiler;
-import openfl.utils._internal.Lib;
 import lime.system.Locale;
 import lime.system.System;
+import openfl.utils._internal.Lib;
 #if linux
 import sys.io.Process;
 #end

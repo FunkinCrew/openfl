@@ -1,7 +1,7 @@
 package openfl.display;
 
-import openfl.display._internal.GraphicsDataType;
 import openfl.Vector;
+import openfl.display._internal.GraphicsDataType;
 
 /**
 	Defines a set of quadrilaterals. This is similar to using GraphicsPath `drawRect`

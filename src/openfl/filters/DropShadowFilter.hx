@@ -1,12 +1,12 @@
 package openfl.filters;
 
+import lime._internal.graphics.ImageDataUtil;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import lime._internal.graphics.ImageDataUtil;
 
 /**
 	The DropShadowFilter class lets you add a drop shadow to display objects.

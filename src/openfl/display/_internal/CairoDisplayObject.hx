@@ -1,8 +1,8 @@
 package openfl.display._internal;
 
+import lime.math.ARGB;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
-import lime.math.ARGB;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)

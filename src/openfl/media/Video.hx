@@ -1,19 +1,19 @@
 package openfl.media;
 
+import lime.graphics.RenderContext;
 import lime.graphics.opengl.GLBuffer;
-import openfl.display3D.textures.RectangleTexture;
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
+import openfl.display.DisplayObject;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
-import openfl.display.DisplayObject;
+import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
-import lime.graphics.RenderContext;
 
 /**
 	The Video class displays live or recorded video in an application without

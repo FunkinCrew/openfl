@@ -3,8 +3,8 @@ package openfl.display3D;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.Float32Array;
-import openfl.utils.ByteArray;
 import openfl.Vector;
+import openfl.utils.ByteArray;
 
 /**
 	The VertexBuffer3D class represents a set of vertex data uploaded to a rendering context.

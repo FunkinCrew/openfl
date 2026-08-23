@@ -6,8 +6,8 @@ import openfl.events.NetStatusEvent;
 import openfl.media.SoundMixer;
 import openfl.media.SoundTransform;
 #if (js && html5)
-import js.html.VideoElement;
 import js.Browser;
+import js.html.VideoElement;
 #end
 
 /**

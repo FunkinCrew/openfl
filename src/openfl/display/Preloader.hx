@@ -1,8 +1,8 @@
 package openfl.display;
 
+import openfl.Lib;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
-import openfl.Lib;
 
 /**
 	The Preloader class is a Lime Preloader instance that uses an OpenFL

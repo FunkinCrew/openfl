@@ -1,7 +1,7 @@
 package openfl.display._internal;
 
-import openfl.display._internal.DrawCommandBuffer;
-import openfl.display._internal.DrawCommandReader;
+import lime._internal.graphics.ImageCanvasUtil;
+import openfl.Vector;
 import openfl.display.BitmapData;
 import openfl.display.CanvasRenderer;
 import openfl.display.CapsStyle;
@@ -9,18 +9,18 @@ import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
+import openfl.display._internal.DrawCommandBuffer;
+import openfl.display._internal.DrawCommandReader;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.Vector;
-import lime._internal.graphics.ImageCanvasUtil;
 #if (js && html5)
+import js.Browser;
 import js.html.CanvasElement;
 import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.html.CanvasWindingRule;
-import js.Browser;
 import js.html.DOMMatrix;
 import js.html.Path2D;
 #end

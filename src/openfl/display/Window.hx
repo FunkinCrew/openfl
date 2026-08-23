@@ -1,9 +1,9 @@
 package openfl.display;
 
-import openfl.utils._internal.Lib;
 import lime.app.Application;
 import lime.ui.Window as LimeWindow;
 import lime.ui.WindowAttributes;
+import openfl.utils._internal.Lib;
 
 /**
 	The Window class is a Lime Window instance that automatically

@@ -6,8 +6,8 @@ package openfl.display._internal;
 	http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
 
 **/
-import openfl.display.BitmapDataChannel;
 import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class PerlinNoise2D extends AbstractNoise

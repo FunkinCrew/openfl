@@ -1,9 +1,9 @@
 package openfl.display3D.textures;
 
-import openfl.display._internal.SamplerState;
-import openfl.display.BitmapData;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
+import openfl.display.BitmapData;
+import openfl.display._internal.SamplerState;
 import openfl.utils.ByteArray;
 
 /**

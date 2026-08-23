@@ -1,10 +1,10 @@
 package openfl.display;
 
-import openfl.utils._internal.Lib;
-import openfl.events.Event;
 import lime.app.Application as LimeApplication;
 import lime.ui.Window as LimeWindow;
 import lime.ui.WindowAttributes;
+import openfl.events.Event;
+import openfl.utils._internal.Lib;
 #if sys
 import openfl.desktop.NativeApplication;
 #end

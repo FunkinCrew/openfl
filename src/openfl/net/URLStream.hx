@@ -1,13 +1,13 @@
 package openfl.net;
 
-import openfl.events.EventDispatcher;
 import openfl.events.Event;
+import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
-import openfl.events.SecurityErrorEvent;
 import openfl.events.ProgressEvent;
-import openfl.utils.IDataInput;
+import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
+import openfl.utils.IDataInput;
 
 /**
 	The URLStream class provides low-level access to downloading URLs. Data is

@@ -1,8 +1,8 @@
 package openfl.net.dns;
 
 #if sys
-import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
+import openfl.events.EventDispatcher;
 
 /**
 	The DNSResolver class lets you lookup Domain Name System (DNS) resource records.

@@ -1,6 +1,8 @@
 package openfl.display._internal;
 
 import haxe.io.Path;
+import lime.utils.AssetLibrary as LimeAssetLibrary;
+import lime.utils.AssetManifest;
 import openfl.display.IDisplayObjectLoader;
 import openfl.display.LoaderInfo;
 import openfl.events.Event;
@@ -14,8 +16,6 @@ import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 import openfl.utils.Promise;
-import lime.utils.AssetLibrary as LimeAssetLibrary;
-import lime.utils.AssetManifest;
 
 class AssetManifestLoader implements IDisplayObjectLoader
 {

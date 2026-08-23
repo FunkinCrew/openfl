@@ -1,17 +1,17 @@
 package openfl.display3D.textures;
 
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
-import lime.graphics.opengl.GLTexture;
-import openfl.display._internal.SamplerState;
-import openfl.display.BitmapData;
-import openfl.events.EventDispatcher;
-import openfl.errors.Error;
-import lime.utils.ArrayBufferView;
-import lime.utils.Log;
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.RenderContext;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.utils.ArrayBufferView;
+import lime.utils.Log;
+import openfl.display.BitmapData;
+import openfl.display._internal.SamplerState;
+import openfl.errors.Error;
+import openfl.events.EventDispatcher;
 
 /**
 	The TextureBase class is the base class for Context3D texture objects.

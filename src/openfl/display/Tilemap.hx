@@ -1,8 +1,8 @@
 package openfl.display;
 
+import openfl.display._internal.Context3DBuffer;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import openfl.display._internal.Context3DBuffer;
 
 /**
 	The Tilemap class represents a "quad batch", or series of objects that are

@@ -1,6 +1,9 @@
 package openfl.media;
 
 import haxe.Int64;
+import lime.media.AudioBuffer;
+import lime.media.AudioSource;
+import lime.utils.UInt8Array;
 import openfl.errors.IOError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -17,9 +20,6 @@ import lime.media.WebAudioContext;
 import lime.media.AudioManager;
 import lime.media.OpenALAudioContext;
 #end
-import lime.utils.UInt8Array;
-import lime.media.AudioBuffer;
-import lime.media.AudioSource;
 
 /**
 	The Sound class lets you work with sound in an application. The Sound class

@@ -1,18 +1,18 @@
 package openfl.display._internal;
 
-import openfl.display._internal.CairoGraphics;
-import openfl.display._internal.CanvasGraphics;
-import openfl.display._internal.DrawCommandReader;
+import lime.math.ARGB;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.MovieClip;
 import openfl.display.OpenGLRenderer;
+import openfl.display._internal.CairoGraphics;
+import openfl.display._internal.CanvasGraphics;
+import openfl.display._internal.DrawCommandReader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import lime.math.ARGB;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;

@@ -1,12 +1,12 @@
 package openfl.filters;
 
+import lime._internal.graphics.ImageCanvasUtil;
+import lime.math.RGBA;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import lime._internal.graphics.ImageCanvasUtil;
-import lime.math.RGBA;
 
 /**
 	The ColorMatrixFilter class lets you apply a 4 x 5 matrix transformation

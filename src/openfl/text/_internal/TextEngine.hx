@@ -1,7 +1,9 @@
 package openfl.text._internal;
 
 import haxe.Timer;
+import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
+import lime.system.System;
 import lime.utils.Log;
 import openfl.Vector;
 import openfl.geom.Rectangle;
@@ -13,16 +15,14 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
-import lime.graphics.cairo.CairoFontFace;
-import lime.system.System;
 #if sys
 import sys.io.Process;
 #end
 #if (js && html5)
+import js.Browser;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.Element;
-import js.Browser;
 #end
 
 @:access(openfl.text.Font)

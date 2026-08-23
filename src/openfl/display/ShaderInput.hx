@@ -1,9 +1,9 @@
 package openfl.display;
 
+import openfl.display3D.Context3D;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
-import openfl.display3D.Context3D;
 
 /**
 	// TODO: Document GLSL Shaders

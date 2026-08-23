@@ -1,7 +1,5 @@
 package openfl.display._internal;
 
-import openfl.text._internal.HTMLParser;
-import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.CanvasRenderer;
 import openfl.geom.Matrix;
@@ -9,9 +7,11 @@ import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
+import openfl.text._internal.HTMLParser;
+import openfl.text._internal.TextEngine;
 #if (js && html5)
-import js.html.CanvasRenderingContext2D;
 import js.Browser;
+import js.html.CanvasRenderingContext2D;
 #end
 
 @:access(openfl.text._internal.TextEngine)

@@ -1,7 +1,7 @@
 package openfl.desktop;
 
-import openfl.utils.Object;
 import lime.system.Clipboard as LimeClipboard;
+import openfl.utils.Object;
 
 /**
 	The Clipboard class provides a container for transferring data and objects

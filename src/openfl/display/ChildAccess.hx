@@ -11,7 +11,6 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.media.Video;
 import openfl.net.NetStream;
-import openfl.text._internal.UTF8String;
 import openfl.text.AntiAliasType;
 import openfl.text.GridFitType;
 import openfl.text.StaticText;
@@ -21,6 +20,7 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextLineMetrics;
+import openfl.text._internal.UTF8String;
 
 /**
 	The ChildAccess abstract simplifies access to nested DisplayObjects. Although

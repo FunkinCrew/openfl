@@ -10,8 +10,8 @@ import openfl.events.ProgressEvent;
 import openfl.events.UncaughtErrorEvents;
 import openfl.net.URLRequest;
 import openfl.system.LoaderContext;
-import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
+import openfl.utils.Assets;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 

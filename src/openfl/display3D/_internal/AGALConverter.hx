@@ -1,15 +1,15 @@
 package openfl.display3D._internal;
 
 import haxe.Int64;
-import openfl.display._internal.SamplerState;
+import lime.graphics.opengl.GL;
 import lime.utils.Log;
+import openfl.display._internal.SamplerState;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
-import lime.graphics.opengl.GL;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class AGALConverter

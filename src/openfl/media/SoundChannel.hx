@@ -1,21 +1,21 @@
 package openfl.media;
 
+import lime.media.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
-import lime.media.AudioSource;
 #if (js && html5)
-import openfl.events.SampleDataEvent;
 import js.html.audio.AudioProcessingEvent;
 import js.html.audio.ScriptProcessorNode;
+import openfl.events.SampleDataEvent;
 #end
 #if lime_openal
-import openfl.events.SampleDataEvent;
-import openfl.utils.ByteArray;
 import lime.media.openal.AL;
 import lime.media.openal.ALBuffer;
 import lime.media.openal.ALSource;
 import lime.utils.ArrayBufferView;
 import lime.utils.Int16Array;
+import openfl.events.SampleDataEvent;
+import openfl.utils.ByteArray;
 #end
 
 /**

@@ -1,19 +1,19 @@
 package openfl.net._internal.websocket;
 
 #if sys
-import haxe.crypto.Md5;
 import haxe.Int64;
-import openfl.display.Stage;
-import openfl.utils.Function;
-import openfl.Lib;
-import openfl.events.Event;
-import openfl.utils.ByteArray;
 import haxe.crypto.Base64;
+import haxe.crypto.Md5;
 import haxe.crypto.Sha1;
 import haxe.ds.StringMap;
 import haxe.io.Bytes;
 import haxe.io.Error;
 import haxe.io.Output;
+import openfl.Lib;
+import openfl.display.Stage;
+import openfl.events.Event;
+import openfl.utils.ByteArray;
+import openfl.utils.Function;
 
 /**
  * Internal Websocket implementation based on RFC4648 Specification.

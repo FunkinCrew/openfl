@@ -1,7 +1,7 @@
 package openfl.display;
 
-import openfl.display._internal.GraphicsDataType;
 import openfl.Vector;
+import openfl.display._internal.GraphicsDataType;
 
 /**
 	A collection of drawing commands and the coordinate parameters for those

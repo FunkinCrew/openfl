@@ -1,8 +1,8 @@
 package openfl.net;
 
 import openfl.errors.ArgumentError;
-import openfl.errors.IllegalOperationError;
 import openfl.errors.IOError;
+import openfl.errors.IllegalOperationError;
 import openfl.errors.SecurityError;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;

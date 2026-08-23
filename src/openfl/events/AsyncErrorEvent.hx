@@ -1,7 +1,5 @@
 package openfl.events;
 
-// import openfl.utils.ObjectPool;
-
 /**
 	An object dispatches an AsyncErrorEvent when an exception is thrown from
 	native asynchronous code, which could be from, for example,

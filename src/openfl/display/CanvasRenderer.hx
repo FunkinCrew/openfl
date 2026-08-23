@@ -1,5 +1,6 @@
 package openfl.display;
 
+import lime.graphics.Canvas2DRenderContext;
 import openfl.display._internal.CanvasBitmap;
 import openfl.display._internal.CanvasBitmapData;
 import openfl.display._internal.CanvasDisplayObject;
@@ -10,7 +11,6 @@ import openfl.display._internal.CanvasTilemap;
 import openfl.display._internal.CanvasVideo;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import lime.graphics.Canvas2DRenderContext;
 
 /**
 	**BETA**

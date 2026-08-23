@@ -1,10 +1,10 @@
 package openfl.display._internal;
 
-import openfl.display3D.Context3DClearMask;
+import lime.math.ARGB;
 import openfl.display.DisplayObject;
 import openfl.display.OpenGLRenderer;
+import openfl.display3D.Context3DClearMask;
 import openfl.geom.Rectangle;
-import lime.math.ARGB;
 
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)

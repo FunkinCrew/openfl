@@ -1,6 +1,7 @@
 package openfl.display._internal;
 
 #if !flash
+import openfl.Vector;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
@@ -10,7 +11,6 @@ import openfl.display.MovieClip;
 import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import openfl.Vector;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

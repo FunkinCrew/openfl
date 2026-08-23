@@ -1,9 +1,9 @@
 package openfl.text;
 
+import lime.text.Font as LimeFont;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
-import lime.text.Font as LimeFont;
 
 /**
 	The Font class is used to manage embedded fonts in SWF files. Embedded

@@ -11,8 +11,8 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.NativeWindowBoundsEvent;
 import openfl.events.NativeWindowDisplayStateEvent;
-import openfl.geom.Rectangle;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 /**
 	The NativeWindow class provides an interface for creating and controlling

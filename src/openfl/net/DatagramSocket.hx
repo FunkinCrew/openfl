@@ -9,8 +9,8 @@ import openfl.errors.IllegalOperationError;
 import openfl.errors.RangeError;
 import openfl.events.DatagramSocketDataEvent;
 import openfl.events.Event;
-import openfl.events.EventType;
 import openfl.events.EventDispatcher;
+import openfl.events.EventType;
 #if !js
 import openfl.utils.ByteArray;
 import sys.net.Address;

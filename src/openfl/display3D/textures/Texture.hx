@@ -1,11 +1,11 @@
 package openfl.display3D.textures;
 
-import haxe.io.Bytes;
 import haxe.Timer;
+import haxe.io.Bytes;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
-import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
+import openfl.display._internal.SamplerState;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
 

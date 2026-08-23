@@ -1,8 +1,8 @@
 package openfl.display._internal;
 
+import lime._internal.graphics.ImageCanvasUtil;
 import openfl.display.Bitmap;
 import openfl.display.CanvasRenderer;
-import lime._internal.graphics.ImageCanvasUtil;
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)

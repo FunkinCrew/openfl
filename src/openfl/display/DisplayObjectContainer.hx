@@ -1,5 +1,6 @@
 package openfl.display;
 
+import openfl.Vector;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
@@ -7,7 +8,6 @@ import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.Vector;
 
 /**
 	The DisplayObjectContainer class is the base class for all objects that can

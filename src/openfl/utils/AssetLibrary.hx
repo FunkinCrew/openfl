@@ -1,12 +1,12 @@
 package openfl.utils;
 
-import openfl.display.MovieClip;
 import lime.graphics.Image;
 import lime.media.AudioBuffer;
 import lime.text.Font;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetManifest;
 import lime.utils.Bytes;
+import openfl.display.MovieClip;
 
 class AssetLibrary extends LimeAssetLibrary
 {

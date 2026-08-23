@@ -1,11 +1,11 @@
 package openfl.sensors;
 
 import haxe.Timer;
+import lime.system.Sensor;
+import lime.system.SensorType;
 import openfl.errors.ArgumentError;
 import openfl.events.AccelerometerEvent;
 import openfl.events.EventDispatcher;
-import lime.system.Sensor;
-import lime.system.SensorType;
 
 /**
 	The Accelerometer class dispatches events based on activity detected by the

@@ -1,7 +1,8 @@
 package openfl.net;
 
-import haxe.io.Path;
 import haxe.Timer;
+import haxe.io.Path;
+import lime.utils.Bytes;
 import openfl.events.DataEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -10,7 +11,6 @@ import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.filesystem.File;
 import openfl.utils.ByteArray;
-import lime.utils.Bytes;
 #if !macro
 import lime.ui.FileDialog;
 import lime.ui.FileDialogFilter;
@@ -19,9 +19,9 @@ import lime.ui.FileDialogFilter;
 import sys.FileSystem;
 #end
 #if (js && html5)
+import js.Browser;
 import js.html.FileReader;
 import js.html.InputElement;
-import js.Browser;
 #end
 
 /**

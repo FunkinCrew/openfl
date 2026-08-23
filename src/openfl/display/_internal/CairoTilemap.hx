@@ -1,18 +1,18 @@
 package openfl.display._internal;
 
+import lime.graphics.cairo.CairoFilter;
+import lime.graphics.cairo.CairoPattern;
+import lime.graphics.cairo.CairoSurface;
+import lime.math.Matrix3;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CairoRenderer;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
-import openfl.display.Tileset;
 import openfl.display.Tileset.TileData;
+import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import lime.graphics.cairo.CairoFilter;
-import lime.graphics.cairo.CairoPattern;
-import lime.graphics.cairo.CairoSurface;
-import lime.math.Matrix3;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)

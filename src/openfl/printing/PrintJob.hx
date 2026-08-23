@@ -5,11 +5,11 @@ import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
 #if (js && html5)
-import lime._internal.graphics.ImageCanvasUtil;
+import js.Browser;
 import js.html.DivElement;
 import js.html.Image;
 import js.html.StyleElement;
-import js.Browser;
+import lime._internal.graphics.ImageCanvasUtil;
 #end
 
 /**

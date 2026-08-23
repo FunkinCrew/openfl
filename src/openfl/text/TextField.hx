@@ -1,12 +1,11 @@
 package openfl.text;
 
 import haxe.Timer;
-import openfl.text._internal.HTMLParser;
-import openfl.text._internal.TextEngine;
-import openfl.text._internal.TextFormatRange;
-import openfl.text._internal.TextLayoutGroup;
-import openfl.text._internal.UTF8String;
+import lime.system.Clipboard;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
 import lime.utils.Log;
+import openfl.Lib;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
@@ -21,12 +20,13 @@ import openfl.events.TextEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.net.URLRequest;
+import openfl.text._internal.HTMLParser;
+import openfl.text._internal.TextEngine;
+import openfl.text._internal.TextFormatRange;
+import openfl.text._internal.TextLayoutGroup;
+import openfl.text._internal.UTF8String;
 import openfl.ui.Keyboard;
 import openfl.ui.MouseCursor;
-import openfl.Lib;
-import lime.system.Clipboard;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
 #if (js && html5)
 import js.html.DivElement;
 #end

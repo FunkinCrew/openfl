@@ -10,8 +10,8 @@ package openfl.display._internal;
 	AS3 optimizations by Mario Klingemann http://www.quasimondo.com
 	Haxe port and optimization by Nicolas Cannasse http://haxe.org
 **/
-import openfl.display.BitmapDataChannel;
 import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class PerlinNoise extends AbstractNoise

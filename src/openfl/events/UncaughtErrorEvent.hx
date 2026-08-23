@@ -1,7 +1,5 @@
 package openfl.events;
 
-// import openfl.utils.ObjectPool;
-
 /**
 	An UncaughtErrorEvent object is dispatched by an instance of the
 	UncaughtErrorEvents class when an uncaught error occurs. An uncaught error

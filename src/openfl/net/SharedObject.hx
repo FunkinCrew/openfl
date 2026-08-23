@@ -1,20 +1,20 @@
 package openfl.net;
 
-import haxe.io.Bytes;
-import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
+import haxe.io.Bytes;
+import haxe.io.Path;
+import lime.app.Application;
+import lime.system.System;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.utils.Object;
-import lime.app.Application;
-import lime.system.System;
 #if (js && html5)
 import js.Browser;
 #end
 #if sys
-import sys.io.File;
 import sys.FileSystem;
+import sys.io.File;
 #end
 
 /**

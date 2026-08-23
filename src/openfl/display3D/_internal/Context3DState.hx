@@ -1,19 +1,19 @@
 package openfl.display3D._internal;
 
+import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
+import openfl.display.Shader;
 import openfl.display._internal.SamplerState;
-import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DStencilAction;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
-import openfl.display.Shader;
+import openfl.display3D.textures.TextureBase;
 import openfl.geom.Rectangle;
-import lime.graphics.opengl.GL;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DState

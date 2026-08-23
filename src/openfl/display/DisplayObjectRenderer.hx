@@ -1,9 +1,13 @@
 package openfl.display;
 
-import openfl.display._internal.Context3DGraphics;
+import lime._internal.graphics.ImageCanvasUtil;
+import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
+import lime.graphics.cairo.Cairo;
 import openfl.display.Bitmap;
 import openfl.display.DisplayObject;
 import openfl.display.Tilemap;
+import openfl.display._internal.Context3DGraphics;
 import openfl.display3D.Context3D;
 import openfl.display3D.textures.MultiBufferTexture;
 import openfl.events.EventDispatcher;
@@ -14,10 +18,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
-import lime._internal.graphics.ImageCanvasUtil;
-import lime.graphics.cairo.Cairo;
-import lime.graphics.RenderContext;
-import lime.graphics.RenderContextType;
 
 @:access(openfl.display._internal.Context3DGraphics)
 @:access(lime.graphics.ImageBuffer)

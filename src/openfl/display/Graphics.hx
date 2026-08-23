@@ -1,12 +1,16 @@
 package openfl.display;
 
+import lime.graphics.cairo.Cairo;
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
+import openfl.Vector;
 import openfl.display._internal.CairoGraphics;
 import openfl.display._internal.CanvasGraphics;
 import openfl.display._internal.Context3DBuffer;
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
-import openfl.display._internal.IBitmapDrawableType;
 import openfl.display._internal.GraphicsTessellator.GraphicsTessellatedFillPart;
+import openfl.display._internal.IBitmapDrawableType;
 import openfl.display._internal.ShaderBuffer;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.IndexBuffer3D;
@@ -15,11 +19,7 @@ import openfl.errors.ArgumentError;
 import openfl.filters.BitmapFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 import openfl.utils.ObjectPool;
-import openfl.Vector;
-import lime.graphics.cairo.Cairo;
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;

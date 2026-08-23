@@ -1,18 +1,18 @@
 package openfl.display3D;
 
+import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
-import openfl.display3D._internal.AGALConverter;
-import openfl.display._internal.SamplerState;
+import lime.utils.BytePointer;
 import lime.utils.Float32Array;
 import lime.utils.Log;
+import openfl.Vector;
 import openfl.display.ShaderParameterType;
+import openfl.display._internal.SamplerState;
+import openfl.display3D._internal.AGALConverter;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
-import openfl.Vector;
-import lime.graphics.opengl.GL;
-import lime.utils.BytePointer;
 
 /**
 	The Program3D class represents a pair of rendering programs (also called "shaders")

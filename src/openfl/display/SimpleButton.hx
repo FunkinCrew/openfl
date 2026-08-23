@@ -1,11 +1,11 @@
 package openfl.display;
 
+import openfl.Vector;
+import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 import openfl.ui.MouseCursor;
-import openfl.Vector;
 
 /**
 	The SimpleButton class lets you control all instances of button symbols in

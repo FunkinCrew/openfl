@@ -1,9 +1,9 @@
 package openfl.display._internal;
 
-import openfl.display.Bitmap;
-import openfl.display.CairoRenderer;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
+import openfl.display.Bitmap;
+import openfl.display.CairoRenderer;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.Bitmap)

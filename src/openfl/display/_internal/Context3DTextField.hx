@@ -1,8 +1,8 @@
 package openfl.display._internal;
 
+import openfl.display.OpenGLRenderer;
 import openfl.display._internal.CairoTextField;
 import openfl.display._internal.CanvasTextField;
-import openfl.display.OpenGLRenderer;
 import openfl.text.TextField;
 
 #if !openfl_debug

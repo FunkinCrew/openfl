@@ -1,8 +1,8 @@
 package openfl.geom;
 
-import openfl.utils.ObjectPool;
-import lime.utils.Float32Array;
 import lime.math.ColorMatrix;
+import lime.utils.Float32Array;
+import openfl.utils.ObjectPool;
 
 /**
 	The ColorTransform class lets you adjust the color values in a display

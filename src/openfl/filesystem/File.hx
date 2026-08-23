@@ -2,15 +2,16 @@ package openfl.filesystem;
 
 #if sys
 import haxe.io.Path;
+import lime.system.BackgroundWorker;
 import lime.system.System;
 import openfl.desktop.Icon;
-import openfl.errors.IllegalOperationError;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
+import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
+import openfl.events.FileListEvent;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileFilter;
-import openfl.events.FileListEvent;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 import sys.FileSystem;
@@ -19,7 +20,6 @@ import sys.io.Process;
 import lime.ui.FileDialog;
 import lime.ui.FileDialogFilter;
 #end
-import lime.system.BackgroundWorker;
 
 @:noCompletion private typedef HaxeFile = sys.io.File;
 

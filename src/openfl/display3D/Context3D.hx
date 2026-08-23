@@ -1,39 +1,39 @@
 package openfl.display3D;
 
-import openfl.display3D._internal.Context3DState;
+import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
+import lime.graphics.RenderContext;
+import lime.graphics.WebGL2RenderContext;
+import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.math.Rectangle as LimeRectangle;
+import lime.math.Vector2;
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
+import lime.utils.UInt8Array;
+import openfl.display.BitmapData;
+import openfl.display.OpenGLRenderer;
+import openfl.display.Stage3D;
+import openfl.display.Stage;
 import openfl.display._internal.SamplerState;
+import openfl.display3D._internal.Context3DState;
+import openfl.display3D.textures.ASTCTexture;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.MultiBufferTexture;
 import openfl.display3D.textures.RectangleTexture;
-import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.Texture;
-import openfl.display3D.textures.ASTCTexture;
+import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.VideoTexture;
-import openfl.display.BitmapData;
-import openfl.display.Stage;
-import openfl.display.Stage3D;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
-import lime.utils.UInt8Array;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
-import openfl.display.OpenGLRenderer;
-import lime.graphics.opengl.GL;
-import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
-import lime.graphics.RenderContext;
-import lime.graphics.WebGL2RenderContext;
-import lime.math.Rectangle as LimeRectangle;
-import lime.math.Vector2;
 
 /**
 	The Context3D class provides a context for rendering geometrically defined graphics.

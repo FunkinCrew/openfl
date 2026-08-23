@@ -2,10 +2,10 @@ package openfl.net;
 
 #if native
 import haxe.io.Path;
+import lime.ui.FileDialog;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.filesystem.File;
-import lime.ui.FileDialog;
 #if sys
 import sys.FileSystem;
 #end
@@ -208,13 +208,13 @@ class FileReferenceList extends EventDispatcher
 	}
 }
 #elseif js
-import openfl.utils.ByteArray;
+import js.lib.DataView;
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
 import openfl.events.MouseEvent;
 import openfl.net.FileFilter;
 import openfl.net.FileReference;
-import openfl.events.EventDispatcher;
-import openfl.events.Event;
-import js.lib.DataView;
+import openfl.utils.ByteArray;
 
 @:access(openfl.events.Event)
 @:access(openfl.net.FileReference)

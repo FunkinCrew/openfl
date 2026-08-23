@@ -1,7 +1,7 @@
 package openfl.geom;
 
-import openfl.utils.ObjectPool;
 import lime.math.Rectangle as LimeRectangle;
+import openfl.utils.ObjectPool;
 
 /**
 	A Rectangle object is an area defined by its position, as indicated by its

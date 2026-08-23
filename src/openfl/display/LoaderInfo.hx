@@ -1,11 +1,11 @@
 package openfl.display;
 
-import openfl.utils.AssetLibrary;
-import openfl.events.EventDispatcher;
 import openfl.events.Event;
+import openfl.events.EventDispatcher;
 import openfl.events.ProgressEvent;
 import openfl.events.UncaughtErrorEvents;
 import openfl.system.ApplicationDomain;
+import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
 #if (js && html5)
 import js.Browser;

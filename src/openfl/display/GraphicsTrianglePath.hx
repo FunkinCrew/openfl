@@ -1,7 +1,7 @@
 package openfl.display;
 
-import openfl.display._internal.GraphicsDataType;
 import openfl.Vector;
+import openfl.display._internal.GraphicsDataType;
 
 /**
 	Defines an ordered set of triangles that can be rendered using either

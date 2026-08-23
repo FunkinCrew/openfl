@@ -2,8 +2,8 @@ package openfl.net;
 
 import openfl.events.DataEvent;
 import openfl.events.Event;
-import openfl.events.IOErrorEvent;
 import openfl.events.EventDispatcher;
+import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
 

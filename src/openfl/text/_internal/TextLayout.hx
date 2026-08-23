@@ -2,6 +2,9 @@ package openfl.text._internal;
 
 import haxe.io.Bytes;
 import lime.math.Vector2;
+import lime.text.Font;
+import lime.text.Glyph;
+import lime.text.harfbuzz.HB;
 import lime.text.harfbuzz.HBBuffer;
 import lime.text.harfbuzz.HBBufferClusterLevel;
 import lime.text.harfbuzz.HBDirection;
@@ -10,9 +13,6 @@ import lime.text.harfbuzz.HBGlyphInfo;
 import lime.text.harfbuzz.HBGlyphPosition;
 import lime.text.harfbuzz.HBLanguage;
 import lime.text.harfbuzz.HBScript;
-import lime.text.harfbuzz.HB;
-import lime.text.Font;
-import lime.text.Glyph;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class TextLayout

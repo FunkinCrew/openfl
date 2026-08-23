@@ -2,10 +2,10 @@ package openfl.utils._internal;
 
 import haxe.PosInfos;
 import lime.utils.Log;
+import openfl.display.MovieClip;
 #if !openfl_unit_testing
 import openfl.display.Application;
 #end
-import openfl.display.MovieClip;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Lib

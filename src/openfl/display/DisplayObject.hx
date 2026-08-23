@@ -1,8 +1,8 @@
 package openfl.display;
 
+import lime.graphics.cairo.Cairo;
+import openfl.Vector;
 import openfl.display._internal.IBitmapDrawableType;
-import openfl.utils.ObjectPool;
-import openfl.utils._internal.Lib;
 import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -18,12 +18,12 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.ui.MouseCursor;
-import openfl.Vector;
-import lime.graphics.cairo.Cairo;
+import openfl.utils.ObjectPool;
+import openfl.utils._internal.Lib;
 #if (js && html5)
+import js.html.CSSStyleDeclaration;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
 #end
 
 /**

@@ -2,11 +2,11 @@ package openfl.display3D.textures;
 
 import haxe.Timer;
 import lime.graphics.opengl.GLFramebuffer;
-import openfl.display._internal.SamplerState;
 import lime.utils.ArrayBufferView;
 import lime.utils.Log;
 import lime.utils.UInt8Array;
 import openfl.display.BitmapData;
+import openfl.display._internal.SamplerState;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
 import openfl.utils.ByteArray;

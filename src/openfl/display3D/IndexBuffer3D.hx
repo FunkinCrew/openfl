@@ -3,8 +3,8 @@ package openfl.display3D;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt16Array;
-import openfl.utils.ByteArray;
 import openfl.Vector;
+import openfl.utils.ByteArray;
 
 /**
 	IndexBuffer3D is used to represent lists of vertex indices comprising graphic elements

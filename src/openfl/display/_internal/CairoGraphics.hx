@@ -1,17 +1,5 @@
 package openfl.display._internal;
 
-import openfl.display._internal.DrawCommandBuffer;
-import openfl.display._internal.DrawCommandReader;
-import openfl.display.BitmapData;
-import openfl.display.CairoRenderer;
-import openfl.display.GradientType;
-import openfl.display.Graphics;
-import openfl.display.InterpolationMethod;
-import openfl.display.SpreadMethod;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-import openfl.Vector;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
 import lime.graphics.cairo.CairoFilter;
@@ -19,6 +7,18 @@ import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.math.Matrix3;
 import lime.math.Vector2;
+import openfl.Vector;
+import openfl.display.BitmapData;
+import openfl.display.CairoRenderer;
+import openfl.display.GradientType;
+import openfl.display.Graphics;
+import openfl.display.InterpolationMethod;
+import openfl.display.SpreadMethod;
+import openfl.display._internal.DrawCommandBuffer;
+import openfl.display._internal.DrawCommandReader;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)

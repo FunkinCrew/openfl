@@ -1,5 +1,9 @@
 package openfl.display;
 
+import lime.graphics.CairoRenderContext;
+import lime.graphics.cairo.Cairo;
+import lime.graphics.cairo.CairoOperator;
+import lime.math.Matrix3;
 import openfl.display._internal.CairoBitmap;
 import openfl.display._internal.CairoBitmapData;
 import openfl.display._internal.CairoDisplayObject;
@@ -11,10 +15,6 @@ import openfl.display._internal.CairoTextField;
 import openfl.display._internal.CairoTilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import lime.graphics.cairo.Cairo;
-import lime.graphics.cairo.CairoOperator;
-import lime.graphics.CairoRenderContext;
-import lime.math.Matrix3;
 
 /**
 	**BETA**

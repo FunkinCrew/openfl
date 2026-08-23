@@ -1,6 +1,9 @@
 package openfl.display;
 
 import haxe.Timer;
+import lime.graphics.RenderContext;
+import lime.graphics.opengl.GL;
+import openfl.Vector;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
@@ -10,14 +13,11 @@ import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
-import openfl.Vector;
-import lime.graphics.opengl.GL;
-import lime.graphics.RenderContext;
 #if (js && html5)
-import js.html.webgl.RenderingContext;
-import js.html.CanvasElement;
-import js.html.CSSStyleDeclaration;
 import js.Browser;
+import js.html.CSSStyleDeclaration;
+import js.html.CanvasElement;
+import js.html.webgl.RenderingContext;
 #end
 
 /**

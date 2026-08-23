@@ -1,23 +1,23 @@
 package openfl.utils;
 
 import haxe.Int64;
+import haxe.Json;
+import haxe.Serializer;
+import haxe.Unserializer;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
 import haxe.io.FPHelper;
-import haxe.Json;
-import haxe.Serializer;
-import haxe.Unserializer;
-import openfl.errors.EOFError;
-import openfl.errors.RangeError;
-import openfl.net.ObjectEncoding;
 import lime.system.System;
 import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
 import lime.utils.Int8Array;
+import openfl.errors.EOFError;
+import openfl.errors.RangeError;
+import openfl.net.ObjectEncoding;
 
 /**
 	The ByteArray class provides methods and properties to optimize reading,

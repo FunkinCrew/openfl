@@ -1,8 +1,8 @@
 package openfl.display;
 
 #if sys
-import openfl.events.EventDispatcher;
 import lime.system.System;
+import openfl.events.EventDispatcher;
 import openfl.geom.Rectangle;
 
 /**

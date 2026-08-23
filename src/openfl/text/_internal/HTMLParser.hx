@@ -1,9 +1,9 @@
 package openfl.text._internal;
 
 import lime.utils.Log;
+import openfl.Vector;
 import openfl.text.StyleSheet;
 import openfl.text.TextFormat;
-import openfl.Vector;
 
 @:access(openfl.text.StyleSheet)
 @SuppressWarnings("checkstyle:FieldDocComment")

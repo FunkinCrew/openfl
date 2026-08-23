@@ -1,5 +1,8 @@
 package openfl.display;
 
+import lime.graphics.WebGLRenderContext;
+import lime.graphics.opengl.ext.KHR_debug;
+import lime.math.Matrix4;
 import openfl.display._internal.Context3DBitmap;
 import openfl.display._internal.Context3DBitmapData;
 import openfl.display._internal.Context3DDisplayObject;
@@ -11,15 +14,12 @@ import openfl.display._internal.Context3DTextField;
 import openfl.display._internal.Context3DTilemap;
 import openfl.display._internal.Context3DVideo;
 import openfl.display._internal.ShaderBuffer;
-import openfl.utils.ObjectPool;
-import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
+import openfl.display3D.Context3DClearMask;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import lime.graphics.opengl.ext.KHR_debug;
-import lime.graphics.WebGLRenderContext;
-import lime.math.Matrix4;
+import openfl.utils.ObjectPool;
 
 /**
 	**BETA**

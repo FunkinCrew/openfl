@@ -1,7 +1,5 @@
 package openfl.events;
 
-// import openfl.utils.ObjectPool;
-
 /**
 	A NetConnection, NetStream, or SharedObject object dispatches
 	NetStatusEvent objects when a it reports its status. There is only one

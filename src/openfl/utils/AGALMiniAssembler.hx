@@ -28,9 +28,9 @@
 package openfl.utils;
 
 import lime.utils.Log;
+import openfl.Lib;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
-import openfl.Lib;
 
 @SuppressWarnings(["checkstyle:ConstantName", "checkstyle:FieldDocComment"])
 class AGALMiniAssembler

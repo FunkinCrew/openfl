@@ -1,8 +1,8 @@
 package openfl.display;
 
+import openfl.Vector;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.Vector;
 
 /**
 	The Tileset class lets you specify logical rectangles within a larger

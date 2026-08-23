@@ -1,20 +1,20 @@
 package openfl.display._internal;
 
-import openfl.text.Font;
-import openfl.text._internal.TextEngine;
+import lime.graphics.cairo.Cairo;
+import lime.graphics.cairo.CairoAntialias;
+import lime.graphics.cairo.CairoFTFontFace;
+import lime.graphics.cairo.CairoFontOptions;
+import lime.graphics.cairo.CairoGlyph;
+import lime.graphics.cairo.CairoHintMetrics;
+import lime.graphics.cairo.CairoHintStyle;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.text.Font;
 import openfl.text.TextField;
-import lime.graphics.cairo.Cairo;
-import lime.graphics.cairo.CairoAntialias;
-import lime.graphics.cairo.CairoFontOptions;
-import lime.graphics.cairo.CairoFTFontFace;
-import lime.graphics.cairo.CairoGlyph;
-import lime.graphics.cairo.CairoHintMetrics;
-import lime.graphics.cairo.CairoHintStyle;
+import openfl.text._internal.TextEngine;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)

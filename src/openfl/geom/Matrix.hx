@@ -1,8 +1,8 @@
 package openfl.geom;
 
-import openfl.utils.ObjectPool;
-import lime.utils.Float32Array;
 import lime.math.Matrix3;
+import lime.utils.Float32Array;
+import openfl.utils.ObjectPool;
 
 /**
 	The Matrix class represents a transformation matrix that determines how to

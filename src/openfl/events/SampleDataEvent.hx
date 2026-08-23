@@ -1,17 +1,16 @@
 package openfl.events;
 
-// import openfl.utils.ObjectPool;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 #if (js && html5)
-import js.html.audio.AudioProcessingEvent;
 import haxe.io.Float32Array;
 import js.html.audio.AudioBuffer;
+import js.html.audio.AudioProcessingEvent;
 import openfl.errors.Error;
 #end
 #if lime_openal
-import openfl.errors.Error;
 import haxe.io.Bytes;
+import openfl.errors.Error;
 #end
 
 /**

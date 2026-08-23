@@ -1,8 +1,8 @@
 package openfl.utils._internal;
 
+import lime.ui.Touch;
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;
-import lime.ui.Touch;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class TouchData

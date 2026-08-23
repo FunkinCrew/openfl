@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+import openfl.Vector;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
@@ -10,7 +11,6 @@ import openfl.display.LineScaleMode;
 import openfl.display.SpreadMethod;
 import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
-import openfl.Vector;
 
 @:allow(openfl.display._internal)
 @:access(openfl.display._internal)

@@ -3,13 +3,13 @@ package openfl.text;
 #if sys
 import openfl.display.BitmapData;
 import openfl.display.Stage;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
+import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.FocusEvent;
 import openfl.events.KeyboardEvent;
-import openfl.errors.ArgumentError;
-import openfl.errors.Error;
-import openfl.errors.RangeError;
 import openfl.geom.Rectangle;
 import openfl.text.engine.FontPosture;
 import openfl.text.engine.FontWeight;

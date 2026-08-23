@@ -1,18 +1,18 @@
 package openfl;
 
-import openfl.utils.Dictionary;
 import haxe.Constraints.Function;
 import haxe.PosInfos;
 import haxe.Timer;
-import openfl.errors.Error;
-import openfl.errors.TypeError;
+import lime.system.System;
 import lime.utils.Log;
-import openfl.utils._internal.Lib as InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
+import openfl.errors.Error;
+import openfl.errors.TypeError;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-import lime.system.System;
+import openfl.utils.Dictionary;
+import openfl.utils._internal.Lib as InternalLib;
 #if (js && html5)
 import js.Browser;
 #end

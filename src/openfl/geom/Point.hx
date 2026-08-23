@@ -1,7 +1,7 @@
 package openfl.geom;
 
-import openfl.utils.ObjectPool;
 import lime.math.Vector2;
+import openfl.utils.ObjectPool;
 
 /**
 	The Point object represents a location in a two-dimensional coordinate
