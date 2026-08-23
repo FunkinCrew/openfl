@@ -2,11 +2,9 @@ package openfl.display;
 
 import openfl.utils._internal.Lib;
 import openfl.events.Event;
-#if lime
 import lime.app.Application as LimeApplication;
 import lime.ui.Window as LimeWindow;
 import lime.ui.WindowAttributes;
-#end
 #if sys
 import openfl.desktop.NativeApplication;
 #end
@@ -28,27 +26,17 @@ import openfl.events.InvokeEvent;
 #end
 @:access(openfl.events.Event)
 @SuppressWarnings("checkstyle:FieldDocComment")
-class Application #if lime extends LimeApplication #end
+class Application extends LimeApplication
 {
-	#if !lime
-	public static var current:Application;
-
-	public var window:Window;
-	#end
-
-	#if lime
 	public function new(?appMeta:Map<String, String>)
-	#else
-	public function new()
-	#end
 	{
-		#if lime
 		super(appMeta);
-		#end
+
 		if (Lib.application == null)
 		{
 			Lib.application = this;
 		}
+
 		#if !macro
 		if (Lib.current == null) Lib.current = new MovieClip();
 		Lib.current.__loaderInfo = LoaderInfo.create(null);
@@ -56,7 +44,6 @@ class Application #if lime extends LimeApplication #end
 		#end
 	}
 
-	#if lime
 	@:noCompletion override public function createWindow(attributes:WindowAttributes):Window
 	{
 		return cast super.createWindow(attributes);
@@ -154,7 +141,6 @@ class Application #if lime extends LimeApplication #end
 
 		onCreateWindow.dispatch(window);
 	}
-	#end
 
 	@:noCompletion override private function __checkForAllWindowsClosed():Void
 	{

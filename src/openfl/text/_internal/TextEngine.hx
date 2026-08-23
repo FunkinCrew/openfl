@@ -13,10 +13,8 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
-#if lime
 import lime.graphics.cairo.CairoFontFace;
 import lime.system.System;
-#end
 #if sys
 import sys.io.Process;
 #end
@@ -99,7 +97,7 @@ class TextEngine
 	private var __useIntAdvances:Null<Bool>;
 	private var __useLetterSpacing:Null<Bool>;
 
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion @:dox(hide) public var __cairoFont:#if lime CairoFontFace #else Dynamic #end;
+	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
 
 	public function new(textField:TextField)
@@ -489,15 +487,10 @@ class TextEngine
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
 		}
-		else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+		else if (font != null && font.unitsPerEM != 0)
 		{
-			#if lime
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs((font.descender / font.unitsPerEM) * format.size);
-			#else
-			ascent = format.size;
-			descent = format.size * 0.185;
-			#end
 		}
 		else
 		{
@@ -734,15 +727,10 @@ class TextEngine
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
 			}
-			else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+			else if (font != null && font.unitsPerEM != 0)
 			{
-				#if lime
 				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
-				#else
-				ascent = currentFormat.size;
-				descent = currentFormat.size * 0.185;
-				#end
 			}
 			else
 			{
@@ -1055,12 +1043,10 @@ class TextEngine
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
 			}
-			else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+			else if (font != null && font.unitsPerEM != 0)
 			{
-				#if lime
 				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
-				#end
 			}
 			else
 			{

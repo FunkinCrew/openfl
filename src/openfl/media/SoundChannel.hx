@@ -2,9 +2,7 @@ package openfl.media;
 
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
-#if lime
 import lime.media.AudioSource;
-#end
 #if (js && html5)
 import openfl.events.SampleDataEvent;
 import js.html.audio.AudioProcessingEvent;
@@ -76,9 +74,7 @@ import lime.utils.Int16Array;
 	@:noCompletion private var __sound:Sound;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
-	#if lime
 	@:noCompletion private var __audioSource:AudioSource;
-	#end
 
 	#if (js && html5)
 	private var __sampleDataEvent:SampleDataEvent;
@@ -96,7 +92,7 @@ import lime.utils.Int16Array;
 	private var __emptyBuffers:Array<ALBuffer>;
 	#end
 
-	@:noCompletion private function new(sound:Sound, audioSource:#if lime AudioSource #else Dynamic #end = null, soundTransform:SoundTransform = null):Void
+	@:noCompletion private function new(sound:Sound, audioSource:AudioSource = null, soundTransform:SoundTransform = null):Void
 	{
 		super(this);
 
@@ -152,9 +148,8 @@ import lime.utils.Int16Array;
 		}
 		#end
 
-		#if lime
 		__audioSource.stop();
-		#end
+
 		__dispose();
 	}
 
@@ -162,11 +157,10 @@ import lime.utils.Int16Array;
 	{
 		if (!__isValid) return;
 
-		#if lime
 		__audioSource.onComplete.remove(audioSource_onComplete);
 		__audioSource.dispose();
 		__audioSource = null;
-		#end
+
 		__isValid = false;
 	}
 
@@ -281,9 +275,8 @@ import lime.utils.Int16Array;
 		this.soundTransform = soundTransform;
 	}
 
-	@:noCompletion private function __initAudioSource(audioSource:#if lime AudioSource #else Dynamic #end):Void
+	@:noCompletion private function __initAudioSource(audioSource:AudioSource):Void
 	{
-		#if lime
 		__audioSource = audioSource;
 		if (__audioSource == null)
 		{
@@ -294,7 +287,6 @@ import lime.utils.Int16Array;
 		__isValid = true;
 
 		__audioSource.play();
-		#end
 	}
 
 	// Get & Set Methods
@@ -302,20 +294,15 @@ import lime.utils.Int16Array;
 	{
 		if (!__isValid) return 0;
 
-		#if lime
 		return __audioSource.currentTime + __audioSource.offset;
-		#else
-		return 0;
-		#end
 	}
 
 	@:noCompletion private function set_position(value:Float):Float
 	{
 		if (!__isValid) return 0;
 
-		#if lime
 		__audioSource.currentTime = Std.int(value) - __audioSource.offset;
-		#end
+
 		return value;
 	}
 
@@ -340,7 +327,6 @@ import lime.utils.Int16Array;
 
 			if (__isValid)
 			{
-				#if lime
 				__audioSource.gain = volume;
 
 				var position = __audioSource.position;
@@ -349,7 +335,6 @@ import lime.utils.Int16Array;
 				__audioSource.position = position;
 
 				return value;
-				#end
 			}
 		}
 

@@ -27,7 +27,6 @@ import openfl.utils._internal.UInt8Array;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
 import openfl.display.OpenGLRenderer;
-#if lime
 import lime.graphics.opengl.GL;
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
@@ -35,7 +34,6 @@ import lime.graphics.RenderContext;
 import lime.graphics.WebGL2RenderContext;
 import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
-#end
 
 /**
 	The Context3D class provides a context for rendering geometrically defined graphics.
@@ -258,13 +256,13 @@ import lime.math.Vector2;
 	@:noCompletion private static var __glMemoryTotalAvailable:Int = -1;
 	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
 
-	@:noCompletion private var gl:#if lime WebGL2RenderContext #else Dynamic #end;
+	@:noCompletion private var gl:WebGL2RenderContext;
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
 	@:noCompletion private var __cleared:Bool;
-	@:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __context:RenderContext;
 	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __renderStage3DProgram:Program3D;
 	@:noCompletion private var __enableErrorChecking:Bool;
@@ -303,11 +301,9 @@ import lime.math.Vector2;
 		if (__contextState == null) __contextState = new Context3DState();
 		__state = new Context3DState();
 
-		#if lime
 		__vertexConstants = new Float32Array(4 * 128);
 		__fragmentConstants = new Float32Array(4 * 128);
 		__positionScale = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-		#end
 		__programs = new Map<String, Program3D>();
 
 		if (__glMaxViewportDims == -1)
@@ -345,7 +341,6 @@ import lime.math.Vector2;
 			}
 		}
 
-		#if lime
 		if (__glDepthStencil == -1)
 		{
 			#if (js && html5)
@@ -387,7 +382,6 @@ import lime.math.Vector2;
 				__glMemoryCurrentAvailable = extension.GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX;
 			}
 		}
-		#end
 
 		if (__driverInfo == null)
 		{
@@ -404,7 +398,6 @@ import lime.math.Vector2;
 		__quadIndexBufferElements = Math.floor(0xFFFF / 4);
 		__quadIndexBufferCount = __quadIndexBufferElements * 6;
 
-		#if lime
 		var data = new UInt16Array(__quadIndexBufferCount);
 
 		var index:UInt = 0;
@@ -425,7 +418,6 @@ import lime.math.Vector2;
 
 		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray(data);
-		#end
 	}
 
 	/**
@@ -1155,7 +1147,6 @@ import lime.math.Vector2;
 	**/
 	public function drawToBitmapData(destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void
 	{
-		#if lime
 		if (destination == null) return;
 
 		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle() : new LimeRectangle(0, 0, backBufferWidth, backBufferHeight);
@@ -1196,7 +1187,6 @@ import lime.math.Vector2;
 					__state.renderToTextureSurfaceSelector);
 			}
 		}
-		#end
 	}
 
 	/**
@@ -1528,7 +1518,6 @@ import lime.math.Vector2;
 	public function setProgramConstantsFromByteArray(programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray,
 			byteArrayOffset:UInt):Void
 	{
-		#if lime
 		if (numRegisters == 0 || __state.program == null) return;
 
 		if (__state.program != null && __state.program.__format == GLSL)
@@ -1561,7 +1550,6 @@ import lime.math.Vector2;
 				__state.program.__markDirty(isVertex, firstRegister, numRegisters);
 			}
 		}
-		#end
 	}
 
 	/**
@@ -1586,7 +1574,6 @@ import lime.math.Vector2;
 	**/
 	public function setProgramConstantsFromMatrix(programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void
 	{
-		#if lime
 		if (__state.program != null && __state.program.__format == GLSL)
 		{
 			__flushGLProgram();
@@ -1657,7 +1644,6 @@ import lime.math.Vector2;
 				__state.program.__markDirty(isVertex, firstRegister, 4);
 			}
 		}
-		#end
 	}
 
 	/**
@@ -2531,13 +2517,11 @@ import lime.math.Vector2;
 					__bindGLTextureCubeMap(texture.__getTexture());
 				}
 
-				#if lime
 				if (__context.type == OPENGL)
 				{
 					// TODO: Cache?
 					gl.enable(gl.TEXTURE_2D);
 				}
-				#end
 
 				__contextState.textures[i] = texture;
 

@@ -14,10 +14,8 @@ import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 import openfl.utils.Promise;
-#if lime
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetManifest;
-#end
 
 class AssetManifestLoader implements IDisplayObjectLoader
 {
@@ -25,7 +23,6 @@ class AssetManifestLoader implements IDisplayObjectLoader
 
 	public function load(request:URLRequest, context:LoaderContext, contentLoaderInfo:LoaderInfo):Future<DisplayObject>
 	{
-		#if lime
 		if (contentLoaderInfo.contentType != null && contentLoaderInfo.contentType.indexOf("/json") > -1)
 		{
 			var promise = new Promise<DisplayObject>();
@@ -92,7 +89,6 @@ class AssetManifestLoader implements IDisplayObjectLoader
 			return promise.future;
 		}
 		else
-		#end
 		{
 			return null;
 		}

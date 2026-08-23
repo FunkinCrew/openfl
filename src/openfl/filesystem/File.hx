@@ -15,7 +15,7 @@ import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 import sys.FileSystem;
 import sys.io.Process;
-#if (lime && !macro)
+#if !macro
 import lime.ui.FileDialog;
 import lime.ui.FileDialogFilter;
 #end
@@ -585,7 +585,7 @@ class File extends FileReference
 	**/
 	public function browseForDirectory(title:String):Void
 	{
-		#if (lime && !macro)
+		#if !macro
 		FileDialog.openDirectory(Lib.current.stage.window, title, function(filepaths:Array<String>):Void
 		{
 			if (filepaths.length > 0)
@@ -650,7 +650,7 @@ class File extends FileReference
 	**/
 	public function browseForOpen(title:String, typeFilter:Array<FileFilter> = null)
 	{
-		#if (lime && !macro)
+		#if !macro
 		FileDialog.openFile(Lib.current.stage.window, title, function(filepaths:Array<String>, filter):Void
 		{
 			if (filepaths.length > 0)
@@ -714,7 +714,7 @@ class File extends FileReference
 	**/
 	public function browseForOpenMultiple(title:String, typeFilter:Array<FileFilter> = null):Void
 	{
-		#if (lime && !macro)
+		#if !macro
 		FileDialog.openFile(Lib.current.stage.window, title, function(filepaths:Array<String>, filter):Void
 		{
 			if (filepaths.length > 0)
@@ -781,7 +781,7 @@ class File extends FileReference
 	**/
 	public function browseForSave(title:String):Void
 	{
-		#if (lime && !macro)
+		#if !macro
 		FileDialog.saveFile(Lib.current.stage.window, title, function(filepath:String, filter):Void
 		{
 			if (filepath != null)
@@ -2033,7 +2033,7 @@ class File extends FileReference
 		return Path.removeTrailingSlashes(path);
 	}
 
-	#if (lime && !macro)
+	#if !macro
 	@:noCompletion private static function __getFilterTypes(typeFilter:Array<FileFilter>):Array<FileDialogFilter>
 	{
 		var filters:Array<FileDialogFilter> = [];

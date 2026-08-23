@@ -7,10 +7,8 @@ import haxe.Unserializer;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.utils.Object;
-#if lime
 import lime.app.Application;
 import lime.system.System;
-#end
 #if (js && html5)
 import js.Browser;
 #end
@@ -647,13 +645,11 @@ class SharedObject extends EventDispatcher
 		if (__sharedObjects == null)
 		{
 			__sharedObjects = new Map();
-			// Lib.application.onExit.add (application_onExit);
-			#if lime
+
 			if (Application.current != null)
 			{
 				Application.current.onExit.add(application_onExit);
 			}
-			#end
 		}
 
 		var id = localPath + "/" + name;
@@ -854,7 +850,6 @@ class SharedObject extends EventDispatcher
 
 	@:noCompletion private static function __getPath(localPath:String, name:String):String
 	{
-		#if lime
 		var path = System.applicationStorageDirectory + "/" + localPath + "/";
 
 		name = StringTools.replace(name, "//", "/");
@@ -884,9 +879,6 @@ class SharedObject extends EventDispatcher
 		}
 
 		return path + name + ".sol";
-		#else
-		return name + ".sol";
-		#end
 	}
 
 	@:noCompletion private static function __mkdir(directory:String):Void

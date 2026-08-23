@@ -10,9 +10,7 @@ import openfl.display._internal.CanvasTilemap;
 import openfl.display._internal.CanvasVideo;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if lime
 import lime.graphics.Canvas2DRenderContext;
-#end
 
 /**
 	**BETA**
@@ -33,12 +31,12 @@ class CanvasRenderer extends DisplayObjectRenderer
 		The current HTML5 canvas render context
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
+	public var context:Canvas2DRenderContext;
 
 	@:noCompletion private var __tempMatrix:Matrix;
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	@:noCompletion private function new(context:#if lime Canvas2DRenderContext #else Dynamic #end)
+	@:noCompletion private function new(context:Canvas2DRenderContext)
 	{
 		super();
 
@@ -46,16 +44,14 @@ class CanvasRenderer extends DisplayObjectRenderer
 
 		__tempMatrix = new Matrix();
 
-		#if lime
 		__type = CANVAS;
-		#end
 	}
 
 	/**
 		Set whether smoothing should be enabled on a canvas context
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public function applySmoothing(context:#if lime Canvas2DRenderContext #else Dynamic #end, value:Bool):Void
+	public function applySmoothing(context:Canvas2DRenderContext, value:Bool):Void
 	{
 		context.imageSmoothingEnabled = value;
 	}
@@ -65,7 +61,7 @@ class CanvasRenderer extends DisplayObjectRenderer
 		context
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public function setTransform(transform:Matrix, context:#if lime Canvas2DRenderContext #else Dynamic #end = null):Void
+	public function setTransform(transform:Matrix, context:Canvas2DRenderContext = null):Void
 	{
 		if (context == null)
 		{
@@ -240,7 +236,7 @@ class CanvasRenderer extends DisplayObjectRenderer
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	@:noCompletion private function __setBlendModeContext(context:#if lime Canvas2DRenderContext #else Dynamic #end, value:BlendMode):Void
+	@:noCompletion private function __setBlendModeContext(context:Canvas2DRenderContext, value:BlendMode):Void
 	{
 		switch (value)
 		{

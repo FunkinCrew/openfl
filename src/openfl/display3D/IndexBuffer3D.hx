@@ -73,10 +73,8 @@ import openfl.Vector;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void
 	{
-		#if lime
 		var offset = byteArrayOffset + startOffset * 2;
 		uploadFromTypedArray(new UInt16Array(data.toArrayBuffer(), offset, count));
-		#end
 	}
 
 	/**
@@ -114,7 +112,6 @@ import openfl.Vector;
 	**/
 	public function uploadFromVector(data:Vector<UInt>, startOffset:Int, count:Int):Void
 	{
-		#if lime
 		// TODO: Optimize more
 
 		if (data == null) return;
@@ -139,7 +136,6 @@ import openfl.Vector;
 		}
 
 		uploadFromTypedArray(__tempUInt16Array);
-		#end
 	}
 
 	/**
@@ -159,7 +155,6 @@ import openfl.Vector;
 	**/
 	public function uploadFromArray(data:Array<UInt>, startOffset:Int, count:Int):Void
 	{
-		#if lime
 		// TODO: Optimize more
 
 		if (data == null) return;
@@ -184,6 +179,5 @@ import openfl.Vector;
 		}
 
 		uploadFromTypedArray(__tempUInt16Array);
-		#end
 	}
 }

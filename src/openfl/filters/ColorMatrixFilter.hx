@@ -5,10 +5,8 @@ import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime._internal.graphics.ImageCanvasUtil;
 import lime.math.RGBA;
-#end
 
 /**
 	The ColorMatrixFilter class lets you apply a 4 x 5 matrix transformation
@@ -137,7 +135,6 @@ import lime.math.RGBA;
 	@:noCompletion private override function __applyFilter(destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
-		#if lime
 		var sourceImage = sourceBitmapData.image;
 		var image = destBitmapData.image;
 
@@ -200,7 +197,7 @@ import lime.math.RGBA;
 		}
 
 		destBitmapData.image.dirty = true;
-		#end
+
 		return destBitmapData;
 	}
 

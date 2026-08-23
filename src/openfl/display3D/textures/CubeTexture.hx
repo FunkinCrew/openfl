@@ -111,7 +111,6 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromBitmapData(source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void
 	{
-		#if lime
 		if (source == null) return;
 		var size = __size >> miplevel;
 		if (size == 0) return;
@@ -140,7 +139,6 @@ import openfl.utils.ByteArray;
 		#end
 
 		uploadFromTypedArray(image.data, side, miplevel);
-		#end
 	}
 
 	/**
@@ -171,7 +169,6 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void
 	{
-		#if lime
 		#if (js && !display)
 		if (byteArrayOffset == 0)
 		{
@@ -181,7 +178,6 @@ import openfl.utils.ByteArray;
 		#end
 
 		uploadFromTypedArray(new UInt8Array(data.toArrayBuffer(), byteArrayOffset), side, miplevel);
-		#end
 	}
 
 	/**

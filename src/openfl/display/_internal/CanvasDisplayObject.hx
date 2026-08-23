@@ -2,9 +2,7 @@ package openfl.display._internal;
 
 import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
-#if lime
 import lime.math.ARGB;
-#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)

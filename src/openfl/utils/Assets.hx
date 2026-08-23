@@ -8,11 +8,9 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 import openfl.text.Font;
-#if lime
 import lime.app.Promise;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
-#end
 
 /**
 	The Assets class provides a cross-platform interface to access
@@ -49,12 +47,10 @@ class Assets
 
 	public static function addEventListener(type:String, listener:Dynamic, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
 	{
-		#if lime
 		if (!LimeAssets.onChange.has(LimeAssets_onChange))
 		{
 			LimeAssets.onChange.add(LimeAssets_onChange);
 		}
-		#end
 
 		dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 	}
@@ -73,7 +69,6 @@ class Assets
 	**/
 	public static function exists(id:String, type:AssetType = null, allowCompressedTextures:Bool = true):Bool
 	{
-		#if lime
 		if (allowCompressedTextures)
 		{
 			if (id != null && haxe.io.Path.extension(id) == "png")
@@ -90,9 +85,6 @@ class Assets
 		}
 
 		return LimeAssets.exists(id, cast type);
-		#else
-		return false;
-		#end
 	}
 
 	/**
@@ -129,7 +121,7 @@ class Assets
 	**/
 	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true):BitmapData
 	{
-		#if (lime && tools && !display)
+		#if (tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
 		{
 			var bitmapData = cache.getBitmapData(id);
@@ -196,11 +188,7 @@ class Assets
 	**/
 	public static function getBytes(id:String):ByteArray
 	{
-		#if lime
 		return LimeAssets.getBytes(id);
-		#else
-		return null;
-		#end
 	}
 
 	/**
@@ -218,7 +206,7 @@ class Assets
 	**/
 	public static function getFont(id:String, useCache:Bool = true):Font
 	{
-		#if (lime && tools && !display && !macro)
+		#if (tools && !display && !macro)
 		if (useCache && cache.enabled && cache.hasFont(id))
 		{
 			return cache.getFont(id);
@@ -244,13 +232,9 @@ class Assets
 		return new Font();
 	}
 
-	public static function getLibrary(name:String):#if lime LimeAssetLibrary #else AssetLibrary #end
+	public static function getLibrary(name:String):LimeAssetLibrary
 	{
-		#if lime
 		return LimeAssets.getLibrary(name);
-		#else
-		return null;
-		#end
 	}
 
 	/**
@@ -265,7 +249,7 @@ class Assets
 	**/
 	public static function getMovieClip(id:String):MovieClip
 	{
-		#if (lime && tools && !display)
+		#if (tools && !display)
 		var libraryName = id.substring(0, id.indexOf(":"));
 		var symbolName = id.substr(id.indexOf(":") + 1);
 		var limeLibrary = getLibrary(libraryName);
@@ -319,11 +303,7 @@ class Assets
 	**/
 	public static function getPath(id:String):String
 	{
-		#if lime
 		return LimeAssets.getPath(id);
-		#else
-		return null;
-		#end
 	}
 
 	/**
@@ -341,7 +321,7 @@ class Assets
 	**/
 	public static function getSound(id:String, useCache:Bool = true):Sound
 	{
-		#if (lime && tools && !display)
+		#if (tools && !display)
 		if (useCache && cache.enabled && cache.hasSound(id))
 		{
 			var sound = cache.getSound(id);
@@ -382,11 +362,7 @@ class Assets
 	**/
 	public static function getText(id:String):String
 	{
-		#if lime
 		return LimeAssets.getText(id);
-		#else
-		return null;
-		#end
 	}
 
 	public static function hasEventListener(type:String):Bool
@@ -396,11 +372,7 @@ class Assets
 
 	public static function hasLibrary(name:String):Bool
 	{
-		#if lime
 		return LimeAssets.hasLibrary(name);
-		#else
-		return false;
-		#end
 	}
 
 	/**
@@ -447,7 +419,7 @@ class Assets
 	**/
 	public static function isLocal(id:String, type:AssetType = null, useCache:Bool = true):Bool
 	{
-		#if (lime && tools && !display)
+		#if (tools && !display)
 		if (useCache && cache.enabled)
 		{
 			if (type == AssetType.IMAGE || type == null)
@@ -481,9 +453,8 @@ class Assets
 
 	@:analyzer(ignore) private static function isValidBitmapData(bitmapData:BitmapData):Bool
 	{
-		#if (lime && tools && !display)
-		return (bitmapData != null
-			&& #if !lime_hybrid (bitmapData.image != null || bitmapData.__texture != null) #else bitmapData.__handle != null #end);
+		#if (tools && !display)
+		return (bitmapData != null && (bitmapData.image != null || bitmapData.__texture != null));
 		#else
 		return true;
 		#end
@@ -506,11 +477,7 @@ class Assets
 	**/
 	public static function list(type:AssetType = null):Array<String>
 	{
-		#if lime
 		return LimeAssets.list(cast type);
-		#else
-		return [];
-		#end
 	}
 
 	/**
@@ -530,7 +497,7 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
-		#if (lime && tools && !display)
+		#if (tools && !display)
 		var promise = new Promise<BitmapData>();
 
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
@@ -585,18 +552,14 @@ class Assets
 	**/
 	public static function loadBytes(id:String):Future<ByteArray>
 	{
-		#if lime
 		var promise = new Promise<ByteArray>();
-		var future = LimeAssets.loadBytes(id);
 
+		var future = LimeAssets.loadBytes(id);
 		future.onComplete(function(bytes) promise.complete(bytes));
 		future.onProgress(function(progress, total) promise.progress(progress, total));
 		future.onError(function(msg) promise.error(msg));
 
 		return promise.future;
-		#else
-		return Future.withValue(getBytes(id));
-		#end
 	}
 
 	/**
@@ -616,7 +579,7 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
-		#if (lime && tools && !display && !macro)
+		#if (tools && !display && !macro)
 		var promise = new Promise<Font>();
 
 		if (useCache && cache.enabled && cache.hasFont(id))
@@ -625,22 +588,22 @@ class Assets
 			return promise.future;
 		}
 
-		LimeAssets.loadFont(id)
-			.onComplete(function(limeFont)
+		var future = LimeAssets.loadFont(id);
+		future.onComplete(function(limeFont)
+		{
+			var font = new Font();
+
+			font.__fromLimeFont(limeFont);
+
+			if (useCache && cache.enabled)
 			{
-				var font = new Font();
+				cache.setFont(id, font);
+			}
 
-				font.__fromLimeFont(limeFont);
-
-				if (useCache && cache.enabled)
-				{
-					cache.setFont(id, font);
-				}
-
-				promise.complete(font);
-			})
-			.onError(promise.error)
-			.onProgress(promise.progress);
+			promise.complete(font);
+		});
+		future.onError(promise.error);
+		future.onProgress(promise.progress);
 
 		return promise.future;
 		#else
@@ -655,7 +618,6 @@ class Assets
 	**/
 	public static function loadLibrary(name:String):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end
 	{
-		#if lime
 		return LimeAssets.loadLibrary(name).then(function(library)
 		{
 			var _library:AssetLibrary = null;
@@ -684,9 +646,6 @@ class Assets
 
 			return Future.withValue(_library);
 		});
-		#else
-		return cast Future.withError("Cannot load library");
-		#end
 	}
 
 	/**
@@ -704,38 +663,35 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
-		#if lime
 		#if !html5
 		var promise = new Promise<Sound>();
 
-		LimeAssets.loadAudioBuffer(id, useCache)
-			.onComplete(function(buffer)
+		var future = LimeAssets.loadAudioBuffer(id, useCache);
+		future.onComplete(function(buffer)
+		{
+			if (buffer != null)
 			{
-				if (buffer != null)
-				{
-					var sound = Sound.fromAudioBuffer(buffer);
+				var sound = Sound.fromAudioBuffer(buffer);
 
-					if (useCache && cache.enabled)
-					{
-						cache.setSound(id, sound);
-					}
-
-					promise.complete(sound);
-				}
-				else
+				if (useCache && cache.enabled)
 				{
-					promise.error("[Assets] Could not load Sound \"" + id + "\"");
+					cache.setSound(id, sound);
 				}
-			})
-			.onError(promise.error)
-			.onProgress(promise.progress);
+
+				promise.complete(sound);
+			}
+			else
+			{
+				promise.error("[Assets] Could not load Sound \"" + id + "\"");
+			}
+		});
+		future.onError(promise.error);
+		future.onProgress(promise.progress);
+
 		return promise.future;
 		#else
 		var future = new Future<Sound>(function() return getMusic(id, useCache));
 		return future;
-		#end
-		#else
-		return Future.withValue(getMusic(id, useCache));
 		#end
 	}
 
@@ -752,7 +708,7 @@ class Assets
 	**/
 	public static function loadMovieClip(id:String):Future<MovieClip>
 	{
-		#if (lime && tools && !display)
+		#if (tools && !display)
 		var promise = new Promise<MovieClip>();
 
 		var libraryName = id.substring(0, id.indexOf(":"));
@@ -802,7 +758,6 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
-		#if lime
 		var promise = new Promise<Sound>();
 
 		LimeAssets.loadAudioBuffer(id, useCache)
@@ -826,10 +781,8 @@ class Assets
 			})
 			.onError(promise.error)
 			.onProgress(promise.progress);
+
 		return promise.future;
-		#else
-		return Future.withValue(getSound(id, useCache));
-		#end
 	}
 
 	/**
@@ -845,12 +798,7 @@ class Assets
 	**/
 	public static function loadText(id:String):Future<String>
 	{
-		#if lime
-		var future = LimeAssets.loadText(id);
-		return future;
-		#else
-		return Future.withValue(getText(id));
-		#end
+		return LimeAssets.loadText(id);
 	}
 
 	/**
@@ -870,9 +818,7 @@ class Assets
 	**/
 	public static function registerLibrary(name:String, library:AssetLibrary):Void
 	{
-		#if lime
 		LimeAssets.registerLibrary(name, library);
-		#end
 	}
 
 	public static function removeEventListener(type:String, listener:Dynamic, capture:Bool = false):Void
@@ -882,9 +828,7 @@ class Assets
 
 	public static function unloadLibrary(name:String):Void
 	{
-		#if lime
 		LimeAssets.unloadLibrary(name);
-		#end
 	}
 
 	/**

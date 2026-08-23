@@ -1,11 +1,9 @@
 package openfl.display;
 
 import openfl.utils._internal.Lib;
-#if lime
 import lime.app.Application;
 import lime.ui.Window as LimeWindow;
 import lime.ui.WindowAttributes;
-#end
 
 /**
 	The Window class is a Lime Window instance that automatically
@@ -14,28 +12,12 @@ import lime.ui.WindowAttributes;
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Stage)
 @SuppressWarnings("checkstyle:FieldDocComment")
-class Window #if lime extends LimeWindow #end
+class Window extends LimeWindow
 {
-	#if !lime
-	public var application:Application;
-	@SuppressWarnings("checkstyle:Dynamic") public var context:Dynamic;
-	@SuppressWarnings("checkstyle:Dynamic") public var cursor:Dynamic;
-	@SuppressWarnings("checkstyle:Dynamic") public var display:Dynamic;
-	public var frameRate:Float;
-	public var fullscreen:Bool;
-	public var height:Int;
-	public var scale:Float;
-	public var stage:Stage;
-	public var textInputEnabled:Bool;
-	public var width:Int;
-	#end
-
 	@SuppressWarnings("checkstyle:Dynamic")
-	@:noCompletion private function new(application:Application, attributes:#if lime WindowAttributes #else Dynamic #end)
+	@:noCompletion private function new(application:Application, attributes:WindowAttributes)
 	{
-		#if lime
 		super(application, attributes);
-		#end
 
 		#if !macro
 		#if commonjs
@@ -65,9 +47,7 @@ class Window #if lime extends LimeWindow #end
 			stage.scaleMode = StageScaleMode.SHOW_ALL;
 		}
 
-		#if lime
 		application.addModule(stage);
-		#end
 		#else
 		stage = Lib.current.stage;
 		#end
@@ -85,9 +65,9 @@ class Window #if lime extends LimeWindow #end
 			// already closed
 			return;
 		}
-		#if lime
+
 		application.removeModule(stage);
-		#end
+
 		stage = null;
 	}
 }

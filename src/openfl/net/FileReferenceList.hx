@@ -5,9 +5,7 @@ import haxe.io.Path;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.filesystem.File;
-#if lime
 import lime.ui.FileDialog;
-#end
 #if sys
 import sys.FileSystem;
 #end
@@ -135,7 +133,7 @@ class FileReferenceList extends EventDispatcher
 	{
 		fileList = new Array();
 
-		#if (lime && !macro)
+		#if !macro
 		FileDialog.openFile(Lib.current.stage.window, function(paths:Array<String>, filter):Void
 		{
 			if (paths.length > 0)

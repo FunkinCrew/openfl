@@ -1,7 +1,6 @@
 package openfl.text._internal;
 
 import haxe.io.Bytes;
-#if lime
 import lime.math.Vector2;
 import lime.text.harfbuzz.HBBuffer;
 import lime.text.harfbuzz.HBBufferClusterLevel;
@@ -14,9 +13,6 @@ import lime.text.harfbuzz.HBScript;
 import lime.text.harfbuzz.HB;
 import lime.text.Font;
 import lime.text.Glyph;
-#else
-import openfl.text.Font;
-#end
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class TextLayout
@@ -49,7 +45,7 @@ class TextLayout
 	public var autoHint:Bool;
 	public var direction(get, set):TextDirection;
 	public var font(default, set):Font;
-	@SuppressWarnings("checkstyle:Dynamic") public var glyphs(get, never):Array< #if lime Glyph #else Dynamic #end>;
+	public var glyphs(get, never):Array<Glyph>;
 	public var language(get, set):String;
 	public var letterSpacing:Float = 0;
 	@:isVar public var positions(get, null):Array<GlyphPosition>;
@@ -88,19 +84,17 @@ class TextLayout
 	{
 		if (language.length != 4) return;
 
-		#if lime
 		__hbBuffer = new HBBuffer();
 		__hbBuffer.direction = direction.toHBDirection();
 		__hbBuffer.script = script.toHBScript();
 		__hbBuffer.language = new HBLanguage(language);
-		#end
 	}
 
 	@:noCompletion private function __position():Void
 	{
 		positions = [];
 
-		#if (lime && lime_cffi && !macro)
+		#if (lime_cffi && !macro)
 		if (text != null && text != "" && font != null && font.src != null)
 		{
 			if (__buffer == null)
@@ -221,11 +215,10 @@ class TextLayout
 		return value;
 	}
 
-	@:noCompletion
 	@SuppressWarnings("checkstyle:Dynamic")
-	private function get_glyphs():Array< #if lime Glyph #else Dynamic #end>
+	@:noCompletion private function get_glyphs():Array<Glyph>
 	{
-		var glyphs:Array< #if lime Glyph #else Dynamic #end> = [];
+		var glyphs:Array<Glyph> = [];
 
 		for (position in positions)
 		{
@@ -313,7 +306,6 @@ class TextLayout
 		}
 	}
 
-	#if lime
 	@:to public inline function toHBDirection():HBDirection
 	{
 		return switch (this)
@@ -325,7 +317,6 @@ class TextLayout
 			default: HBDirection.INVALID;
 		}
 	}
-	#end
 
 	@:noCompletion private inline function get_backward():Bool
 	{
@@ -478,7 +469,6 @@ class TextLayout
 	public var WARANG_CITI = "Wara";
 	public var rightToLeft(get, never):Bool;
 
-	#if lime
 	@:to public inline function toHBScript():HBScript
 	{
 		return switch (this)
@@ -486,7 +476,6 @@ class TextLayout
 			default: HBScript.COMMON;
 		}
 	}
-	#end
 
 	@:noCompletion private inline function get_rightToLeft():Bool
 	{

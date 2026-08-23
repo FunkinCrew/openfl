@@ -143,7 +143,7 @@ class MultiBufferTexture extends TextureBase
 		switch (f)
 		{
 			case BGRA:
-				#if (lime && !ios)
+				#if !ios
 				return (__context.__context.type == OPENGLES) ? baseGLFormat : gl.RGBA;
 				#else
 				return gl.RGBA;

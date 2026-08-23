@@ -28,7 +28,6 @@ import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-#if lime
 import lime.app.Application;
 import lime.app.IModule;
 import lime.graphics.RenderContext;
@@ -43,7 +42,6 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
 import lime.system.Orientation;
-#end
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 #end
@@ -183,7 +181,7 @@ typedef Element = Dynamic;
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
 @:access(lime.ui.Window)
-class Stage extends DisplayObjectContainer #if lime implements IModule #end
+class Stage extends DisplayObjectContainer implements IModule
 {
 	/**
 		Whether the application supports changes in the stage orientation (and
@@ -867,9 +865,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __uncaughtErrorEvents:UncaughtErrorEvents;
 	@:noCompletion private var __wasDirty:Bool;
 	@:noCompletion private var __wasFullscreen:Bool;
-	#if lime
 	@:noCompletion private var __primaryTouch:Touch;
-	#end
 	private var __oldStageOrientation:StageOrientation = UNKNOWN;
 
 	public function new(#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null,
@@ -1154,7 +1150,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __createRenderer():Void
 	{
-		#if lime
 		var windowWidth = Std.int(window.width * window.scale);
 		var windowHeight = Std.int(window.height * window.scale);
 
@@ -1194,7 +1189,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__renderer.__stage = this;
 			__renderer.__resize(windowWidth, windowHeight);
 		}
-		#end
 	}
 
 	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
@@ -1495,7 +1489,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 	}
 
-	#if lime
 	@:noCompletion private function __onKey(type:String, keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		__dispatchPendingMouseEvent();
@@ -1815,9 +1808,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 		}
 	}
-	#end
 
-	#if lime
 	@:noCompletion private function __onLimeCreateWindow(window:Window):Void
 	{
 		if (this.window != window) return;
@@ -2129,7 +2120,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__update(false, true);
 		#end
 
-		#if lime
 		if (__renderer != null)
 		{
 			if (context3D != null)
@@ -2185,7 +2175,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			__renderer.__cleared = false;
 		}
-		#end
 
 		return cancelled;
 	}
@@ -2577,7 +2566,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__dispatchEvent(new FullScreenEvent(FullScreenEvent.FULL_SCREEN, false, false, false, true));
 		}
 	}
-	#end
 
 	@:noCompletion private function __onMouse(type:String, x:Float, y:Float, button:Int):Void
 	{
@@ -3079,7 +3067,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Point.__pool.release(localPoint);
 	}
 
-	#if lime
 	@:noCompletion private function __onMouseWheel(deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void
 	{
 		var x = __mouseX;
@@ -3116,9 +3103,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		Point.__pool.release(targetPoint);
 	}
-	#end
 
-	#if lime
 	@:noCompletion private function __onTouch(type:String, touch:Touch, isPrimaryTouchPoint:Bool):Void
 	{
 		var targetPoint = Point.__pool.get();
@@ -3313,9 +3298,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			TouchData.__pool.release(touchData);
 		}
 	}
-	#end
 
-	#if lime
 	@:noCompletion private function __registerLimeModule(application:Application):Void
 	{
 		application.onCreateWindow.add(__onLimeCreateWindow);
@@ -3334,7 +3317,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Touch.onEnd.add(__onLimeTouchEnd);
 		Touch.onCancel.add(__onLimeTouchCancel);
 	}
-	#end
 
 	@:noCompletion private function __applyScaleAndAlign(windowWidth:Float, windowHeight:Float, scaleX:Float, scaleY:Float):Void
 	{
@@ -3552,7 +3534,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __unregisterLimeModule(application:Application):Void
 	{
-		#if lime
 		application.onCreateWindow.remove(__onLimeCreateWindow);
 		application.onUpdate.remove(__onLimeUpdate);
 		application.onExit.remove(__onLimeModuleExit);
@@ -3563,7 +3544,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Touch.onMove.remove(__onLimeTouchMove);
 		Touch.onEnd.remove(__onLimeTouchEnd);
 		Touch.onCancel.remove(__onLimeTouchCancel);
-		#end
 	}
 
 	#if openfl_enable_experimental_update_queue

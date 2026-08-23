@@ -1,9 +1,7 @@
 package openfl.system;
 
-#if lime
 import lime.system.Clipboard;
 import lime.system.System as LimeSystem;
-#end
 #if cpp
 import cpp.vm.Gc;
 #end
@@ -130,9 +128,7 @@ import cpp.vm.Gc;
 	**/
 	public static function exit(code:Int):Void
 	{
-		#if lime
 		LimeSystem.exit(code);
-		#end
 	}
 
 	/**
@@ -203,9 +199,7 @@ import cpp.vm.Gc;
 	**/
 	public static function setClipboard(string:String):Void
 	{
-		#if lime
 		Clipboard.text = string;
-		#end
 	}
 
 	// Getters & Setters

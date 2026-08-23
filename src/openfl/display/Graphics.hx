@@ -19,9 +19,7 @@ import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.UInt16Array;
 import openfl.utils.ObjectPool;
 import openfl.Vector;
-#if lime
 import lime.graphics.cairo.Cairo;
-#end
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
@@ -402,7 +400,6 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (shader != null)
 		{
-			#if lime
 			if (__shaderBufferPool == null)
 			{
 				__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
@@ -414,7 +411,6 @@ import js.html.CanvasRenderingContext2D;
 			shaderBuffer.update(cast shader);
 
 			__commands.beginShaderFill(shaderBuffer);
-			#end
 		}
 	}
 
@@ -425,7 +421,6 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function clear():Void
 	{
-		#if lime
 		if (__usedShaderBuffers != null)
 		{
 			for (shaderBuffer in __usedShaderBuffers)
@@ -435,7 +430,6 @@ import js.html.CanvasRenderingContext2D;
 
 			__usedShaderBuffers.clear();
 		}
-		#end
 
 		__commands.clear();
 		__strokePadding = 0;

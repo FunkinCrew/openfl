@@ -25,8 +25,7 @@ import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Lib;
 import openfl.Vector;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime._internal.graphics.ImageCanvasUtil;
 import lime.app.Application;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoSurface;
@@ -37,7 +36,6 @@ import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.math.ARGB;
 import lime.math.Vector2;
-#end
 #if (js && html5)
 import js.html.CanvasElement;
 #end
@@ -134,10 +132,8 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
-	#if lime
 	@:noCompletion private static var __tempVector:Vector2 = new Vector2();
 	@:noCompletion private static var __fillRectRectangle:Rectangle = new Rectangle();
-	#end
 
 	/**
 		The height of the bitmap image in pixels.
@@ -150,7 +146,7 @@ class BitmapData implements IBitmapDrawable
 		In Flash Player, this property is always `null`.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var image(default, null):#if lime Image #else Dynamic #end;
+	public var image(default, null):Image;
 
 	/**
 		Defines whether the bitmap image is readable. Hardware-only bitmap images
@@ -281,7 +277,6 @@ class BitmapData implements IBitmapDrawable
 
 			fillColor = (fillColor << 8) | ((fillColor >> 24) & 0xFF);
 
-			#if lime
 			#if sys
 			var buffer = new ImageBuffer(new UInt8Array(width * height * 4), width, height);
 			buffer.format = BGRA32;
@@ -293,26 +288,11 @@ class BitmapData implements IBitmapDrawable
 			{
 				image.fillRect(image.rect, fillColor);
 			}
-			// #elseif (js && html5)
-			// var buffer = new ImageBuffer (null, width, height);
-			// var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
-			// buffer.__srcCanvas = canvas;
-			// buffer.__srcContext = canvas.getContext ("2d");
-			//
-			// image = new Image (buffer, 0, 0, width, height);
-			// image.type = CANVAS;
-			//
-			// if (fillColor != 0) {
-			//
-			// image.fillRect (image.rect, fillColor);
-			//
-			// }
 			#else
 			image = new Image(null, 0, 0, width, height, fillColor);
 			#end
 
 			image.transparent = transparent;
-			#end
 
 			__isValid = true;
 			readable = true;
@@ -405,7 +385,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function clone():BitmapData
 	{
-		#if lime
 		var bitmapData:BitmapData;
 
 		if (!__isValid)
@@ -438,9 +417,6 @@ class BitmapData implements IBitmapDrawable
 		bitmapData.__renderTransform.copyFrom(__renderTransform);
 
 		return bitmapData;
-		#else
-		return null;
-		#end
 	}
 
 	/**
@@ -454,9 +430,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable) return;
 
-		#if lime
 		image.colorTransform(rect.__toLimeRectangle(), colorTransform.__toLimeColorMatrix());
-		#end
 	}
 
 	/**
@@ -472,7 +446,6 @@ class BitmapData implements IBitmapDrawable
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function compare(otherBitmapData:BitmapData):Dynamic
 	{
-		#if lime
 		if (otherBitmapData == this)
 		{
 			return 0;
@@ -584,9 +557,6 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		return bitmapData;
-		#else
-		return 0;
-		#end
 	}
 
 	/**
@@ -638,7 +608,6 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable) return;
 
-		#if lime
 		var sourceChannel = switch (sourceChannel)
 		{
 			case 1: ImageChannel.RED;
@@ -658,7 +627,6 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		image.copyChannel(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), sourceChannel, destChannel);
-		#end
 	}
 
 	/**
@@ -707,7 +675,6 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable || sourceBitmapData == null) return;
 
-		#if lime
 		if (alphaPoint != null)
 		{
 			__tempVector.x = alphaPoint.x;
@@ -716,7 +683,6 @@ class BitmapData implements IBitmapDrawable
 
 		image.copyPixels(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
 			alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? __tempVector : null, mergeAlpha);
-		#end
 	}
 
 	/**
@@ -1187,7 +1153,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray
 	{
-		#if lime
 		if (!readable || rect == null) return byteArray = null;
 		if (byteArray == null) byteArray = new ByteArray();
 
@@ -1217,7 +1182,6 @@ class BitmapData implements IBitmapDrawable
 			byteArray.writeBytes(ByteArray.fromBytes(image.encode(JPEG, cast(compressor, JPEGEncoderOptions).quality)));
 			return byteArray;
 		}
-		#end
 
 		return byteArray = null;
 	}
@@ -1249,10 +1213,9 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function floodFill(x:Int, y:Int, color:Int):Void
 	{
-		#if lime
 		if (!readable) return;
+
 		image.floodFill(x, y, color, ARGB32);
-		#end
 	}
 
 	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
@@ -1360,7 +1323,6 @@ class BitmapData implements IBitmapDrawable
 	}
 	#end
 
-	#if lime
 	/**
 		Creates a new BitmapData using an existing Lime Image instance.
 
@@ -1379,7 +1341,6 @@ class BitmapData implements IBitmapDrawable
 		bitmapData.image.transparent = transparent;
 		return bitmapData.image != null ? bitmapData : null;
 	}
-	#end
 
 	/**
 		**BETA**
@@ -1462,7 +1423,6 @@ class BitmapData implements IBitmapDrawable
 			// TODO: Use shared buffer on context
 			// TODO: Support for UVs other than scale-9 grid?
 
-			#if lime
 			__indexBufferContext = context.__context;
 			__indexBuffer = null;
 
@@ -1650,7 +1610,6 @@ class BitmapData implements IBitmapDrawable
 			}
 
 			__indexBuffer.uploadFromTypedArray(__indexBufferData);
-			#end
 		}
 
 		return __indexBuffer;
@@ -1722,7 +1681,6 @@ class BitmapData implements IBitmapDrawable
 			// [ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
 			// [ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
 
-			#if lime
 			__vertexBufferContext = context.__context;
 			__vertexBuffer = null;
 
@@ -2006,7 +1964,6 @@ class BitmapData implements IBitmapDrawable
 			// __vertexBufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
 
 			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
-			#end
 		}
 		else
 		{
@@ -2118,7 +2075,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getColorBoundsRect(mask:Int, color:Int, findColor:Bool = true):Rectangle
 	{
-		#if lime
 		if (!readable) return new Rectangle(0, 0, width, height);
 
 		if (!transparent || ((mask >> 24) & 0xFF) > 0)
@@ -2128,10 +2084,8 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		var rect = image.getColorBoundsRect(mask, color, findColor, ARGB32);
+
 		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
-		#else
-		return new Rectangle(0, 0, width, height);
-		#end
 	}
 
 	/**
@@ -2162,11 +2116,8 @@ class BitmapData implements IBitmapDrawable
 	public function getPixel(x:Int, y:Int):Int
 	{
 		if (!readable) return 0;
-		#if lime
+
 		return image.getPixel(x, y, ARGB32);
-		#else
-		return 0;
-		#end
 	}
 
 	/**
@@ -2196,11 +2147,8 @@ class BitmapData implements IBitmapDrawable
 	public function getPixel32(x:Int, y:Int):Int
 	{
 		if (!readable) return 0;
-		#if lime
+
 		return image.getPixel32(x, y, ARGB32);
-		#else
-		return 0;
-		#end
 	}
 
 	/**
@@ -2214,16 +2162,12 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixels(rect:Rectangle):ByteArray
 	{
-		#if lime
 		if (!readable) return null;
 		if (rect == null) rect = this.rect;
 		var byteArray = ByteArray.fromBytes(image.getPixels(rect.__toLimeRectangle(), ARGB32));
 		// TODO: System endian order
 		byteArray.endian = Endian.BIG_ENDIAN;
 		return byteArray;
-		#else
-		return null;
-		#end
 	}
 
 	/**
@@ -2235,9 +2179,8 @@ class BitmapData implements IBitmapDrawable
 		@returns	The associated CairoImageSurface
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	@:dox(hide) public function getSurface():#if lime CairoImageSurface #else Dynamic #end
+	@:dox(hide) public function getSurface():CairoImageSurface
 	{
-		#if lime
 		if (!readable) return null;
 
 		if (__surface == null)
@@ -2246,9 +2189,6 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		return __surface;
-		#else
-		return null;
-		#end
 	}
 
 	/**
@@ -2284,7 +2224,6 @@ class BitmapData implements IBitmapDrawable
 			__textureVersion = -1;
 		}
 
-		#if lime
 		#if (js && html5)
 		ImageCanvasUtil.sync(image, false);
 		#end
@@ -2332,7 +2271,6 @@ class BitmapData implements IBitmapDrawable
 			__surface = null;
 			image = null;
 		}
-		#end
 
 		return __texture;
 	}
@@ -2551,14 +2489,10 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function loadFromBase64(base64:String, type:String):Future<BitmapData>
 	{
-		#if lime
 		return Image.loadFromBase64(base64, type).then(function(image)
 		{
 			return Future.withValue(BitmapData.fromImage(image));
 		});
-		#else
-		return cast Future.withValue(null);
-		#end
 	}
 
 	/**
@@ -2576,7 +2510,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function loadFromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>
 	{
-		#if lime
 		return Image.loadFromBytes(bytes).then(function(image)
 		{
 			var bitmapData = BitmapData.fromImage(image);
@@ -2588,9 +2521,6 @@ class BitmapData implements IBitmapDrawable
 
 			return Future.withValue(bitmapData);
 		});
-		#else
-		return cast Future.withValue(null);
-		#end
 	}
 
 	/**
@@ -2604,14 +2534,10 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function loadFromFile(path:String):Future<BitmapData>
 	{
-		#if lime
 		return Image.loadFromFile(path).then(function(image)
 		{
 			return Future.withValue(BitmapData.fromImage(image));
 		});
-		#else
-		return cast Future.withValue(null);
-		#end
 	}
 
 	/**
@@ -2666,11 +2592,9 @@ class BitmapData implements IBitmapDrawable
 	public function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt,
 			alphaMultiplier:UInt):Void
 	{
-		#if lime
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable || sourceRect == null || destPoint == null) return;
 		image.merge(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), redMultiplier, greenMultiplier, blueMultiplier,
 			alphaMultiplier);
-		#end
 	}
 
 	/**
@@ -2944,9 +2868,8 @@ class BitmapData implements IBitmapDrawable
 	public function setPixel(x:Int, y:Int, color:Int):Void
 	{
 		if (!readable) return;
-		#if lime
+
 		image.setPixel(x, y, color, ARGB32);
-		#end
 	}
 
 	/**
@@ -2985,9 +2908,8 @@ class BitmapData implements IBitmapDrawable
 	public function setPixel32(x:Int, y:Int, color:Int):Void
 	{
 		if (!readable) return;
-		#if lime
+
 		image.setPixel32(x, y, color, ARGB32);
-		#end
 	}
 
 	/**
@@ -3016,9 +2938,7 @@ class BitmapData implements IBitmapDrawable
 		var length = (rect.width * rect.height * 4);
 		if (byteArray.bytesAvailable < length) throw new Error("End of file was encountered.", 2030);
 
-		#if lime
 		image.setPixels(rect.__toLimeRectangle(), byteArray, ARGB32, byteArray.endian);
-		#end
 	}
 
 	/**
@@ -3106,12 +3026,8 @@ class BitmapData implements IBitmapDrawable
 			return 0;
 		}
 
-		#if lime
 		return image.threshold(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), operation, threshold, color, mask,
 			copySource, ARGB32);
-		#else
-		return 0;
-		#end
 	}
 
 	/**
@@ -3216,7 +3132,6 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __fillRect(rect:Rectangle, color:Int, allowFramebuffer:Bool):Void
 	{
-		#if lime
 		if (rect == null) return;
 
 		if (transparent && (color & 0xFF000000) == 0)
@@ -3280,42 +3195,31 @@ class BitmapData implements IBitmapDrawable
 		{
 			image.fillRect(rect.__toLimeRectangle(), color, ARGB32);
 		}
-		#end
 	}
 
 	@:noCompletion private inline function __fromBase64(base64:String, type:String):Void
 	{
-		#if lime
-		var image = Image.fromBase64(base64, type);
-		__fromImage(image);
-		#end
+		__fromImage(Image.fromBase64(base64, type));
 	}
 
 	@:noCompletion private inline function __fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Void
 	{
-		#if lime
-		var image = Image.fromBytes(bytes);
-		__fromImage(image);
+		__fromImage(Image.fromBytes(bytes));
 
 		if (rawAlpha != null)
 		{
 			__applyAlpha(rawAlpha);
 		}
-		#end
 	}
 
 	@:noCompletion private function __fromFile(path:String):Void
 	{
-		#if lime
-		var image = Image.fromFile(path);
-		__fromImage(image);
-		#end
+		__fromImage(Image.fromFile(path));
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	@:noCompletion private function __fromImage(image:#if lime Image #else Dynamic #end):Void
+	@:noCompletion private function __fromImage(image:Image):Void
 	{
-		#if lime
 		if (image != null && image.buffer != null)
 		{
 			this.image = image;
@@ -3335,7 +3239,6 @@ class BitmapData implements IBitmapDrawable
 			readable = true;
 			__isValid = true;
 		}
-		#end
 	}
 
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
@@ -3348,20 +3251,15 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private inline function __loadFromBase64(base64:String, type:String):Future<BitmapData>
 	{
-		#if lime
 		return Image.loadFromBase64(base64, type).then(function(image)
 		{
 			__fromImage(image);
 			return Future.withValue(this);
 		});
-		#else
-		return cast Future.withValue(null);
-		#end
 	}
 
 	@:noCompletion private inline function __loadFromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>
 	{
-		#if lime
 		return Image.loadFromBytes(bytes).then(function(image)
 		{
 			__fromImage(image);
@@ -3373,22 +3271,15 @@ class BitmapData implements IBitmapDrawable
 
 			return Future.withValue(this);
 		});
-		#else
-		return cast Future.withValue(null);
-		#end
 	}
 
 	@:noCompletion private function __loadFromFile(path:String):Future<BitmapData>
 	{
-		#if lime
 		return Image.loadFromFile(path).then(function(image)
 		{
 			__fromImage(image);
 			return Future.withValue(this);
 		});
-		#else
-		return cast Future.withValue(this);
-		#end
 	}
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void

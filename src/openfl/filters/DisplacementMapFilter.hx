@@ -6,12 +6,10 @@ import openfl.geom.Point;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
-#if lime
 import lime._internal.graphics.ImageCanvasUtil;
 import lime._internal.graphics.ImageDataUtil;
 import lime.math.Vector2;
 import lime.math.Vector4;
-#end
 
 /**
 	The DisplacementMapFilter class uses the pixel values from the specified
@@ -217,7 +215,6 @@ import lime.math.Vector4;
 
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
-		#if lime
 		__updateMapMatrix();
 
 		#if (js && html5)
@@ -232,7 +229,6 @@ import lime.math.Vector4;
 
 			new Vector4(__matrixData[0], __matrixData[4], __matrixData[8], __matrixData[12]),
 			new Vector4(__matrixData[1], __matrixData[5], __matrixData[9], __matrixData[13]), __smooth);
-		#end
 
 		return bitmapData;
 	}

@@ -9,11 +9,9 @@ import openfl.events.EventDispatcher;
 import openfl.errors.Error;
 import openfl.utils._internal.ArrayBufferView;
 import openfl.utils._internal.Log;
-#if lime
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.RenderContext;
-#end
 
 /**
 	The TextureBase class is the base class for Context3D texture objects.
@@ -47,7 +45,7 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private var __premultiplyAlpha:Bool;
 	@:noCompletion private var __samplerState:SamplerState;
 	@:noCompletion private var __streamingLevels:Int;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __textureContext:RenderContext;
 	@:noCompletion private var __textureID:GLTexture;
 	@:noCompletion private var __textureTarget:Int;
 
@@ -78,7 +76,7 @@ class TextureBase extends EventDispatcher
 				__textureFormat = bgraExtension.BGRA_EXT;
 
 				// Note: Get rid of this when `ANGLE` is added.
-				#if (lime && !ios)
+				#if !ios
 				if (context.__context.type == OPENGLES)
 				{
 					__textureInternalFormat = bgraExtension.BGRA_EXT;
@@ -194,7 +192,6 @@ class TextureBase extends EventDispatcher
 		return __glFramebuffer;
 	}
 
-	#if lime
 	@:noCompletion private function __getImage(bitmapData:BitmapData):Image
 	{
 		var image = bitmapData.image;
@@ -246,7 +243,6 @@ class TextureBase extends EventDispatcher
 
 		return image;
 	}
-	#end
 
 	@:noCompletion private function __getTexture():GLTexture
 	{
@@ -323,7 +319,6 @@ class TextureBase extends EventDispatcher
 		return false;
 	}
 
-	#if lime
 	@:noCompletion private function __uploadFromImage(image:Image):Void
 	{
 		var gl = __context.gl;
@@ -373,7 +368,6 @@ class TextureBase extends EventDispatcher
 
 		__context.__bindGLTexture2D(null);
 	}
-	#end
 
 	@:noCompletion private function __uploadTexture2D(target:Int, width:Int, height:Int, internalFormat:Int, format:Int, data:ArrayBufferView):Void
 	{

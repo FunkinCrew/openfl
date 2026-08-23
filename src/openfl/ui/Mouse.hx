@@ -1,9 +1,7 @@
 package openfl.ui;
 
-#if lime
 import lime.app.Application;
 import lime.ui.MouseCursor as LimeMouseCursor;
-#end
 
 /**
 	The methods of the Mouse class are used to hide and show the mouse pointer,
@@ -75,12 +73,10 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	{
 		__hidden = true;
 
-		#if lime
 		for (window in Application.current.windows)
 		{
 			window.cursor = null;
 		}
-		#end
 	}
 
 	/**
@@ -110,7 +106,6 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	{
 		if (value == null) value = AUTO;
 
-		#if lime
 		var setCursor:LimeMouseCursor = null;
 
 		switch (value)
@@ -149,7 +144,6 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 				window.cursor = setCursor;
 			}
 		}
-		#end
 
 		return __cursor = value;
 	}

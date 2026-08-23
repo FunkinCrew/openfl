@@ -17,11 +17,9 @@ import openfl.display3D.Context3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if lime
 import lime.graphics.opengl.ext.KHR_debug;
 import lime.graphics.WebGLRenderContext;
 import lime.math.Matrix4;
-#end
 
 /**
 	**BETA**
@@ -69,7 +67,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		The current OpenGL render context
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var gl:#if lime WebGLRenderContext #else Dynamic #end;
+	public var gl:WebGLRenderContext;
 
 	@:noCompletion private static var __staticDefaultDisplayShader:DisplayObjectShader;
 	@:noCompletion private static var __staticDefaultGraphicsShader:GraphicsShader;
@@ -127,10 +125,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getParameter(__gl.MAX_TEXTURE_SIZE);
 		}
 
-		#if lime
 		__matrix = new Matrix4();
-		#end
-
 		__values = new Array();
 
 		#if gl_debug
@@ -180,20 +175,15 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__softwareRenderer = new CairoRenderer(null);
 		#end
 
-		#if lime
 		__type = OPENGL;
-		#end
-
 		__setBlendMode(NORMAL);
 		__context3D.__setGLBlend(true);
 
 		__clipRects = new Array();
 		__maskObjects = new Array();
 		__numClipRects = 0;
-		#if lime
 		__projection = new Matrix4();
 		__projectionFlipped = new Matrix4();
-		#end
 		__stencilReference = 0;
 		__tempRect = new Rectangle();
 
@@ -355,7 +345,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		new values, so it will need to be cloned if the result must be cached
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public function getMatrix(transform:Matrix):#if lime Matrix4 #else Dynamic #end
+	public function getMatrix(transform:Matrix):Matrix4
 	{
 		if (gl != null)
 		{

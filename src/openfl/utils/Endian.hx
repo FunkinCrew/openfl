@@ -1,8 +1,6 @@
 package openfl.utils;
 
-#if lime
 import lime.system.Endian as LimeEndian;
-#end
 
 /**
 	The Endian class contains values that denote the byte order used to
@@ -57,7 +55,6 @@ enum abstract Endian(Null<Int>)
 	**/
 	public var LITTLE_ENDIAN = 1;
 
-	#if lime
 	@:from private static function fromLimeEndian(value:LimeEndian):Endian
 	{
 		return switch (value)
@@ -67,7 +64,6 @@ enum abstract Endian(Null<Int>)
 			default: null;
 		}
 	}
-	#end
 
 	@:from private static function fromString(value:String):Endian
 	{
@@ -79,7 +75,6 @@ enum abstract Endian(Null<Int>)
 		}
 	}
 
-	#if lime
 	@:to private function toLimeEndian():LimeEndian
 	{
 		return switch (cast this : Endian)
@@ -89,7 +84,6 @@ enum abstract Endian(Null<Int>)
 			default: null;
 		}
 	}
-	#end
 
 	@:to private function toString():String
 	{

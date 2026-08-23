@@ -1,10 +1,8 @@
 package openfl.geom;
 
 import openfl.utils.ObjectPool;
-#if lime
 import openfl.utils._internal.Float32Array;
 import lime.math.ColorMatrix;
-#end
 
 /**
 	The ColorTransform class lets you adjust the color values in a display
@@ -52,9 +50,8 @@ import lime.math.ColorMatrix;
 **/
 class ColorTransform
 {
-	#if lime
 	@:noCompletion private static var __limeColorMatrix:Float32Array;
-	#end
+
 	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(),
 		function(ct) ct.__identity());
 
@@ -316,7 +313,6 @@ class ColorTransform
 		return color;
 	}
 
-	#if lime
 	@:noCompletion private function __toLimeColorMatrix():ColorMatrix
 	{
 		if (__limeColorMatrix == null)
@@ -335,5 +331,4 @@ class ColorTransform
 
 		return __limeColorMatrix;
 	}
-	#end
 }

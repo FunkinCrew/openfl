@@ -4,10 +4,8 @@ import haxe.Timer;
 import openfl.errors.ArgumentError;
 import openfl.events.AccelerometerEvent;
 import openfl.events.EventDispatcher;
-#if lime
 import lime.system.Sensor;
 import lime.system.SensorType;
-#end
 
 /**
 	The Accelerometer class dispatches events based on activity detected by the
@@ -116,7 +114,6 @@ class Accelerometer extends EventDispatcher
 	{
 		if (!initialized)
 		{
-			#if lime
 			var sensors = Sensor.getSensors(SensorType.ACCELEROMETER);
 
 			if (sensors.length > 0)
@@ -124,7 +121,6 @@ class Accelerometer extends EventDispatcher
 				sensors[0].onUpdate.add(accelerometer_onUpdate);
 				supported = true;
 			}
-			#end
 
 			initialized = true;
 		}

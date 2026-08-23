@@ -1,21 +1,13 @@
 package openfl.utils;
 
 import haxe.io.Bytes;
-#if lime
 import lime.utils.AssetManifest as LimeAssetManifest;
-#end
 
-class AssetManifest #if lime extends LimeAssetManifest #end
+class AssetManifest extends LimeAssetManifest
 {
-	#if !lime
-	private var assets:Array<Dynamic>;
-	#end
-
 	public function new()
 	{
-		#if lime
 		super();
-		#end
 	}
 
 	public function addBitmapData(path:String, id:String = null):Void
@@ -70,59 +62,35 @@ class AssetManifest #if lime extends LimeAssetManifest #end
 
 	public static function fromBytes(bytes:Bytes, rootPath:String = null):AssetManifest
 	{
-		#if lime
-		var manifest = LimeAssetManifest.fromBytes(bytes, rootPath);
-		return __fromLimeManifest(manifest);
-		#else
-		return null;
-		#end
+		return __fromLimeManifest(LimeAssetManifest.fromBytes(bytes, rootPath));
 	}
 
 	public static function fromFile(path:String, rootPath:String = null):AssetManifest
 	{
-		#if lime
-		var manifest = LimeAssetManifest.fromFile(path, rootPath);
-		return __fromLimeManifest(manifest);
-		#else
-		return null;
-		#end
+		return __fromLimeManifest(LimeAssetManifest.fromFile(path, rootPath));
 	}
 
 	public static function loadFromBytes(bytes:Bytes, rootPath:String = null):Future<AssetManifest>
 	{
-		#if lime
 		return LimeAssetManifest.loadFromBytes(bytes, rootPath).then(function(manifest)
 		{
 			return Future.withValue(__fromLimeManifest(manifest));
 		});
-		#else
-		return null;
-		#end
 	}
 
 	public static function loadFromFile(path:String, rootPath:String = null):Future<AssetManifest>
 	{
-		#if lime
 		return LimeAssetManifest.loadFromFile(path, rootPath).then(function(manifest)
 		{
 			return Future.withValue(__fromLimeManifest(manifest));
 		});
-		#else
-		return null;
-		#end
 	}
 
 	public static function parse(data:String, rootPath:String = null):AssetManifest
 	{
-		#if lime
-		var manifest = LimeAssetManifest.parse(data, rootPath);
-		return __fromLimeManifest(manifest);
-		#else
-		return null;
-		#end
+		return __fromLimeManifest(LimeAssetManifest.parse(data, rootPath));
 	}
 
-	#if lime
 	@:noCompletion private static function __fromLimeManifest(limeManifest:LimeAssetManifest):AssetManifest
 	{
 		var manifest:AssetManifest = null;
@@ -138,5 +106,4 @@ class AssetManifest #if lime extends LimeAssetManifest #end
 		}
 		return manifest;
 	}
-	#end
 }

@@ -3,11 +3,9 @@ package openfl.display._internal;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
-#if lime
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
 import lime.math.Matrix3;
-#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)

@@ -4,10 +4,8 @@ import haxe.Timer;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-#end
 #if (js && html5)
+import lime._internal.graphics.ImageCanvasUtil;
 import js.html.DivElement;
 import js.html.Image;
 import js.html.StyleElement;

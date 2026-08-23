@@ -9,12 +9,10 @@ import openfl.display.Tileset;
 import openfl.display.Tileset.TileData;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if lime
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
-#end
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
@@ -52,12 +50,10 @@ class CairoTilemap
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	private static function renderTileContainer(group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
-			alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData,
-			surface:#if lime CairoSurface #else Dynamic #end, pattern:#if lime CairoPattern #else Dynamic #end, rect:Rectangle,
-			matrix:#if lime Matrix3 #else Dynamic #end):Void
+	@:noCompletion private static function renderTileContainer(group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset,
+			smooth:Bool, alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData,
+			surface:CairoSurface, pattern:CairoPattern, rect:Rectangle, matrix:Matrix3):Void
 	{
-		#if lime
 		var cairo = renderer.cairo;
 
 		var tileTransform = Matrix.__pool.get();
@@ -162,7 +158,6 @@ class CairoTilemap
 		}
 
 		Matrix.__pool.release(tileTransform);
-		#end
 	}
 
 	public static inline function renderDrawable(tilemap:Tilemap, renderer:CairoRenderer):Void

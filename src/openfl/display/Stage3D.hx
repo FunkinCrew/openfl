@@ -11,10 +11,8 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
-#if lime
 import lime.graphics.opengl.GL;
 import lime.graphics.RenderContext;
-#end
 #if (js && html5)
 import js.html.webgl.RenderingContext;
 import js.html.CanvasElement;
@@ -282,7 +280,6 @@ class Stage3D extends EventDispatcher
 
 	@:noCompletion private function __createContext():Void
 	{
-		#if lime
 		var stage = __stage;
 		var renderer = stage.__renderer;
 
@@ -301,7 +298,6 @@ class Stage3D extends EventDispatcher
 			#end
 			__dispatchCreate();
 		}
-		#end
 	}
 
 	@:noCompletion private function __dispatchError():Void

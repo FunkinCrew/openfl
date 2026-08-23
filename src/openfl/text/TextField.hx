@@ -24,11 +24,9 @@ import openfl.net.URLRequest;
 import openfl.ui.Keyboard;
 import openfl.ui.MouseCursor;
 import openfl.Lib;
-#if lime
 import lime.system.Clipboard;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-#end
 #if (js && html5)
 import js.html.DivElement;
 #end
@@ -1554,11 +1552,9 @@ class TextField extends InteractiveObject
 	{
 		if (__inputEnabled && stage != null)
 		{
-			#if lime
 			stage.window.textInputEnabled = false;
 			stage.window.onTextInput.remove(window_onTextInput);
 			stage.window.onKeyDown.remove(window_onKeyDown);
-			#end
 
 			__inputEnabled = false;
 			__stopCursorTimer();
@@ -1595,7 +1591,6 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __enableInput():Void
 	{
-		#if lime
 		if (stage != null)
 		{
 			stage.window.textInputEnabled = true;
@@ -1638,7 +1633,6 @@ class TextField extends InteractiveObject
 				__startCursorTimer();
 			}
 		}
-		#end
 	}
 
 	@:noCompletion private inline function __getAdvance(position):Float
@@ -3223,7 +3217,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function this_onKeyDown(event:KeyboardEvent):Void
 	{
-		#if (lime && !openfl_doc_gen)
+		#if !openfl_doc_gen
 		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey))
 		{
 			if (__caretIndex != __selectionIndex && !displayAsPassword)
@@ -3291,7 +3285,6 @@ class TextField extends InteractiveObject
 		}
 	}
 
-	#if lime
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
 		inline function isModifierPressed()
@@ -3496,7 +3489,6 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case C:
-				#if lime
 				if (isModifierPressed())
 				{
 					if (__caretIndex != __selectionIndex && !displayAsPassword)
@@ -3504,10 +3496,8 @@ class TextField extends InteractiveObject
 						Clipboard.text = __text.substring(__caretIndex, __selectionIndex);
 					}
 				}
-				#end
 
 			case X:
-				#if lime
 				if (isModifierPressed())
 				{
 					if (__caretIndex != __selectionIndex && !displayAsPassword)
@@ -3531,11 +3521,9 @@ class TextField extends InteractiveObject
 						#end
 					}
 				}
-				#end
 
 			#if !js
 			case V:
-				#if lime
 				if (#if mac modifier.metaKey #else modifier.ctrlKey && !modifier.altKey #end)
 				{
 					if (Clipboard.text != null)
@@ -3569,7 +3557,6 @@ class TextField extends InteractiveObject
 					// TODO: does this need to occur?
 					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 				}
-				#end
 			#end
 
 			case A if (selectable):
@@ -3581,7 +3568,6 @@ class TextField extends InteractiveObject
 			default:
 		}
 	}
-	#end
 
 	@:noCompletion private function window_onTextInput(value:String):Void
 	{

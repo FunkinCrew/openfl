@@ -8,10 +8,8 @@ import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
-#if lime
 import lime.net.HTTPRequest;
 import lime.net.HTTPRequestHeader;
-#end
 
 /**
 	The URLLoader class downloads data from a URL as text, binary data, or
@@ -147,7 +145,7 @@ class URLLoader extends EventDispatcher
 	**/
 	public var dataFormat:URLLoaderDataFormat;
 
-	@:noCompletion private var __httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
+	@:noCompletion private var __httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
 
 	/**
 		Creates a URLLoader object.
@@ -286,7 +284,7 @@ class URLLoader extends EventDispatcher
 	**/
 	public function load(request:URLRequest):Void
 	{
-		#if (lime && !macro)
+		#if !macro
 		#if openfl_pool_events
 		var openEvent = Event.__pool.get();
 		openEvent.type = Event.OPEN;
@@ -373,7 +371,7 @@ class URLLoader extends EventDispatcher
 		responseStatusEvent.responseURL = __httpRequest.uri;
 
 		var headers = new Array<URLRequestHeader>();
-		#if (lime && !display && !macro && !doc_gen)
+		#if (!display && !macro && !doc_gen)
 		if (__httpRequest.enableResponseHeaders && __httpRequest.responseHeaders != null)
 		{
 			for (header in __httpRequest.responseHeaders)
@@ -392,10 +390,8 @@ class URLLoader extends EventDispatcher
 		dispatchEvent(statusEvent);
 	}
 
-	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end,
-			request:URLRequest):Void
+	@:noCompletion private function __prepareRequest(httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void
 	{
-		#if lime
 		__httpRequest = httpRequest;
 		__httpRequest.uri = request.url;
 		__httpRequest.method = request.method;
@@ -442,7 +438,6 @@ class URLLoader extends EventDispatcher
 
 		__httpRequest.userAgent = request.userAgent;
 		__httpRequest.enableResponseHeaders = true;
-		#end
 	}
 
 	// Event Handlers
@@ -451,7 +446,7 @@ class URLLoader extends EventDispatcher
 		__dispatchResponseStatus();
 		__dispatchStatus();
 
-		#if (lime && !doc_gen)
+		#if !doc_gen
 		// some targets won't allow us to cast to HTTPRequest<Dynamic>
 		if (Std.isOfType(__httpRequest, _HTTPRequest_Bytes))
 		{

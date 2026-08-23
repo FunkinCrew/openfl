@@ -2,10 +2,8 @@ package openfl.display._internal;
 
 import openfl.display.Bitmap;
 import openfl.display.CanvasRenderer;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime._internal.graphics.ImageCanvasUtil;
 
-#end
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @SuppressWarnings("checkstyle:FieldDocComment")

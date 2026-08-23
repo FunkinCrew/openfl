@@ -45,10 +45,10 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromBitmapData(source:BitmapData):Void
 	{
-		#if lime
 		if (source == null) return;
 
 		var image = __getImage(source);
+
 		if (image == null) return;
 
 		#if (js && html5)
@@ -64,7 +64,6 @@ import openfl.utils.ByteArray;
 		#end
 
 		uploadFromTypedArray(image.data);
-		#end
 	}
 
 	/**
@@ -85,7 +84,6 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
-		#if lime
 		#if (js && !display)
 		if (byteArrayOffset == 0)
 		{
@@ -95,7 +93,6 @@ import openfl.utils.ByteArray;
 		#end
 
 		uploadFromTypedArray(new UInt8Array(data.toArrayBuffer(), byteArrayOffset));
-		#end
 	}
 
 	/**

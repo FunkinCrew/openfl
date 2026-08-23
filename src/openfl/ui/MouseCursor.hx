@@ -1,8 +1,6 @@
 package openfl.ui;
 
-#if lime
 import lime.ui.MouseCursor as LimeMouseCursor;
-#end
 
 /**
 	The MouseCursor class is an enumeration of constant values used in setting
@@ -46,7 +44,6 @@ enum abstract MouseCursor(String) from String to String
 	@:noCompletion private var __WAIT = "wait";
 	@:noCompletion private var __WAIT_ARROW = "waitarrow";
 
-	#if lime
 	@:from private static function fromLimeCursor(cursor:LimeMouseCursor):MouseCursor
 	{
 		return switch (cursor)
@@ -88,5 +85,4 @@ enum abstract MouseCursor(String) from String to String
 			default: LimeMouseCursor.DEFAULT;
 		}
 	}
-	#end
 }

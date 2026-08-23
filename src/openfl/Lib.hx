@@ -12,9 +12,7 @@ import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-#if lime
 import lime.system.System;
-#end
 #if (js && html5)
 import js.Browser;
 #end
@@ -157,11 +155,7 @@ class Lib
 	**/
 	public static function getTimer():Float
 	{
-		#if lime
 		return System.getTimer();
-		#else
-		return 0;
-		#end
 	}
 
 	/**
@@ -357,7 +351,6 @@ class Lib
 			window = "_blank";
 		}
 
-		#if lime
 		var uri = request.url;
 
 		if (Type.typeof(request.data) == Type.ValueType.TObject)
@@ -382,7 +375,6 @@ class Lib
 		}
 
 		System.openURL(uri, window);
-		#end
 	}
 
 	/**

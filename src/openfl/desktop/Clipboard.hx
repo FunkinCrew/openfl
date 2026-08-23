@@ -1,9 +1,7 @@
 package openfl.desktop;
 
 import openfl.utils.Object;
-#if lime
 import lime.system.Clipboard as LimeClipboard;
-#end
 
 /**
 	The Clipboard class provides a container for transferring data and objects
@@ -132,13 +130,11 @@ class Clipboard
 	**/
 	public function clear():Void
 	{
-		#if lime
 		if (__systemClipboard)
 		{
 			LimeClipboard.text = null;
 			return;
 		}
-		#end
 
 		__htmlText = null;
 		__richText = null;
@@ -159,7 +155,6 @@ class Clipboard
 	**/
 	public function clearData(format:ClipboardFormats):Void
 	{
-		#if lime
 		if (__systemClipboard)
 		{
 			switch (format)
@@ -172,7 +167,6 @@ class Clipboard
 
 			return;
 		}
-		#end
 
 		switch (format)
 		{
@@ -239,7 +233,6 @@ class Clipboard
 			transferMode = ORIGINAL_PREFERRED;
 		}
 
-		#if lime
 		if (__systemClipboard)
 		{
 			return switch (format)
@@ -248,7 +241,6 @@ class Clipboard
 				default: null;
 			}
 		}
-		#end
 
 		return switch (format)
 		{
@@ -274,7 +266,6 @@ class Clipboard
 	**/
 	public function hasFormat(format:ClipboardFormats):Bool
 	{
-		#if lime
 		if (__systemClipboard)
 		{
 			return switch (format)
@@ -283,7 +274,6 @@ class Clipboard
 				default: false;
 			}
 		}
-		#end
 
 		return switch (format)
 		{
@@ -381,7 +371,6 @@ class Clipboard
 	**/
 	public function setData(format:ClipboardFormats, data:Object, serializable:Bool = true):Bool
 	{
-		#if lime
 		if (__systemClipboard)
 		{
 			switch (format)
@@ -394,7 +383,6 @@ class Clipboard
 					return false;
 			}
 		}
-		#end
 
 		switch (format)
 		{

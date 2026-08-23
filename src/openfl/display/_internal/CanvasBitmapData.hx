@@ -1,9 +1,7 @@
 package openfl.display._internal;
 
-#if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime._internal.graphics.ImageCanvasUtil;
 
-#end
 @:access(openfl.display.BitmapData)
 class CanvasBitmapData
 {

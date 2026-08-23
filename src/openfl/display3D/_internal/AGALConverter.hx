@@ -9,9 +9,7 @@ import openfl.display3D.Context3DWrapMode;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
-#if lime
 import lime.graphics.opengl.GL;
-#end
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class AGALConverter
@@ -543,13 +541,11 @@ class AGALConverter
 			sb.add("\n");
 		}
 
-		#if lime
 		if (limitedProfile == null)
 		{
 			var version:String = GL.getParameter(GL.VERSION);
 			limitedProfile = (version.indexOf("OpenGL ES") > -1 || version.indexOf("WebGL") > -1);
 		}
-		#end
 
 		// combine parts into final progam
 		var glsl = new StringBuf();

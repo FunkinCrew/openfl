@@ -11,10 +11,8 @@ import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
-#if lime
 import lime.graphics.opengl.GL;
 import lime.utils.BytePointer;
-#end
 
 /**
 	The Program3D class represents a pair of rendering programs (also called "shaders")
@@ -475,7 +473,6 @@ import lime.utils.BytePointer;
 	{
 		if (__format == GLSL) return;
 
-		#if lime
 		var gl = __context.gl;
 
 		__agalUniforms.clear();
@@ -574,7 +571,6 @@ import lime.utils.BytePointer;
 
 		__agalVertexUniformMap = new UniformMap(Lambda.array(vertexUniforms));
 		__agalFragmentUniformMap = new UniformMap(Lambda.array(fragmentUniforms));
-		#end
 	}
 
 	@:noCompletion private function __deleteShaders():Void
@@ -931,9 +927,7 @@ import lime.utils.BytePointer;
 	public var regCount:Int;
 	public var isDirty:Bool;
 	public var context:Context3D;
-	#if lime
 	public var regDataPointer:BytePointer;
-	#end
 
 	public function new(context:Context3D)
 	{
@@ -941,14 +935,11 @@ import lime.utils.BytePointer;
 
 		isDirty = true;
 
-		#if lime
 		regDataPointer = new BytePointer();
-		#end
 	}
 
 	public function flush():Void
 	{
-		#if lime
 		#if (js && html5)
 		var gl = context.gl;
 		#else
@@ -990,7 +981,6 @@ import lime.utils.BytePointer;
 				gl.uniform4fv(location, regCount, __getUniformRegisters(index, regCount * 4));
 			#end
 		}
-		#end
 	}
 
 	#if (js && html5)

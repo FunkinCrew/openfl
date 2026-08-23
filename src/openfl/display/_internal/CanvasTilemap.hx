@@ -8,10 +8,7 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if lime
-// TODO: Avoid use of private APIs
 import lime._internal.graphics.ImageCanvasUtil;
-#end
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)

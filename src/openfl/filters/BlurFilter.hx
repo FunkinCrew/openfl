@@ -6,10 +6,7 @@ import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-#if lime
-import lime._internal.graphics.ImageDataUtil; // TODO
-
-#end
+import lime._internal.graphics.ImageDataUtil;
 
 /**
 	The BlurFilter class lets you apply a blur visual effect to display
@@ -157,14 +154,13 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
-		#if lime
 		var time = Timer.stamp();
 		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
 			__blurX, __blurY, __quality);
 		var elapsed = Timer.stamp() - time;
 		// trace("blurX: " + __blurX + " blurY: " + __blurY + " quality: " + __quality + " elapsed: " + elapsed * 1000 + "ms");
 		if (finalImage == bitmapData.image) return bitmapData;
-		#end
+
 		return sourceBitmapData;
 	}
 
@@ -192,11 +188,8 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	{
 		if (value <= 0) return 0;
 		var passes = (__quality > 0 ? __quality : 1);
-		#if lime
 		var reach = value * passes * 3.0;
-		#else
-		var reach = value;
-		#end
+
 		return Std.int(Math.ceil(reach)) + 2;
 	}
 

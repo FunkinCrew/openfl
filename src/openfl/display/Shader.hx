@@ -479,12 +479,10 @@ class Shader
 
 		__context.__bindGLArrayBuffer(null);
 
-		#if lime
 		if (__context.__context.type == OPENGL)
 		{
 			gl.disable(gl.TEXTURE_2D);
 		}
-		#end
 	}
 
 	@:noCompletion private function __enable():Void
@@ -509,12 +507,10 @@ class Shader
 			textureCount++;
 		}
 
-		#if lime
 		if (__context.__context.type == OPENGL && textureCount > 0)
 		{
 			gl.enable(gl.TEXTURE_2D);
 		}
-		#end
 	}
 
 	@:noCompletion private function __init():Void
@@ -544,7 +540,6 @@ class Shader
 		var complexBlendsSupported = OpenGLRenderer.__complexBlendsSupported && isFragment;
 		var standardDerivativesSupported = OpenGLRenderer.__standardDerivativesSupported && isFragment;
 
-		#if lime
 		if (__context.__context.type == OPENGL)
 		{
 			complexBlendsSupported = complexBlendsSupported && (__glVersion == "150" || !StringTools.startsWith(__glVersion, "1"));
@@ -553,20 +548,17 @@ class Shader
 		{
 			complexBlendsSupported = complexBlendsSupported && !StringTools.startsWith(__glVersion, "1");
 		}
-		#end
 
 		if (complexBlendsSupported)
 		{
 			extensions += "#extension GL_KHR_blend_equation_advanced : enable\n";
 
-			#if lime
 			if (__context.__context.type == OPENGL)
 			{
 				// compiling without this gives the error
 				// 'gl_SampleID' : required extension not requested: GL_ARB_sample_shading
 				extensions += "#extension GL_ARB_sample_shading : enable\n";
 			}
-			#end
 		}
 
 		if (standardDerivativesSupported)
@@ -876,9 +868,9 @@ class Shader
 						parameter.name = name;
 						parameter.type = parameterType;
 						parameter.__arrayLength = arrayLength;
-						#if lime
+
 						if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array(arrayLength * arrayLength);
-						#end
+
 						parameter.__isFloat = true;
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;

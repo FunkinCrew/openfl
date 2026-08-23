@@ -1,9 +1,7 @@
 package openfl.geom;
 
 import openfl.utils.ObjectPool;
-#if lime
 import lime.math.Vector2;
-#end
 
 /**
 	The Point object represents a location in a two-dimensional coordinate
@@ -33,9 +31,8 @@ import lime.math.Vector2;
 class Point
 {
 	@:noCompletion private static var __pool:ObjectPool<Point> = new ObjectPool<Point>(function() return new Point(), function(p) p.setTo(0, 0));
-	#if lime
+
 	@:noCompletion private static var __limeVector2:Vector2;
-	#end
 
 	/**
 		The length of the line segment from (0,0) to this point.
@@ -326,7 +323,6 @@ class Point
 		return '(x=$x, y=$y)';
 	}
 
-	#if lime
 	@:noCompletion private function __toLimeVector2():Vector2
 	{
 		if (__limeVector2 == null)
@@ -335,9 +331,9 @@ class Point
 		}
 
 		__limeVector2.setTo(x, y);
+
 		return __limeVector2;
 	}
-	#end
 
 	// Getters & Setters
 	@:noCompletion private function get_length():Float

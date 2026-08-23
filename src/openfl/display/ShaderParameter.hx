@@ -182,7 +182,6 @@ import openfl.display3D.Context3D;
 	{
 		if (index < 0) return;
 
-		#if lime
 		var gl = context.gl;
 
 		var value = overrideValue != null ? overrideValue : this.value;
@@ -411,14 +410,12 @@ import openfl.display3D.Context3D;
 				}
 			}
 		}
-		#end
 	}
 
 	@:noCompletion private function __updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
 	{
 		if (index < 0) return;
 
-		#if lime
 		var gl = context.gl;
 
 		if (__isUniform)
@@ -578,7 +575,6 @@ import openfl.display3D.Context3D;
 				}
 			}
 		}
-		#end
 	}
 
 	// Get & Set Methods

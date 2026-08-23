@@ -101,7 +101,6 @@ class ShaderBuffer
 
 	public function update(shader:GraphicsShader):Void
 	{
-		#if lime
 		inputCount = 0;
 		// overrideCount = 0;
 		overrideIntCount = 0;
@@ -252,6 +251,5 @@ class ShaderBuffer
 		}
 
 		this.shader = shader;
-		#end
 	}
 }

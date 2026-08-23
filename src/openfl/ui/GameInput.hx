@@ -4,11 +4,9 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventType;
 import openfl.events.GameInputEvent;
-#if lime
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
-#end
 
 /**
 	The GameInput class is the entry point into the GameInput API. You can use this API to
@@ -75,9 +73,7 @@ import lime.ui.GamepadButton;
 
 	@:noCompletion private static var __deviceList:Array<GameInputDevice> = new Array();
 	@:noCompletion private static var __instances:Array<GameInput> = [];
-	#if lime
 	@:noCompletion private static var __devices:Map<Gamepad, GameInputDevice> = new Map();
-	#end
 
 	public function new()
 	{
@@ -86,7 +82,6 @@ import lime.ui.GamepadButton;
 		__instances.push(this);
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
 	public override function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
@@ -124,7 +119,6 @@ import lime.ui.GamepadButton;
 		return null;
 	}
 
-	#if lime
 	@:noCompletion private static function __getDevice(gamepad:Gamepad):GameInputDevice
 	{
 		if (gamepad == null) return null;
@@ -139,9 +133,7 @@ import lime.ui.GamepadButton;
 
 		return __devices.get(gamepad);
 	}
-	#end
 
-	#if lime
 	@:noCompletion private static function __onGamepadAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void
 	{
 		var device = __getDevice(gamepad);
@@ -173,9 +165,7 @@ import lime.ui.GamepadButton;
 			#end
 		}
 	}
-	#end
 
-	#if lime
 	@:noCompletion private static function __onGamepadButtonDown(gamepad:Gamepad, button:GamepadButton):Void
 	{
 		var device = __getDevice(gamepad);
@@ -207,9 +197,7 @@ import lime.ui.GamepadButton;
 			#end
 		}
 	}
-	#end
 
-	#if lime
 	@:noCompletion private static function __onGamepadButtonUp(gamepad:Gamepad, button:GamepadButton):Void
 	{
 		var device = __getDevice(gamepad);
@@ -241,9 +229,7 @@ import lime.ui.GamepadButton;
 			#end
 		}
 	}
-	#end
 
-	#if lime
 	@:noCompletion private static function __onGamepadConnect(gamepad:Gamepad):Void
 	{
 		var device = __getDevice(gamepad);
@@ -254,9 +240,7 @@ import lime.ui.GamepadButton;
 			instance.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
 		}
 	}
-	#end
 
-	#if lime
 	@:noCompletion private static function __onGamepadDisconnect(gamepad:Gamepad):Void
 	{
 		var device = __devices.get(gamepad);
@@ -277,5 +261,4 @@ import lime.ui.GamepadButton;
 			}
 		}
 	}
-	#end
 }

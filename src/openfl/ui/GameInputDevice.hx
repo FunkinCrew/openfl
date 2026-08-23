@@ -1,9 +1,7 @@
 package openfl.ui;
 
 import openfl.utils.ByteArray;
-#if lime
 import lime.ui.Gamepad;
-#end
 
 @:access(openfl.ui.GameInputControl)
 @:final class GameInputDevice
@@ -43,9 +41,7 @@ import lime.ui.Gamepad;
 	@:noCompletion private var __axis:Map<Int, GameInputControl> = new Map();
 	@:noCompletion private var __button:Map<Int, GameInputControl> = new Map();
 	@:noCompletion private var __controls:Array<GameInputControl> = new Array();
-	#if lime
 	@:noCompletion private var __gamepad:Gamepad;
-	#end
 
 	@:noCompletion private function new(gamepad:Gamepad)
 	{

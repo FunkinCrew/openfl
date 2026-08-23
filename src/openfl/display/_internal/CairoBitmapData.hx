@@ -1,9 +1,7 @@
 package openfl.display._internal;
 
-#if lime
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
-#end
 
 @:access(openfl.display.BitmapData)
 class CairoBitmapData

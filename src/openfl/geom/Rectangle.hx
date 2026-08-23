@@ -1,9 +1,7 @@
 package openfl.geom;
 
 import openfl.utils.ObjectPool;
-#if lime
 import lime.math.Rectangle as LimeRectangle;
-#end
 
 /**
 	A Rectangle object is an area defined by its position, as indicated by its
@@ -54,9 +52,8 @@ import lime.math.Rectangle as LimeRectangle;
 **/
 class Rectangle
 {
-	#if lime
 	@:noCompletion private static var __limeRectangle:LimeRectangle;
-	#end
+
 	@:noCompletion private static var __pool:ObjectPool<Rectangle> = new ObjectPool<Rectangle>(function() return new Rectangle(),
 		function(r) r.setTo(0, 0, 0, 0));
 
@@ -655,7 +652,6 @@ class Rectangle
 		if (cacheBottom < y + height) this.height = y + height - this.y;
 	}
 
-	#if lime
 	@:noCompletion private function __toLimeRectangle():LimeRectangle
 	{
 		if (__limeRectangle == null)
@@ -666,7 +662,6 @@ class Rectangle
 		__limeRectangle.setTo(x, y, width, height);
 		return __limeRectangle;
 	}
-	#end
 
 	@:noCompletion private function __transform(rect:Rectangle, m:Matrix):Void
 	{

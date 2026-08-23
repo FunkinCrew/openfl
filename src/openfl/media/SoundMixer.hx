@@ -122,7 +122,6 @@ package openfl.media;
 		return __soundTransform;
 	}
 
-	#if lime
 	@:noCompletion private static function __unregisterSoundChannelByBuffer(buffer:lime.media.AudioBuffer):Void
 	{
 		var i = __soundChannels.length;
@@ -136,7 +135,6 @@ package openfl.media;
 			}
 		}
 	}
-	#end
 
 	@:noCompletion private static function set_soundTransform(value:SoundTransform):SoundTransform
 	{

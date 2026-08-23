@@ -17,11 +17,9 @@ import lime.media.WebAudioContext;
 import lime.media.AudioManager;
 import lime.media.OpenALAudioContext;
 #end
-#if lime
 import openfl.utils._internal.UInt8Array;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
-#end
 
 /**
 	The Sound class lets you work with sound in an application. The Sound class
@@ -238,12 +236,9 @@ class Sound extends EventDispatcher
 	public var url(default, null):String;
 
 	@:noCompletion private var __urlLoading:Bool = false;
-
-	#if lime
 	@:noCompletion private var __pendingSoundChannel:SoundChannel;
 	@:noCompletion private var __pendingAudioSource:AudioSource;
 	@:noCompletion private var __buffer:AudioBuffer;
-	#end
 
 	#if (js && html5)
 	public var sampleRate(get, never):Int;
@@ -325,17 +320,14 @@ class Sound extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		#if lime
 		if (__buffer != null)
 		{
 			SoundMixer.__unregisterSoundChannelByBuffer(__buffer);
 			__buffer.dispose();
 			__buffer = null;
 		}
-		#end
 	}
 
-	#if lime
 	/**
 		Creates a new Sound from an AudioBuffer immediately.
 
@@ -348,7 +340,6 @@ class Sound extends EventDispatcher
 		sound.__buffer = buffer;
 		return sound;
 	}
-	#end
 
 	/**
 		Creates a new Sound from a file path synchronously. This means that the
@@ -365,16 +356,14 @@ class Sound extends EventDispatcher
 	**/
 	public static function fromFile(path:String):Sound
 	{
-		#if lime
 		var buffer = AudioBuffer.fromFile(path);
+
 		if (buffer == null)
 		{
 			throw new IOError("Error loading sound from file: " + path);
 		}
+
 		return fromAudioBuffer(buffer);
-		#else
-		return null;
-		#end
 	}
 
 	/**
@@ -457,7 +446,6 @@ class Sound extends EventDispatcher
 		url = stream.url;
 		__urlLoading = true;
 
-		#if lime
 		#if openfl_pool_events
 		var openEvent = Event.__pool.get();
 		openEvent.type = Event.OPEN;
@@ -500,7 +488,6 @@ class Sound extends EventDispatcher
 				AudioBuffer_onURLLoad(null);
 			});
 		#end
-		#end
 	}
 
 	/**
@@ -527,7 +514,6 @@ class Sound extends EventDispatcher
 			bytes = copy;
 		}
 
-		#if lime
 		__buffer = AudioBuffer.fromBytes(bytes);
 
 		if (__buffer == null)
@@ -577,9 +563,6 @@ class Sound extends EventDispatcher
 			Event.__pool.release(completeEvent);
 			#end
 		}
-		#else
-		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		#end
 	}
 
 	/**
@@ -594,14 +577,10 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFile(path:String):Future<Sound>
 	{
-		#if lime
 		return AudioBuffer.loadFromFile(path).then(function(audioBuffer)
 		{
 			return Future.withValue(fromAudioBuffer(audioBuffer));
 		});
-		#else
-		return cast Future.withError("Cannot load audio file");
-		#end
 	}
 
 	/**
@@ -617,14 +596,10 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFiles(paths:Array<String>):Future<Sound>
 	{
-		#if lime
 		return AudioBuffer.loadFromFiles(paths).then(function(audioBuffer)
 		{
 			return Future.withValue(fromAudioBuffer(audioBuffer));
 		});
-		#else
-		return cast Future.withError("Cannot load audio files");
-		#end
 	}
 
 	/**
@@ -665,7 +640,6 @@ class Sound extends EventDispatcher
 			bytes = copy;
 		}
 
-		#if lime
 		var audioBuffer = new AudioBuffer();
 		audioBuffer.channels = channels;
 		audioBuffer.dataFormat = (format == "float" ? F32 : S16);
@@ -713,9 +687,6 @@ class Sound extends EventDispatcher
 		#if openfl_pool_events
 		Event.__pool.release(completeEvent);
 		#end
-		#else
-		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		#end
 	}
 
 	/**
@@ -740,7 +711,6 @@ class Sound extends EventDispatcher
 	**/
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
-		#if lime
 		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
 		{
 			return null;
@@ -794,10 +764,8 @@ class Sound extends EventDispatcher
 			}
 			#end
 		}
+
 		return soundChannel;
-		#else
-		return null;
-		#end
 	}
 
 	#if (js && html5)
@@ -822,7 +790,6 @@ class Sound extends EventDispatcher
 
 	@:noCompletion private function get_length():Float
 	{
-		#if lime
 		if (__buffer != null)
 		{
 			#if (js && html5 && lime_howlerjs)
@@ -851,13 +818,11 @@ class Sound extends EventDispatcher
 			}
 			#end
 		}
-		#end
 
 		return 0;
 	}
 
 	// Event Handlers
-	#if lime
 	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
 	{
 		__urlLoading = false;
@@ -932,5 +897,4 @@ class Sound extends EventDispatcher
 		ProgressEvent.__pool.release(progressEvent);
 		#end
 	}
-	#end
 }

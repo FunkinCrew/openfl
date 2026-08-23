@@ -12,9 +12,7 @@ import openfl.display.OpenGLRenderer;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if lime
 import lime.math.ARGB;
-#end
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
@@ -1023,7 +1021,6 @@ class Context3DGraphics
 							renderer.setShader(shader);
 							renderer.applyMatrix(uMatrix);
 							renderer.applyBitmapData(blankBitmapData, true, repeat);
-							#if lime
 							var color:ARGB = (fill : ARGB);
 							tempColorTransform.__identity();
 							var worldColorTransform = graphics.__owner.__worldColorTransform;
@@ -1037,10 +1034,6 @@ class Context3DGraphics
 							tempColorTransform.alphaOffset = color.a * worldColorTransform.alphaMultiplier + worldColorTransform.alphaOffset;
 							renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 							renderer.applyColorTransform(tempColorTransform);
-							#else
-							renderer.applyAlpha(graphics.__owner.__worldAlpha);
-							renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-							#end
 							renderer.updateShader();
 						}
 
@@ -1247,7 +1240,6 @@ class Context3DGraphics
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(blankBitmapData, true, repeat);
-									#if lime
 									var color:ARGB = (fill : ARGB);
 									tempColorTransform.__identity();
 									var worldColorTransform = graphics.__owner.__worldColorTransform;
@@ -1261,10 +1253,6 @@ class Context3DGraphics
 									tempColorTransform.alphaOffset = color.a * worldColorTransform.alphaMultiplier + worldColorTransform.alphaOffset;
 									renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform(tempColorTransform);
-									#else
-									renderer.applyAlpha(graphics.__owner.__worldAlpha);
-									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-									#end
 									renderer.updateShader();
 								}
 
@@ -1372,7 +1360,6 @@ class Context3DGraphics
 								renderer.setShader(shader);
 								renderer.applyMatrix(renderer.__getMatrix(matrix, AUTO));
 								renderer.applyBitmapData(blankBitmapData, true, repeat);
-								#if lime
 								var color:ARGB = (fill : ARGB);
 								tempColorTransform.__identity();
 								var worldColorTransform = graphics.__owner.__worldColorTransform;
@@ -1386,10 +1373,6 @@ class Context3DGraphics
 								tempColorTransform.alphaOffset = color.a * worldColorTransform.alphaMultiplier + worldColorTransform.alphaOffset;
 								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform(tempColorTransform);
-								#else
-								renderer.applyAlpha(graphics.__owner.__worldAlpha);
-								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-								#end
 								renderer.updateShader();
 
 								var vertexBuffer = blankBitmapData.getVertexBuffer(context);
@@ -1478,7 +1461,6 @@ class Context3DGraphics
 		var buffer = (isQuad ? null /*graphics.__quadIndexBufferData*/ : graphics.__triangleIndexBufferData);
 		var position = 0, newBuffer = null;
 
-		#if lime
 		if (buffer == null)
 		{
 			newBuffer = new UInt16Array(length);
@@ -1489,7 +1471,6 @@ class Context3DGraphics
 			newBuffer.set(buffer);
 			position = buffer.length;
 		}
-		#end
 
 		if (newBuffer != null)
 		{
@@ -1524,7 +1505,6 @@ class Context3DGraphics
 		var buffer = (hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData);
 		var newBuffer:Float32Array = null;
 
-		#if lime
 		if (buffer == null)
 		{
 			newBuffer = new Float32Array(length);
@@ -1534,7 +1514,6 @@ class Context3DGraphics
 			newBuffer = new Float32Array(length);
 			newBuffer.set(buffer);
 		}
-		#end
 
 		if (newBuffer != null)
 		{

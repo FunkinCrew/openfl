@@ -1,5 +1,3 @@
 package openfl.display3D._internal;
 
-#if lime
 typedef GLUniformLocation = lime.graphics.opengl.GLUniformLocation;
-#end
