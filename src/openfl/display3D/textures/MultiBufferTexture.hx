@@ -1,8 +1,8 @@
 package openfl.display3D.textures;
 
-import openfl.display3D._internal.GLFramebuffer;
-import openfl.display3D._internal.GLTexture;
-import openfl.utils._internal.Log;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.utils.Log;
 
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)

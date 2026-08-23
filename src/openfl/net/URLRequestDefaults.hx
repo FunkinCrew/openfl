@@ -93,9 +93,4 @@ class URLRequestDefaults
 		* `"Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/526.9+ (KHTML, like Gecko) AdobeAIR/1.5"`
 	**/
 	public static var userAgent:String;
-
-	// public static function setLoginCredentialsForHost (hostname:String, user:String, password:String):Dynamic {
-	// 	openfl.utils._internal.Lib.notImplemented ();
-	// 	return null;
-	// }
 }

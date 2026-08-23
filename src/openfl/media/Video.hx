@@ -1,6 +1,6 @@
 package openfl.media;
 
-import openfl.display3D._internal.GLBuffer;
+import lime.graphics.opengl.GLBuffer;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -11,8 +11,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
-import openfl.utils._internal.Float32Array;
-import openfl.utils._internal.UInt16Array;
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
 import lime.graphics.RenderContext;
 
 /**
@@ -262,7 +262,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function __getIndexBuffer(context:Context3D):IndexBuffer3D
 	{
-		#if (lime || js)
+		#if js
 		var gl = context.gl;
 
 		if (__indexBuffer == null || __indexBufferContext != context.__context)
@@ -316,7 +316,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function __getVertexBuffer(context:Context3D):VertexBuffer3D
 	{
-		#if (lime || js)
+		#if js
 		var gl = context.gl;
 
 		if (__vertexBuffer == null

@@ -1,7 +1,7 @@
 package openfl.utils._internal;
 
 import haxe.PosInfos;
-import openfl.utils._internal.Log;
+import lime.utils.Log;
 #if !openfl_unit_testing
 import openfl.display.Application;
 #end

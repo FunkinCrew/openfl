@@ -1,8 +1,8 @@
 package openfl.display3D;
 
-import openfl.display3D._internal.GLBuffer;
-import openfl.utils._internal.ArrayBufferView;
-import openfl.utils._internal.UInt16Array;
+import lime.graphics.opengl.GLBuffer;
+import lime.utils.ArrayBufferView;
+import lime.utils.UInt16Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 

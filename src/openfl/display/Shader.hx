@@ -6,11 +6,11 @@ import openfl.display3D.Context3DTextureFilter;
 import openfl.display._internal.ShaderBuffer;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
-import openfl.display3D._internal.GLProgram;
-import openfl.display3D._internal.GLShader;
+import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLShader;
 import openfl.utils.ByteArray;
-import openfl.utils._internal.Float32Array;
-import openfl.utils._internal.Log;
+import lime.utils.Float32Array;
+import lime.utils.Log;
 import openfl.Lib;
 
 /**

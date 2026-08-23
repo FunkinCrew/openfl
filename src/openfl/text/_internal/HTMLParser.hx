@@ -1,6 +1,6 @@
 package openfl.text._internal;
 
-import openfl.utils._internal.Log;
+import lime.utils.Log;
 import openfl.text.StyleSheet;
 import openfl.text.TextFormat;
 import openfl.Vector;

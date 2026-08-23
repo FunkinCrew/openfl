@@ -2,7 +2,7 @@ package openfl.display3D._internal;
 
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
-import openfl.utils._internal.UInt8Array;
+import lime.utils.UInt8Array;
 
 /**
 	This class can read ASTC texture containers according to the Khronos ASTC specification.

@@ -1,7 +1,7 @@
 package openfl.geom;
 
 import openfl.utils.ObjectPool;
-import openfl.utils._internal.Float32Array;
+import lime.utils.Float32Array;
 import lime.math.ColorMatrix;
 
 /**

@@ -1,9 +1,9 @@
 package openfl.display3D;
 
 import openfl.display3D._internal.Context3DState;
-import openfl.display3D._internal.GLBuffer;
-import openfl.display3D._internal.GLFramebuffer;
-import openfl.display3D._internal.GLTexture;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLTexture;
 import openfl.display._internal.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.MultiBufferTexture;
@@ -21,9 +21,9 @@ import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.utils._internal.Float32Array;
-import openfl.utils._internal.UInt16Array;
-import openfl.utils._internal.UInt8Array;
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
+import lime.utils.UInt8Array;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
 import openfl.display.OpenGLRenderer;

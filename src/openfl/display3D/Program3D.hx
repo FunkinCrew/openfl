@@ -1,12 +1,12 @@
 package openfl.display3D;
 
-import openfl.display3D._internal.GLProgram;
-import openfl.display3D._internal.GLShader;
-import openfl.display3D._internal.GLUniformLocation;
+import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLShader;
+import lime.graphics.opengl.GLUniformLocation;
 import openfl.display3D._internal.AGALConverter;
 import openfl.display._internal.SamplerState;
-import openfl.utils._internal.Float32Array;
-import openfl.utils._internal.Log;
+import lime.utils.Float32Array;
+import lime.utils.Log;
 import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
@@ -386,7 +386,7 @@ import lime.utils.BytePointer;
 		var glslVertex = AGALConverter.convertToGLSL(vertexProgram, null);
 		var glslFragment = AGALConverter.convertToGLSL(fragmentProgram, samplerStates);
 
-		if (Log.level == LogLevel.VERBOSE)
+		if (Log.level == VERBOSE)
 		{
 			Log.info(glslVertex);
 			Log.info(glslFragment);
@@ -563,7 +563,7 @@ import lime.utils.BytePointer;
 				__agalAlphaSamplerEnabled[uniform.regIndex] = uniform;
 			}
 
-			if (Log.level == LogLevel.VERBOSE)
+			if (Log.level == VERBOSE)
 			{
 				Log.verbose('${i} name:${uniform.name} type:${uniform.type} size:${uniform.size} location:${uniform.location}');
 			}

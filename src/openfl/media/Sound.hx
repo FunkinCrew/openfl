@@ -17,7 +17,7 @@ import lime.media.WebAudioContext;
 import lime.media.AudioManager;
 import lime.media.OpenALAudioContext;
 #end
-import openfl.utils._internal.UInt8Array;
+import lime.utils.UInt8Array;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
 

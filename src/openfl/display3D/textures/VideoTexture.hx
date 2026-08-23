@@ -1,7 +1,7 @@
 package openfl.display3D.textures;
 
 import haxe.Timer;
-import openfl.display3D._internal.GLTexture;
+import lime.graphics.opengl.GLTexture;
 import openfl.events.Event;
 import openfl.net.NetStream;
 

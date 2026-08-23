@@ -2,7 +2,7 @@ package openfl.display;
 
 import haxe.CallStack;
 import haxe.ds.ArraySort;
-import openfl.utils._internal.Log;
+import lime.utils.Log;
 import openfl.utils._internal.TouchData;
 import openfl.display3D.Context3D;
 import openfl.display.Application as OpenFLApplication;

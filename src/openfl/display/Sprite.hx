@@ -3,7 +3,7 @@ package openfl.display;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.ui.MouseCursor;
-import openfl.utils._internal.Log;
+import lime.utils.Log;
 import openfl.utils.AssetLibrary;
 
 /**

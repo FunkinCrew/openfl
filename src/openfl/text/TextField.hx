@@ -6,7 +6,7 @@ import openfl.text._internal.TextEngine;
 import openfl.text._internal.TextFormatRange;
 import openfl.text._internal.TextLayoutGroup;
 import openfl.text._internal.UTF8String;
-import openfl.utils._internal.Log;
+import lime.utils.Log;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;

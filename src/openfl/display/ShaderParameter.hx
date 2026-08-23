@@ -1,6 +1,6 @@
 package openfl.display;
 
-import openfl.utils._internal.Float32Array;
+import lime.utils.Float32Array;
 import openfl.display3D.Context3D;
 
 /**

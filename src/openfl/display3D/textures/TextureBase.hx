@@ -1,14 +1,14 @@
 package openfl.display3D.textures;
 
-import openfl.display3D._internal.GLFramebuffer;
-import openfl.display3D._internal.GLRenderbuffer;
-import openfl.display3D._internal.GLTexture;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
 import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
-import openfl.utils._internal.ArrayBufferView;
-import openfl.utils._internal.Log;
+import lime.utils.ArrayBufferView;
+import lime.utils.Log;
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.RenderContext;

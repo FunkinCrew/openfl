@@ -2,7 +2,7 @@ package openfl.display3D._internal;
 
 import haxe.Int64;
 import openfl.display._internal.SamplerState;
-import openfl.utils._internal.Log;
+import lime.utils.Log;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
