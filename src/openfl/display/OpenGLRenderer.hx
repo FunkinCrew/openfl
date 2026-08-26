@@ -1,6 +1,6 @@
 package openfl.display;
 
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.ext.KHR_debug;
 import lime.math.Matrix4;
 import openfl.display._internal.Context3DBitmap;
@@ -68,7 +68,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	/**
 		The current OpenGL render context
 	**/
-	public var gl:WebGLRenderContext;
+	public var gl:WebGL2RenderContext;
 
 	@:noCompletion private static var __staticDefaultDisplayShader:DisplayObjectShader;
 	@:noCompletion private static var __staticDefaultGraphicsShader:GraphicsShader;
@@ -89,7 +89,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __displayWidth:Int;
 	@:noCompletion private var __flipped:Bool;
 	@:noCompletion private var __shaderOverride:Shader;
-	@:noCompletion private var __gl:WebGLRenderContext;
+	@:noCompletion private var __gl:WebGL2RenderContext;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __maskShader:Context3DMaskShader;
 	@:noCompletion private var __matrix:Matrix4;
@@ -115,7 +115,14 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__context3D = context;
 		__context = context.__context;
 
-		gl = context.__context.webgl;
+		#if (js && html5)
+		gl = context.__context.webgl2;
+		#elseif desktop
+		gl = context.__context.gl;
+		#elseif mobile
+		gl = context.__context.gles3;
+		#end
+
 		__gl = gl;
 
 		this.__defaultRenderTarget = defaultRenderTarget;
