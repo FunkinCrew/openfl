@@ -2030,15 +2030,6 @@ class CanvasGraphics
 			{
 				graphics.__softwareDirty = true;
 			}
-			else if (renderer.__isDOM)
-			{
-				var scaledWidth = Std.int(width * renderer.__pixelRatio);
-				var scaledHeight = Std.int(height * renderer.__pixelRatio);
-				if (graphics.__canvas.width != scaledWidth || graphics.__canvas.height != scaledHeight)
-				{
-					graphics.__softwareDirty = true;
-				}
-			}
 			else if (graphics.__canvas.width != width || graphics.__canvas.height != height)
 			{
 				graphics.__softwareDirty = true;
