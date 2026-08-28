@@ -174,10 +174,11 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				__bgraExtension = gl.getExtension("APPLE_texture_format_BGRA8888");
 			}
 
-			// Note: Get rid of this when `ANGLE` is added.
-			#if !ios
-			__bgraAsInternalFormat = context.__context.type == OPENGLES;
-			#end
+			if (__bgraAsInternalFormat == null)
+			{
+				// Note: Get rid of this when `ANGLE` is added.
+				__bgraAsInternalFormat = #if !ios context.__context.type == OPENGLES #else false #end;
+			}
 		}
 		if (__blendMinMaxSupported == null)
 		{
