@@ -129,9 +129,6 @@ import openfl.display._internal.stats.DrawCallContext;
 class BitmapData implements IBitmapDrawable
 {
 	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
-	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
-	@:noCompletion private static var __textureFormat:Int;
-	@:noCompletion private static var __textureInternalFormat:Int;
 	@:noCompletion private static var __tempVector:Vector2 = new Vector2();
 	@:noCompletion private static var __fillRectRectangle:Rectangle = new Rectangle();
 
@@ -2235,7 +2232,7 @@ class BitmapData implements IBitmapDrawable
 			var textureImage = image;
 
 			#if (js && html5)
-			if (#if openfl_power_of_two true || #end (!TextureBase.__supportsBGRA && textureImage.format != RGBA32))
+			if (#if openfl_power_of_two true || #end (OpenGLRenderer.__bgraExtension == null && textureImage.format != RGBA32))
 			{
 				textureImage = textureImage.clone();
 				textureImage.format = RGBA32;

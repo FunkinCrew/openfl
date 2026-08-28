@@ -47,6 +47,8 @@ import openfl.utils.ObjectPool;
 @:allow(openfl.text)
 class OpenGLRenderer extends DisplayObjectRenderer
 {
+	@:noCompletion private static var __bgraExtension:Null<Dynamic>;
+	@:noCompletion private static var __bgraAsInternalFormat:Null<Bool>;
 	@:noCompletion private static var __blendMinMaxSupported:Null<Bool>;
 	@:noCompletion private static var __standardDerivativesSupported:Null<Bool>;
 	@:noCompletion private static var __complexBlendsSupported:Null<Bool>;
@@ -160,6 +162,25 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			}
 		}
 
+		if (__bgraExtension == null)
+		{
+			__bgraExtension = gl.getExtension("EXT_bgra");
+
+			if (__bgraExtension == null)
+			{
+				__bgraExtension = gl.getExtension("EXT_texture_format_BGRA8888");
+			}
+
+			if (__bgraExtension == null)
+			{
+				__bgraExtension = gl.getExtension("APPLE_texture_format_BGRA8888");
+			}
+
+			// Note: Get rid of this when `ANGLE` is added.
+			#if !ios
+			__bgraAsInternalFormat = context.__context.type == OPENGLES;
+			#end
+		}
 		if (__blendMinMaxSupported == null)
 		{
 			__blendMinMaxSupported = exts.contains("EXT_blend_minmax");

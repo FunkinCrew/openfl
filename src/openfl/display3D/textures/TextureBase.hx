@@ -8,6 +8,7 @@ import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.utils.ArrayBufferView;
 import lime.utils.Log;
+import openfl.display.OpenGLRenderer;
 import openfl.display.BitmapData;
 import openfl.display._internal.SamplerState;
 import openfl.errors.Error;
@@ -25,10 +26,6 @@ import openfl.events.EventDispatcher;
 @:access(openfl.display.Stage)
 class TextureBase extends EventDispatcher
 {
-	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
-	@:noCompletion private static var __textureFormat:Int;
-	@:noCompletion private static var __textureInternalFormat:Int;
-
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __glDepthRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __glFramebuffer:GLFramebuffer;
@@ -49,7 +46,7 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private var __textureID:GLTexture;
 	@:noCompletion private var __textureTarget:Int;
 
-	@:noCompletion private function new(context:Context3D)
+	@:noCompletion private function new(context:Context3D, ?format:Context3DTextureFormat)
 	{
 		super();
 
@@ -59,39 +56,46 @@ class TextureBase extends EventDispatcher
 		__textureID = gl.createTexture();
 		__textureContext = __context.__context;
 
-		if (__supportsBGRA == null)
+		// Since `format` has never been taken into account when creating the `TextureBase`, if `format` is null, keep the old behaviour.
+		if (format == null)
 		{
-			__textureInternalFormat = gl.RGBA;
-
-			var bgraExtension:Dynamic = null;
-			#if (!js || !html5)
-			bgraExtension = gl.getExtension("EXT_bgra");
-			if (bgraExtension == null) bgraExtension = gl.getExtension("EXT_texture_format_BGRA8888");
-			if (bgraExtension == null) bgraExtension = gl.getExtension("APPLE_texture_format_BGRA8888");
-			#end
-
-			if (bgraExtension != null)
+			if (OpenGLRenderer.__bgraExtension != null)
 			{
-				__supportsBGRA = true;
-				__textureFormat = bgraExtension.BGRA_EXT;
-
-				// Note: Get rid of this when `ANGLE` is added.
-				#if !ios
-				if (context.__context.type == OPENGLES)
-				{
-					__textureInternalFormat = bgraExtension.BGRA_EXT;
-				}
-				#end
+				__internalFormat = OpenGLRenderer.__bgraAsInternalFormat ? OpenGLRenderer.__bgraExtension.BGRA_EXT : gl.RGBA;
+				__format = OpenGLRenderer.__bgraExtension.BGRA_EXT;
 			}
 			else
 			{
-				__supportsBGRA = false;
-				__textureFormat = gl.RGBA;
+				__internalFormat = gl.RGBA;
+				__format = gl.RGBA;
 			}
 		}
-
-		__internalFormat = __textureInternalFormat;
-		__format = __textureFormat;
+		else
+		{
+			switch (format)
+			{
+				case RGB:
+					__internalFormat = gl.RGB;
+					__internalFormat = gl.RGB;
+				case BGRA:
+					if (OpenGLRenderer.__bgraExtension != null)
+					{
+						__internalFormat = OpenGLRenderer.__bgraAsInternalFormat ? OpenGLRenderer.__bgraExtension.BGRA_EXT : gl.RGBA;
+						__format = OpenGLRenderer.__bgraExtension.BGRA_EXT;
+					}
+					else
+					{
+						__internalFormat = gl.RGBA;
+						__format = gl.RGBA;
+					}
+				case RGBA:
+					__internalFormat = gl.RGBA;
+					__format = gl.RGBA;
+				case R:
+					__internalFormat = gl.R8;
+					__internalFormat = gl.RED;
+			}
+		}
 	}
 
 	/**
@@ -327,20 +331,6 @@ class TextureBase extends EventDispatcher
 			return;
 		}
 
-		var internalFormat:Int;
-		var format:Int;
-
-		if (image.buffer.bitsPerPixel == 1)
-		{
-			internalFormat = gl.ALPHA;
-			format = gl.ALPHA;
-		}
-		else
-		{
-			internalFormat = TextureBase.__textureInternalFormat;
-			format = TextureBase.__textureFormat;
-		}
-
 		__context.__bindGLTexture2D(__textureID);
 
 		#if (js && html5)
@@ -355,14 +345,14 @@ class TextureBase extends EventDispatcher
 
 		if (image.type == DATA)
 		{
-			__uploadTexture2D(__textureTarget, image.buffer.width, image.buffer.height, internalFormat, format, image.data);
+			__uploadTexture2D(__textureTarget, image.buffer.width, image.buffer.height, __internalFormat, __format, image.data);
 		}
 		else
 		{
-			gl.texImage2D(__textureTarget, 0, internalFormat, format, gl.UNSIGNED_BYTE, image.src);
+			gl.texImage2D(__textureTarget, 0, __internalFormat, __format, gl.UNSIGNED_BYTE, image.src);
 		}
 		#else
-		__uploadTexture2D(__textureTarget, image.buffer.width, image.buffer.height, internalFormat, format, image.data);
+		__uploadTexture2D(__textureTarget, image.buffer.width, image.buffer.height, __internalFormat, __format, image.data);
 		#end
 
 		__context.__bindGLTexture2D(null);

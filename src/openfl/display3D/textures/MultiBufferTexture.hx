@@ -3,6 +3,7 @@ package openfl.display3D.textures;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.utils.Log;
+import openfl.display.OpenGLRenderer;
 
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
@@ -113,26 +114,21 @@ class MultiBufferTexture extends TextureBase
 
 		switch (f)
 		{
+			case RGB:
+				return gl.RGB;
 			case BGRA:
-				if (TextureBase.__supportsBGRA)
+				if (OpenGLRenderer.__bgraExtension != null)
 				{
-					var bgraExtension:Dynamic = null;
-					bgraExtension = gl.getExtension("EXT_bgra");
-					if (bgraExtension == null) bgraExtension = gl.getExtension("EXT_texture_format_BGRA8888");
-					if (bgraExtension == null) bgraExtension = gl.getExtension("APPLE_texture_format_BGRA8888");
-
-					return bgraExtension.BGRA_EXT;
+					return OpenGLRenderer.__bgraExtension.BGRA_EXT;
 				}
 				else
 				{
 					return gl.RGBA;
 				}
-
+			case RGBA:
+				return gl.RGBA;
 			case R:
 				return gl.RED;
-
-			default:
-				return gl.RGBA;
 		}
 	}
 
@@ -142,18 +138,14 @@ class MultiBufferTexture extends TextureBase
 
 		switch (f)
 		{
+			case RGB:
+				return gl.RGB;
 			case BGRA:
-				#if !ios
-				return (__context.__context.type == OPENGLES) ? baseGLFormat : gl.RGBA;
-				#else
+				return OpenGLRenderer.__bgraAsInternalFormat ? baseGLFormat : gl.RGBA;
+			case RGBA:
 				return gl.RGBA;
-				#end
-
 			case R:
 				return gl.R8;
-
-			default:
-				return baseGLFormat;
 		}
 	}
 }

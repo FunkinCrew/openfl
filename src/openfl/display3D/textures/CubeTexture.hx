@@ -31,7 +31,7 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function new(context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int)
 	{
-		super(context);
+		super(context, format);
 
 		__size = size;
 		__width = __height = __size;
