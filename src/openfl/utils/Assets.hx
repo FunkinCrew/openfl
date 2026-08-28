@@ -489,11 +489,12 @@ class Assets
 
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+		@param  allowCompressedTextures		(Optional) Wether to allow compressed textures to be used to get this bitmap (Default: true)
 		@return		Returns a Future<BitmapData>
 
 		@see [Working with bitmap assets](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/working-with-bitmap-assets.html)
 	**/
-	public static function loadBitmapData(id:String, useCache:Null<Bool> = true):Future<BitmapData>
+	public static function loadBitmapData(id:String, useCache:Null<Bool> = true, allowCompressedTextures:Bool = true):Future<BitmapData>
 	{
 		if (useCache == null) useCache = true;
 
@@ -508,6 +509,40 @@ class Assets
 			{
 				promise.complete(bitmapData);
 				return promise.future;
+			}
+		}
+
+		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
+		{
+			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
+
+			if (LimeAssets.exists(astcTexture, BINARY))
+			{
+				LimeAssets.loadBytes(astcTexture).onComplete(function(bytes)
+				{
+					if (bytes != null)
+					{
+						var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(bytes), false);
+
+						if (useCache && cache.enabled)
+						{
+							cache.setBitmapData(id, bitmapData);
+						}
+
+						promise.complete(bitmapData);
+					}
+					else
+					{
+						promise.error("[Assets] Could not load Image \"" + id + "\"");
+					}
+				}).onError(promise.error).onProgress(promise.progress);
+
+				return promise.future;
+			}
+
+			if (haxe.io.Path.extension(id) == "astc")
+			{
+				return null;
 			}
 		}
 
