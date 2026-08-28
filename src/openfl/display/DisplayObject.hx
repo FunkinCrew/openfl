@@ -795,8 +795,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	public var scrollRect(get, set):Rectangle;
 
 	/**
-		**BETA**
-
 		Applies a custom Shader object to use when rendering this display object (or its children) when using
 		hardware rendering. This occurs as a single-pass render on this object only, if visible. In order to
 		apply a post-process effect to multiple display objects at once, enable `cacheAsBitmap` or use the

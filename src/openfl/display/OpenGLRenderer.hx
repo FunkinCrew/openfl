@@ -22,8 +22,6 @@ import openfl.geom.Rectangle;
 import openfl.utils.ObjectPool;
 
 /**
-	**BETA**
-
 	The OpenGLRenderer API exposes support for OpenGL render instructions within the
 	`RenderEvent.RENDER_OPENGL` event.
 **/

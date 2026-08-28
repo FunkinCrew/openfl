@@ -106,12 +106,9 @@ import openfl.utils.ByteArray;
 	}
 
 	/**
-		**BETA**
-
 		Get the index for the specified shader attribute.
 
-		@returns	The index, or -1 if the attribute is not bound or
-		was not found in the shader sources
+		@returns	The index, or -1 if the attribute is not bound or was not found in the shader sources
 	**/
 	public function getAttributeIndex(name:String):Int
 	{
@@ -140,8 +137,6 @@ import openfl.utils.ByteArray;
 	}
 
 	/**
-		**BETA**
-
 		Get the index for the specified shader constant.
 
 		@returns	The index, or -1 if the constant is not bound or
@@ -403,8 +398,6 @@ import openfl.utils.ByteArray;
 	}
 
 	/**
-		**BETA**
-
 		Uploads a pair of rendering programs expressed in GLSL (GL Shader Language).
 	**/
 	public function uploadSources(vertexSource:String, fragmentSource:String):Void

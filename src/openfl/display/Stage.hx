@@ -268,8 +268,6 @@ class Stage extends DisplayObjectContainer implements IModule
 	public var contentsScaleFactor(get, never):Float;
 
 	/**
-		**BETA**
-
 		The current Context3D the default display renderer.
 
 		This property is supported only when using hardware rendering.

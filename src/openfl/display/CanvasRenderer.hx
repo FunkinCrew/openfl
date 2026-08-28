@@ -13,10 +13,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 /**
-	**BETA**
-
-	The CanvasRenderer API exposes support for HTML5 canvas render instructions within the
-	`RenderEvent.RENDER_CANVAS` event
+	The CanvasRenderer API exposes support for HTML5 canvas render instructions within the `RenderEvent.RENDER_CANVAS` event
 **/
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.IBitmapDrawable)

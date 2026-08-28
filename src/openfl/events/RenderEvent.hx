@@ -5,8 +5,6 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
 /**
-	**BETA**
-
 	RenderEvent is dispatched (optionally) once a listener is added to a
 	DisplayObject. When the internal Stage renderer is ready to draw the specified
 	object, a RenderEvent will be dispatched.

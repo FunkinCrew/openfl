@@ -17,10 +17,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 /**
-	**BETA**
-
-	The CairoRenderer API exposes support for native Cairo render instructions within the
-	`RenderEvent.RENDER_CAIRO` event
+	The CairoRenderer API exposes support for native Cairo render instructions within the `RenderEvent.RENDER_CAIRO` event
 **/
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)

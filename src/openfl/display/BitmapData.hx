@@ -1338,8 +1338,6 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	/**
-		**BETA**
-
 		Creates a new BitmapData instance from a Stage3D rectangle texture. The
 		BitmapData instance will hardware-only, and the `readable` property will
 		be false, meaning that some operations will not be permitted.
@@ -1399,8 +1397,6 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	/**
-		**BETA**
-
 		Get the IndexBuffer3D object associated with this BitmapData object
 
 		@param	context	A Stage3D context
@@ -1611,8 +1607,6 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	/**
-		**BETA**
-
 		Get the VertexBuffer3D object associated with this BitmapData object
 
 		@param	context	A Stage3D context
@@ -2166,8 +2160,6 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	/**
-		**BETA**
-
 		Get the CairoImageSurface associated with this BitmapData object for use with
 		Cairo software rendering
 
@@ -2186,8 +2178,6 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	/**
-		**BETA**
-
 		Get a hardware texture representing this BitmapData instance
 
 		@param	context	A Context3D instance
