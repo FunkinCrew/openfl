@@ -1354,13 +1354,13 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (texture == null) return null;
 
-		var bitmapData = new BitmapData(texture.__width, texture.__height, true, 0);
-		bitmapData.readable = false;
+		var bitmapData = new BitmapData(0, 0, true, 0);
+		bitmapData.rect.setTo(0, 0, texture.__width, texture.__height);
 		bitmapData.__texture = texture;
 		bitmapData.__textureContext = texture.__textureContext;
 		bitmapData.__textureShared = shared;
-		bitmapData.__surface = null;
-		bitmapData.image = null;
+		bitmapData.__resize(texture.__width, texture.__height);
+		bitmapData.__isValid = true;
 		return bitmapData;
 	}
 
