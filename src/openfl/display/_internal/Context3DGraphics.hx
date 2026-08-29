@@ -926,8 +926,7 @@ class Context3DGraphics
 				var context = renderer.__context3D;
 				var gl = context.gl;
 
-				var matrix = Matrix.__pool.get();
-
+				var matrix:Matrix = null;
 				var shaderBuffer:ShaderBuffer = null;
 				var bitmap:BitmapData = null;
 				var bitmapMatrix:Matrix = null;
@@ -1111,7 +1110,12 @@ class Context3DGraphics
 
 					graphics.__dirty = false;
 					graphics.__hardwareDirty = false;
-					Matrix.__pool.release(matrix);
+
+					if (matrix != null)
+					{
+						Matrix.__pool.release(matrix);
+					}
+
 					data.destroy();
 					return;
 				}
@@ -1329,6 +1333,11 @@ class Context3DGraphics
 									height = (scaledBottom - scaledTop) / graphics.__owner.scaleY;
 								}
 
+								if (matrix == null)
+								{
+									matrix = Matrix.__pool.get();
+								}
+
 								matrix.identity();
 								matrix.scale(width, height);
 								matrix.tx = x;
@@ -1416,11 +1425,15 @@ class Context3DGraphics
 					}
 				}
 
-				Matrix.__pool.release(matrix);
+				if (matrix != null)
+				{
+					Matrix.__pool.release(matrix);
+				}
 			}
 
 			graphics.__dirty = false;
 		}
+
 		graphics.__hardwareDirty = false;
 	}
 
