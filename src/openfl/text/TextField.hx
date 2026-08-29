@@ -3217,7 +3217,6 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function this_onKeyDown(event:KeyboardEvent):Void
 	{
-		#if !openfl_doc_gen
 		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey))
 		{
 			if (__caretIndex != __selectionIndex && !displayAsPassword)
@@ -3225,7 +3224,6 @@ class TextField extends InteractiveObject
 				Clipboard.text = __text.substring(__caretIndex, __selectionIndex);
 			}
 		}
-		#end
 	}
 
 	@:noCompletion private function this_onMouseDown(event:MouseEvent):Void

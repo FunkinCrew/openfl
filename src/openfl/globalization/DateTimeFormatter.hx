@@ -6,7 +6,7 @@ import openfl.Vector;
 import js.lib.intl.DateTimeFormat;
 #end
 
-#if !(js && html5)
+#if (!(js && html5))
 @:final class DateTimeFormatter
 {
 	@:noCompletion private static var WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];

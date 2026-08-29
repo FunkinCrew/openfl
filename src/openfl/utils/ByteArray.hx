@@ -54,10 +54,7 @@ import openfl.net.ObjectEncoding;
 **/
 @:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
-// TODO: Remove if bug that breaks `byteArray.endian = BIG_ENDIAN` is fixed
-#if !openfl_doc_gen
 @:forward(endian, objectEncoding)
-#end
 @:transitive
 abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 {
@@ -103,14 +100,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	public var bytesAvailable(get, never):UInt;
 
-	#if openfl_doc_gen
-	/**
-		Changes or reads the byte order for the data; either
-		`Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
-	**/
-	public var endian(get, set):Endian;
-	#end
-
 	/**
 		The length of the ByteArray object, in bytes.
 
@@ -121,29 +110,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		length, the byte array is truncated.
 	**/
 	public var length(get, set):UInt;
-
-	#if openfl_doc_gen
-	/**
-		* Used to determine whether the Haxe Serialization Format, JSON, AMF0,
-		* or AMF3 format should be used when writing to, or reading from, a
-		* ByteArray instance. The value is a constant from the ObjectEncoding class.
-
-		* On the Flash and AIR targets, support for Action Message Format (AMF) object
-		* serialization is included in the Flash runtime. For other targets, AMF
-		* serialization is supported if your project using built using the optional
-		* "format" library, such as `<haxelib name="format" />` in a project.xml file.
-		*
-		* Additional OpenFL targets support reading and writing of objects using
-		* Haxe Serialization Format (HXSF) and JavaScript Object Notation (JSON). These
-		* targets use HXSF by default.
-		*
-		* Since these additional object serialization formats are not internal to the
-		* Flash runtime, they are not supported by the `readObject` or `writeObject`
-		* functions on the Flash or AIR targets, but through `haxe.Serializer`,
-		* `haxe.Unserializer` or `haxe.JSON` if needed.
-	**/
-	public var objectEncoding(get, set):ObjectEncoding;
-	#end
 
 	/**
 		Moves, or returns the current position, in bytes, of the file pointer into

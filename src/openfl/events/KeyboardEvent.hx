@@ -79,7 +79,6 @@ class KeyboardEvent extends Event
 	**/
 	public var charCode:Int;
 
-	#if (!openfl_doc_gen || !flash_doc_gen || air_doc_gen)
 	/**
 		Indicates whether the Command key is active (`true`) or inactive
 		(`false`). Supported for Mac OS only. On Mac OS, the `commandKey`
@@ -93,7 +92,6 @@ class KeyboardEvent extends Event
 		is active.
 	**/
 	public var controlKey:Bool;
-	#end
 
 	/**
 		On Windows and Linux, indicates whether the Ctrl key is active
@@ -171,20 +169,15 @@ class KeyboardEvent extends Event
 		ctrlKey = ctrlKeyValue;
 		altKey = altKeyValue;
 		shiftKey = shiftKeyValue;
-
-		#if !openfl_doc_gen
 		controlKey = controlKeyValue;
 		commandKey = commandKeyValue;
-		#end
 
 		__updateAfterEventFlag = false;
 	}
 
 	public override function clone():KeyboardEvent
 	{
-		var event = new KeyboardEvent(type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey
-			#if !openfl_doc_gen, controlKey, commandKey #end);
-
+		var event = new KeyboardEvent(type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey, controlKey, commandKey);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
@@ -224,11 +217,8 @@ class KeyboardEvent extends Event
 		ctrlKey = false;
 		altKey = false;
 		shiftKey = false;
-
-		#if !openfl_doc_gen
 		controlKey = false;
 		commandKey = false;
-		#end
 
 		__updateAfterEventFlag = false;
 	}

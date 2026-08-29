@@ -1213,7 +1213,7 @@ class BitmapData implements IBitmapDrawable
 		image.floodFill(x, y, color, ARGB32);
 	}
 
-	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	#if (!(js && html5))
 	/**
 		Creates a new BitmapData instance from Base64-encoded data
 		synchronously. This means that the BitmapData will be returned
@@ -1230,17 +1230,13 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromBase64(base64:String, type:String):BitmapData
 	{
-		#if (js && html5)
-		return null;
-		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
 		bitmapData.__fromBase64(base64, type);
 		return bitmapData;
-		#end
 	}
 	#end
 
-	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	#if (!(js && html5))
 	/**
 		Creates a new BitmapData from bytes (a `haxe.io.Bytes` or
 		`openfl.utils.ByteArray`) synchronously. This means that the BitmapData
@@ -1260,13 +1256,9 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData
 	{
-		#if (js && html5)
-		return null;
-		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
 		bitmapData.__fromBytes(bytes, rawAlpha);
 		return bitmapData;
-		#end
 	}
 	#end
 
@@ -1292,7 +1284,7 @@ class BitmapData implements IBitmapDrawable
 	}
 	#end
 
-	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	#if (!(js && html5))
 	/**
 		Creates a new BitmapData from a file path synchronously. This means that the
 		BitmapData will be returned immediately (if supported).
@@ -1308,13 +1300,9 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromFile(path:String):BitmapData
 	{
-		#if (js && html5)
-		return null;
-		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
 		bitmapData.__fromFile(path);
 		return bitmapData.image != null ? bitmapData : null;
-		#end
 	}
 	#end
 
