@@ -978,9 +978,9 @@ class Context3DGraphics
 
 							renderer.__setShaderBuffer(shaderBuffer);
 							renderer.applyMatrix(uMatrix);
-							renderer.applyBitmapData(bitmap, false, repeat);
-							renderer.applyAlpha(1);
-							renderer.applyColorTransform(null);
+							renderer.applyBitmapData(bitmap, smooth, repeat);
+							renderer.applyAlpha(graphics.__owner.__worldAlpha);
+							renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 							renderer.__updateShaderBuffer(shaderBufferOffset);
 						}
 						else if (bitmap != null)
@@ -1149,10 +1149,7 @@ class Context3DGraphics
 						case BEGIN_FILL:
 							flushBitmapLinePath();
 							var c = data.readBeginFill();
-							var color = Std.int(c.color);
-							var alpha = Std.int(c.alpha * 0xFF);
-
-							fill = (color & 0xFFFFFF) | (alpha << 24);
+							fill = (Std.int(c.color) & 0xFFFFFF) | (Std.int(c.alpha * 0xFF) << 24);
 							shaderBuffer = null;
 							bitmap = null;
 							bitmapMatrix = null;
@@ -1202,7 +1199,7 @@ class Context3DGraphics
 
 									renderer.__setShaderBuffer(shaderBuffer);
 									renderer.applyMatrix(uMatrix);
-									renderer.applyBitmapData(bitmap, false /* ignored */, repeat);
+									renderer.applyBitmapData(bitmap, smooth, repeat);
 									renderer.applyAlpha(graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 									// renderer.__updateShaderBuffer ();
