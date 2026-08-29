@@ -326,26 +326,9 @@ class Video extends DisplayObject
 		{
 			__currentWidth = width;
 			__currentHeight = height;
-			#if openfl_power_of_two
-			var newWidth = 1;
-			var newHeight = 1;
 
-			while (newWidth < width)
-			{
-				newWidth <<= 1;
-			}
-
-			while (newHeight < height)
-			{
-				newHeight <<= 1;
-			}
-
-			var uvWidth = width / newWidth;
-			var uvHeight = height / newHeight;
-			#else
 			var uvWidth = 1;
 			var uvHeight = 1;
-			#end
 
 			__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
 

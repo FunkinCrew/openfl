@@ -334,24 +334,8 @@ class Context3DGraphics
 
 						var vertexBufferData = graphics.__quadBuffer.vertexBufferData;
 
-						bitmapWidth = 1;
-						bitmapHeight = 1;
-						if (bitmap != null)
-						{
-							#if openfl_power_of_two
-							while (bitmapWidth < bitmap.width)
-							{
-								bitmapWidth <<= 1;
-							}
-							while (bitmapHeight < bitmap.height)
-							{
-								bitmapHeight <<= 1;
-							}
-							#else
-							bitmapWidth = bitmap.width;
-							bitmapHeight = bitmap.height;
-							#end
-						}
+						bitmapWidth = bitmap != null ? bitmap.width : 1;
+						bitmapHeight = bitmap != null ? bitmap.height : 1;
 
 						for (i in 0...length)
 						{

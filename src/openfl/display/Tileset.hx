@@ -228,24 +228,6 @@ class TileData
 			var bitmapWidth = bitmapData.width;
 			var bitmapHeight = bitmapData.height;
 
-			#if openfl_power_of_two
-			var newWidth = 1;
-			var newHeight = 1;
-
-			while (newWidth < bitmapWidth)
-			{
-				newWidth <<= 1;
-			}
-
-			while (newHeight < bitmapHeight)
-			{
-				newHeight <<= 1;
-			}
-
-			bitmapWidth = newWidth;
-			bitmapHeight = newHeight;
-			#end
-
 			__uvX = x / bitmapWidth;
 			__uvY = y / bitmapHeight;
 			__uvWidth = (x + width) / bitmapWidth;
