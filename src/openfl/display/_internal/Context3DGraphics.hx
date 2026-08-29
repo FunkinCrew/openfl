@@ -29,12 +29,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DGraphics
 {
-	@:noCompletion private static var blankBitmapData = new BitmapData(1, 1, false, 0);
-
-	public static inline function getBlankBitmapData():BitmapData
-	{
-		return blankBitmapData;
-	}
+	public static var blankBitmapData:BitmapData = new BitmapData(1, 1, false, 0);
 
 	@:noCompletion private static var maskRender:Bool;
 	@:noCompletion private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
@@ -1004,7 +999,7 @@ class Context3DGraphics
 							shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 							renderer.setShader(shader);
 							renderer.applyMatrix(uMatrix);
-							renderer.applyBitmapData(blankBitmapData, true, repeat);
+							renderer.applyBitmapData(blankBitmapData, false, false);
 							var color:ARGB = (fill : ARGB);
 							tempColorTransform.__identity();
 							var worldColorTransform = graphics.__owner.__worldColorTransform;
@@ -1223,7 +1218,7 @@ class Context3DGraphics
 									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
-									renderer.applyBitmapData(blankBitmapData, true, repeat);
+									renderer.applyBitmapData(blankBitmapData, false, false);
 									var color:ARGB = (fill : ARGB);
 									tempColorTransform.__identity();
 									var worldColorTransform = graphics.__owner.__worldColorTransform;
@@ -1343,7 +1338,7 @@ class Context3DGraphics
 								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 								renderer.setShader(shader);
 								renderer.applyMatrix(renderer.__getMatrix(matrix, AUTO));
-								renderer.applyBitmapData(blankBitmapData, true, repeat);
+								renderer.applyBitmapData(blankBitmapData, false, false);
 								var color:ARGB = (fill : ARGB);
 								tempColorTransform.__identity();
 								var worldColorTransform = graphics.__owner.__worldColorTransform;
