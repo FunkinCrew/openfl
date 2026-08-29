@@ -944,8 +944,8 @@ import js.html.CanvasRenderingContext2D;
 			if (maxY < tileRect.bottom) maxY = tileRect.bottom;
 		}
 
-		__inflateBounds(minX, minY);
-		__inflateBounds(maxX, maxY);
+		__inflateBounds(minX - __strokePadding, minY - __strokePadding);
+		__inflateBounds(maxX + __strokePadding, maxY + __strokePadding);
 
 		__commands.drawQuads(rects, indices, transforms);
 
@@ -1150,8 +1150,8 @@ import js.html.CanvasRenderingContext2D;
 			if (maxY < y) maxY = y;
 		}
 
-		__inflateBounds(minX, minY);
-		__inflateBounds(maxX, maxY);
+		__inflateBounds(minX - __strokePadding, minY - __strokePadding);
+		__inflateBounds(maxX + __strokePadding, maxY + __strokePadding);
 
 		__commands.drawTriangles(vertices, indices, uvtData, culling);
 
