@@ -58,6 +58,7 @@ import js.html.CanvasRenderingContext2D;
 {
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
+	@:noCompletion private static var shaderBufferPool:ObjectPool<ShaderBuffer> = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
@@ -82,7 +83,6 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __renderHeight:Int;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __renderWidth:Int;
-	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
 	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
@@ -400,13 +400,12 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (shader != null)
 		{
-			if (__shaderBufferPool == null)
+			if (__usedShaderBuffers == null)
 			{
-				__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 				__usedShaderBuffers = new List<ShaderBuffer>();
 			}
 
-			var shaderBuffer = __shaderBufferPool.get();
+			var shaderBuffer = shaderBufferPool.get();
 			__usedShaderBuffers.add(shaderBuffer);
 			shaderBuffer.update(cast shader);
 
@@ -425,7 +424,7 @@ import js.html.CanvasRenderingContext2D;
 		{
 			for (shaderBuffer in __usedShaderBuffers)
 			{
-				__shaderBufferPool.release(shaderBuffer);
+				shaderBufferPool.release(shaderBuffer);
 			}
 
 			__usedShaderBuffers.clear();
