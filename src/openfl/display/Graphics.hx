@@ -2102,31 +2102,8 @@ import js.html.CanvasRenderingContext2D;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
-		#if openfl_disable_graphics_pixel_snapping
 		__worldTransform.tx = tx;
 		__worldTransform.ty = ty;
-		#else
-		// round the world position for crisp graphics rendering
-		if (pixelRatio > 1.0)
-		{
-			// on HiDPI screens, we can round to the nearest device pixel
-			// instead of the nearest stage pixel because device pixels have
-			// more precision.
-			// rendering will still be crisp, and animations will be smoother.
-			var nativePixelSize = 1 / pixelRatio;
-			__worldTransform.tx = Math.fround(tx / nativePixelSize) * nativePixelSize;
-			__worldTransform.ty = Math.fround(ty / nativePixelSize) * nativePixelSize;
-		}
-		else
-		{
-			__worldTransform.tx = Math.fround(tx);
-			__worldTransform.ty = Math.fround(ty);
-		}
-
-		// Offset the rendering with the subpixel offset removed by Math.round above
-		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
-		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
-		#end
 
 		if (useExactRenderScale && (newWidth != __width || newHeight != __height))
 		{
