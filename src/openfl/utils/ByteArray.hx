@@ -1732,9 +1732,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		if (__defaultEndian == null)
 		{
-			#if openfl_big_endian
-			__defaultEndian = BIG_ENDIAN;
-			#elseif lime
 			if (System.endianness == LITTLE_ENDIAN)
 			{
 				__defaultEndian = LITTLE_ENDIAN;
@@ -1743,9 +1740,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			{
 				__defaultEndian = BIG_ENDIAN;
 			}
-			#else
-			__defaultEndian = LITTLE_ENDIAN;
-			#end
 		}
 
 		return __defaultEndian;

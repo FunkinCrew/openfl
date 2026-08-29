@@ -63,10 +63,8 @@ package openfl.globalization;
 			// Lime's Locale.currentLocale uses navigator.language, which may
 			// not be the right choice when using JS Intl types
 			requestedLocaleIDName = untyped Intl.DateTimeFormat().resolvedOptions().locale;
-			#elseif lime
-			requestedLocaleIDName = lime.system.Locale.currentLocale;
 			#else
-			requestedLocaleIDName = openfl.system.Capabilities.language;
+			requestedLocaleIDName = lime.system.Locale.currentLocale;
 			#end
 		}
 		// A Unicode CLDR locale identifier can be converted to a valid
