@@ -39,7 +39,7 @@ class Context3DShape
 
 				var shader = renderer.__initDisplayShader(cast shape.__worldShader);
 				renderer.setShader(shader);
-				renderer.applyBitmapData(graphics.__bitmap, true);
+				renderer.applyBitmapData(graphics.__bitmap, renderer.__allowSmoothing || renderer.__upscaled);
 
 				var matrix = Matrix.__pool.get();
 				matrix.scale(1 / graphics.__bitmapScaleX, 1 / graphics.__bitmapScaleY);
@@ -88,7 +88,7 @@ class Context3DShape
 
 				var shader = renderer.__maskShader;
 				renderer.setShader(shader);
-				renderer.applyBitmapData(graphics.__bitmap, true);
+				renderer.applyBitmapData(graphics.__bitmap, renderer.__allowSmoothing || renderer.__upscaled);
 				renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
 				renderer.updateShader();
 

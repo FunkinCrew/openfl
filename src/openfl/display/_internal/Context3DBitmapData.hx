@@ -23,7 +23,7 @@ class Context3DBitmapData
 
 		var shader = renderer.__defaultDisplayShader;
 		renderer.setShader(shader);
-		renderer.applyBitmapData(bitmapData, renderer.__upscaled);
+		renderer.applyBitmapData(bitmapData, renderer.__allowSmoothing || renderer.__upscaled);
 		renderer.applyMatrix(renderer.__getMatrix(bitmapData.__worldTransform, AUTO));
 		renderer.applyAlpha(bitmapData.__worldAlpha);
 		renderer.applyColorTransform(bitmapData.__worldColorTransform);
@@ -51,7 +51,7 @@ class Context3DBitmapData
 
 		var shader = renderer.__maskShader;
 		renderer.setShader(shader);
-		renderer.applyBitmapData(bitmapData, renderer.__upscaled);
+		renderer.applyBitmapData(bitmapData, renderer.__allowSmoothing || renderer.__upscaled);
 		renderer.applyMatrix(renderer.__getMatrix(bitmapData.__worldTransform, AUTO));
 		renderer.updateShader();
 
