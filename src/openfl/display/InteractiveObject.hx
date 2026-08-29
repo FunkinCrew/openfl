@@ -1210,30 +1210,6 @@ class InteractiveObject extends DisplayObject
 		__tabIndex = -1;
 	}
 
-	#if !openfl_strict
-	/**
-		Raises a virtual keyboard.
-
-		Calling this method focuses the InteractiveObject instance and raises
-		the soft keyboard, if necessary. The `needsSoftKeyboard` must
-		also be `true`. A keyboard is not raised if a hardware keyboard
-		is available, or if the client system does not support virtual
-		keyboards.
-
-		**Note:** This method is not supported in AIR applications on
-		iOS.
-
-		@return A value of `true` means that the soft keyboard request
-				was granted; `false` means that the soft keyboard was
-				not raised.
-	**/
-	public function requestSoftKeyboard():Bool
-	{
-		openfl.utils._internal.Lib.notImplemented();
-		return false;
-	}
-	#end
-
 	@:noCompletion private function __allowMouseFocus():Bool
 	{
 		return mouseEnabled && tabEnabled;

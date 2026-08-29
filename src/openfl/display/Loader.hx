@@ -229,18 +229,6 @@ class Loader extends DisplayObjectContainer
 		return null;
 	}
 
-	#if !openfl_strict
-	/**
-		Cancels a `load()` method operation that is currently in
-		progress for the Loader instance.
-
-	**/
-	public function close():Void
-	{
-		openfl.utils._internal.Lib.notImplemented();
-	}
-	#end
-
 	/**
 		Loads a SWF, JPEG, progressive JPEG, unanimated GIF, or PNG file into an
 		object that is a child of this Loader object. If you load an animated GIF

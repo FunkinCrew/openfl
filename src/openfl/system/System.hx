@@ -152,36 +152,6 @@ import cpp.vm.Gc;
 		#end
 	}
 
-	#if !openfl_strict
-	/**
-		Pauses Flash Player or the AIR Debug Launcher (ADL). After calling this
-		method, nothing in the application continues except the delivery of Socket
-		events.
-
-		_For the Flash Player debugger version or the AIR Debug Launcher
-		(ADL) only._
-
-	**/
-	public static function pause():Void
-	{
-		openfl.utils._internal.Lib.notImplemented();
-	}
-	#end
-
-	#if !openfl_strict
-	/**
-		Resumes the application after calling `System.pause()`.
-
-		_For the Flash Player debugger version or the AIR Debug Launcher
-		(ADL) only._
-
-	**/
-	public static function resume():Void
-	{
-		openfl.utils._internal.Lib.notImplemented();
-	}
-	#end
-
 	/**
 		Replaces the contents of the Clipboard with a specified text string. This
 		method works from any security context when called as a result of a user

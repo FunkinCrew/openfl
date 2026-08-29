@@ -1001,16 +1001,6 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		cast(this, TextField).replaceText(beginIndex, endIndex, newText);
 	}
 
-	#if !openfl_strict
-	/**
-		Accesses the `requestSoftKeyboard` method (for InteractiveObject instances only).
-	**/
-	public function requestSoftKeyboard():Bool
-	{
-		return cast(this, InteractiveObject).requestSoftKeyboard();
-	}
-	#end
-
 	/**
 		Resolves a child DisplayObject by name (if this is an instance
 		of DisplayObjectContainer) or otherwise will return `null`.
