@@ -28,7 +28,7 @@ class CanvasShape
 			var height = graphics.__height;
 			var canvas = graphics.__canvas;
 
-			if (canvas != null && graphics.__visible && width >= 1 && height >= 1)
+			if (canvas != null && graphics.__visible && width > 0 && height > 0)
 			{
 				var transform = graphics.__worldTransform;
 				var context = renderer.context;

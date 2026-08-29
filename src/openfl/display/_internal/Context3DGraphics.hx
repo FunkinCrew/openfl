@@ -904,7 +904,7 @@ class Context3DGraphics
 			var width = graphics.__width;
 			var height = graphics.__height;
 
-			if (bounds != null && width >= 1 && height >= 1)
+			if (bounds != null && width > 0 && height > 0)
 			{
 				if (graphics.__hardwareDirty
 					|| (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null))
