@@ -58,7 +58,6 @@ import js.html.CanvasRenderingContext2D;
 {
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
-	@:noCompletion private static inline var __renderSizePadding:Float = 1.25;
 
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
@@ -2040,7 +2039,7 @@ import js.html.CanvasRenderingContext2D;
 			}
 			else if (__renderWidth > 0 && renderWidth > __renderWidth)
 			{
-				renderWidth = Math.ceil(Math.max(renderWidth, __renderWidth * __renderSizePadding));
+				renderWidth = Math.ceil(Math.max(renderWidth, __renderWidth * 1.25));
 			}
 
 			if (__renderHeight > 0 && renderHeight <= __renderHeight)
@@ -2049,7 +2048,7 @@ import js.html.CanvasRenderingContext2D;
 			}
 			else if (__renderHeight > 0 && renderHeight > __renderHeight)
 			{
-				renderHeight = Math.ceil(Math.max(renderHeight, __renderHeight * __renderSizePadding));
+				renderHeight = Math.ceil(Math.max(renderHeight, __renderHeight * 1.25));
 			}
 
 			if (maxTextureWidth != null && renderWidth > maxTextureWidth)
