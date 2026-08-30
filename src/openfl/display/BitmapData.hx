@@ -601,7 +601,7 @@ class BitmapData implements IBitmapDrawable
 	public function copyChannel(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel,
 			destChannel:BitmapDataChannel):Void
 	{
-		if (!readable) return;
+		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 
 		var sourceChannel = switch (sourceChannel)
 		{
@@ -668,7 +668,7 @@ class BitmapData implements IBitmapDrawable
 	public function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null,
 			mergeAlpha:Bool = false):Void
 	{
-		if (!readable || sourceBitmapData == null) return;
+		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 
 		if (alphaPoint != null)
 		{
@@ -2944,7 +2944,9 @@ class BitmapData implements IBitmapDrawable
 	public function threshold(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000,
 			mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int
 	{
-		if (sourceBitmapData == null
+		if (!readable
+			|| sourceBitmapData == null
+			|| !sourceBitmapData.readable
 			|| sourceRect == null
 			|| destPoint == null
 			|| sourceRect.x > sourceBitmapData.width
