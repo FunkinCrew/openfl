@@ -1,9 +1,11 @@
 package openfl.utils;
 
+import haxe.io.Path;
 import lime.app.Promise;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.Log;
+import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
 import openfl.display.Sprite;
@@ -40,6 +42,8 @@ import openfl.text.Font;
 @:access(openfl.utils.AssetLibrary)
 class Assets
 {
+	public static var allowCompressedTextures:Bool = true;
+
 	public static var cache:IAssetCache = new AssetCache();
 
 	@:noCompletion private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher() #end;
@@ -69,16 +73,16 @@ class Assets
 	**/
 	public static function exists(id:String, type:AssetType = null, allowCompressedTextures:Bool = true):Bool
 	{
-		if (allowCompressedTextures)
+		if (allowCompressedTextures && Assets.allowCompressedTextures)
 		{
-			if (id != null && haxe.io.Path.extension(id) == "png")
+			if (id != null && Path.extension(id) == "png")
 			{
-				if (LimeAssets.exists(haxe.io.Path.withExtension(id, "astc"), BINARY))
+				if (LimeAssets.exists(Path.withExtension(id, "astc"), BINARY))
 				{
 					return true;
 				}
 			}
-			else if (id != null && haxe.io.Path.extension(id) == "astc" && type != AssetType.BINARY)
+			else if (id != null && Path.extension(id) == "astc" && type != AssetType.BINARY)
 			{
 				type = AssetType.BINARY;
 			}
@@ -132,24 +136,36 @@ class Assets
 			}
 		}
 
-		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
+		var isASTC:Bool = Path.extension(id) == "astc";
+
+		if ((allowCompressedTextures && Assets.allowCompressedTextures) || isASTC)
 		{
-			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
+			final astcTexture:String = Path.withExtension(id, "astc");
 
 			if (LimeAssets.exists(astcTexture, BINARY))
 			{
-				var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)), false);
-
-				if (useCache && cache.enabled)
+				if (Lib.current.stage.context3D.isASTCSupported())
 				{
-					cache.setBitmapData(id, bitmapData);
+					var bitmapData = BitmapData.fromTexture(Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)), false);
+
+					if (useCache && cache.enabled)
+					{
+						cache.setBitmapData(id, bitmapData);
+					}
+
+					return bitmapData;
 				}
+				else if (isASTC)
+				{
+					Log.error("ASTC is not supported");
 
-				return bitmapData;
+					return null;
+				}
 			}
-
-			if (haxe.io.Path.extension(id) == "astc")
+			else if (isASTC)
 			{
+				Log.error("There is no " + AssetType.BINARY + " asset with an ID of \"" + astcTexture + "\"");
+
 				return null;
 			}
 		}
@@ -512,37 +528,45 @@ class Assets
 			}
 		}
 
-		if ((allowCompressedTextures || haxe.io.Path.extension(id) == "astc") && openfl.Lib.current.stage.context3D.isASTCSupported())
+		var isASTC:Bool = Path.extension(id) == "astc";
+
+		if ((allowCompressedTextures && Assets.allowCompressedTextures) || isASTC)
 		{
-			final astcTexture:String = haxe.io.Path.withExtension(id, "astc");
+			final astcTexture:String = Path.withExtension(id, "astc");
 
 			if (LimeAssets.exists(astcTexture, BINARY))
 			{
-				LimeAssets.loadBytes(astcTexture).onComplete(function(bytes)
+				if (Lib.current.stage.context3D.isASTCSupported())
 				{
-					if (bytes != null)
+					LimeAssets.loadBytes(astcTexture).onComplete(function(bytes)
 					{
-						var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(bytes), false);
-
-						if (useCache && cache.enabled)
+						if (bytes != null)
 						{
-							cache.setBitmapData(id, bitmapData);
+							var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(bytes), false);
+
+							if (useCache && cache.enabled)
+							{
+								cache.setBitmapData(id, bitmapData);
+							}
+
+							promise.complete(bitmapData);
 						}
+						else
+						{
+							promise.error("[Assets] Could not load Image \"" + astcTexture + "\"");
+						}
+					}).onError(promise.error).onProgress(promise.progress);
 
-						promise.complete(bitmapData);
-					}
-					else
-					{
-						promise.error("[Assets] Could not load Image \"" + id + "\"");
-					}
-				}).onError(promise.error).onProgress(promise.progress);
-
-				return promise.future;
+					return promise.future;
+				}
+				else if (isASTC)
+				{
+					return cast Future.withError("ASTC is not supported");
+				}
 			}
-
-			if (haxe.io.Path.extension(id) == "astc")
+			else if (isASTC)
 			{
-				return null;
+				return cast Future.withError("There is no " + AssetType.BINARY + " asset with an ID of \"" + astcTexture + "\"");
 			}
 		}
 
