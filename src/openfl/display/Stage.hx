@@ -831,7 +831,6 @@ class Stage extends DisplayObjectContainer implements IModule
 	@:noCompletion private var __dragOffsetX:Float;
 	@:noCompletion private var __dragOffsetY:Float;
 	@:noCompletion private var __focus:InteractiveObject;
-	@:noCompletion private var __forceRender:Bool;
 	@:noCompletion private var __fullscreen:Bool;
 	@:noCompletion private var __fullScreenSourceRect:Rectangle;
 	@:noCompletion private var __invalidated:Bool;
@@ -916,7 +915,6 @@ class Stage extends DisplayObjectContainer implements IModule
 		#end
 
 		__clearBeforeRender = true;
-		__forceRender = false;
 		__stack = [];
 		__rollOutStack = [];
 		__mouseOutStack = [];
@@ -2089,7 +2087,7 @@ class Stage extends DisplayObjectContainer implements IModule
 
 		var event:Event = null;
 
-		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
+		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && __renderDirty #end) #else false #end;
 
 		if (__invalidated && shouldRender)
 		{
@@ -2532,15 +2530,6 @@ class Stage extends DisplayObjectContainer implements IModule
 		if (this.window == null || this.window != window) return;
 
 		__resize();
-
-		#if android
-		// workaround for newer behavior
-		__forceRender = true;
-		Lib.setTimeout(function()
-		{
-			__forceRender = false;
-		}, 500);
-		#end
 
 		if (__wasFullscreen && !window.fullscreen)
 		{
