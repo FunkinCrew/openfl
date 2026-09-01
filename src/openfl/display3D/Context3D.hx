@@ -23,6 +23,7 @@ import openfl.display3D.textures.ASTCTexture;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.MultiBufferTexture;
 import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.textures.S3TCTexture;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.VideoTexture;
@@ -129,6 +130,7 @@ import openfl.utils.ByteArray;
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.TextureBase)
+@:access(openfl.display3D.textures.S3TCTexture)
 @:access(openfl.display3D.textures.Texture)
 @:access(openfl.display3D.textures.VideoTexture)
 @:access(openfl.display3D.IndexBuffer3D)
@@ -989,6 +991,39 @@ import openfl.utils.ByteArray;
 	public function createASTCTexture(data:ByteArray):ASTCTexture
 	{
 		return new ASTCTexture(this, data);
+	}
+
+	/**
+		Checks whether S3TC (DXT1, DXT3, DXT5) texture compression is supported on this Context3D instance.
+
+		@return `true` if S3TC textures can be used on this device, `false` otherwise.
+	**/
+	public function isS3TCSupported():Bool
+	{
+		if (S3TCTexture.__s3tcCompressedTexturesSupported == null)
+		{
+			S3TCTexture.__s3tcCompressedTexturesSupported = gl.getSupportedExtensions().contains("EXT_texture_compression_s3tc");
+		}
+
+		return S3TCTexture.__s3tcCompressedTexturesSupported == true;
+	}
+
+	/**
+		Creates a new S3TCTexture instance from S3TC-compressed data.
+
+		You must check `isS3TCSupported()` before calling this method.
+
+		@param data A ByteArray containing S3TC-compressed texture data.
+		@return An `S3TCTexture` ready for use in rendering.
+
+		@throws IllegalOperationError If S3TC is not supported on this device (missing extension).
+		@throws IllegalOperationError If the S3TC signature in `data` is invalid.
+		@throws IllegalOperationError If the S3TC compression format is not supported.
+		@throws IllegalOperationError If the S3TC file is too short for header + blocks.
+	**/
+	public function createS3TCTexture(data:ByteArray):S3TCTexture
+	{
+		return new S3TCTexture(this, data);
 	}
 
 	/**

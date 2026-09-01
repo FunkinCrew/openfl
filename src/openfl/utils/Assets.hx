@@ -79,12 +79,12 @@ class Assets
 		{
 			if (id != null && Path.extension(id) == "png")
 			{
-				if (LimeAssets.exists(Path.withExtension(id, "astc"), BINARY))
+				if (LimeAssets.exists(Path.withExtension(id, "astc"), BINARY) || LimeAssets.exists(Path.withExtension(id, "dds"), BINARY))
 				{
 					return true;
 				}
 			}
-			else if (id != null && Path.extension(id) == "astc" && type != AssetType.BINARY)
+			else if (id != null && (Path.extension(id) == "astc" || Path.extension(id) == "dds") && type != AssetType.BINARY)
 			{
 				type = AssetType.BINARY;
 			}
@@ -165,6 +165,35 @@ class Assets
 				}
 			}
 			else if (Path.extension(id) == "astc")
+			{
+				Log.error("There is no " + AssetType.BINARY + " asset with an ID of \"" + textureID + "\"");
+
+				return null;
+			}
+
+			final textureID:String = Path.withExtension(id, "dds");
+
+			if (LimeAssets.exists(textureID, BINARY))
+			{
+				if (Lib.current.stage.context3D.isS3TCSupported())
+				{
+					var bitmapData = BitmapData.fromTexture(Lib.current.stage.context3D.createS3TCTexture(LimeAssets.getBytes(textureID)), false);
+
+					if (useCache && cache.enabled)
+					{
+						cache.setBitmapData(id, bitmapData);
+					}
+
+					return bitmapData;
+				}
+				else if (Path.extension(id) == "dds")
+				{
+					Log.error("S3TC is not supported");
+
+					return null;
+				}
+			}
+			else if (Path.extension(id) == "dds")
 			{
 				Log.error("There is no " + AssetType.BINARY + " asset with an ID of \"" + textureID + "\"");
 
@@ -567,6 +596,43 @@ class Assets
 				}
 			}
 			else if (Path.extension(id) == "astc")
+			{
+				return cast Future.withError("There is no " + AssetType.BINARY + " asset with an ID of \"" + textureID + "\"");
+			}
+
+			final textureID:String = Path.withExtension(id, "dds");
+
+			if (LimeAssets.exists(textureID, BINARY))
+			{
+				if (Lib.current.stage.context3D.isS3TCSupported())
+				{
+					LimeAssets.loadBytes(textureID).onComplete(function(bytes)
+					{
+						if (bytes != null)
+						{
+							var bitmapData = BitmapData.fromTexture(Lib.current.stage.context3D.createS3TCTexture(bytes), false);
+
+							if (useCache && cache.enabled)
+							{
+								cache.setBitmapData(id, bitmapData);
+							}
+
+							promise.complete(bitmapData);
+						}
+						else
+						{
+							promise.error("[Assets] Could not load Image \"" + textureID + "\"");
+						}
+					}).onError(promise.error).onProgress(promise.progress);
+
+					return promise.future;
+				}
+				else if (Path.extension(id) == "dds")
+				{
+					return cast Future.withError("S3TC is not supported");
+				}
+			}
+			else if (Path.extension(id) == "dds")
 			{
 				return cast Future.withError("There is no " + AssetType.BINARY + " asset with an ID of \"" + textureID + "\"");
 			}
