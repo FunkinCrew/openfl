@@ -140,17 +140,15 @@ class Assets
 			}
 		}
 
-		var isASTC:Bool = Path.extension(id) == "astc";
-
-		if ((allowCompressedTextures && Assets.allowCompressedTextures) || isASTC)
+		if (allowCompressedTextures && Assets.allowCompressedTextures)
 		{
-			final astcTexture:String = Path.withExtension(id, "astc");
+			final textureID:String = Path.withExtension(id, "astc");
 
-			if (LimeAssets.exists(astcTexture, BINARY))
+			if (LimeAssets.exists(textureID, BINARY))
 			{
 				if (Lib.current.stage.context3D.isASTCSupported())
 				{
-					var bitmapData = BitmapData.fromTexture(Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(astcTexture)), false);
+					var bitmapData = BitmapData.fromTexture(Lib.current.stage.context3D.createASTCTexture(LimeAssets.getBytes(textureID)), false);
 
 					if (useCache && cache.enabled)
 					{
@@ -159,16 +157,16 @@ class Assets
 
 					return bitmapData;
 				}
-				else if (isASTC)
+				else if (Path.extension(id) == "astc")
 				{
 					Log.error("ASTC is not supported");
 
 					return null;
 				}
 			}
-			else if (isASTC)
+			else if (Path.extension(id) == "astc")
 			{
-				Log.error("There is no " + AssetType.BINARY + " asset with an ID of \"" + astcTexture + "\"");
+				Log.error("There is no " + AssetType.BINARY + " asset with an ID of \"" + textureID + "\"");
 
 				return null;
 			}
@@ -534,21 +532,19 @@ class Assets
 			}
 		}
 
-		var isASTC:Bool = Path.extension(id) == "astc";
-
-		if ((allowCompressedTextures && Assets.allowCompressedTextures) || isASTC)
+		if (allowCompressedTextures && Assets.allowCompressedTextures)
 		{
-			final astcTexture:String = Path.withExtension(id, "astc");
+			final textureID:String = Path.withExtension(id, "astc");
 
-			if (LimeAssets.exists(astcTexture, BINARY))
+			if (LimeAssets.exists(textureID, BINARY))
 			{
 				if (Lib.current.stage.context3D.isASTCSupported())
 				{
-					LimeAssets.loadBytes(astcTexture).onComplete(function(bytes)
+					LimeAssets.loadBytes(textureID).onComplete(function(bytes)
 					{
 						if (bytes != null)
 						{
-							var bitmapData = BitmapData.fromTexture(openfl.Lib.current.stage.context3D.createASTCTexture(bytes), false);
+							var bitmapData = BitmapData.fromTexture(Lib.current.stage.context3D.createASTCTexture(bytes), false);
 
 							if (useCache && cache.enabled)
 							{
@@ -559,20 +555,20 @@ class Assets
 						}
 						else
 						{
-							promise.error("[Assets] Could not load Image \"" + astcTexture + "\"");
+							promise.error("[Assets] Could not load Image \"" + textureID + "\"");
 						}
 					}).onError(promise.error).onProgress(promise.progress);
 
 					return promise.future;
 				}
-				else if (isASTC)
+				else if (Path.extension(id) == "astc")
 				{
 					return cast Future.withError("ASTC is not supported");
 				}
 			}
-			else if (isASTC)
+			else if (Path.extension(id) == "astc")
 			{
-				return cast Future.withError("There is no " + AssetType.BINARY + " asset with an ID of \"" + astcTexture + "\"");
+				return cast Future.withError("There is no " + AssetType.BINARY + " asset with an ID of \"" + textureID + "\"");
 			}
 		}
 

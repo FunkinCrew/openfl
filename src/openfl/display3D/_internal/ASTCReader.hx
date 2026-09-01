@@ -39,6 +39,8 @@ class ASTCReader
 	{
 		this.data = data;
 
+		data.position = 0;
+
 		final sig0:UInt = data.readUnsignedByte();
 		final sig1:UInt = data.readUnsignedByte();
 		final sig2:UInt = data.readUnsignedByte();

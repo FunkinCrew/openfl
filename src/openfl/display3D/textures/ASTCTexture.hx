@@ -27,7 +27,9 @@ using StringTools;
 		final extension:Null<Dynamic> = __context.gl.getExtension("KHR_texture_compression_astc_ldr");
 
 		if (extension == null)
+		{
 			throw new IllegalOperationError("ASTC texture compression is not supported on this device (missing GL extension: GL_KHR_texture_compression_astc_ldr).");
+		}
 
 		var reader:ASTCReader = new ASTCReader(data);
 
@@ -35,7 +37,9 @@ using StringTools;
 			final format:Null<Int> = Reflect.field(extension, 'COMPRESSED_RGBA_ASTC_${reader.blockX}x${reader.blockY}_KHR');
 
 			if (format == null)
+			{
 				throw new IllegalOperationError('ASTC format ${reader.blockX}x${reader.blockY} is not supported on this device (GL extension KHR_texture_compression_astc_ldr is present, but this block size is missing).');
+			}
 
 			__textureTarget = __context.gl.TEXTURE_2D;
 			__width = reader.width;
