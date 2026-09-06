@@ -388,13 +388,6 @@ class Stage extends DisplayObjectContainer implements IModule
 	**/
 	public var displayState(get, set):StageDisplayState;
 
-	#if commonjs
-	/**
-		The parent HTML element where this Stage is embedded.
-	**/
-	public var element:Element;
-	#end
-
 	/**
 		The interactive object with keyboard focus; or `null` if focus
 		is not set or if the focused object belongs to a security sandbox to which
@@ -818,9 +811,6 @@ class Stage extends DisplayObjectContainer implements IModule
 	@:noCompletion private var __colorString:String;
 	@:noCompletion private var __contentsScaleFactor:Float;
 	@:noCompletion private var __currentTabOrderIndex:Int;
-	#if (commonjs && !nodejs)
-	@:noCompletion private var __cursor:LimeMouseCursor;
-	#end
 	@:noCompletion private var __deltaTime:Float;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayMatrix:Matrix;
@@ -865,8 +855,7 @@ class Stage extends DisplayObjectContainer implements IModule
 	@:noCompletion private var __primaryTouch:Touch;
 	@:noCompletion private var __oldStageOrientation:StageOrientation = UNKNOWN;
 
-	public function new(#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null,
-		windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end)
+	public function new(window:Window, color:Null<Int> = null)
 	{
 		super();
 
@@ -929,79 +918,9 @@ class Stage extends DisplayObjectContainer implements IModule
 		// TODO: Do not rely on Lib.current
 		__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
 
-		#if commonjs
-		if (windowAttributes == null) windowAttributes = {};
-		var app:OpenFLApplication = null;
-
-		if (!Math.isNaN(width))
-		{
-			var resizable = (width == 0 && width == 0);
-
-			#if (js && html5)
-			if (windowAttributes.element != null)
-			{
-				element = windowAttributes.element;
-			}
-			else
-			{
-				element = Browser.document.createElement("div");
-			}
-
-			if (resizable)
-			{
-				element.style.width = "100%";
-				element.style.height = "100%";
-			}
-			#else
-			element = null;
-			#end
-
-			windowAttributes.width = width;
-			windowAttributes.height = height;
-			windowAttributes.element = element;
-			windowAttributes.resizable = resizable;
-
-			windowAttributes.stage = this;
-
-			if (!Reflect.hasField(windowAttributes, "context")) windowAttributes.context = {};
-			var contextAttributes = windowAttributes.context;
-			if (Reflect.hasField(windowAttributes, "renderer"))
-			{
-				var type = Std.string(windowAttributes.renderer);
-				if (type == "webgl1")
-				{
-					contextAttributes.type = RenderContextType.WEBGL;
-					contextAttributes.version = "1";
-				}
-				else if (type == "webgl2")
-				{
-					contextAttributes.type = RenderContextType.WEBGL;
-					contextAttributes.version = "2";
-				}
-				else
-				{
-					Reflect.setField(contextAttributes, "type", windowAttributes.renderer);
-				}
-			}
-			if (!Reflect.hasField(contextAttributes, "stencil")) contextAttributes.stencil = true;
-			if (!Reflect.hasField(contextAttributes, "depth")) contextAttributes.depth = true;
-			if (!Reflect.hasField(contextAttributes, "background")) contextAttributes.background = null;
-
-			app = new OpenFLApplication();
-			window = app.createWindow(windowAttributes);
-
-			this.color = color;
-		}
-		else
-		{
-			this.window = cast width;
-			this.color = height;
-		}
-		#else
 		this.application = window.application;
 		this.window = window;
 		this.color = color;
-		#end
 
 		__contentsScaleFactor = window.scale;
 		__wasFullscreen = window.fullscreen;
@@ -1012,22 +931,6 @@ class Stage extends DisplayObjectContainer implements IModule
 		{
 			stage.addChild(Lib.current);
 		}
-
-		#if commonjs
-		if (documentClass != null)
-		{
-			DisplayObject.__initStage = this;
-			var sprite:Sprite = cast Type.createInstance(documentClass, []);
-			// addChild (sprite); // done by init stage
-			sprite.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
-		}
-
-		if (app != null)
-		{
-			app.addModule(this);
-			app.exec();
-		}
-		#end
 	}
 
 	/**
