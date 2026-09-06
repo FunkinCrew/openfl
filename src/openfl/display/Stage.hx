@@ -1153,11 +1153,7 @@ class Stage extends DisplayObjectContainer implements IModule
 			case OPENGL, OPENGLES, WEBGL:
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D(this);
-				#if openfl_dpi_aware
-				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
-				#else
 				context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
-				#end
 				context3D.present();
 				__renderer = new OpenGLRenderer(context3D);
 				#end
@@ -3370,15 +3366,10 @@ class Stage extends DisplayObjectContainer implements IModule
 		{
 			if (__logicalWidth == 0 || __logicalHeight == 0 || scaleMode == NO_SCALE || windowWidth == 0 || windowHeight == 0)
 			{
-				#if openfl_dpi_aware
-				stageWidth = windowWidth;
-				stageHeight = windowHeight;
-				#else
 				stageWidth = Math.round(windowWidth / window.scale);
 				stageHeight = Math.round(windowHeight / window.scale);
 
 				__displayMatrix.scale(window.scale, window.scale);
-				#end
 
 				__displayRect.setTo(0, 0, stageWidth, stageHeight);
 			}
@@ -3417,11 +3408,7 @@ class Stage extends DisplayObjectContainer implements IModule
 
 		if (context3D != null)
 		{
-			#if openfl_dpi_aware
-			context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
-			#else
 			context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
-			#end
 		}
 
 		for (stage3D in stage3Ds)

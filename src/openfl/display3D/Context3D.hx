@@ -590,13 +590,11 @@ import openfl.utils.ByteArray;
 	public function configureBackBuffer(width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false,
 			wantsBestResolutionOnBrowserZoom:Bool = false):Void
 	{
-		#if !openfl_dpi_aware
 		if (wantsBestResolution)
 		{
 			width = Std.int(width * __stage.window.scale);
 			height = Std.int(height * __stage.window.scale);
 		}
-		#end
 
 		if (__stage3D == null)
 		{
@@ -623,13 +621,9 @@ import openfl.utils.ByteArray;
 					__stage3D.__vertexBuffer = createVertexBuffer(4, 5);
 				}
 
-				#if openfl_dpi_aware
-				var scaledWidth = width;
-				var scaledHeight = height;
-				#else
 				var scaledWidth = wantsBestResolution ? width : Std.int(width * __stage.window.scale);
 				var scaledHeight = wantsBestResolution ? height : Std.int(height * __stage.window.scale);
-				#end
+
 				var vertexData:Array<Float> = [
 					scaledWidth,
 					scaledHeight,
@@ -2460,7 +2454,7 @@ import openfl.utils.ByteArray;
 			var scissorY = Std.int(__state.scissorRectangle.y);
 			var scissorWidth = Std.int(__state.scissorRectangle.width);
 			var scissorHeight = Std.int(__state.scissorRectangle.height);
-			#if !openfl_dpi_aware
+
 			if (__backBufferWantsBestResolution)
 			{
 				scissorX = Std.int(__state.scissorRectangle.x * __stage.window.scale);
@@ -2468,7 +2462,6 @@ import openfl.utils.ByteArray;
 				scissorWidth = Std.int(__state.scissorRectangle.width * __stage.window.scale);
 				scissorHeight = Std.int(__state.scissorRectangle.height * __stage.window.scale);
 			}
-			#end
 
 			if (__state.renderToTexture == null && __stage3D == null)
 			{
@@ -2594,13 +2587,13 @@ import openfl.utils.ByteArray;
 			{
 				var scaledBackBufferWidth = backBufferWidth;
 				var scaledBackBufferHeight = backBufferHeight;
-				#if !openfl_dpi_aware
+
 				if (__stage3D == null && !__backBufferWantsBestResolution)
 				{
 					scaledBackBufferWidth = Std.int(backBufferWidth * __stage.window.scale);
 					scaledBackBufferHeight = Std.int(backBufferHeight * __stage.window.scale);
 				}
-				#end
+
 				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
 				var y = Std.int((__stage.window.height * __stage.window.scale) - scaledBackBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
 				gl.viewport(x, y, scaledBackBufferWidth, scaledBackBufferHeight);

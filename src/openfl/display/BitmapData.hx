@@ -3097,7 +3097,7 @@ class BitmapData implements IBitmapDrawable
 				var y = Math.floor(rect.y);
 				var width = (rect.width > 0 ? Math.ceil(rect.right) - x : 0);
 				var height = (rect.height > 0 ? Math.ceil(rect.bottom) - y : 0);
-				#if !openfl_dpi_aware
+
 				if (context.__backBufferWantsBestResolution)
 				{
 					x = Math.floor(rect.x / context.__stage.window.scale);
@@ -3105,7 +3105,7 @@ class BitmapData implements IBitmapDrawable
 					width = (rect.width > 0 ? Math.ceil(rect.right / context.__stage.window.scale) - x : 0);
 					height = (rect.height > 0 ? Math.ceil(rect.bottom / context.__stage.window.scale) - y : 0);
 				}
-				#end
+
 				__fillRectRectangle.setTo(x, y, width, height);
 				context.setScissorRectangle(__fillRectRectangle);
 			}

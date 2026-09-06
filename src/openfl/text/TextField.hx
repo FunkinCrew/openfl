@@ -1598,16 +1598,6 @@ class TextField extends InteractiveObject
 			// ensure that the text field is not hidden by the soft keyboard
 			var bounds = getBounds(stage);
 			var limeRect = new lime.math.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
-			#if openfl_dpi_aware
-			var scale = stage.window.scale;
-			if (scale != 1.0)
-			{
-				limeRect.x /= scale;
-				limeRect.y /= scale;
-				limeRect.width /= scale;
-				limeRect.height /= scale;
-			}
-			#end
 			// we need to call setTextInputRect() after setting textInputEnabled
 			// to true, or SDL might ignore the rectangle and think that the
 			// input is happening at 0,0
