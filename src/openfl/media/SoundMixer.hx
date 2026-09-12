@@ -10,8 +10,6 @@ package openfl.media;
 @:access(openfl.media.SoundChannel)
 @:final class SoundMixer
 {
-	@:noCompletion private static inline var MAX_ACTIVE_CHANNELS:Int = 32;
-
 	/**
 		The number of seconds to preload an embedded streaming sound into a
 		buffer before it starts to stream. The data in a loaded sound,
