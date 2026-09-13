@@ -80,7 +80,20 @@ class Context3DBuffer
 			vertexBuffer = context3D.createVertexBuffer(vertexCount, dataPerVertex, DYNAMIC_DRAW);
 		}
 
-		vertexBuffer.uploadFromTypedArray(vertexBufferData);
+		var verticesPerElement = switch (elementType)
+		{
+			case QUADS: 4;
+			case TRIANGLES, TRIANGLE_INDICES: 3;
+			default: 0;
+		}
+
+		var usedBytes = elementCount * verticesPerElement * dataPerVertex * 4;
+		if (verticesPerElement == 0 || usedBytes <= 0 || usedBytes > vertexBufferData.byteLength)
+		{
+			usedBytes = vertexBufferData.byteLength;
+		}
+
+		vertexBuffer.uploadFromTypedArray(vertexBufferData, usedBytes);
 	}
 
 	public function resize(elementCount:Int, dataPerVertex:Int = -1):Void

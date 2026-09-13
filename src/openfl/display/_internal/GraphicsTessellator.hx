@@ -66,6 +66,17 @@ class GraphicsTessellator
 			return false;
 		}
 
+		// reject if any of these commands are present, as they cannot be tessellated
+		for (type in graphics.__commands.types)
+		{
+			switch (type)
+			{
+				case OVERRIDE_BLEND_MODE, OVERRIDE_MATRIX, BEGIN_SHADER_FILL, DRAW_QUADS, DRAW_TRIANGLES:
+					return false;
+				default:
+			}
+		}
+
 		var data = new DrawCommandReader(graphics.__commands);
 		var parts = new Array<GraphicsTessellatedFillPart>();
 		var currentFill:Null<Int> = null;

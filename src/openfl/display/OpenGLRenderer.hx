@@ -451,6 +451,12 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	public function setViewport():Void
 	{
 		__gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
+
+		// bypass the viewport cache in Context3D to ensure that the GL viewport is always updated
+		if (__context3D != null)
+		{
+			@:privateAccess __context3D.__contextState.__currentGLViewportWidth = -1;
+		}
 	}
 
 	/**

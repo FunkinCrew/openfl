@@ -21,6 +21,7 @@ class MultiBufferTexture extends TextureBase
 
 		var gl = context.gl;
 		// delete the default initial texture made by the texture base as we won't use be using it
+		@:privateAccess context.__invalidateGLTexture2D(__textureID);
 		gl.deleteTexture(__textureID);
 
 		__width = width;
@@ -89,6 +90,7 @@ class MultiBufferTexture extends TextureBase
 
 		for (i in 1...textures.length)
 		{
+			@:privateAccess __context.__invalidateGLTexture2D(textures[i]);
 			gl.deleteTexture(textures[i]);
 		}
 

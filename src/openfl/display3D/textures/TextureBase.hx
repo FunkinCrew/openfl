@@ -108,6 +108,8 @@ class TextureBase extends EventDispatcher
 
 		if (__textureID != null)
 		{
+			// Deleting unbinds the texture from every unit, so drop it from the bind cache too.
+			__context.__invalidateGLTexture2D(__textureID);
 			gl.deleteTexture(__textureID);
 			__textureID = null;
 		}

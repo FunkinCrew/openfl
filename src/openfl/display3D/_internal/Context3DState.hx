@@ -57,6 +57,12 @@ class Context3DState
 	@:noCompletion private var __currentGLFramebuffer:GLFramebuffer;
 	@:noCompletion private var __currentGLTexture2D:GLTexture;
 	@:noCompletion private var __currentGLTextureCubeMap:GLTexture;
+	@:noCompletion private var __currentGLActiveTexture:Int;
+	@:noCompletion private var __currentGLTexture2DPerUnit:Array<GLTexture>;
+	@:noCompletion private var __currentGLViewportX:Int;
+	@:noCompletion private var __currentGLViewportY:Int;
+	@:noCompletion private var __currentGLViewportWidth:Int;
+	@:noCompletion private var __currentGLViewportHeight:Int;
 	@:noCompletion private var __enableGLBlend:Bool;
 	@:noCompletion private var __enableGLCullFace:Bool;
 	@:noCompletion private var __enableGLDepthTest:Bool;
@@ -97,5 +103,11 @@ class Context3DState
 		textures = new Array();
 		__frontFaceGLCCW = true;
 		__glBlendEquation = GL.FUNC_ADD;
+		__currentGLActiveTexture = 0;
+		__currentGLTexture2DPerUnit = new Array();
+		__currentGLViewportX = 0;
+		__currentGLViewportY = 0;
+		__currentGLViewportWidth = -1;
+		__currentGLViewportHeight = -1;
 	}
 }
