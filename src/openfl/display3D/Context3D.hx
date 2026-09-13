@@ -2130,14 +2130,38 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __bindGLTexture2D(texture:GLTexture):Void
 	{
-		// TODO: Need to consider activeTexture ID
+		var unit = __contextState.__currentGLActiveTexture;
+		var bound = __contextState.__currentGLTexture2DPerUnit;
 
-		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTexture2D != texture #end) {
+		if (#if openfl_disable_context_cache true #else bound[unit] != texture #end)
+		{
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			bound[unit] = texture;
+		}
 
-		gl.bindTexture(gl.TEXTURE_2D, texture);
 		__contextState.__currentGLTexture2D = texture;
+	}
 
-		// }
+	@:noCompletion private function __setGLActiveTexture(unit:Int):Void
+	{
+		if (#if openfl_disable_context_cache true #else __contextState.__currentGLActiveTexture != unit #end)
+		{
+			gl.activeTexture(gl.TEXTURE0 + unit);
+			__contextState.__currentGLActiveTexture = unit;
+		}
+	}
+
+	@:noCompletion private function __invalidateGLTexture2D(texture:GLTexture):Void
+	{
+		if (texture == null) return;
+
+		var bound = __contextState.__currentGLTexture2DPerUnit;
+		for (i in 0...bound.length)
+		{
+			if (bound[i] == texture) bound[i] = null;
+		}
+
+		if (__contextState.__currentGLTexture2D == texture) __contextState.__currentGLTexture2D = null;
 	}
 
 	@:noCompletion private function __bindGLTextureCubeMap(texture:GLTexture):Void
@@ -2529,7 +2553,7 @@ import openfl.utils.ByteArray;
 				samplerState = __state.samplerStates[i];
 			}
 
-			gl.activeTexture(gl.TEXTURE0 + sampler);
+			__setGLActiveTexture(sampler);
 
 			if (texture != null)
 			{
@@ -2564,7 +2588,7 @@ import openfl.utils.ByteArray;
 
 			if (__state.program != null && __state.program.__format == AGAL && samplerState.textureAlpha)
 			{
-				gl.activeTexture(gl.TEXTURE0 + sampler + 4);
+				__setGLActiveTexture(sampler + 4);
 
 				__bindGLTexture2D(null);
 				if (__state.program.__agalAlphaSamplerEnabled[sampler] != null)
@@ -2577,10 +2601,26 @@ import openfl.utils.ByteArray;
 		}
 	}
 
+	@:noCompletion private function __setGLViewport(x:Int, y:Int, width:Int, height:Int):Void
+	{
+		var state = __contextState;
+		if (#if openfl_disable_context_cache false #else state.__currentGLViewportWidth == width
+			&& state.__currentGLViewportHeight == height
+			&& state.__currentGLViewportX == x
+			&& state.__currentGLViewportY == y #end)
+		{
+			return;
+		}
+
+		gl.viewport(x, y, width, height);
+		state.__currentGLViewportX = x;
+		state.__currentGLViewportY = y;
+		state.__currentGLViewportWidth = width;
+		state.__currentGLViewportHeight = height;
+	}
+
 	@:noCompletion private function __flushGLViewport():Void
 	{
-		// TODO: Cache
-
 		if (__state.renderToTexture == null)
 		{
 			if (__stage.context3D == this)
@@ -2596,11 +2636,11 @@ import openfl.utils.ByteArray;
 
 				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
 				var y = Std.int((__stage.window.height * __stage.window.scale) - scaledBackBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
-				gl.viewport(x, y, scaledBackBufferWidth, scaledBackBufferHeight);
+				__setGLViewport(x, y, scaledBackBufferWidth, scaledBackBufferHeight);
 			}
 			else
 			{
-				gl.viewport(0, 0, backBufferWidth, backBufferHeight);
+				__setGLViewport(0, 0, backBufferWidth, backBufferHeight);
 			}
 		}
 		else
@@ -2633,7 +2673,7 @@ import openfl.utils.ByteArray;
 				height = multiBufferTexture.__height;
 			}
 
-			gl.viewport(0, 0, width, height);
+			__setGLViewport(0, 0, width, height);
 		}
 	}
 
