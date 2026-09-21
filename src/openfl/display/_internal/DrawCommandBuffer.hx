@@ -198,34 +198,30 @@ class DrawCommandBuffer
 
 	public function clear():Void
 	{
-		if (copyOnWrite == 0)
-		{
-			// if these arrays have already been copied, then we should be able
-			// to reuse them instead of creating new copies. this will result in
-			// fewer temporary objects that need to be garbage collected
+		// if these arrays have already been copied, then we should be able
+		// to reuse them instead of creating new copies. this will result in
+		// fewer temporary objects that need to be garbage collected
 
-			types.resize(0);
+		if ((copyOnWrite & COW_TYPES) == 0) types.resize(0);
+		else types = empty.types;
 
-			b.resize(0);
-			i.resize(0);
-			f.resize(0);
-			o.resize(0);
-			ff.resize(0);
-			ii.resize(0);
+		if ((copyOnWrite & COW_B) == 0) b.resize(0);
+		else b = empty.b;
 
-			return;
-		}
+		if ((copyOnWrite & COW_I) == 0) i.resize(0);
+		else i = empty.i;
 
-		types = empty.types;
+		if ((copyOnWrite & COW_F) == 0) f.resize(0);
+		else f = empty.f;
 
-		b = empty.b;
-		i = empty.i;
-		f = empty.f;
-		o = empty.o;
-		ff = empty.ff;
-		ii = empty.ii;
+		if ((copyOnWrite & COW_O) == 0) o.resize(0);
+		else o = empty.o;
 
-		copyOnWrite = COW_ALL;
+		if ((copyOnWrite & COW_FF) == 0) ff.resize(0);
+		else ff = empty.ff;
+
+		if ((copyOnWrite & COW_II) == 0) ii.resize(0);
+		else ii = empty.ii;
 	}
 
 	public function copy():DrawCommandBuffer

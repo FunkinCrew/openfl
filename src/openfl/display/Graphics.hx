@@ -89,7 +89,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __triangleIndexBufferCount:Int;
 	@:noCompletion private var __triangleIndexBufferData:UInt16Array;
 	@:noCompletion private var __tessellatedFillParts:Array<GraphicsTessellatedFillPart>;
-	@:noCompletion private var __usedShaderBuffers:List<ShaderBuffer>;
+	@:noCompletion private var __usedShaderBuffers:Array<ShaderBuffer>;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@:noCompletion private var __vertexBufferCount:Int;
 	@:noCompletion private var __vertexBufferCountUVT:Int;
@@ -402,11 +402,11 @@ import js.html.CanvasRenderingContext2D;
 			if (__shaderBufferPool == null)
 			{
 				__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
-				__usedShaderBuffers = new List<ShaderBuffer>();
+				__usedShaderBuffers = [];
 			}
 
 			var shaderBuffer = __shaderBufferPool.get();
-			__usedShaderBuffers.add(shaderBuffer);
+			__usedShaderBuffers.push(shaderBuffer);
 			shaderBuffer.update(cast shader);
 
 			__commands.beginShaderFill(shaderBuffer);
@@ -422,12 +422,12 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (__usedShaderBuffers != null)
 		{
-			for (shaderBuffer in __usedShaderBuffers)
+			for (i in 0...__usedShaderBuffers.length)
 			{
-				__shaderBufferPool.release(shaderBuffer);
+				__shaderBufferPool.release(__usedShaderBuffers[i]);
 			}
 
-			__usedShaderBuffers.clear();
+			__usedShaderBuffers.resize(0);
 		}
 
 		__commands.clear();

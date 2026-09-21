@@ -1228,14 +1228,7 @@ abstract Vector<T>(IVector<T>)
 		if (value != __array.length && !fixed)
 		{
 			#if cpp
-			if (value > __array.length)
-			{
-				cpp.NativeArray.setSize(__array, value);
-			}
-			else
-			{
-				__array.splice(value, __array.length);
-			}
+			cpp.NativeArray.setSize(__array, value);
 			#else
 			var currentLength = __array.length;
 			if (value < 0) value = 0;
