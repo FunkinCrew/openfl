@@ -126,7 +126,12 @@ class VertexBuffer3D
 
 		if (__memoryUsage >= data.byteLength)
 		{
+			#if (js && html5)
+			var bytesPerElement:Int = untyped data.BYTES_PER_ELEMENT;
+			gl.bufferSubData(gl.ARRAY_BUFFER, 0, data, 0, bytesPerElement > 0 ? Std.int(byteLength / bytesPerElement) : byteLength);
+			#else
 			gl.bufferSubData(gl.ARRAY_BUFFER, 0, data, 0, byteLength);
+			#end
 		}
 		else
 		{
