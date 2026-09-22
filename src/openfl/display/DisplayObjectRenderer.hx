@@ -405,8 +405,8 @@ class DisplayObjectRenderer extends EventDispatcher
 
 	@:noCompletion private inline function __getFilterCacheBounds(rect:Rectangle, pixelRatio:Float, cacheBounds:Rectangle):Void
 	{
-		cacheBounds.x = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
-		cacheBounds.y = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
+		cacheBounds.x = Math.floor(rect.x);
+		cacheBounds.y = Math.floor(rect.y);
 		cacheBounds.width = rect.width > 0 ? Math.ceil((rect.width + 1) * pixelRatio) : 0;
 		cacheBounds.height = rect.height > 0 ? Math.ceil((rect.height + 1) * pixelRatio) : 0;
 	}
