@@ -280,7 +280,6 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
 	@:noCompletion private var __vertexConstants:Float32Array;
-	@:noCompletion private var __usingComplexBlend:Bool;
 
 	@:noCompletion private function new(stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
 	{
@@ -1324,21 +1323,7 @@ import openfl.utils.ByteArray;
 
 		__bindGLElementArrayBuffer(indexBuffer.__id);
 
-		if (OpenGLRenderer.__coherentBlendsSupported)
-		{
-			gl.enable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
-		}
-		else if (__usingComplexBlend)
-		{
-			gl.blendBarrier();
-		}
-
 		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
-
-		if (OpenGLRenderer.__coherentBlendsSupported)
-		{
-			gl.disable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
-		}
 	}
 
 	/**
@@ -2119,6 +2104,32 @@ import openfl.utils.ByteArray;
 		}
 	}
 
+	@:noCompletion public function __copyRenderTarget(target:TextureBase, width:Int, height:Int, ?flush:Bool = true):Bool
+	{
+		if (target == null || width <= 0 || height <= 0) return false;
+
+		final texture = target.__getTexture();
+		if (texture == null) return false;
+
+		if (flush) __flushGLFramebuffer();
+		__setGLActiveTexture(0);
+		__bindGLTexture2D(texture);
+		gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, width, height);
+
+		return true;
+	}
+
+	@:noCompletion public inline function __copyBackBuffer(target:TextureBase, width:Int, height:Int):Bool
+	{
+		final cacheFB = __contextState.__currentGLFramebuffer;
+		__bindGLFramebuffer(__state.__primaryGLFramebuffer);
+
+		final res = __copyRenderTarget(target, width, height, false);
+		__bindGLFramebuffer(cacheFB);
+
+		return res;
+	}
+
 	@:noCompletion private function __bindGLFramebuffer(framebuffer:GLFramebuffer):Void
 	{
 		if (#if openfl_disable_context_cache true #else __contextState.__currentGLFramebuffer != framebuffer #end)
@@ -2225,21 +2236,7 @@ import openfl.utils.ByteArray;
 			__state.program.__flush();
 		}
 
-		if (OpenGLRenderer.__coherentBlendsSupported)
-		{
-			gl.enable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
-		}
-		else if (__usingComplexBlend)
-		{
-			gl.blendBarrier();
-		}
-
 		gl.drawArrays(gl.TRIANGLES, firstIndex, count);
-
-		if (OpenGLRenderer.__coherentBlendsSupported)
-		{
-			gl.disable(0x9285); // BLEND_ADVANCED_COHERENT_KHR
-		}
 	}
 
 	@:noCompletion private function __flushGL():Void

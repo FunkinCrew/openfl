@@ -4,6 +4,7 @@ import openfl.display3D.Context3D;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
+import openfl.display3D.Context3DBlendTarget;
 
 /**
 	// TODO: Document GLSL Shaders
@@ -124,6 +125,13 @@ import openfl.display3D.Context3DWrapMode;
 		This property is not available when targeting Flash.
 	**/
 	public var wrap:Context3DWrapMode;
+
+	/**
+		Against what must this input apply it's blends.
+
+		Default is BlendRenderTarget.
+	**/
+	public var blendTarget:Context3DBlendTarget = Context3DBlendTarget.BlendRenderTarget;
 
 	@:noCompletion private var __isUniform:Bool;
 

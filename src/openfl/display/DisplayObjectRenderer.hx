@@ -52,6 +52,7 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
+	@:noCompletion private var __renderTargetTransform:Matrix;
 
 	@:noCompletion private function new()
 	{
@@ -823,6 +824,12 @@ class DisplayObjectRenderer extends EventDispatcher
 
 				displayObject.__cacheBitmapRenderer.__pixelRatio = pixelRatio;
 
+				if (displayObject.__cacheBitmapRenderer.__renderTargetTransform == null)
+				{
+					displayObject.__cacheBitmapRenderer.__renderTargetTransform = new Matrix();
+				}
+
+				displayObject.__cacheBitmapRenderer.__renderTargetTransform.copyFrom(displayObject.__cacheBitmap.__renderTransform);
 				displayObject.__cacheBitmapRenderer.__worldColorTransform.__copyFrom(colorTransform);
 				displayObject.__cacheBitmapRenderer.__worldColorTransform.__invert();
 
