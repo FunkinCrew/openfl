@@ -6,6 +6,7 @@ import openfl.display.BitmapData;
 import openfl.display.GraphicsShader;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
+import openfl.display3D.Context3DBlendTarget;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
@@ -16,6 +17,8 @@ class ShaderBuffer
 {
 	public var inputCount:Int;
 	public var inputRefs:Array<ShaderInput<BitmapData>>;
+	// Should this become an array?
+	public var blendTarget:Context3DBlendTarget;
 	public var inputFilter:Array<Context3DTextureFilter>;
 	public var inputMipFilter:Array<Context3DMipFilter>;
 	public var inputs:Array<BitmapData>;
@@ -116,6 +119,9 @@ class ShaderBuffer
 		if (shader == null) return;
 
 		shader.__init();
+
+		var blendInput = shader.__bitmap != null ? shader.__bitmap : shader.__texture;
+		blendTarget = blendInput != null ? blendInput.blendTarget : null;
 
 		inputCount = shader.__inputBitmapData.length;
 		var input:ShaderInput<BitmapData>;
