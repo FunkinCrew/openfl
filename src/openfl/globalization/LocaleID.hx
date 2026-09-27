@@ -57,16 +57,6 @@ package openfl.globalization;
 		{
 			return null;
 		}
-		if (requestedLocaleIDName == DEFAULT)
-		{
-			#if html5
-			// Lime's Locale.currentLocale uses navigator.language, which may
-			// not be the right choice when using JS Intl types
-			requestedLocaleIDName = untyped Intl.DateTimeFormat().resolvedOptions().locale;
-			#else
-			requestedLocaleIDName = lime.system.Locale.currentLocale;
-			#end
-		}
 		// A Unicode CLDR locale identifier can be converted to a valid
 		// BCP47 language tag (which is also a Unicode BCP 47 locale
 		// identifier) by performing the following transformation.
