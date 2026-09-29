@@ -592,8 +592,8 @@ import openfl.utils.ByteArray;
 	{
 		if (wantsBestResolution)
 		{
-			width = Std.int(width * __stage.window.scale);
-			height = Std.int(height * __stage.window.scale);
+			width = Math.round(width * __stage.window.scale);
+			height = Math.round(height * __stage.window.scale);
 		}
 
 		if (__stage3D == null)
