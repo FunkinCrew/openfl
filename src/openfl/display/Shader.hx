@@ -267,6 +267,8 @@ class Shader
 	@:noCompletion private var __blendMode:ShaderParameter<Int>;
 	@:noCompletion private var __blendBitmap:ShaderInput<BitmapData>;
 	@:noCompletion private var __blendBitmapTransform:ShaderParameter<Float>;
+	@:noCompletion private var __blendBitmapMerge:ShaderInput<BitmapData>;
+	@:noCompletion private var __blendBitmapMergeTransform:ShaderParameter<Float>;
 	@:noCompletion private var __colorMultiplier:ShaderParameter<Float>;
 	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
 	@:noCompletion private var __context:Context3D;
@@ -738,6 +740,8 @@ class Shader
 						__bitmap = input;
 					case "openfl_BlendBitmap":
 						__blendBitmap = input;
+					case "openfl_BlendBitmapMerge":
+						__blendBitmapMerge = input;
 					default:
 				}
 
@@ -879,6 +883,7 @@ class Shader
 								case "openfl_TextureCoord": __textureCoord = parameter;
 								case "openfl_TextureSize": __textureSize = parameter;
 								case "openfl_BlendBitmapTransform": __blendBitmapTransform = parameter;
+								case "openfl_BlendBitmapMergeTransform": __blendBitmapMergeTransform = parameter;
 								default:
 							}
 						}
@@ -961,7 +966,7 @@ class Shader
 			inputMipFilter = shaderBuffer.inputMipFilter[i];
 			inputWrap = shaderBuffer.inputWrap[i];
 
-			if (inputData == null && input == __blendBitmap) inputData = input.input;
+			if (inputData == null && (input == __blendBitmap || input == __blendBitmapMerge)) inputData = input.input;
 
 			if (inputData != null)
 			{

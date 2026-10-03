@@ -47,6 +47,8 @@ class GraphicsShader extends Shader
 		uniform sampler2D bitmap;
 		uniform sampler2D openfl_BlendBitmap;
 		uniform vec4 openfl_BlendBitmapTransform;
+		uniform sampler2D openfl_BlendBitmapMerge;
+		uniform vec4 openfl_BlendBitmapMergeTransform;
 		uniform int openfl_BlendMode;
 
 		const int OPENFL_BLEND_NONE = 0;
@@ -363,6 +365,16 @@ class GraphicsShader extends Shader
 			vec2 blendCoord = gl_FragCoord.xy * openfl_BlendBitmapTransform.xy + openfl_BlendBitmapTransform.zw;
 
 			vec4 bg = texture2D(openfl_BlendBitmap, blendCoord);
+
+			// Merge them on the shader instead of a frame buffer... smart?
+			if (openfl_BlendBitmapMergeTransform.x != 0.0) {
+
+				vec2 mergeCoord = gl_FragCoord.xy * openfl_BlendBitmapMergeTransform.xy + openfl_BlendBitmapMergeTransform.zw;
+				vec4 layer = texture2D(openfl_BlendBitmapMerge, mergeCoord);
+
+				bg = vec4(bg.rgb + layer.rgb * (1.0 - bg.a), 1.0);
+
+			}
 
 			vec3 _res = openfl_blend(bg.rgb, src.rgb / src.a);
 

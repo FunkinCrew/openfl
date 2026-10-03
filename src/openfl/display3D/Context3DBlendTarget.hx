@@ -22,6 +22,15 @@ enum Context3DBlendTarget
 	BlendBackBuffer(?viewport:Rectangle);
 
 	/**
+		Blend ontop of whatever is currently being rendered on.
+
+		BUT use the backbuffer as a background!
+		`viewport` is the backbuffer view offset.
+		Must be configured if youre current submit has it's own render target with a transform.
+	**/
+	BlendMergedTarget(?viewport:Rectangle);
+
+	/**
 		Blend against a `bitmap` you speicify.
 	**/
 	BlendCustomTarget(bitmap:openfl.display.BitmapData);

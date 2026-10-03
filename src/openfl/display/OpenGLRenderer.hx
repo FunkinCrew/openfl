@@ -80,6 +80,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __blendTransform:Array<Float> = [0, 0, 0, 0];
 	@:noCompletion private var __blendBackBufferBitmap:BitmapData;
 	@:noCompletion private var __blendSource:BitmapData;
+	@:noCompletion private var __blendSourceMerge:BitmapData;
+	@:noCompletion private var __blendTransformMerge:Array<Float> = [0, 0, 0, 0];
 	@:noCompletion private var __shaderBlendMode:Null<BlendMode>;
 	@:noCompletion private var __currentDisplayShader:Shader;
 	@:noCompletion private var __currentGraphicsShader:Shader;
@@ -472,21 +474,27 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		{
 			__currentShaderBuffer.addIntOverride("openfl_BlendMode", [__shaderBlendModeValue]);
 
-			if (__shaderBlendMode != null) __currentShaderBuffer.addFloatOverride("openfl_BlendBitmapTransform", __blendTransform);
+			if (__shaderBlendMode != null)
+			{
+				__currentShaderBuffer.addFloatOverride("openfl_BlendBitmapTransform", __blendTransform);
+				__currentShaderBuffer.addFloatOverride("openfl_BlendBitmapMergeTransform", __blendTransformMerge);
+			}
 		}
 		else if (__currentShader != null)
 		{
 			if (__currentShader.__blendMode != null) __currentShader.__blendMode.value = [__shaderBlendModeValue];
 
-			if (__shaderBlendMode != null && __currentShader.__blendBitmapTransform != null)
+			if (__shaderBlendMode != null)
 			{
-				__currentShader.__blendBitmapTransform.value = __blendTransform;
+				if (__currentShader.__blendBitmapTransform != null) __currentShader.__blendBitmapTransform.value = __blendTransform;
+				if (__currentShader.__blendBitmapMergeTransform != null) __currentShader.__blendBitmapMergeTransform.value = __blendTransformMerge;
 			}
 		}
 
-		if (__currentShader != null && __currentShader.__blendBitmap != null)
+		if (__currentShader != null)
 		{
-			__currentShader.__blendBitmap.input = (__shaderBlendMode != null) ? __blendSource : null;
+			if (__currentShader.__blendBitmap != null) __currentShader.__blendBitmap.input = (__shaderBlendMode != null) ? __blendSource : null;
+			if (__currentShader.__blendBitmapMerge != null) __currentShader.__blendBitmapMerge.input = (__shaderBlendMode != null) ? __blendSourceMerge : null;
 		}
 	}
 
@@ -1190,6 +1198,14 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		return BitmapData.fromTexture(__context3D.createRectangleTexture(width, height, RGBA, false), false);
 	}
 
+	@:noCompletion private inline function __setBlendTransformMerge(scaleX:Float, scaleY:Float, offsetX:Float, offsetY:Float):Void
+	{
+		__blendTransformMerge[0] = scaleX;
+		__blendTransformMerge[1] = scaleY;
+		__blendTransformMerge[2] = offsetX;
+		__blendTransformMerge[3] = offsetY;
+	}
+
 	@:noCompletion private inline function __setBlendTransform(scaleX:Float, scaleY:Float, offsetX:Float, offsetY:Float):Void
 	{
 		__blendTransform[0] = scaleX;
@@ -1223,9 +1239,12 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				else
 					__setBlendTransform(1 / width, 1 / height, 0, 0);
 
+				__blendSourceMerge = null;
+				__setBlendTransformMerge(0, 0, 0, 0);
 				__blendSource = bitmap;
 
-			case BlendBackBuffer(viewport):
+			case BlendBackBuffer(viewport) | BlendMergedTarget(viewport):
+				final merging = blendTarget.match(BlendMergedTarget(_));
 				final scale = (__stage != null && !__context3D.__backBufferWantsBestResolution) ? __stage.window.scale : 1.0;
 				final backBufferWidth = Std.int(__context3D.backBufferWidth * scale);
 				final backBufferHeight = Std.int(__context3D.backBufferHeight * scale);
@@ -1264,7 +1283,29 @@ class OpenGLRenderer extends DisplayObjectRenderer
 					__setBlendTransform(w / (width * backBufferWidth), -h / (height * backBufferHeight), x / backBufferWidth, 1 - (y / backBufferHeight));
 				}
 
-				__blendSource = __blendBackBufferBitmap;
+				__blendSourceMerge = null;
+				__setBlendTransformMerge(0, 0, 0, 0);
+
+				if (merging)
+				{
+					__blendSourceMerge = __blendBackBufferBitmap;
+					__setBlendTransformMerge(__blendTransform[0], __blendTransform[1], __blendTransform[2], __blendTransform[3]);
+
+					__blendRenderTargetBitmap = __resizeBlendBitmap(__blendRenderTargetBitmap, width, height);
+
+					if (!__context3D.__copyRenderTarget(__blendRenderTargetBitmap.getTexture(__context3D), width, height))
+					{
+						__shaderBlendMode = null;
+						return;
+					}
+
+					__setBlendTransform(1 / width, 1 / height, 0, 0);
+					__blendSource = __blendRenderTargetBitmap;
+				}
+				else
+				{
+					__blendSource = __blendBackBufferBitmap;
+				}
 
 			default:
 				__blendRenderTargetBitmap = __resizeBlendBitmap(__blendRenderTargetBitmap, width, height);
@@ -1276,6 +1317,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 				}
 
 				__setBlendTransform(1 / width, 1 / height, 0, 0);
+				__blendSourceMerge = null;
+				__setBlendTransformMerge(0, 0, 0, 0);
 				__blendSource = __blendRenderTargetBitmap;
 		}
 	}
