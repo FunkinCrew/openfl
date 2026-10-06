@@ -225,7 +225,7 @@ class DisplayObjectRenderer extends EventDispatcher
 		for (i in 0...graphics.__extraBufferFormats.length)
 		{
 			var filters = graphics.__bufferFilters[i];
-			if (filters == null || filters.length == 0) continue;
+			if (filters == null) continue;
 
 			var interval = graphics.__bufferUpdateDelay != null ? graphics.__bufferUpdateDelay[i] : 0;
 			if (interval > 0 && graphics.__bufferResult != null && graphics.__bufferResult[i] != null)
