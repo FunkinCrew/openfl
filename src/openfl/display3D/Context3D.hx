@@ -2108,30 +2108,37 @@ import openfl.utils.ByteArray;
 		}
 	}
 
-	@:noCompletion public function __copyRenderTarget(target:TextureBase, width:Int, height:Int, ?flush:Bool = true):Bool
+	@:noCompletion public function __copyRenderTarget(target:TextureBase, width:Int, height:Int):Bool
 	{
 		if (target == null || width <= 0 || height <= 0) return false;
 
-		final texture = target.__getTexture();
-		if (texture == null) return false;
+		final framebuffer = target.__getGLFramebuffer(__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
+			__state.renderToTextureSurfaceSelector);
+		if (framebuffer == null) return false;
 
-		if (flush) __flushGLFramebuffer();
-		__setGLActiveTexture(0);
-		__bindGLTexture2D(texture);
-		gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, width, height);
+		final cacheFB = __contextState.__currentGLFramebuffer;
+		gl.bindFramebuffer(gl.READ_FRAMEBUFFER, __contextState.__currentGLFramebuffer);
+		gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+		gl.blitFramebuffer(0, 0, __state.renderToTexture.__width, __state.renderToTexture.__height, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, cacheFB);
 
 		return true;
 	}
 
-	@:noCompletion public inline function __copyBackBuffer(target:TextureBase, width:Int, height:Int):Bool
+	@:noCompletion public function __copyBackBuffer(target:TextureBase, width:Int, height:Int):Bool
 	{
+		if (target == null || width <= 0 || height <= 0) return false;
+
+		final framebuffer = target.__getGLFramebuffer(__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
+		if (framebuffer == null) return false;
+
 		final cacheFB = __contextState.__currentGLFramebuffer;
-		__bindGLFramebuffer(__state.__primaryGLFramebuffer);
+		gl.bindFramebuffer(gl.READ_FRAMEBUFFER, __state.__primaryGLFramebuffer);
+		gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
+		gl.blitFramebuffer(0, 0, backBufferWidth, backBufferHeight, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, cacheFB);
 
-		final res = __copyRenderTarget(target, width, height, false);
-		__bindGLFramebuffer(cacheFB);
-
-		return res;
+		return true;
 	}
 
 	@:noCompletion private function __bindGLFramebuffer(framebuffer:GLFramebuffer):Void
