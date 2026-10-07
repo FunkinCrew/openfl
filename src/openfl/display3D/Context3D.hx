@@ -2117,9 +2117,18 @@ import openfl.utils.ByteArray;
 		if (framebuffer == null) return false;
 
 		final cacheFB = __contextState.__currentGLFramebuffer;
+		final state = __state.renderToTexture != null ? __state : __contextState;
+		var bufferW:Int = width;
+		var bufferH:Int = height;
+		if (state.renderToTextur != null)
+		{
+			bufferW = state.renderToTexture.__width;
+			bufferH = state.renderToTexture.__height;
+		}
+
 		gl.bindFramebuffer(gl.READ_FRAMEBUFFER, __contextState.__currentGLFramebuffer);
 		gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
-		gl.blitFramebuffer(0, 0, __state.renderToTexture.__width, __state.renderToTexture.__height, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+		gl.blitFramebuffer(0, 0, bufferW, bufferH, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, cacheFB);
 
 		return true;
