@@ -2120,7 +2120,7 @@ import openfl.utils.ByteArray;
 		final state = __state.renderToTexture != null ? __state : __contextState;
 		var bufferW:Int = width;
 		var bufferH:Int = height;
-		if (state.renderToTextur != null)
+		if (state.renderToTexture != null)
 		{
 			bufferW = state.renderToTexture.__width;
 			bufferH = state.renderToTexture.__height;
