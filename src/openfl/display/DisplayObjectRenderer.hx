@@ -233,7 +233,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				if (graphics.__bufferNextUpdateTime == null) graphics.__bufferNextUpdateTime = [];
 
 				var nextUpdateTime = graphics.__bufferNextUpdateTime[i];
-				if (now < nextUpdateTime) continue;
+				if (now < nextUpdateTime && nextUpdateTime != 0.0) continue;
 
 				graphics.__bufferNextUpdateTime[i] = now + interval;
 			}

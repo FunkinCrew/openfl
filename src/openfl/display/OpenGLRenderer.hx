@@ -29,6 +29,7 @@ import openfl.utils.ObjectPool;
 @:access(lime.graphics.GLRenderContext)
 @:access(openfl.display._internal.ShaderBuffer)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display3D._internal.Context3DState)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -82,6 +83,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __blendSource:BitmapData;
 	@:noCompletion private var __blendSourceMerge:BitmapData;
 	@:noCompletion private var __blendTransformMerge:Array<Float> = [0, 0, 0, 0];
+	@:noCompletion private var __cacheRenderTargetFramebuffer:#if (lime_opengl || lime_opengles) lime.graphics.opengl.GLFramebuffer #else Dynamic #end = null;
 	@:noCompletion private var __shaderBlendMode:Null<BlendMode>;
 	@:noCompletion private var __currentDisplayShader:Shader;
 	@:noCompletion private var __currentGraphicsShader:Shader;
@@ -1255,12 +1257,23 @@ class OpenGLRenderer extends DisplayObjectRenderer
 					return;
 				}
 
-				__blendBackBufferBitmap = __resizeBlendBitmap(__blendBackBufferBitmap, backBufferWidth, backBufferHeight);
-
-				if (!__context3D.__copyBackBuffer(__blendBackBufferBitmap.getTexture(__context3D), backBufferWidth, backBufferHeight))
+				// in this mode, the results are always written into the render target rather than the backbuffer
+				// so the backbuffer technically never changes. so there is no need to make a copy each time of it in this blend target.
+				// ultimatly this is just to improve performance on Apple hardware since they do not like copyTexSubImage2D
+				if ((__cacheRenderTargetFramebuffer == null
+					|| __context3D.__state.__primaryGLFramebuffer == __context3D.__contextState.__currentGLFramebuffer)
+					|| (__cacheRenderTargetFramebuffer != __context3D.__contextState.__currentGLFramebuffer
+						|| __context3D.__backBufferDirty))
 				{
-					__shaderBlendMode = null;
-					return;
+					__context3D.__backBufferDirty = false;
+					__cacheRenderTargetFramebuffer = __context3D.__contextState.__currentGLFramebuffer;
+					__blendBackBufferBitmap = __resizeBlendBitmap(__blendBackBufferBitmap, backBufferWidth, backBufferHeight);
+
+					if (!__context3D.__copyBackBuffer(__blendBackBufferBitmap.getTexture(__context3D), backBufferWidth, backBufferHeight))
+					{
+						__shaderBlendMode = null;
+						return;
+					}
 				}
 
 				if (__flipped)

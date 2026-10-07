@@ -259,6 +259,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
 
 	@:noCompletion private var gl:WebGL2RenderContext;
+	@:noCompletion private var __backBufferDirty:Bool = true;
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
@@ -473,6 +474,7 @@ import openfl.utils.ByteArray;
 			{
 				if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
 				__cleared = true;
+				if (__state.renderToTexture == null) __backBufferDirty = true;
 			}
 
 			clearMask |= gl.COLOR_BUFFER_BIT;
@@ -1322,6 +1324,8 @@ import openfl.utils.ByteArray;
 		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
 
 		__bindGLElementArrayBuffer(indexBuffer.__id);
+
+		if (__state.renderToTexture == null) __backBufferDirty = true;
 
 		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
 	}
@@ -2235,6 +2239,8 @@ import openfl.utils.ByteArray;
 		{
 			__state.program.__flush();
 		}
+
+		if (__state.renderToTexture == null) __backBufferDirty = true;
 
 		gl.drawArrays(gl.TRIANGLES, firstIndex, count);
 	}
