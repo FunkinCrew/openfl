@@ -2112,40 +2112,53 @@ import openfl.utils.ByteArray;
 	{
 		if (target == null || width <= 0 || height <= 0) return false;
 
-		final framebuffer = target.__getGLFramebuffer(__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
-			__state.renderToTextureSurfaceSelector);
-		if (framebuffer == null) return false;
+		__flushGLFramebuffer();
 
-		final cacheFB = __contextState.__currentGLFramebuffer;
-		final state = __state.renderToTexture != null ? __state : __contextState;
+		final state = __contextState.renderToTexture != null ? __contextState : __state;
 		var bufferW:Int = width;
 		var bufferH:Int = height;
-		if (state.renderToTexture != null)
+		if (__contextState.renderToTexture != null)
 		{
 			bufferW = state.renderToTexture.__width;
 			bufferH = state.renderToTexture.__height;
 		}
 
-		gl.bindFramebuffer(gl.READ_FRAMEBUFFER, __contextState.__currentGLFramebuffer);
-		gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
-		gl.blitFramebuffer(0, 0, bufferW, bufferH, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
-		gl.bindFramebuffer(gl.FRAMEBUFFER, cacheFB);
-
-		return true;
+		return __blitToTexture(__contextState.__currentGLFramebuffer, bufferW, bufferH, target, width, height, __state.renderToTextureDepthStencil,
+			__state.renderToTextureAntiAlias, __state.renderToTextureSurfaceSelector);
 	}
 
 	@:noCompletion public function __copyBackBuffer(target:TextureBase, width:Int, height:Int):Bool
 	{
 		if (target == null || width <= 0 || height <= 0) return false;
 
-		final framebuffer = target.__getGLFramebuffer(__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
-		if (framebuffer == null) return false;
+		return __blitToTexture(__state.__primaryGLFramebuffer, backBufferWidth, backBufferHeight, target, width, height,
+			__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
+	}
 
+	@:noCompletion private function __blitToTexture(srcFramebuffer:GLFramebuffer, srcWidth:Int, srcHeight:Int, target:TextureBase, width:Int, height:Int,
+			enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):Bool
+	{
 		final cacheFB = __contextState.__currentGLFramebuffer;
-		gl.bindFramebuffer(gl.READ_FRAMEBUFFER, __state.__primaryGLFramebuffer);
+
+		final framebuffer = target.__getGLFramebuffer(enableDepthAndStencil, antiAlias, surfaceSelector);
+		if (framebuffer == null)
+		{
+			gl.bindFramebuffer(gl.FRAMEBUFFER, cacheFB);
+			__contextState.__currentGLFramebuffer = cacheFB;
+			return false;
+		}
+
+		final scissor = __contextState.__enableGLScissorTest;
+		if (scissor) gl.disable(gl.SCISSOR_TEST);
+
+		gl.bindFramebuffer(gl.READ_FRAMEBUFFER, srcFramebuffer);
 		gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
-		gl.blitFramebuffer(0, 0, backBufferWidth, backBufferHeight, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+		gl.blitFramebuffer(0, 0, srcWidth, srcHeight, 0, 0, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+
+		if (scissor) gl.enable(gl.SCISSOR_TEST);
+
 		gl.bindFramebuffer(gl.FRAMEBUFFER, cacheFB);
+		__contextState.__currentGLFramebuffer = cacheFB;
 
 		return true;
 	}
