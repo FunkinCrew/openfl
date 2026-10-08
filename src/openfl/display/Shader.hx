@@ -558,6 +558,10 @@ class Shader
 		{
 			extensions += "#extension GL_ARB_draw_buffers : enable\n";
 		}
+		else if (OpenGLRenderer.__drawBuffersWEBGL)
+		{
+			extensions += "#extension WEBGL_draw_buffers : enable\n";
+		}
 
 		// #version must be the first directive and cannot be repeated,
 		// while #extension directives must be before any non-preprocessor tokens.

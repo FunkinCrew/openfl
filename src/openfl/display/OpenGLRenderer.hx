@@ -54,6 +54,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __sRGBWriteControlSupported:Null<Bool>;
 	@:noCompletion private static var __drawBuffersEXT:Null<Bool>;
 	@:noCompletion private static var __drawBuffersARB:Null<Bool>;
+	@:noCompletion private static var __drawBuffersWEBGL:Null<Bool>;
 
 	@:noCompletion private static var __alphaValue:Array<Float> = [1];
 	@:noCompletion private static var __colorMultipliersValue:Array<Float> = [0, 0, 0, 0];
@@ -204,6 +205,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		if (__drawBuffersARB == null)
 		{
 			__drawBuffersARB = exts.contains("ARB_draw_buffers");
+		}
+		if (__drawBuffersWEBGL == null)
+		{
+			__drawBuffersWEBGL = exts.contains("WEBGL_draw_buffers");
 		}
 
 		#if (js && html5)
