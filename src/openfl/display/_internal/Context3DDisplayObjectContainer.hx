@@ -484,39 +484,25 @@ private class ColorMatrixDisplayObjectShader extends Shader
 		uniform vec4 uOffsets;")
 	@:glFragmentBody("vec4 color = texture2D (openfl_Texture, openfl_TextureCoordv);
 
-		if (color.a == 0.0) {
+		color = vec4 (color.rgb / max(color.a, ALPHA_EPSILON), color.a);
 
-			gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+		if (openfl_HasColorTransform) {
 
-		} else {
+			mat4 colorMultiplier = mat4 (0);
+			colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
+			colorMultiplier[1][1] = openfl_ColorMultiplierv.y;
+			colorMultiplier[2][2] = openfl_ColorMultiplierv.z;
+			colorMultiplier[3][3] = 1.0; // openfl_ColorMultiplierv.w;
 
-			color = vec4 (color.rgb / color.a, color.a);
+			color = clamp (openfl_ColorOffsetv + (color * colorMultiplier), 0.0, 1.0);
 
-			if (openfl_HasColorTransform) {
+		}
 
-				mat4 colorMultiplier = mat4 (0);
-				colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
-				colorMultiplier[1][1] = openfl_ColorMultiplierv.y;
-				colorMultiplier[2][2] = openfl_ColorMultiplierv.z;
-				colorMultiplier[3][3] = 1.0; // openfl_ColorMultiplierv.w;
+		color = uOffsets + color * uMultipliers;
 
-				color = clamp (openfl_ColorOffsetv + (color * colorMultiplier), 0.0, 1.0);
+		gl_FragColor = vec4 (color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
 
-			}
-
-			color = uOffsets + color * uMultipliers;
-
-			if (color.a > 0.0) {
-
-				gl_FragColor = vec4 (color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
-
-			} else {
-
-				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
-
-			}
-
-		}")
+	")
 	@:glFragmentSource("#pragma header
 
 		void main(void) {
