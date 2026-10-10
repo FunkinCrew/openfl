@@ -12,6 +12,9 @@ import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Program3D;
 import openfl.utils.ByteArray;
+#if (js && html5)
+import openfl.display3D._internal.GLSL3Converter;
+#end
 
 /**
 	// TODO: Document GLSL Shaders
@@ -619,6 +622,18 @@ class Shader
 			}
 			else
 			{
+				// Keeping this only for JS for now
+				// Because WebGL must run on ver 300 so we can use MRTs
+				#if (js && html5)
+				if (__glVersion == "100" && __context.__context.version == "2")
+				{
+					var converter = new GLSL3Converter();
+
+					vertex = converter.convertShaderSource(vertex, true);
+					fragment = converter.convertShaderSource(fragment, false);
+				}
+				#end
+
 				program = __context.createProgram(GLSL);
 
 				// TODO
