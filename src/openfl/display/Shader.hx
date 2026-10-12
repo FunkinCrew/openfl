@@ -535,7 +535,73 @@ class Shader
 		}
 	}
 
-	@:noCompletion private function __buildSourcePrefix(isFragment:Bool):String
+	/**
+	 * Core extensions in GLSL ES 3.00.
+	 */
+	@:noCompletion private static var __gles3CoreExtensions:Array<String> = [
+		"GL_OES_standard_derivatives",
+		"GL_EXT_draw_buffers",
+		"GL_EXT_shader_texture_lod",
+		"GL_EXT_frag_depth"
+	];
+
+	/**
+	 * Whether the shader has to be compiled as GLSL ES 3.00.
+	 */
+	@:noCompletion private function __needsGLES3Source(fragmentSource:String):Bool
+	{
+		if (__context.__context.type != OPENGLES) return false;
+		if (OpenGLRenderer.__drawBuffersEXT == true) return false;
+		if (Std.parseFloat(__context.__context.version) < 3) return false;
+
+		return ~/gl_FragData\s*\[\s*[1-9]/.match(fragmentSource);
+	}
+
+	@:noCompletion private function __convertGLES3Source(source:String, isFragment:Bool):String
+	{
+		source = ~/\btexture2DProj\b/g.replace(source, "textureProj");
+		source = ~/\b(texture2DLodEXT|texture2DLod|textureCubeLodEXT|textureCubeLod)\b/g.replace(source, "textureLod");
+		source = ~/\b(texture2D|textureCube)\b/g.replace(source, "texture");
+
+		if (isFragment)
+		{
+			source = ~/\bvarying\b/g.replace(source, "in");
+			source = ~/\bgl_FragData\s*\[\s*(\d+)\s*\]/g.replace(source, "openfl_FragData$1");
+			source = ~/\bgl_FragColor\b/g.replace(source, "openfl_FragData0");
+		}
+		else
+		{
+			source = ~/\battribute\b/g.replace(source, "in");
+			source = ~/\bvarying\b/g.replace(source, "out");
+		}
+
+		return source;
+	}
+
+	@:noCompletion private function __buildGLES3Outputs(fragmentSource:String):String
+	{
+		var maxIndex = 0;
+		var regex = ~/gl_FragData\s*\[\s*(\d+)\s*\]/;
+		var remaining = fragmentSource;
+
+		while (regex.match(remaining))
+		{
+			var index = Std.parseInt(regex.matched(1));
+			if (index > maxIndex) maxIndex = index;
+			remaining = regex.matchedRight();
+		}
+
+		var outputs = "";
+
+		for (i in 0...maxIndex + 1)
+		{
+			outputs += "layout(location = " + i + ") out vec4 openfl_FragData" + i + ";\n";
+		}
+
+		return outputs;
+	}
+
+	@:noCompletion private function __buildSourcePrefix(isFragment:Bool, gles3:Bool = false):String
 	{
 		var extensions = "";
 
@@ -543,17 +609,22 @@ class Shader
 
 		for (ext in extList)
 		{
+			if (gles3 && __gles3CoreExtensions.contains(ext.name)) continue;
 			extensions += "#extension " + ext.name + " : " + ext.behavior + "\n";
 		}
 
 		var standardDerivativesSupported = OpenGLRenderer.__standardDerivativesSupported && isFragment;
 
-		if (standardDerivativesSupported)
+		if (standardDerivativesSupported && !gles3)
 		{
 			extensions += "#extension GL_OES_standard_derivatives : enable\n";
 		}
 
-		if (OpenGLRenderer.__drawBuffersEXT)
+		if (gles3)
+		{
+			// GLSL ES 3.00 is the core language, so no extensions are needed.
+		}
+		else if (OpenGLRenderer.__drawBuffersEXT)
 		{
 			extensions += "#extension GL_EXT_draw_buffers : enable\n";
 		}
@@ -570,7 +641,7 @@ class Shader
 		// while #extension directives must be before any non-preprocessor tokens.
 
 		var prefix = "#version "
-			+ __glVersion
+			+ (gles3 ? "300 es" : __glVersion)
 			+ "
       "
 			+ extensions
@@ -611,8 +682,19 @@ class Shader
 		{
 			var gl = __context.gl;
 
-			var vertex = __buildSourcePrefix(false) + glVertexSource;
-			var fragment = __buildSourcePrefix(true) + glFragmentSource;
+			var vertex:String;
+			var fragment:String;
+
+			if (__needsGLES3Source(glFragmentSource))
+			{
+				vertex = __buildSourcePrefix(false, true) + __convertGLES3Source(glVertexSource, false);
+				fragment = __buildSourcePrefix(true, true) + __buildGLES3Outputs(glFragmentSource) + __convertGLES3Source(glFragmentSource, true);
+			}
+			else
+			{
+				vertex = __buildSourcePrefix(false) + glVertexSource;
+				fragment = __buildSourcePrefix(true) + glFragmentSource;
+			}
 
 			var id = vertex + fragment;
 
