@@ -12,9 +12,7 @@ import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Program3D;
 import openfl.utils.ByteArray;
-#if (js && html5)
 import openfl.display3D._internal.GLSL3Converter;
-#end
 
 /**
 	// TODO: Document GLSL Shaders
@@ -535,6 +533,23 @@ class Shader
 		}
 	}
 
+	/**
+	 * Whether the shader has to be converted to GLSL 3.XX.
+	 */
+	@:noCompletion private function __needsGLSL3Source(fragmentSource:String):Bool
+	{
+		if (__glVersion != "100") return false;
+
+		var context = __context.__context;
+
+		if (context.type == WEBGL) return context.version == "2";
+		if (context.type != OPENGLES) return false;
+		if (OpenGLRenderer.__drawBuffersEXT == true) return false;
+		if (Std.parseFloat(context.version) < 3) return false;
+
+		return ~/gl_FragData\s*\[\s*[1-9]/.match(fragmentSource);
+	}
+
 	@:noCompletion private function __buildSourcePrefix(isFragment:Bool):String
 	{
 		var extensions = "";
@@ -622,17 +637,13 @@ class Shader
 			}
 			else
 			{
-				// Keeping this only for JS for now
-				// Because WebGL must run on ver 300 so we can use MRTs
-				#if (js && html5)
-				if (__glVersion == "100" && __context.__context.version == "2")
+				if (__needsGLSL3Source(glFragmentSource))
 				{
 					var converter = new GLSL3Converter();
 
 					vertex = converter.convertShaderSource(vertex, true);
 					fragment = converter.convertShaderSource(fragment, false);
 				}
-				#end
 
 				program = __context.createProgram(GLSL);
 
