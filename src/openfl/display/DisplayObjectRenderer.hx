@@ -262,6 +262,26 @@ class DisplayObjectRenderer extends EventDispatcher
 				}
 			}
 
+			if (filters.length == 0)
+			{
+				var plainX = (finalWidth == scaledWidth) ? scale : finalWidth / sourceWidth;
+				var plainY = (finalHeight == scaledHeight) ? scale : finalHeight / sourceHeight;
+
+				graphics.__bufferSourceView.__renderTransform.identity();
+				graphics.__bufferSourceView.__renderTransform.scale(plainX, plainY);
+
+				graphics.__bufferResult[i] = __getBuffer(graphics.__bufferResult[i], finalWidth, finalHeight);
+				var plainTarget = graphics.__bufferResult[i];
+
+				sourceTexture.withAttachment(i + 1, () ->
+				{
+					renderer.__setRenderTarget(plainTarget);
+					renderer.__renderFilterPass(graphics.__bufferSourceView, renderer.__defaultDisplayShader, false, true);
+				});
+
+				continue;
+			}
+
 			if (graphics.__bufferCache[i] == null) graphics.__bufferCache[i] = [null, null];
 
 			graphics.__bufferCache[i][0] = __getScaledBuffer(context, graphics.__bufferCache[i][0], finalWidth, finalHeight);
@@ -319,7 +339,6 @@ class DisplayObjectRenderer extends EventDispatcher
 			return new BitmapData(width, height, true, 0);
 		}
 
-		buffer.fillRect(buffer.rect, 0);
 		return buffer;
 	}
 
@@ -332,10 +351,6 @@ class DisplayObjectRenderer extends EventDispatcher
 			var finalWidth = Math.ceil(Math.max(width * 1.25, buffer != null ? buffer.width : 0));
 			var finalHeight = Math.ceil(Math.max(height * 1.25, buffer != null ? buffer.height : 0));
 			buffer = new BitmapData(finalWidth, finalHeight, true, 0);
-		}
-		else
-		{
-			buffer.fillRect(buffer.rect, 0);
 		}
 
 		buffer.__setUVRect(context, 0, 0, width, height);
