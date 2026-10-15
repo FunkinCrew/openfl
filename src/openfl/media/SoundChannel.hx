@@ -3,20 +3,6 @@ package openfl.media;
 import lime.media.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
-#if (js && html5)
-import js.html.audio.AudioProcessingEvent;
-import js.html.audio.ScriptProcessorNode;
-import openfl.events.SampleDataEvent;
-#end
-#if lime_openal
-import lime.media.openal.AL;
-import lime.media.openal.ALBuffer;
-import lime.media.openal.ALSource;
-import lime.utils.ArrayBufferView;
-import lime.utils.Int16Array;
-import openfl.events.SampleDataEvent;
-import openfl.utils.ByteArray;
-#end
 
 /**
 	The SoundChannel class controls a sound in an application. Every sound is
@@ -32,7 +18,6 @@ import openfl.utils.ByteArray;
 	@see `openfl.media.Sound`
 **/
 @:access(openfl.events.Event)
-@:access(openfl.events.SampleDataEvent)
 @:access(openfl.media.Sound)
 @:access(openfl.media.SoundMixer)
 @:final @:keep class SoundChannel extends EventDispatcher
@@ -76,22 +61,6 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __soundTransform:SoundTransform;
 	@:noCompletion private var __audioSource:AudioSource;
 
-	#if (js && html5)
-	@:noCompletion private var __sampleDataEvent:SampleDataEvent;
-	@:noCompletion private var __processor:ScriptProcessorNode;
-	@:noCompletion private var __firstRun:Bool = true;
-	#end
-
-	#if lime_openal
-	@:noCompletion private var __sampleDataEvent:SampleDataEvent;
-	@:noCompletion private var __alSource:ALSource;
-	@:noCompletion private var __outputBuffer:ByteArray;
-	@:noCompletion private var __bufferView:ArrayBufferView;
-	@:noCompletion private var __alBuffers:Array<ALBuffer>;
-	@:noCompletion private var __numberOfBuffers:Int = 3;
-	@:noCompletion private var __emptyBuffers:Array<ALBuffer>;
-	#end
-
 	@:noCompletion private function new(sound:Sound, audioSource:AudioSource = null, soundTransform:SoundTransform = null):Void
 	{
 		super(this);
@@ -126,28 +95,6 @@ import openfl.utils.ByteArray;
 
 		if (!__isValid) return;
 
-		#if (js && html5)
-		if (__processor != null)
-		{
-			__processor.disconnect();
-			__processor.onaudioprocess = null;
-			__processor = null;
-		}
-		#end
-
-		#if lime_openal
-		if (__alSource != null)
-		{
-			lime.app.Application.current.onUpdate.remove(watchBuffers);
-			var alAudioContext = __sound.__alAudioContext;
-			alAudioContext.sourceStop(__alSource);
-			alAudioContext.deleteSource(__alSource);
-			alAudioContext.deleteBuffers(__alBuffers);
-			__emptyBuffers = null;
-			__alSource = null;
-		}
-		#end
-
 		__audioSource.stop();
 
 		__dispose();
@@ -164,111 +111,7 @@ import openfl.utils.ByteArray;
 		__isValid = false;
 	}
 
-	@:noCompletion private function __startSampleData():Void
-	{
-		#if (js && html5)
-		var webAudioContext = __sound.__webAudioContext;
-		if (webAudioContext != null)
-		{
-			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
-			__sound.dispatchEvent(__sampleDataEvent);
-			var bufferSize = __sampleDataEvent.getBufferSize();
-			if (bufferSize == 0)
-			{
-				// ensure that listeners can be added to the SoundChannel
-				// before dispatching this event
-				openfl.Lib.setTimeout(function():Void
-				{
-					stop();
-
-					#if openfl_pool_events
-					var soundCompleteEvent = Event.__pool.get();
-					soundCompleteEvent.type = Event.SOUND_COMPLETE;
-					#else
-					var soundCompleteEvent = new Event(Event.SOUND_COMPLETE);
-					#end
-
-					dispatchEvent(soundCompleteEvent);
-
-					#if openfl_pool_events
-					Event.__pool.release(soundCompleteEvent);
-					#end
-				}, 1);
-			}
-			else
-			{
-				__processor = webAudioContext.createScriptProcessor(bufferSize, 0, 2);
-				__processor.connect(webAudioContext.destination);
-				__processor.onaudioprocess = onSample;
-				webAudioContext.resume();
-			}
-		}
-		#end
-		#if lime_openal
-		var alAudioContext = __sound.__alAudioContext;
-		if (alAudioContext != null)
-		{
-			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
-			__sound.dispatchEvent(__sampleDataEvent);
-			var bufferSize = __sampleDataEvent.getBufferSize();
-			if (bufferSize == 0)
-			{
-				// ensure that listeners can be added to the SoundChannel
-				// before dispatching this event
-				openfl.Lib.setTimeout(function():Void
-				{
-					stop();
-
-					#if openfl_pool_events
-					var soundCompleteEvent = Event.__pool.get();
-					soundCompleteEvent.type = Event.SOUND_COMPLETE;
-					#else
-					var soundCompleteEvent = new Event(Event.SOUND_COMPLETE);
-					#end
-
-					dispatchEvent(soundCompleteEvent);
-
-					#if openfl_pool_events
-					Event.__pool.release(soundCompleteEvent);
-					#end
-				}, 1);
-			}
-			else
-			{
-				bufferSize = 0;
-				__alSource = alAudioContext.createSource();
-				alAudioContext.sourcef(__alSource, AL.GAIN, 1);
-				alAudioContext.source3f(__alSource, AL.POSITION, 0, 0, 0);
-				alAudioContext.sourcef(__alSource, AL.PITCH, 1.0);
-
-				__alBuffers = alAudioContext.genBuffers(__numberOfBuffers);
-				__outputBuffer = new ByteArray();
-				__bufferView = new lime.utils.Int16Array(__outputBuffer);
-
-				for (a in 0...__numberOfBuffers)
-				{
-					if (bufferSize == 0)
-					{
-						bufferSize = __sampleDataEvent.getBufferSize();
-						__sampleDataEvent.getSamples(__outputBuffer);
-						alAudioContext.bufferData(__alBuffers[a], AL.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
-					}
-					else
-					{
-						__sound.dispatchEvent(__sampleDataEvent);
-						__sampleDataEvent.getSamples(__outputBuffer);
-						alAudioContext.bufferData(__alBuffers[a], AL.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
-					}
-				}
-
-				alAudioContext.sourceQueueBuffers(__alSource, __numberOfBuffers, __alBuffers);
-
-				alAudioContext.sourcePlay(__alSource);
-				lime.app.Application.current.onUpdate.add(watchBuffers);
-			}
-		}
-		#end
-	}
+	@:noCompletion private function __startSampleData():Void {}
 
 	@:noCompletion private function __updateTransform():Void
 	{
@@ -294,14 +137,14 @@ import openfl.utils.ByteArray;
 	{
 		if (!__isValid) return 0;
 
-		return __audioSource.currentTime + __audioSource.offset;
+		return __audioSource.currentTime;
 	}
 
 	@:noCompletion private function set_position(value:Float):Float
 	{
 		if (!__isValid) return 0;
 
-		__audioSource.currentTime = value - __audioSource.offset;
+		__audioSource.currentTime = value;
 
 		return value;
 	}
@@ -318,23 +161,10 @@ import openfl.utils.ByteArray;
 			__soundTransform.pan = value.pan;
 			__soundTransform.volume = value.volume;
 
-			var pan = SoundMixer.__soundTransform.pan + __soundTransform.pan;
-
-			if (pan < -1) pan = -1;
-			if (pan > 1) pan = 1;
-
-			var volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
-
 			if (__isValid)
 			{
-				__audioSource.gain = volume;
-
-				var position = __audioSource.position;
-				position.x = pan;
-				position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-				__audioSource.position = position;
-
-				return value;
+				__audioSource.gain = SoundMixer.__soundTransform.volume * __soundTransform.volume;
+				__audioSource.pan = Math.max(-1, Math.min(1, SoundMixer.__soundTransform.pan + __soundTransform.pan));
 			}
 		}
 
@@ -361,97 +191,4 @@ import openfl.utils.ByteArray;
 		Event.__pool.release(soundCompleteEvent);
 		#end
 	}
-
-	#if (js && html5)
-	@:noCompletion private function onSample(event:AudioProcessingEvent):Void
-	{
-		var hasSampleData = false;
-		if (__firstRun)
-		{
-			hasSampleData = true;
-			__firstRun = false;
-		}
-		else
-		{
-			__sampleDataEvent.data.length = 0;
-			__sound.dispatchEvent(__sampleDataEvent);
-			hasSampleData = __sampleDataEvent.data.length > 0;
-		}
-		if (hasSampleData)
-		{
-			__sampleDataEvent.getSamples(event);
-		}
-		else
-		{
-			stop();
-
-			#if openfl_pool_events
-			var soundCompleteEvent = Event.__pool.get();
-			soundCompleteEvent.type = Event.SOUND_COMPLETE;
-			#else
-			var soundCompleteEvent = new Event(Event.SOUND_COMPLETE);
-			#end
-
-			dispatchEvent(soundCompleteEvent);
-
-			#if openfl_pool_events
-			Event.__pool.release(soundCompleteEvent);
-			#end
-		}
-	}
-	#end
-
-	#if lime_openal
-	@:noCompletion private function watchBuffers(_):Void
-	{
-		var alAudioContext = __sound.__alAudioContext;
-		var hasSampleData = true;
-
-		if (alAudioContext != null)
-		{
-			var bufferState = alAudioContext.getSourcei(__alSource, AL.BUFFERS_PROCESSED);
-			if (bufferState > 0)
-			{
-				__emptyBuffers = alAudioContext.sourceUnqueueBuffers(__alSource, bufferState);
-				for (a in 0...__emptyBuffers.length)
-				{
-					__sampleDataEvent.data.length = 0;
-					__sound.dispatchEvent(__sampleDataEvent);
-					if (__sampleDataEvent.data.length == 0)
-					{
-						hasSampleData = false;
-					}
-					else
-					{
-						__sampleDataEvent.getSamples(__outputBuffer);
-						alAudioContext.bufferData(__emptyBuffers[a], AL.FORMAT_STEREO16, __bufferView, __sampleDataEvent.getBufferSize() * 4, 44100);
-						alAudioContext.sourceQueueBuffer(__alSource, __emptyBuffers[a]);
-					}
-				}
-
-				if (hasSampleData && alAudioContext.getSourcei(__alSource, AL.SOURCE_STATE) != AL.PLAYING)
-				{
-					alAudioContext.sourcePlay(__alSource);
-				}
-			}
-		}
-		if (!hasSampleData)
-		{
-			stop();
-
-			#if openfl_pool_events
-			var soundCompleteEvent = Event.__pool.get();
-			soundCompleteEvent.type = Event.SOUND_COMPLETE;
-			#else
-			var soundCompleteEvent = new Event(Event.SOUND_COMPLETE);
-			#end
-
-			dispatchEvent(soundCompleteEvent);
-
-			#if openfl_pool_events
-			Event.__pool.release(soundCompleteEvent);
-			#end
-		}
-	}
-	#end
 }
