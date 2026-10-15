@@ -657,6 +657,8 @@ class Shader
 				#endif
 				";
 
+		if (isFragment) prefix += "#define ALPHA_EPSILON 1e-4\n";
+
 		return prefix;
 	}
 
