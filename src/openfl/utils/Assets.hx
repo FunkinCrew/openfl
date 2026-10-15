@@ -369,15 +369,15 @@ class Assets
 	public static function getSound(id:String, useCache:Bool = true):Sound
 	{
 		#if (tools && !display)
-		if (useCache && cache.enabled && cache.hasSound(id))
-		{
-			var sound = cache.getSound(id);
+		// if (useCache && cache.enabled && cache.hasSound(id))
+		// {
+		// 	var sound = cache.getSound(id);
 
-			if (isValidSound(sound))
-			{
-				return sound;
-			}
-		}
+		// 	if (isValidSound(sound))
+		// 	{
+		// 		return sound;
+		// 	}
+		// }
 
 		var buffer = LimeAssets.getAudioBuffer(id, false);
 
@@ -385,10 +385,10 @@ class Assets
 		{
 			var sound = Sound.fromAudioBuffer(buffer);
 
-			if (useCache && cache.enabled)
-			{
-				cache.setSound(id, sound);
-			}
+			// if (useCache && cache.enabled)
+			// {
+			// 	cache.setSound(id, sound);
+			// }
 
 			return sound;
 		}
