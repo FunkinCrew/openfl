@@ -12,14 +12,6 @@ import openfl.events.ProgressEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
-#if (js && html5)
-import lime.media.AudioManager;
-import lime.media.WebAudioContext;
-#end
-#if lime_openal
-import lime.media.AudioManager;
-import lime.media.OpenALAudioContext;
-#end
 
 /**
 	The Sound class lets you work with sound in an application. The Sound class
@@ -240,18 +232,6 @@ class Sound extends EventDispatcher
 	@:noCompletion private var __pendingAudioSource:AudioSource;
 	@:noCompletion private var __buffer:AudioBuffer;
 
-	#if (js && html5)
-	public var sampleRate(get, never):Int;
-
-	@:noCompletion private var __webAudioContext:WebAudioContext = null;
-	#end
-
-	#if lime_openal
-	public var sampleRate(get, never):Int;
-
-	@:noCompletion private var __alAudioContext:OpenALAudioContext = null;
-	#end
-
 	/**
 		Creates a new Sound object. If you pass a valid URLRequest object to the
 		Sound constructor, the constructor automatically calls the
@@ -287,28 +267,6 @@ class Sound extends EventDispatcher
 		{
 			load(stream, context);
 		}
-		#if (js && html5)
-		if (stream == null && AudioManager.context != null)
-		{
-			switch (AudioManager.context.type)
-			{
-				case WEB:
-					__webAudioContext = AudioManager.context.web;
-				default:
-			}
-		}
-		#end
-		#if lime_openal
-		if (stream == null && AudioManager.context != null)
-		{
-			switch (AudioManager.context.type)
-			{
-				case OPENAL:
-					__alAudioContext = AudioManager.context.openal;
-				default:
-			}
-		}
-		#end
 	}
 
 	/**
@@ -623,70 +581,70 @@ class Sound extends EventDispatcher
 	**/
 	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void
 	{
-		if (bytes == null)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			return;
-		}
+		// if (bytes == null)
+		// {
+		// 	dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		// 	return;
+		// }
 
-		var bitsPerSample = (format == "float" ? 32 : 16); // "short"
-		var channels = (stereo ? 2 : 1);
-		var bytesLength = Std.int(samples * channels * (bitsPerSample / 8));
+		// var bitsPerSample = (format == "float" ? 32 : 16); // "short"
+		// var channels = (stereo ? 2 : 1);
+		// var bytesLength = Std.int(samples * channels * (bitsPerSample / 8));
 
-		if (bytes.position > 0 || bytes.length > bytesLength)
-		{
-			var copy = new ByteArray(bytesLength);
-			copy.writeBytes(bytes, bytes.position, bytesLength);
-			bytes = copy;
-		}
+		// if (bytes.position > 0 || bytes.length > bytesLength)
+		// {
+		// 	var copy = new ByteArray(bytesLength);
+		// 	copy.writeBytes(bytes, bytes.position, bytesLength);
+		// 	bytes = copy;
+		// }
 
-		var audioBuffer = new AudioBuffer();
-		audioBuffer.channels = channels;
-		audioBuffer.dataFormat = (format == "float" ? F32 : S16);
-		audioBuffer.data = new UInt8Array(bytes);
-		audioBuffer.sampleRate = Std.int(sampleRate);
-		__buffer = audioBuffer;
+		// var audioBuffer = new AudioBuffer();
+		// audioBuffer.channels = channels;
+		// audioBuffer.dataFormat = (format == "float" ? F32 : S16);
+		// audioBuffer.data = new UInt8Array(bytes);
+		// audioBuffer.sampleRate = Std.int(sampleRate);
+		// __buffer = audioBuffer;
 
-		#if openfl_pool_events
-		var openEvent = Event.__pool.get();
-		openEvent.type = Event.OPEN;
-		#else
-		var openEvent = new Event(Event.OPEN);
-		#end
+		// #if openfl_pool_events
+		// var openEvent = Event.__pool.get();
+		// openEvent.type = Event.OPEN;
+		// #else
+		// var openEvent = new Event(Event.OPEN);
+		// #end
 
-		dispatchEvent(openEvent);
+		// dispatchEvent(openEvent);
 
-		#if openfl_pool_events
-		Event.__pool.release(openEvent);
-		#end
+		// #if openfl_pool_events
+		// Event.__pool.release(openEvent);
+		// #end
 
-		#if openfl_pool_events
-		var progressEvent = ProgressEvent.__pool.get();
-		progressEvent.type = ProgressEvent.PROGRESS;
-		progressEvent.bytesLoaded = bytes.length;
-		progressEvent.bytesTotal = bytes.length;
-		#else
-		var progressEvent = new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytes.length, bytes.length);
-		#end
+		// #if openfl_pool_events
+		// var progressEvent = ProgressEvent.__pool.get();
+		// progressEvent.type = ProgressEvent.PROGRESS;
+		// progressEvent.bytesLoaded = bytes.length;
+		// progressEvent.bytesTotal = bytes.length;
+		// #else
+		// var progressEvent = new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytes.length, bytes.length);
+		// #end
 
-		dispatchEvent(progressEvent);
+		// dispatchEvent(progressEvent);
 
-		#if openfl_pool_events
-		ProgressEvent.__pool.release(progressEvent);
-		#end
+		// #if openfl_pool_events
+		// ProgressEvent.__pool.release(progressEvent);
+		// #end
 
-		#if openfl_pool_events
-		var completeEvent = Event.__pool.get();
-		completeEvent.type = Event.COMPLETE;
-		#else
-		var completeEvent = new Event(Event.COMPLETE);
-		#end
+		// #if openfl_pool_events
+		// var completeEvent = Event.__pool.get();
+		// completeEvent.type = Event.COMPLETE;
+		// #else
+		// var completeEvent = new Event(Event.COMPLETE);
+		// #end
 
-		dispatchEvent(completeEvent);
+		// dispatchEvent(completeEvent);
 
-		#if openfl_pool_events
-		Event.__pool.release(completeEvent);
-		#end
+		// #if openfl_pool_events
+		// Event.__pool.release(completeEvent);
+		// #end
 	}
 
 	/**
@@ -720,62 +678,26 @@ class Sound extends EventDispatcher
 			sndTransform = sndTransform.clone();
 		}
 
-		var pan = SoundMixer.__soundTransform.pan + sndTransform.pan;
-
-		if (pan > 1) pan = 1;
-		if (pan < -1) pan = -1;
-
-		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
-
 		var audioSource = new AudioSource(__buffer);
-		audioSource.offset = Std.int(startTime);
-		if (loops > 1) audioSource.loops = loops - 1;
 
-		audioSource.gain = volume;
+		if (loops > 1)
+		{
+			audioSource.loops = loops - 1;
+		}
 
-		var position = audioSource.position;
-		position.x = pan;
-		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-		audioSource.position = position;
+		audioSource.gain = SoundMixer.__soundTransform.volume * sndTransform.volume;
+		audioSource.pan = Math.max(-1, Math.min(1, SoundMixer.__soundTransform.pan + sndTransform.pan));
 
 		var soundChannel = new SoundChannel(this, __urlLoading ? null : audioSource, sndTransform);
+
 		if (__urlLoading)
 		{
 			__pendingAudioSource = audioSource;
 			__pendingSoundChannel = soundChannel;
 		}
-		else if (__buffer == null)
-		{
-			#if (js && html5)
-			if (__webAudioContext != null)
-			{
-				soundChannel.__startSampleData();
-			}
-			#end
-			#if lime_openal
-			if (__alAudioContext != null)
-			{
-				soundChannel.__startSampleData();
-			}
-			#end
-		}
 
 		return soundChannel;
 	}
-
-	#if (js && html5)
-	@:noCompletion private function get_sampleRate():Int
-	{
-		return Std.int(__webAudioContext.sampleRate);
-	}
-	#end
-
-	#if lime_openal
-	@:noCompletion private function get_sampleRate():Int
-	{
-		return 44100;
-	}
-	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_id3():ID3Info
@@ -804,7 +726,6 @@ class Sound extends EventDispatcher
 			{
 				var bytesPerFrame = __buffer.channels * (__buffer.bitsPerSample / 8.0);
 				var totalFrames = __buffer.data.length / bytesPerFrame;
-
 				return (totalFrames / __buffer.sampleRate) * 1000.0;
 			}
 			else
@@ -821,6 +742,7 @@ class Sound extends EventDispatcher
 	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
 	{
 		__urlLoading = false;
+
 		if (buffer == null)
 		{
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
@@ -828,7 +750,9 @@ class Sound extends EventDispatcher
 		else
 		{
 			__buffer = buffer;
+
 			var byteLength = 1;
+
 			if (__buffer.data != null)
 			{
 				byteLength = __buffer.data.length;
@@ -865,9 +789,7 @@ class Sound extends EventDispatcher
 			if (__pendingSoundChannel != null)
 			{
 				__pendingAudioSource.buffer = __buffer;
-				// ideally, Lime would call init() when setting buffer,
-				// similar to how it does in the AudioSource constructor
-				@:privateAccess __pendingAudioSource.init();
+				__pendingAudioSource.init();
 				__pendingSoundChannel.__initAudioSource(__pendingAudioSource);
 			}
 		}
