@@ -301,7 +301,7 @@ import openfl.utils.ByteArray;
 	{
 		if (!__isValid) return 0;
 
-		__audioSource.currentTime = Std.int(value) - __audioSource.offset;
+		__audioSource.currentTime = value - __audioSource.offset;
 
 		return value;
 	}
