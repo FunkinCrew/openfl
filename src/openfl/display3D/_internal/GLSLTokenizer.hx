@@ -102,19 +102,13 @@ class GLSLTokenizer
 		return tokens;
 	}
 
-	static inline function startLen(m:ScanMode):Null<Int>
-		return startConditionsMap.get(m)();
-
 	static inline function isStart(m:ScanMode):Bool
-		return startLen(m) != null;
-
-	static inline function isEnd(m:ScanMode):Bool
-		return endConditionsMap.get(m)();
+		return startLen(m) != -1;
 
 	static function tryMode(m:ScanMode):Bool
 	{
 		var n = startLen(m);
-		if (n != null)
+		if (n != -1)
 		{
 			mode = m;
 			advance(n);
@@ -235,17 +229,18 @@ class GLSLTokenizer
 	{
 		if (isEnd(mode))
 		{
+			var data = buf;
 			var tt:TokenType = null;
 			// in order of priority
 			// check if it's a keyword
-			tt = keywordMap.get(buf);
+			tt = keywordMap.get(data);
 			// check if it's a field selection
 			if (tt == null && previousTokenType() == DOT) tt = FIELD_SELECTION;
 			// otherwise it must be an identifier
 			if (tt == null) tt = IDENTIFIER;
 			// it may be a TYPE_NAME, but this is handled in a later pass
 
-			buildToken(tt);
+			buildToken(tt, data);
 			mode = UNDETERMINED;
 			return;
 		}
@@ -266,7 +261,7 @@ class GLSLTokenizer
 				}
 				// collect leading digits
 				var j = i;
-				while (~/[0-9]/.match(c(i)))
+				while (isDigitAt(i))
 					advance();
 				if (i > j)
 				{
@@ -333,11 +328,11 @@ class GLSLTokenizer
 
 	// end mode functions
 
-	static function buildToken(type:TokenType)
+	static function buildToken(type:TokenType, ?data:String)
 	{
 		if (type == null) error('cannot have null token type');
 
-		var data = buf;
+		if (data == null) data = buf;
 
 		if (data == '') error('cannot have empty token data');
 		var token:Token = {
@@ -458,84 +453,89 @@ class GLSLTokenizer
 		return isAlphaAt(j) || isDigitAt(j);
 
 	// single character patterns
-	static var operatorRegex = ~/[&<=>|*?!+%(){}.~:,;\/\-\^\[\]]/;
+	static inline function isOperatorAt(j:Int):Bool
+	{
+		return switch (codeAt(j))
+		{
+			case "&".code, "<".code, "=".code, ">".code, "|".code, "*".code, "?".code, "!".code, "+".code, "%".code, "(".code, ")".code, "{".code, "}".code,
+				".".code, "~".code, ":".code, ",".code, ";".code, "/".code, "-".code, "^".code, "[".code, "]".code:
+				true;
+			default:
+				false;
+		}
+	}
 
 	// mode conditions
 	// returns either the length of the matched start string (starting from i) or null for invalid starting point
-	static var startConditionsMap:Map<ScanMode, Void->Null<Int>> = [
-		BLOCK_COMMENT => function() return source.substring(i, i + 2) == '/*' ? 2 : null,
-		LINE_COMMENT => function() return source.substring(i, i + 2) == '//' ? 2 : null,
-		PREPROCESSOR_DIRECTIVE => function()
+	static function startLen(m:ScanMode):Int
+	{
+		return switch (m)
 		{
-			// return c(i) == '#' ? 1 : null;
-			// a preprocessor directives # can only be proceeded with whitespace within its line
-			if (c(i) == '#')
-			{
-				var j = i - 1;
-				while (c(j) != '\n' && c(j) != '')
+			case BLOCK_COMMENT: (codeAt(i) == "/".code && codeAt(i + 1) == "*".code) ? 2 : -1;
+			case LINE_COMMENT: (codeAt(i) == "/".code && codeAt(i + 1) == "/".code) ? 2 : -1;
+			case PREPROCESSOR_DIRECTIVE:
+				// a preprocessor directives # can only be proceeded with whitespace within its line
+				if (codeAt(i) == "#".code)
 				{
-					if (!isSpaceAt(j)) return null; // non-whitespace character found between # and line start
-					j--;
+					var j = i - 1;
+					while (codeAt(j) != "\n".code && codeAt(j) != -1)
+					{
+						if (!isSpaceAt(j)) return -1; // non-whitespace character found between # and line start
+						j--;
+					}
+					return 1;
 				}
-				return 1;
-			}
-
-			return null;
-		},
-		WHITESPACE => function() return isSpaceAt(i) ? 1 : null,
-		OPERATOR => function() return operatorRegex.match(c(i)) ? 1 : null,
-		LITERAL => function() return isAlphaAt(i) ? 1 : null,
-		HEX_CONSTANT => function() return (codeAt(i) == "0".code
-			&& (codeAt(i + 1) == "x".code || codeAt(i + 1) == "X".code)
-			&& isHexAt(i + 2)) ? 3 : null,
-		OCTAL_CONSTANT => function() return (codeAt(i) == "0".code && isOctalAt(i + 1)) ? 2 : null,
-		DECIMAL_CONSTANT => function() return isDigitAt(i) ? 1 : null,
-		FLOATING_CONSTANT => function()
-		{
-			// first mode: FRACTIONAL_CONSTANT EXPONENT_PART?
-			if (isStart(FRACTIONAL_CONSTANT)) return 0; // return fl;
-			// second mode: \d+ EXPONENT_PART
-			var j = i;
-			while (isDigitAt(j))
-				j++; // match sequence of digits
-			var _i = i;
-			i = j; // temporary move i to j to test start
-			var exponentFollows = isStart(EXPONENT_PART);
-			i = _i; // return i to original place
-			if (j > i && exponentFollows) return 0; // return ++j - i;
-			return null;
-		},
-		FRACTIONAL_CONSTANT => function()
-		{
-			var j = i;
-			while (isDigitAt(j))
-				j++;
-			if (j > i && c(j) == '.') return ++j - i; // \d+\.
-			return (codeAt(i) == ".".code && isDigitAt(i + 1)) ? 2 : null; // \.\d
-		},
-		EXPONENT_PART => function()
-		{
-			if (codeAt(i) != "e".code && codeAt(i) != "E".code) return null;
-
-			final signed = codeAt(i + 1) == "+".code || codeAt(i + 1) == "-".code;
-
-			return isDigitAt(signed ? i + 2 : i + 1) ? (signed ? 3 : 2) : null;
+					-1;
+			case WHITESPACE: isSpaceAt(i) ? 1 : -1;
+			case OPERATOR: isOperatorAt(i) ? 1 : -1;
+			case LITERAL: isAlphaAt(i) ? 1 : -1;
+			case HEX_CONSTANT: (codeAt(i) == "0".code
+					&& (codeAt(i + 1) == "x".code || codeAt(i + 1) == "X".code)
+					&& isHexAt(i + 2)) ? 3 : -1;
+			case OCTAL_CONSTANT: (codeAt(i) == "0".code && isOctalAt(i + 1)) ? 2 : -1;
+			case DECIMAL_CONSTANT: isDigitAt(i) ? 1 : -1;
+			case FLOATING_CONSTANT:
+				// first mode: FRACTIONAL_CONSTANT EXPONENT_PART?
+				if (isStart(FRACTIONAL_CONSTANT)) return 0;
+				// second mode: \d+ EXPONENT_PART
+				var j = i;
+				while (isDigitAt(j))
+					j++; // match sequence of digits
+				var _i = i;
+				i = j; // temporary move i to j to test start
+				var exponentFollows = isStart(EXPONENT_PART);
+				i = _i; // return i to original place
+				(j > i && exponentFollows) ? 0 : -1;
+			case FRACTIONAL_CONSTANT:
+				var j = i;
+				while (isDigitAt(j))
+					j++;
+				if (j > i && codeAt(j) == ".".code) return ++j - i; // \d+\.
+				(codeAt(i) == ".".code && isDigitAt(i + 1)) ? 2 : -1; // \.\d
+			case EXPONENT_PART:
+				if (codeAt(i) != "e".code && codeAt(i) != "E".code) return -1;
+				final signed = codeAt(i + 1) == "+".code || codeAt(i + 1) == "-".code;
+				isDigitAt(signed ? i + 2 : i + 1) ? (signed ? 3 : 2) : -1;
+			default: -1;
 		}
-	];
-	static var endConditionsMap:Map<ScanMode, Void->Bool> = [
-		BLOCK_COMMENT => function() return source.substring(i - 2, i) == '*/',
-		LINE_COMMENT => function() return c(i) == '\n' || c(i) == '',
-		PREPROCESSOR_DIRECTIVE => function() return (c(i) == '\n' && c(i - 1) != '\\') || c(i) == '',
-		WHITESPACE => function() return !isSpaceAt(i),
-		OPERATOR => function() return !operatorMap.exists(buf + c(i)) || c(i) == '',
-		LITERAL => function() return !isAlphaNumAt(i),
-		HEX_CONSTANT => function() return !isHexAt(i),
-		OCTAL_CONSTANT => function() return !isOctalAt(i),
-		DECIMAL_CONSTANT => function() return !isDigitAt(i),
-		FLOATING_CONSTANT => function() return !isDigitAt(i),
-		FRACTIONAL_CONSTANT => function() return !isDigitAt(i),
-		EXPONENT_PART => function() return !isDigitAt(i)
-	];
+	}
+
+	static function isEnd(m:ScanMode):Bool
+	{
+		return switch (m)
+		{
+			case BLOCK_COMMENT: codeAt(i - 2) == "*".code && codeAt(i - 1) == "/".code;
+			case LINE_COMMENT: codeAt(i) == "\n".code || codeAt(i) == -1;
+			case PREPROCESSOR_DIRECTIVE: (codeAt(i) == "\n".code && codeAt(i - 1) != "\\".code) || codeAt(i) == -1;
+			case WHITESPACE: !isSpaceAt(i);
+			case OPERATOR: codeAt(i) == -1 || !operatorMap.exists(source.substring(bufStart, i + 1));
+			case LITERAL: !isAlphaNumAt(i);
+			case HEX_CONSTANT: !isHexAt(i);
+			case OCTAL_CONSTANT: !isOctalAt(i);
+			case DECIMAL_CONSTANT, FLOATING_CONSTANT, FRACTIONAL_CONSTANT, EXPONENT_PART: !isDigitAt(i);
+			default: false;
+		}
+	}
 
 	static var operatorMap:Map<String, TokenType> = [
 		'<<' => LEFT_OP,
