@@ -36,7 +36,8 @@ class GraphicsShader extends Shader
 			#pragma body
 
 		}")
-	@:glFragmentHeader("varying float openfl_Alphav;
+	@:glFragmentHeader("#define OPENFL_GRAPHICS_SHADER
+		varying float openfl_Alphav;
 		varying vec4 openfl_ColorMultiplierv;
 		varying vec4 openfl_ColorOffsetv;
 		varying vec2 openfl_TextureCoordv;

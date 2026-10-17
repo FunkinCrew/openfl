@@ -12,9 +12,7 @@ import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Program3D;
 import openfl.utils.ByteArray;
-#if (js && html5)
 import openfl.display3D._internal.GLSL3Converter;
-#end
 
 /**
 	// TODO: Document GLSL Shaders
@@ -553,8 +551,9 @@ class Shader
 		if (__context.__context.type != OPENGLES) return false;
 		if (OpenGLRenderer.__drawBuffersEXT == true) return false;
 		if (Std.parseFloat(__context.__context.version) < 3) return false;
+		if (__glVersion == "100" && __context.__context.version == "2") return true;
 
-		return ~/gl_FragData\s*\[\s*[1-9]/.match(fragmentSource);
+		return ~/gl_FragData\s*\[\s*[0-9]/.match(fragmentSource);
 	}
 
 	@:noCompletion private function __convertGLES3Source(source:String, isFragment:Bool):String
@@ -599,6 +598,34 @@ class Shader
 		}
 
 		return outputs;
+	}
+
+	@:noCompletion private function __applyFragData(src:String):String
+	{
+		// We replace the original main with a new one that calls it
+		src = ~/\bvoid\s+main\s*\(/g.replace(src, "void openfl_main(");
+
+		// replace gl_FragColor with custom global new vector
+		src = ~/\bgl_FragColor\b/g.replace(src, "openfl_FragColorMain");
+
+		// Add the frag data write at the bottom of the main funciton
+		// use basic gl_FragColor if it isn't a GraphicsShader
+		var res:String = "vec4 openfl_FragColorMain = vec4(0.0, 0.0, 0.0, 0.0);\n";
+		res += src;
+		res += "\nvoid main()\n{\n";
+		res += "\topenfl_main();\n";
+		res += "#ifdef OPENFL_GRAPHICS_SHADER\n";
+		res += "\tif (sampleAttachment)\n{\n";
+		res += "\tgl_FragData[1] = openfl_FragColorMain;\n}\n";
+		res += "\telse\n{\n";
+		res += "\tgl_FragData[1] = vec4(0.0);\n}\n";
+		res += "\tgl_FragData[0] = openfl_FragColorMain;\n";
+		res += "#else\n";
+		res += "\tgl_FragColor = openfl_FragColorMain;\n";
+		res += "#endif\n";
+		res += "}\n";
+
+		return res;
 	}
 
 	@:noCompletion private function __buildSourcePrefix(isFragment:Bool, gles3:Bool = false):String
@@ -685,16 +712,10 @@ class Shader
 			var vertex:String;
 			var fragment:String;
 
-			if (__needsGLES3Source(glFragmentSource))
-			{
-				vertex = __buildSourcePrefix(false, true) + __convertGLES3Source(glVertexSource, false);
-				fragment = __buildSourcePrefix(true, true) + __buildGLES3Outputs(glFragmentSource) + __convertGLES3Source(glFragmentSource, true);
-			}
-			else
-			{
-				vertex = __buildSourcePrefix(false) + glVertexSource;
-				fragment = __buildSourcePrefix(true) + glFragmentSource;
-			}
+			vertex = __buildSourcePrefix(false) + glVertexSource;
+			// do NOT mess with the frag data if the shader has it's own!
+			fragment = __buildSourcePrefix(true)
+				+ (~/gl_FragData\s*\[\s*[0-9]/.match(glFragmentSource) ? glFragmentSource : __applyFragData(glFragmentSource));
 
 			var id = vertex + fragment;
 
@@ -704,17 +725,13 @@ class Shader
 			}
 			else
 			{
-				// Keeping this only for JS for now
-				// Because WebGL must run on ver 300 so we can use MRTs
-				#if (js && html5)
-				if (__glVersion == "100" && __context.__context.version == "2")
+				if (__needsGLES3Source(glFragmentSource))
 				{
 					var converter = new GLSL3Converter();
 
 					vertex = converter.convertShaderSource(vertex, true);
 					fragment = converter.convertShaderSource(fragment, false);
 				}
-				#end
 
 				program = __context.createProgram(GLSL);
 
