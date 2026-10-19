@@ -542,25 +542,6 @@ class Sound extends EventDispatcher
 	}
 
 	/**
-		Creates a new Sound from a set of file paths or web addresses asynchronously.
-		The audio backend will choose the first compatible file format, and will load the file
-		it selects in the background.
-
-		Progress, completion and error callbacks will be dispatched in the current
-		thread using callbacks attached to a returned Future object.
-
-		@param	paths	A set of local file paths or web addresses containing sound
-		@returns	A Future Sound
-	**/
-	public static function loadFromFiles(paths:Array<String>):Future<Sound>
-	{
-		return AudioBuffer.loadFromFiles(paths).then(function(audioBuffer)
-		{
-			return Future.withValue(fromAudioBuffer(audioBuffer));
-		});
-	}
-
-	/**
 		Load PCM 32-bit floating point sound data from a ByteArray object into a Sound object. The data will be read
 		from the current ByteArray position and will leave the ByteArray position at the end of the specified sample
 		length multiplied by either 1 channel or 2 channels if the stereo flag is set once finished.
