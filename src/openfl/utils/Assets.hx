@@ -332,12 +332,6 @@ class Assets
 		return null;
 	}
 
-	public static function getMusic(id:String, useCache:Bool = true):Sound
-	{
-		// TODO: Streaming sound
-		return getSound(id, useCache);
-	}
-
 	/**
 		Gets the file path (if available) for an asset
 
@@ -773,53 +767,6 @@ class Assets
 
 			return Future.withValue(_library);
 		});
-	}
-
-	/**
-		Loads an included music asset asynchronously
-
-		```haxe
-		Assets.loadMusic ("music.ogg").onComplete (handleMusic);
-		```
-
-		@param	id 		The ID or asset path for the asset
-		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
-		@return		Returns a Future<Sound>
-	**/
-	public static function loadMusic(id:String, useCache:Null<Bool> = true):Future<Sound>
-	{
-		if (useCache == null) useCache = true;
-
-		#if !html5
-		var promise = new Promise<Sound>();
-
-		var future = LimeAssets.loadAudioBuffer(id, useCache);
-		future.onComplete(function(buffer)
-		{
-			if (buffer != null)
-			{
-				var sound = Sound.fromAudioBuffer(buffer);
-
-				if (useCache && cache.enabled)
-				{
-					cache.setSound(id, sound);
-				}
-
-				promise.complete(sound);
-			}
-			else
-			{
-				promise.error("[Assets] Could not load Sound \"" + id + "\"");
-			}
-		});
-		future.onError(promise.error);
-		future.onProgress(promise.progress);
-
-		return promise.future;
-		#else
-		var future = new Future<Sound>(function() return getMusic(id, useCache));
-		return future;
-		#end
 	}
 
 	/**
