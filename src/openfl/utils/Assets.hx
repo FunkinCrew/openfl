@@ -129,7 +129,6 @@ class Assets
 	**/
 	public static function getBitmapData(id:String, useCache:Bool = true, allowCompressedTextures:Bool = true, allowHardwareTextures:Bool = true):BitmapData
 	{
-		#if (tools && !display)
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
 		{
 			var bitmapData = cache.getBitmapData(id);
@@ -216,7 +215,6 @@ class Assets
 
 			return bitmapData;
 		}
-		#end
 
 		return null;
 	}
@@ -253,7 +251,6 @@ class Assets
 	**/
 	public static function getFont(id:String, useCache:Bool = true):Font
 	{
-		#if (tools && !display && !macro)
 		if (useCache && cache.enabled && cache.hasFont(id))
 		{
 			return cache.getFont(id);
@@ -274,7 +271,6 @@ class Assets
 
 			return font;
 		}
-		#end
 
 		return new Font();
 	}
@@ -296,7 +292,6 @@ class Assets
 	**/
 	public static function getMovieClip(id:String):MovieClip
 	{
-		#if (tools && !display)
 		var libraryName = id.substring(0, id.indexOf(":"));
 		var symbolName = id.substr(id.indexOf(":") + 1);
 		var limeLibrary = getLibrary(libraryName);
@@ -327,7 +322,6 @@ class Assets
 		{
 			Log.error("There is no asset library named \"" + libraryName + "\"");
 		}
-		#end
 
 		return null;
 	}
@@ -362,7 +356,6 @@ class Assets
 	**/
 	public static function getSound(id:String, useCache:Bool = true):Sound
 	{
-		#if (tools && !display)
 		if (useCache && cache.enabled && cache.hasSound(id))
 		{
 			var sound = cache.getSound(id);
@@ -386,7 +379,6 @@ class Assets
 
 			return sound;
 		}
-		#end
 
 		return null;
 	}
@@ -460,7 +452,6 @@ class Assets
 	**/
 	public static function isLocal(id:String, type:AssetType = null, useCache:Bool = true):Bool
 	{
-		#if (tools && !display)
 		if (useCache && cache.enabled)
 		{
 			if (type == AssetType.IMAGE || type == null)
@@ -487,28 +478,18 @@ class Assets
 		{
 			return library.isLocal(symbolName, cast type);
 		}
-		#end
 
 		return false;
 	}
 
 	@:analyzer(ignore) private static function isValidBitmapData(bitmapData:BitmapData):Bool
 	{
-		#if (tools && !display)
 		return (bitmapData != null && (bitmapData.image != null || bitmapData.__texture != null));
-		#else
-		return true;
-		#end
 	}
 
 	@:noCompletion private static function isValidSound(sound:Sound):Bool
 	{
-		#if ((tools && !display) && (cpp || nodejs))
 		return true;
-		// return (sound.__handle != null && sound.__handle != 0);
-		#else
-		return true;
-		#end
 	}
 
 	/**
@@ -541,7 +522,6 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
-		#if (tools && !display)
 		var promise = new Promise<BitmapData>();
 
 		if (useCache && cache.enabled && cache.hasBitmapData(id))
@@ -654,9 +634,6 @@ class Assets
 		}).onError(promise.error).onProgress(promise.progress);
 
 		return promise.future;
-		#else
-		return Future.withValue(getBitmapData(id, useCache));
-		#end
 	}
 
 	/**
@@ -700,7 +677,6 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
-		#if (tools && !display && !macro)
 		var promise = new Promise<Font>();
 
 		if (useCache && cache.enabled && cache.hasFont(id))
@@ -727,9 +703,6 @@ class Assets
 		future.onProgress(promise.progress);
 
 		return promise.future;
-		#else
-		return Future.withValue(getFont(id, useCache));
-		#end
 	}
 
 	/**
@@ -782,7 +755,6 @@ class Assets
 	**/
 	public static function loadMovieClip(id:String):Future<MovieClip>
 	{
-		#if (tools && !display)
 		var promise = new Promise<MovieClip>();
 
 		var libraryName = id.substring(0, id.indexOf(":"));
@@ -810,9 +782,6 @@ class Assets
 		}
 
 		return promise.future;
-		#else
-		return Future.withValue(getMovieClip(id));
-		#end
 	}
 
 	/**
