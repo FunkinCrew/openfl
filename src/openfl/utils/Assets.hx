@@ -652,10 +652,10 @@ class Assets
 	{
 		var promise = new Promise<ByteArray>();
 
-		var future = LimeAssets.loadBytes(id);
-		future.onComplete(function(bytes) promise.complete(bytes));
-		future.onProgress(function(progress, total) promise.progress(progress, total));
-		future.onError(function(msg) promise.error(msg));
+		LimeAssets.loadBytes(id)
+			.onComplete(function(bytes) promise.complete(bytes))
+			.onProgress(function(progress, total) promise.progress(progress, total))
+			.onError(function(msg) promise.error(msg));
 
 		return promise.future;
 	}
@@ -685,22 +685,22 @@ class Assets
 			return promise.future;
 		}
 
-		var future = LimeAssets.loadFont(id);
-		future.onComplete(function(limeFont)
-		{
-			var font = new Font();
-
-			font.__fromLimeFont(limeFont);
-
-			if (useCache && cache.enabled)
+		LimeAssets.loadFont(id, false)
+			.onComplete(function(limeFont)
 			{
-				cache.setFont(id, font);
-			}
+				var font = new Font();
 
-			promise.complete(font);
-		});
-		future.onError(promise.error);
-		future.onProgress(promise.progress);
+				font.__fromLimeFont(limeFont);
+
+				if (useCache && cache.enabled)
+				{
+					cache.setFont(id, font);
+				}
+
+				promise.complete(font);
+			})
+			.onError(promise.error)
+			.onProgress(promise.progress);
 
 		return promise.future;
 	}
@@ -803,27 +803,35 @@ class Assets
 
 		var promise = new Promise<Sound>();
 
-		LimeAssets.loadAudioBuffer(id, useCache)
-			.onComplete(function(buffer)
+		if (useCache && cache.enabled && cache.hasSound(id))
+		{
+			var sound = cache.getSound(id);
+
+			if (isValidSound(sound))
 			{
-				if (buffer != null)
-				{
-					var sound = Sound.fromAudioBuffer(buffer);
+				promise.complete(sound);
+				return promise.future;
+			}
+		}
 
-					if (useCache && cache.enabled)
-					{
-						cache.setSound(id, sound);
-					}
+		LimeAssets.loadAudioBuffer(id, false).onComplete(function(buffer)
+		{
+			if (buffer != null)
+			{
+				var sound = Sound.fromAudioBuffer(buffer);
 
-					promise.complete(sound);
-				}
-				else
+				if (useCache && cache.enabled)
 				{
-					promise.error("[Assets] Could not load Sound \"" + id + "\"");
+					cache.setSound(id, sound);
 				}
-			})
-			.onError(promise.error)
-			.onProgress(promise.progress);
+
+				promise.complete(sound);
+			}
+			else
+			{
+				promise.error("[Assets] Could not load Sound \"" + id + "\"");
+			}
+		}).onError(promise.error).onProgress(promise.progress);
 
 		return promise.future;
 	}
