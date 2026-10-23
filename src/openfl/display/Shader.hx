@@ -611,19 +611,17 @@ class Shader
 		src = ~/\bgl_FragColor\b/g.replace(src, "openfl_FragColorMain");
 
 		// Add the frag data write at the bottom of the main funciton
-		// use basic gl_FragColor if it isn't a GraphicsShader
+		// use gl_FragData[0] only if it isn't a GraphicsShader
 		var res:String = "vec4 openfl_FragColorMain = vec4(0.0, 0.0, 0.0, 0.0);\n";
 		res += src;
 		res += "\nvoid main()\n{\n";
 		res += "\topenfl_main();\n";
+		res += "\tgl_FragData[0] = openfl_FragColorMain;\n";
 		res += "#ifdef OPENFL_GRAPHICS_SHADER\n";
 		res += "\tif (sampleAttachment)\n{\n";
 		res += "\tgl_FragData[1] = openfl_FragColorMain;\n}\n";
 		res += "\telse\n{\n";
 		res += "\tgl_FragData[1] = vec4(0.0);\n}\n";
-		res += "\tgl_FragData[0] = openfl_FragColorMain;\n";
-		res += "#else\n";
-		res += "\tgl_FragColor = openfl_FragColorMain;\n";
 		res += "#endif\n";
 		res += "}\n";
 
