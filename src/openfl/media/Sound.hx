@@ -3,7 +3,8 @@ package openfl.media;
 import haxe.Int64;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
-import lime.utils.UInt8Array;
+import lime.utils.Float32Array;
+import lime.utils.Int16Array;
 import openfl.errors.IOError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -12,14 +13,6 @@ import openfl.events.ProgressEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
-#if (js && html5)
-import lime.media.AudioManager;
-import lime.media.WebAudioContext;
-#end
-#if lime_openal
-import lime.media.AudioManager;
-import lime.media.OpenALAudioContext;
-#end
 
 /**
 	The Sound class lets you work with sound in an application. The Sound class
@@ -240,18 +233,6 @@ class Sound extends EventDispatcher
 	@:noCompletion private var __pendingAudioSource:AudioSource;
 	@:noCompletion private var __buffer:AudioBuffer;
 
-	#if (js && html5)
-	public var sampleRate(get, never):Int;
-
-	@:noCompletion private var __webAudioContext:WebAudioContext = null;
-	#end
-
-	#if lime_openal
-	public var sampleRate(get, never):Int;
-
-	@:noCompletion private var __alAudioContext:OpenALAudioContext = null;
-	#end
-
 	/**
 		Creates a new Sound object. If you pass a valid URLRequest object to the
 		Sound constructor, the constructor automatically calls the
@@ -287,28 +268,6 @@ class Sound extends EventDispatcher
 		{
 			load(stream, context);
 		}
-		#if (js && html5)
-		if (stream == null && AudioManager.context != null)
-		{
-			switch (AudioManager.context.type)
-			{
-				case WEB:
-					__webAudioContext = AudioManager.context.web;
-				default:
-			}
-		}
-		#end
-		#if lime_openal
-		if (stream == null && AudioManager.context != null)
-		{
-			switch (AudioManager.context.type)
-			{
-				case OPENAL:
-					__alAudioContext = AudioManager.context.openal;
-				default:
-			}
-		}
-		#end
 	}
 
 	/**
@@ -364,6 +323,24 @@ class Sound extends EventDispatcher
 		}
 
 		return fromAudioBuffer(buffer);
+	}
+
+	/**
+		Creates a new Sound from a file path or web address asynchronously. The file
+		load will occur in the background.
+
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	path	A local file path or web address containing a sound
+		@returns	A Future Sound
+	**/
+	public static function loadFromFile(path:String):Future<Sound>
+	{
+		return AudioBuffer.loadFromFile(path).then(function(audioBuffer)
+		{
+			return Future.withValue(fromAudioBuffer(audioBuffer));
+		});
 	}
 
 	/**
@@ -443,7 +420,14 @@ class Sound extends EventDispatcher
 	**/
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
+		if (stream == null || stream.url == null)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
+		}
+
 		url = stream.url;
+
 		__urlLoading = true;
 
 		#if openfl_pool_events
@@ -459,27 +443,6 @@ class Sound extends EventDispatcher
 		Event.__pool.release(openEvent);
 		#end
 
-		#if (js && html5)
-		var defaultLibrary = lime.utils.Assets.getLibrary("default"); // TODO: Improve this
-
-		if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(url))
-		{
-			var audioBuffer = defaultLibrary.cachedAudioBuffers.get(url);
-			var byteLength = (audioBuffer != null && audioBuffer.data != null) ? audioBuffer.data.byteLength : 0;
-			AudioBuffer_onURLProgress(byteLength, byteLength);
-			AudioBuffer_onURLLoad(audioBuffer);
-		}
-		else
-		{
-			AudioBuffer.loadFromFile(url)
-				.onProgress(AudioBuffer_onURLProgress)
-				.onComplete(AudioBuffer_onURLLoad)
-				.onError(function(_)
-				{
-					AudioBuffer_onURLLoad(null);
-				});
-		}
-		#else
 		AudioBuffer.loadFromFile(url)
 			.onProgress(AudioBuffer_onURLProgress)
 			.onComplete(AudioBuffer_onURLLoad)
@@ -487,7 +450,6 @@ class Sound extends EventDispatcher
 			{
 				AudioBuffer_onURLLoad(null);
 			});
-		#end
 	}
 
 	/**
@@ -497,131 +459,8 @@ class Sound extends EventDispatcher
 		This function will throw an exception if the ByteArray object does not contain enough data.
 
 		@param	bytes
-		@param	bytesLength
 	**/
-	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int):Void
-	{
-		if (bytes == null || bytesLength <= 0)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			return;
-		}
-
-		if (bytes.position > 0 || bytes.length > bytesLength)
-		{
-			var copy = new ByteArray(bytesLength);
-			copy.writeBytes(bytes, bytes.position, bytesLength);
-			bytes = copy;
-		}
-
-		__buffer = AudioBuffer.fromBytes(bytes);
-
-		if (__buffer == null)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		}
-		else
-		{
-			#if openfl_pool_events
-			var openEvent = Event.__pool.get();
-			openEvent.type = Event.OPEN;
-			#else
-			var openEvent = new Event(Event.OPEN);
-			#end
-
-			dispatchEvent(openEvent);
-
-			#if openfl_pool_events
-			Event.__pool.release(openEvent);
-			#end
-
-			#if openfl_pool_events
-			var progressEvent = ProgressEvent.__pool.get();
-			progressEvent.type = ProgressEvent.PROGRESS;
-			progressEvent.bytesLoaded = bytes.length;
-			progressEvent.bytesTotal = bytes.length;
-			#else
-			var progressEvent = new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytes.length, bytes.length);
-			#end
-
-			dispatchEvent(progressEvent);
-
-			#if openfl_pool_events
-			ProgressEvent.__pool.release(progressEvent);
-			#end
-
-			#if openfl_pool_events
-			var completeEvent = Event.__pool.get();
-			completeEvent.type = Event.COMPLETE;
-			#else
-			var completeEvent = new Event(Event.COMPLETE);
-			#end
-
-			dispatchEvent(completeEvent);
-
-			#if openfl_pool_events
-			Event.__pool.release(completeEvent);
-			#end
-		}
-	}
-
-	/**
-		Creates a new Sound from a file path or web address asynchronously. The file
-		load will occur in the background.
-
-		Progress, completion and error callbacks will be dispatched in the current
-		thread using callbacks attached to a returned Future object.
-
-		@param	path	A local file path or web address containing a sound
-		@returns	A Future Sound
-	**/
-	public static function loadFromFile(path:String):Future<Sound>
-	{
-		return AudioBuffer.loadFromFile(path).then(function(audioBuffer)
-		{
-			return Future.withValue(fromAudioBuffer(audioBuffer));
-		});
-	}
-
-	/**
-		Creates a new Sound from a set of file paths or web addresses asynchronously.
-		The audio backend will choose the first compatible file format, and will load the file
-		it selects in the background.
-
-		Progress, completion and error callbacks will be dispatched in the current
-		thread using callbacks attached to a returned Future object.
-
-		@param	paths	A set of local file paths or web addresses containing sound
-		@returns	A Future Sound
-	**/
-	public static function loadFromFiles(paths:Array<String>):Future<Sound>
-	{
-		return AudioBuffer.loadFromFiles(paths).then(function(audioBuffer)
-		{
-			return Future.withValue(fromAudioBuffer(audioBuffer));
-		});
-	}
-
-	/**
-		Load PCM 32-bit floating point sound data from a ByteArray object into a Sound object. The data will be read
-		from the current ByteArray position and will leave the ByteArray position at the end of the specified sample
-		length multiplied by either 1 channel or 2 channels if the stereo flag is set once finished.
-
-		Starting with Flash Player 11.8, the amount of audio data that can be passed to this function is limited. For
-		SWF versions >= 21, this function throws an exception if the amount of audio data passed into this function is
-		more than 1800 seconds. That is, samples / sampleRate should be less than or equal to 1800. For swf versions <
-		21, the runtime fails silently if the amount of audio data passed in is more than 12000 seconds. This is
-		provided only for backward compatibility.
-
-		This function throws an exception if the ByteArray object does not contain enough data.
-
-		@param	bytes
-		@param	samples
-		@param	format
-		@param	stereo
-		@param	sampleRate
-	**/
-	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void
+	public function loadCompressedDataFromByteArray(bytes:ByteArray):Void
 	{
 		if (bytes == null)
 		{
@@ -629,23 +468,13 @@ class Sound extends EventDispatcher
 			return;
 		}
 
-		var bitsPerSample = (format == "float" ? 32 : 16); // "short"
-		var channels = (stereo ? 2 : 1);
-		var bytesLength = Std.int(samples * channels * (bitsPerSample / 8));
+		__buffer = AudioBuffer.fromBytes(bytes);
 
-		if (bytes.position > 0 || bytes.length > bytesLength)
+		if (__buffer == null)
 		{
-			var copy = new ByteArray(bytesLength);
-			copy.writeBytes(bytes, bytes.position, bytesLength);
-			bytes = copy;
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
 		}
-
-		var audioBuffer = new AudioBuffer();
-		audioBuffer.channels = channels;
-		audioBuffer.dataFormat = (format == "float" ? F32 : S16);
-		audioBuffer.data = new UInt8Array(bytes);
-		audioBuffer.sampleRate = Std.int(sampleRate);
-		__buffer = audioBuffer;
 
 		#if openfl_pool_events
 		var openEvent = Event.__pool.get();
@@ -690,6 +519,87 @@ class Sound extends EventDispatcher
 	}
 
 	/**
+		Load PCM 32-bit floating point sound data from a ByteArray object into a Sound object. The data will be read
+		from the current ByteArray position and will leave the ByteArray position at the end of the specified sample
+		length multiplied by either 1 channel or 2 channels if the stereo flag is set once finished.
+
+		Starting with Flash Player 11.8, the amount of audio data that can be passed to this function is limited. For
+		SWF versions >= 21, this function throws an exception if the amount of audio data passed into this function is
+		more than 1800 seconds. That is, samples / sampleRate should be less than or equal to 1800. For swf versions <
+		21, the runtime fails silently if the amount of audio data passed in is more than 12000 seconds. This is
+		provided only for backward compatibility.
+
+		This function throws an exception if the ByteArray object does not contain enough data.
+
+		@param	bytes
+		@param	samples
+		@param	format
+		@param	stereo
+		@param	sampleRate
+	**/
+	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void
+	{
+		#if lime_miniaudio
+		if (bytes == null)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
+		}
+
+		var audioBuffer = new AudioBuffer();
+		audioBuffer.channels = stereo ? 2 : 1;
+		audioBuffer.sampleRate = Std.int(sampleRate);
+		audioBuffer.frames = samples;
+		audioBuffer.format = (format == "float") ? F32 : S16;
+		audioBuffer.data = (format == "float") ? new Float32Array(bytes) : new Int16Array(bytes);
+		__buffer = audioBuffer;
+
+		#if openfl_pool_events
+		var openEvent = Event.__pool.get();
+		openEvent.type = Event.OPEN;
+		#else
+		var openEvent = new Event(Event.OPEN);
+		#end
+
+		dispatchEvent(openEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(openEvent);
+		#end
+
+		#if openfl_pool_events
+		var progressEvent = ProgressEvent.__pool.get();
+		progressEvent.type = ProgressEvent.PROGRESS;
+		progressEvent.bytesLoaded = bytes.length;
+		progressEvent.bytesTotal = bytes.length;
+		#else
+		var progressEvent = new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytes.length, bytes.length);
+		#end
+
+		dispatchEvent(progressEvent);
+
+		#if openfl_pool_events
+		ProgressEvent.__pool.release(progressEvent);
+		#end
+
+		#if openfl_pool_events
+		var completeEvent = Event.__pool.get();
+		completeEvent.type = Event.COMPLETE;
+		#else
+		var completeEvent = new Event(Event.COMPLETE);
+		#end
+
+		dispatchEvent(completeEvent);
+
+		#if openfl_pool_events
+		Event.__pool.release(completeEvent);
+		#end
+		#else
+		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		#end
+	}
+
+	/**
 		Generates a new SoundChannel object to play back the sound. This method
 		returns a SoundChannel object, which you access to stop the sound and to
 		monitor volume.(To control the volume, panning, and balance, access the
@@ -720,62 +630,26 @@ class Sound extends EventDispatcher
 			sndTransform = sndTransform.clone();
 		}
 
-		var pan = SoundMixer.__soundTransform.pan + sndTransform.pan;
-
-		if (pan > 1) pan = 1;
-		if (pan < -1) pan = -1;
-
-		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
-
 		var audioSource = new AudioSource(__buffer);
-		audioSource.offset = Std.int(startTime);
-		if (loops > 1) audioSource.loops = loops - 1;
 
-		audioSource.gain = volume;
+		if (loops > 1)
+		{
+			audioSource.loops = loops - 1;
+		}
 
-		var position = audioSource.position;
-		position.x = pan;
-		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-		audioSource.position = position;
+		audioSource.gain = SoundMixer.__soundTransform.volume * sndTransform.volume;
+		audioSource.pan = Math.max(-1, Math.min(1, SoundMixer.__soundTransform.pan + sndTransform.pan));
 
 		var soundChannel = new SoundChannel(this, __urlLoading ? null : audioSource, sndTransform);
+
 		if (__urlLoading)
 		{
 			__pendingAudioSource = audioSource;
 			__pendingSoundChannel = soundChannel;
 		}
-		else if (__buffer == null)
-		{
-			#if (js && html5)
-			if (__webAudioContext != null)
-			{
-				soundChannel.__startSampleData();
-			}
-			#end
-			#if lime_openal
-			if (__alAudioContext != null)
-			{
-				soundChannel.__startSampleData();
-			}
-			#end
-		}
 
 		return soundChannel;
 	}
-
-	#if (js && html5)
-	@:noCompletion private function get_sampleRate():Int
-	{
-		return Std.int(__webAudioContext.sampleRate);
-	}
-	#end
-
-	#if lime_openal
-	@:noCompletion private function get_sampleRate():Int
-	{
-		return 44100;
-	}
-	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_id3():ID3Info
@@ -803,10 +677,17 @@ class Sound extends EventDispatcher
 			if (__buffer.data != null)
 			{
 				var bytesPerFrame = __buffer.channels * (__buffer.bitsPerSample / 8.0);
+
 				var totalFrames = __buffer.data.length / bytesPerFrame;
 
 				return (totalFrames / __buffer.sampleRate) * 1000.0;
 			}
+			#if lime_miniaudio
+			else if (__buffer.__srcMADecoder != null)
+			{
+				return (Int64.toInt(__buffer.__srcMADecoder.get_length_in_pcm_frames()) / __buffer.__srcMADecoder.get_data_format().sampleRate) * 1000;
+			}
+			#end
 			else
 			{
 				return 0;
@@ -828,11 +709,15 @@ class Sound extends EventDispatcher
 		else
 		{
 			__buffer = buffer;
+
 			var byteLength = 1;
+
+			#if (!(js && html5))
 			if (__buffer.data != null)
 			{
 				byteLength = __buffer.data.length;
 			}
+			#end
 
 			#if openfl_pool_events
 			var progressEvent = ProgressEvent.__pool.get();
@@ -865,9 +750,7 @@ class Sound extends EventDispatcher
 			if (__pendingSoundChannel != null)
 			{
 				__pendingAudioSource.buffer = __buffer;
-				// ideally, Lime would call init() when setting buffer,
-				// similar to how it does in the AudioSource constructor
-				@:privateAccess __pendingAudioSource.init();
+				__pendingAudioSource.init();
 				__pendingSoundChannel.__initAudioSource(__pendingAudioSource);
 			}
 		}

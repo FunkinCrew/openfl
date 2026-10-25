@@ -322,8 +322,7 @@ class AssetsMacro
 				{
 					super();
 
-					var byteArray = openfl.utils.ByteArray.fromBytes(haxe.Resource.getBytes(resourceName));
-					loadCompressedDataFromByteArray(byteArray, byteArray.length);
+					loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(haxe.Resource.getBytes(resourceName)));
 				};
 
 			var args = [
