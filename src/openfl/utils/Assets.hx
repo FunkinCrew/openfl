@@ -38,6 +38,7 @@ import openfl.text.Font;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Sprite)
 @:access(openfl.events.Event)
+@:access(openfl.media.Sound)
 @:access(openfl.text.Font)
 @:access(openfl.utils.AssetLibrary)
 class Assets
@@ -489,7 +490,7 @@ class Assets
 
 	@:noCompletion private static function isValidSound(sound:Sound):Bool
 	{
-		return true;
+		return (sound != null && sound.__buffer != null && (sound.__buffer.src != null || sound.__buffer.data != null));
 	}
 
 	/**
