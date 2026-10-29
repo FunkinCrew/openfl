@@ -2,6 +2,7 @@ package openfl.utils;
 
 import haxe.io.Path;
 import lime.app.Promise;
+import lime.media.AudioBuffer;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.Log;
@@ -382,6 +383,35 @@ class Assets
 		}
 
 		return null;
+	}
+
+	/**
+		Gets an instance of an embedded music asset
+
+		```haxe
+		var music = Assets.getMusic ("music.ogg");
+		```
+
+		@param	id		The ID or asset path for the music
+		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true). Only applies when falling back to `getSound()`
+		@return		A new Sound object, or null if the music could not be loaded
+
+		@see [Working with sound assets](https://books.openfl.org/openfl-developers-guide/working-with-sound/working-with-sound-assets.html)
+	**/
+	public static function getMusic(id:String, useCache:Bool = true):Sound
+	{
+		#if lime_miniaudio
+		var buffer = AudioBuffer.fromFile(LimeAssets.getPath(id), true);
+
+		if (buffer == null)
+		{
+			buffer = AudioBuffer.fromBytes(LimeAssets.getBytes(id), true);
+		}
+
+		return buffer != null ? Sound.fromAudioBuffer(buffer) : null;
+		#else
+		return getSound(id, useCache);
+		#end
 	}
 
 	/**
@@ -835,6 +865,24 @@ class Assets
 		}).onError(promise.error).onProgress(promise.progress);
 
 		return promise.future;
+	}
+
+	/**
+		Loads an included music asset asynchronously
+
+		```haxe
+		Assets.loadMusic ("music.ogg").onComplete (handleMusic);
+		```
+
+		@param	id		The ID or asset path for the asset
+		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true). Only applies when falling back to `loadSound()`
+		@return		Returns a Future<Sound>
+
+		@see [Working with sound assets](https://books.openfl.org/openfl-developers-guide/working-with-sound/working-with-sound-assets.html)
+	**/
+	public static function loadMusic(id:String, useCache:Null<Bool> = true):Future<Sound>
+	{
+		return #if lime_miniaudio Future.withValue(getMusic(id, useCache)) #else loadSound(id, useCache) #end;
 	}
 
 	/**
