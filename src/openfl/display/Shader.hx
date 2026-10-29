@@ -725,7 +725,7 @@ class Shader
 			}
 			else
 			{
-				if (__needsGLES3Source(glFragmentSource))
+				if (__needsGLES3Source(fragment))
 				{
 					var converter = new GLSL3Converter();
 
