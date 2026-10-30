@@ -3061,6 +3061,7 @@ class Stage extends DisplayObjectContainer implements IModule
 		touchEvent.touchPointID = touchId;
 		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 		touchEvent.pressure = touch.pressure;
+		touchEvent.timestamp = touch.timestamp;
 
 		__dispatchStack(touchEvent, stack);
 
@@ -3075,6 +3076,7 @@ class Stage extends DisplayObjectContainer implements IModule
 			touchEvent.touchPointID = touchId;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = touch.pressure;
+			touchEvent.timestamp = touch.timestamp;
 
 			__dispatchStack(touchEvent, stack);
 
@@ -3093,6 +3095,7 @@ class Stage extends DisplayObjectContainer implements IModule
 			touchEvent.touchPointID = touchId;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = touch.pressure;
+			touchEvent.timestamp = touch.timestamp;
 
 			__dispatchTarget(touchOverTarget, touchEvent);
 
@@ -3118,6 +3121,7 @@ class Stage extends DisplayObjectContainer implements IModule
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = false;
 				touchEvent.pressure = touch.pressure;
+				touchEvent.timestamp = touch.timestamp;
 
 				__dispatchTarget(item, touchEvent);
 
@@ -3144,6 +3148,7 @@ class Stage extends DisplayObjectContainer implements IModule
 					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 					touchEvent.bubbles = false;
 					touchEvent.pressure = touch.pressure;
+					touchEvent.timestamp = touch.timestamp;
 
 					__dispatchTarget(item, touchEvent);
 
@@ -3169,6 +3174,7 @@ class Stage extends DisplayObjectContainer implements IModule
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = true;
 				touchEvent.pressure = touch.pressure;
+				touchEvent.timestamp = touch.timestamp;
 
 				__dispatchTarget(target, touchEvent);
 

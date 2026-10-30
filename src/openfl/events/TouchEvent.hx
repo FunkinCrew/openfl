@@ -1,5 +1,6 @@
 package openfl.events;
 
+import haxe.Int64;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 import openfl.utils.ByteArray;
@@ -382,6 +383,11 @@ class TouchEvent extends Event
 	**/
 	public var touchPointID:Int;
 
+	/**
+		The time (in nanoseconds) in which this event was dispatched.
+	**/
+	public var timestamp:Int64;
+
 	@:noCompletion private var __updateAfterEventFlag:Bool;
 
 	/**
@@ -454,6 +460,7 @@ class TouchEvent extends Event
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
+		event.timestamp = timestamp;
 		return event;
 	}
 
