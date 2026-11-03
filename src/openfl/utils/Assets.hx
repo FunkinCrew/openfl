@@ -520,7 +520,8 @@ class Assets
 
 	@:noCompletion private static function isValidSound(sound:Sound):Bool
 	{
-		return (sound != null && sound.__buffer != null && (sound.__buffer.src != null || sound.__buffer.data != null));
+		@:privateAccess
+		return (sound != null && LimeAssets.isValidAudio(sound.__buffer));
 	}
 
 	/**
