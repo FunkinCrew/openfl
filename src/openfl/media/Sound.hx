@@ -664,7 +664,7 @@ class Sound extends EventDispatcher
 			#if (js && html5 && lime_howlerjs)
 			if (__buffer.__srcHowlerDefaultSprite != null)
 			{
-				var sprite = untyped __buffer.src._sprite[__buffer.__srcHowlerDefaultSprite];
+				var sprite = untyped __buffer.__srcHowl._sprite[__buffer.__srcHowlerDefaultSprite];
 
 				if (sprite != null)
 				{
@@ -672,7 +672,7 @@ class Sound extends EventDispatcher
 				}
 			}
 
-			return __buffer.src.duration() * 1000;
+			return __buffer.__srcHowl.duration() * 1000;
 			#else
 			if (__buffer.data != null)
 			{
