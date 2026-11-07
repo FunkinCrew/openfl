@@ -222,22 +222,22 @@ class Font extends LimeFont
 
 	@:noCompletion private function __initialize():Bool
 	{
-		#if native
 		if (!__initialized)
 		{
+			#if native
 			if (src != null)
 			{
 				// TODO: How does src get defined without being initialized in Lime?
 				if (unitsPerEM == 0) __initializeSource();
 				__initialized = true;
 			}
-			else if (src == null && __fontID != null && Assets.isLocal(__fontID))
-			{
+			else
+			#end if (src == null && __fontID != null && Assets.isLocal(__fontID))
+		{
 				__fromBytes(Assets.getBytes(__fontID));
 				__initialized = true;
-			}
 		}
-		#end
+		}
 
 		return __initialized;
 	}

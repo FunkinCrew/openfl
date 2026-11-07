@@ -183,9 +183,6 @@ class TextEngine
 
 	@:noCompletion private static function findFont(name:String):Font
 	{
-		#if (js && html5)
-		return Font.__fontByName.get(name);
-		#elseif lime_cffi
 		for (registeredFont in Font.__registeredFonts)
 		{
 			if (registeredFont == null) continue;
@@ -205,13 +202,11 @@ class TextEngine
 
 		if (font != null)
 		{
-			Font.__registeredFonts.push(font);
-			Font.__fontByName[font.fontName] = font;
+			Font.registerFont(font);
 			return font;
 		}
-		#end
 
-		return null;
+		return Font.__fontByName.get(name);
 	}
 
 	@:noCompletion private static function findFontVariant(format:TextFormat):Font
