@@ -31,7 +31,7 @@ package openfl.media;
 
 		```haxe
 		var transform = new SoundTransform(1.0, 0.5);
-		var soundChannel = sound.play(0, 0, transform);
+		var soundChannel = sound.play(0, false, transform);
 		```
 
 		The following example sets the pan to -1 (full pan left) for a
@@ -67,7 +67,7 @@ package openfl.media;
 
 		```haxe
 		var transform = new SoundTransform(0.5);
-		var soundChannel = sound.play(0, 0, transform);
+		var soundChannel = sound.play(0, false, transform);
 		```
 
 		The following example sets the volume to 0.0 (silent) for a

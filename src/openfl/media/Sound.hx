@@ -607,9 +607,7 @@ class Sound extends EventDispatcher
 
 		@param startTime    The initial position in milliseconds at which playback
 							should start.
-		@param loops        Defines the number of times a sound loops back to the
-							`startTime` value before the sound channel
-							stops playback.
+		@param looping     Whether the sound should loop continuously during playback.
 		@param sndTransform The initial SoundTransform object assigned to the
 							sound channel.
 		@return A SoundChannel object, which you use to control the sound. This
@@ -619,7 +617,7 @@ class Sound extends EventDispatcher
 
 		@see [Playing sounds](https://books.openfl.org/openfl-developers-guide/working-with-sound/playing-sounds.html)
 	**/
-	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
+	public function play(startTime:Float = 0.0, loop:Bool = false, sndTransform:SoundTransform = null):SoundChannel
 	{
 		if (sndTransform == null)
 		{
@@ -632,10 +630,7 @@ class Sound extends EventDispatcher
 
 		var audioSource = new AudioSource(__buffer);
 
-		if (loops > 1)
-		{
-			audioSource.loops = loops - 1;
-		}
+		audioSource.loop = loop;
 
 		audioSource.gain = SoundMixer.__soundTransform.volume * sndTransform.volume;
 		audioSource.pan = Math.max(-1, Math.min(1, SoundMixer.__soundTransform.pan + sndTransform.pan));
