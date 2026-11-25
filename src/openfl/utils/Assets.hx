@@ -400,7 +400,17 @@ class Assets
 	**/
 	public static function getMusic(id:String, useCache:Bool = true):Sound
 	{
-		#if lime_miniaudio
+		#if (js && html5 && lime_howlerjs)
+		var path = LimeAssets.getPath(id);
+		if (path == null || path.length == 0)
+		{
+			Log.error('Streamed music requires a file-backed Web asset with a URL: ' + id);
+			return null;
+		}
+
+		var buffer = AudioBuffer.fromFile(path, true);
+		return buffer != null ? Sound.fromAudioBuffer(buffer) : null;
+		#elseif lime_miniaudio
 		var buffer = AudioBuffer.fromFile(LimeAssets.getPath(id), true);
 
 		if (buffer == null)
@@ -883,7 +893,20 @@ class Assets
 	**/
 	public static function loadMusic(id:String, useCache:Null<Bool> = true):Future<Sound>
 	{
-		return #if lime_miniaudio Future.withValue(getMusic(id, useCache)) #else loadSound(id, useCache) #end;
+		#if (js && html5 && lime_howlerjs)
+		var path = LimeAssets.getPath(id);
+		if (path == null || path.length == 0)
+		{
+			Log.error('Streamed music requires a file-backed Web asset with a URL: ' + id);
+			return Future.withValue(null);
+		}
+
+		return Future.withValue(Sound.fromAudioBuffer(AudioBuffer.fromFile(path, true)));
+		#elseif lime_miniaudio
+		return Future.withValue(getMusic(id, useCache));
+		#else
+		return loadSound(id, useCache);
+		#end
 	}
 
 	/**

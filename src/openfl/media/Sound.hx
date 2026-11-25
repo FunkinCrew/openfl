@@ -659,11 +659,7 @@ class Sound extends EventDispatcher
 
 	@:noCompletion private function get_isStreaming():Bool
 	{
-		#if lime_miniaudio
-		return __buffer != null ? (__buffer.__srcMADecoder != null || __buffer.__srcMAAudioRingBuffer != null) : false;
-		#else
-		return false;
-		#end
+		return __buffer != null && __buffer.__isStreaming;
 	}
 
 	@:noCompletion private function get_length():Float
@@ -671,23 +667,27 @@ class Sound extends EventDispatcher
 		if (__buffer != null)
 		{
 			#if (js && html5 && lime_howlerjs)
-			if (__buffer.__srcHowlerDefaultSprite != null)
+			if (__buffer.__srcHowl != null)
 			{
-				var sprite = untyped __buffer.__srcHowl._sprite[__buffer.__srcHowlerDefaultSprite];
-
-				if (sprite != null)
+				if (__buffer.__srcHowlerDefaultSprite != null)
 				{
-					return sprite[1];
-				}
-			}
+					var sprite = untyped __buffer.__srcHowl._sprite[__buffer.__srcHowlerDefaultSprite];
 
-			return __buffer.__srcHowl.duration() * 1000;
-			#else
+					if (sprite != null)
+					{
+						return sprite[1];
+					}
+				}
+
+				return __buffer.__srcHowl.duration() * 1000;
+			}
+			#end
+
 			if (__buffer.data != null)
 			{
 				var bytesPerFrame = __buffer.channels * (__buffer.bitsPerSample / 8.0);
 
-				var totalFrames = __buffer.data.length / bytesPerFrame;
+				var totalFrames = __buffer.data.byteLength / bytesPerFrame;
 
 				return (totalFrames / __buffer.sampleRate) * 1000.0;
 			}
@@ -701,7 +701,6 @@ class Sound extends EventDispatcher
 			{
 				return 0;
 			}
-			#end
 		}
 
 		return 0;
@@ -724,7 +723,7 @@ class Sound extends EventDispatcher
 			#if (!(js && html5))
 			if (__buffer.data != null)
 			{
-				byteLength = __buffer.data.length;
+				byteLength = __buffer.data.byteLength;
 			}
 			#end
 
