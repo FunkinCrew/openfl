@@ -195,6 +195,11 @@ class Sound extends EventDispatcher
 	public var isBuffering(default, null):Bool;
 
 	/**
+		Returms whether the current sound is streamed or not.
+	**/
+	public var isStreaming(get, never):Bool;
+
+	/**
 		The length of the current sound in milliseconds.
 	**/
 	public var length(get, never):Float;
@@ -650,6 +655,15 @@ class Sound extends EventDispatcher
 	@:noCompletion private function get_id3():ID3Info
 	{
 		return new ID3Info();
+	}
+
+	@:noCompletion private function get_isStreaming():Bool
+	{
+		#if lime_miniaudio
+		return __buffer != null ? (__buffer.__srcMADecoder != null || __buffer.__srcMAAudioRingBuffer != null) : false;
+		#else
+		return false;
+		#end
 	}
 
 	@:noCompletion private function get_length():Float
