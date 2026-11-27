@@ -55,12 +55,12 @@ class Timeline
 	@:noCompletion private var __currentScene:Scene;
 	@:noCompletion private var __frameScripts:Map<Int, MovieClip->Void>;
 	@:noCompletion private var __framesLoaded:Int;
-	@:noCompletion private var __frameTime:Int;
+	@:noCompletion private var __frameTime:Float;
 	@:noCompletion private var __isPlaying:Bool;
 	@:noCompletion private var __lastFrameScriptEval:Int;
 	@:noCompletion private var __lastFrameUpdate:Int;
 	@:noCompletion private var __scope:MovieClip;
-	@:noCompletion private var __timeElapsed:Int;
+	@:noCompletion private var __timeElapsed:Float;
 	@:noCompletion private var __totalFrames:Int;
 
 	private function new()
@@ -184,7 +184,7 @@ class Timeline
 		attachMovieClip(movieClip);
 	}
 
-	@:noCompletion private function __enterFrame(deltaTime:Int):Void
+	@:noCompletion private function __enterFrame(deltaTime:Float):Void
 	{
 		if (__isPlaying)
 		{
@@ -253,7 +253,7 @@ class Timeline
 		return true;
 	}
 
-	@:noCompletion private function __getNextFrame(deltaTime:Int):Int
+	@:noCompletion private function __getNextFrame(deltaTime:Float):Int
 	{
 		var nextFrame:Int = 0;
 
@@ -317,7 +317,7 @@ class Timeline
 
 		if (frameRate != null)
 		{
-			__frameTime = Std.int(1000 / frameRate);
+			__frameTime = 1000 / frameRate;
 			__timeElapsed = 0;
 		}
 	}
