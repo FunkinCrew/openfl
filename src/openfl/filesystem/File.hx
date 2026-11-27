@@ -16,7 +16,6 @@ import sys.FileSystem;
 import sys.io.Process;
 #if (lime && !macro)
 import lime.ui.FileDialog;
-import lime.ui.FileDialogFilter;
 #end
 import lime.system.BackgroundWorker;
 
@@ -438,6 +437,7 @@ class File extends FileReference
 		];
 		#end
 
+	@:noCompletion private var __fileDialog:#if (lime && !macro) FileDialog #else Dynamic #end;
 	@:noCompletion private var __fileWorker:BackgroundWorker;
 	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
 	@:noCompletion private var __fileStatsDirty:Bool = false;
@@ -544,18 +544,15 @@ class File extends FileReference
 	**/
 	public function browseForDirectory(title:String):Void
 	{
-		#if (lime && !macro)
-		FileDialog.openDirectory(Lib.current.stage.window, function(filepaths:Array<String>):Void
+		if (__fileDialog != null)
 		{
-			if (filepaths.length > 0)
-			{
-				__dispatchSelect(filepaths[0]);
-			}
-			else
-			{
-				__dispatchCancel();
-			}
-		}, __path, false);
+			throw new IllegalOperationError("File Dialog is already open.");
+		}
+		#if (lime && !macro)
+		__fileDialog = new FileDialog();
+		__fileDialog.onSelect.add(__dispatchSelect, true);
+		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN_DIRECTORY, null, __path, title);
 		#end
 	}
 
@@ -609,18 +606,15 @@ class File extends FileReference
 	**/
 	public function browseForOpen(title:String, typeFilter:Array<FileFilter> = null)
 	{
-		#if (lime && !macro)
-		FileDialog.openFile(Lib.current.stage.window, function(filepaths:Array<String>, filter):Void
+		if (__fileDialog != null)
 		{
-			if (filepaths.length > 0)
-			{
-				__dispatchSelect(filepaths[0]);
-			}
-			else
-			{
-				__dispatchCancel();
-			}
-		}, __getFilterTypes(typeFilter), __path, false);
+			throw new IllegalOperationError("File Dialog is already open.");
+		}
+		#if (lime && !macro)
+		__fileDialog = new FileDialog();
+		__fileDialog.onSelect.add(__dispatchSelect, true);
+		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN, __getFilterTypes(typeFilter), __path, title);
 		#end
 	}
 
@@ -673,18 +667,15 @@ class File extends FileReference
 	**/
 	public function browseForOpenMultiple(title:String, typeFilter:Array<FileFilter> = null):Void
 	{
-		#if (lime && !macro)
-		FileDialog.openFile(Lib.current.stage.window, function(filepaths:Array<String>, filter):Void
+		if (__fileDialog != null)
 		{
-			if (filepaths.length > 0)
-			{
-				__dispatchSelectMultiple(filepaths);
-			}
-			else
-			{
-				__dispatchCancel();
-			}
-		}, __getFilterTypes(typeFilter), __path, true);
+			throw new IllegalOperationError("File Dialog is already open.");
+		}
+		#if (lime && !macro)
+		__fileDialog = new FileDialog();
+		__fileDialog.onSelectMultiple.add(__dispatchSelectMultiple, true);
+		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN_MULTIPLE, __getFilterTypes(typeFilter), __path, title);
 		#end
 	}
 
@@ -740,18 +731,14 @@ class File extends FileReference
 	**/
 	public function browseForSave(title:String):Void
 	{
-		#if (lime && !macro)
-		FileDialog.saveFile(Lib.current.stage.window, function(filepath:String, filter):Void
+		if (__fileDialog != null)
 		{
-			if (filepath != null)
-			{
-				__dispatchSelect(filepath);
-			}
-			else
-			{
-				__dispatchCancel();
-			}
-		}, null, __path);
+			throw new IllegalOperationError("File Dialog is already open.");
+		}
+		#if (lime && !macro)
+		__fileDialog = new FileDialog();
+		__fileDialog.onSelect.add(__dispatchSelect, true);
+		__fileDialog.browse(SAVE, null, __path, title);
 		#end
 	}
 
@@ -1885,11 +1872,20 @@ class File extends FileReference
 
 	@:noCompletion private function __dispatchCancel():Void
 	{
+		if (__fileDialog != null)
+		{
+			__fileDialog = null;
+		}
 		this.dispatchEvent(new Event(Event.CANCEL));
 	}
 
 	@:noCompletion private function __dispatchSelect(?filepath:String):Void
 	{
+		if (__fileDialog != null)
+		{
+			__fileDialog = null;
+		}
+
 		nativePath = filepath;
 
 		this.dispatchEvent(new Event(Event.SELECT));
@@ -1897,6 +1893,11 @@ class File extends FileReference
 
 	@:noCompletion private function __dispatchSelectMultiple(?filepaths:Array<String>):Void
 	{
+		if (__fileDialog != null)
+		{
+			__fileDialog = null;
+		}
+
 		var files:Array<File> = [];
 
 		for (filepath in filepaths)
@@ -1958,26 +1959,31 @@ class File extends FileReference
 		return Path.removeTrailingSlashes(path);
 	}
 
-	@:noCompletion private static function __getFilterTypes(typeFilter:Array<FileFilter>):Array<FileDialogFilter>
+	@:noCompletion private function __getFilterTypes(typeFilter:Array<FileFilter>):String
 	{
-		var filters:Array<FileDialogFilter> = [];
+		var filterString:String = null;
+		var filters:Array<String> = [];
 
 		if (typeFilter != null)
 		{
 			for (filter in typeFilter)
 			{
-				var exts:Array<String> = [];
+				var types:Array<String> = filter.extension.split(";");
 
-				for (ext in filter.extension.split(";"))
+				for (type in types)
 				{
-					exts.push(StringTools.replace(ext, "*.", ""));
+					filters.push(StringTools.replace(type, "*.", ""));
 				}
-
-				filters.push(new FileDialogFilter(filter.description, exts.join(";")));
 			}
+
+			filterString = filters.join(",");
 		}
 
-		return filters;
+		#if (lime >= "8.0.1")
+		return filterString;
+		#else
+		return filters[0];
+		#end
 	}
 
 	@:noCompletion private static function __getTempPath(dir:Bool):String
