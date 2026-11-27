@@ -401,14 +401,14 @@ class Assets
 	public static function getMusic(id:String, useCache:Bool = true):Sound
 	{
 		#if lime_miniaudio
-		var buffer = AudioBuffer.fromFile(LimeAssets.getPath(id), true);
+		var buffer = AudioBuffer.fromBytes(LimeAssets.getBytes(id), true);
 
-		if (buffer == null)
+		if (buffer != null)
 		{
-			buffer = AudioBuffer.fromBytes(LimeAssets.getBytes(id), true);
+			return Sound.fromAudioBuffer(buffer);
 		}
 
-		return buffer != null ? Sound.fromAudioBuffer(buffer) : null;
+		return null;
 		#else
 		return getSound(id, useCache);
 		#end
