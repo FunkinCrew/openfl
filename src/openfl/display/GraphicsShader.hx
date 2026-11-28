@@ -361,8 +361,6 @@ class GraphicsShader extends Shader
 
 			if (!openfl_hasBlendBitmap()) return src;
 
-			if (src.a <= 0.0) return src;
-
 			vec2 blendCoord = gl_FragCoord.xy * openfl_BlendBitmapTransform.xy + openfl_BlendBitmapTransform.zw;
 
 			vec4 bg = texture2D(openfl_BlendBitmap, blendCoord);
@@ -377,7 +375,7 @@ class GraphicsShader extends Shader
 
 			}
 
-			vec3 _res = openfl_blend(bg.rgb, src.rgb / src.a);
+			vec3 _res = openfl_blend(bg.rgb, src.rgb / max(src.a, ALPHA_EPSILON));
 
 			return vec4(_res * src.a, src.a);
 
@@ -387,13 +385,8 @@ class GraphicsShader extends Shader
 
 			vec4 color = texture2D (bitmap, coord);
 
-			if (color.a == 0.0) {
-
-				return openfl_applyBlend (vec4 (0.0, 0.0, 0.0, 0.0));
-
-			} else if (openfl_HasColorTransform) {
-
-				color = vec4 (color.rgb / color.a, color.a);
+			if (openfl_HasColorTransform) {
+				color = vec4 (color.rgb / max(color.a, ALPHA_EPSILON), color.a);
 
 				mat4 colorMultiplier = mat4 (0);
 				colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
@@ -403,14 +396,7 @@ class GraphicsShader extends Shader
 
 				color = clamp (openfl_ColorOffsetv + (color * colorMultiplier), 0.0, 1.0);
 
-				if (color.a > 0.0) {
-
-					return openfl_applyBlend (vec4 (color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav));
-
-				}
-
-				return openfl_applyBlend (vec4 (0.0, 0.0, 0.0, 0.0));
-
+				return openfl_applyBlend (vec4 (color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav));
 			}
 
 			return openfl_applyBlend (color * openfl_Alphav);
